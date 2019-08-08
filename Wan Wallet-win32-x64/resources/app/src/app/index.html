@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        ::-webkit-scrollbar {
+            width: 12px;
+            background-color: rgb(26, 27, 44);
+        }
+
+        ::-webkit-scrollbar-track {
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            background-color: rgb(26, 27, 44);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+            background-color: #555;
+        }
+    </style>
+    <title>Wan Wallet</title>
+</head>
+
+<body>
+    <div id="root"></div>
+    <!-- <script src="${isProd ? STATIC_PATH : `http://localhost:${WDS_PORT}/dist`}/js/bundle.js"></script> -->
+    <!-- <script src="http://localhost:7000/dist/js/bundle.js"></script> -->
+    <script>
+        // dynamically insert the bundled app script into the renderer process
+        // const { isDev, WDS_PORT } = require('../config/common')
+        const scripts = []
+        scripts.push(
+            true ? 'http://localhost:7000/dist/js/bundle.js' : './dist/renderer.prod.js'
+        )
+        document.write(
+            scripts
+            .map(script => `<script defer src="${script}"><\/script>`)
+            .join('')
+        )
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="systemUpdate.css">
+    <script src="./imortFontFamily.js"></script>
+    <script src="./vender/jquery-3.2.1.min.js"></script>
+    <script src="./vender/jquery.i18n.js"></script>
+    <script src="./vender/jquery.i18n.messagestore.js"></script>
+    <title id="title">
+        <!-- System Update -->
+    </title>
+</head>
+
+<body>
+    <div id="main-container">
+        <p id="head">
+            <!-- Software Update -->
+        </p>
+        <img id="rocket" src="image/rocket.png">
+        <p id="newVersion">
+            <!-- A new version of Wanchain Wallet is available! -->
+        </p>
+        <p id="version">
+            <!-- Latest version 3.3 is now available, your current version is 1.1. <br>
+            Would you like to upgrade now ? -->
+        </p>
+        <br>
+        <div id="release">
+            <!-- Release notes: -->
+        </div>
+        <br>
+        <div id="info">
+            <!-- Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+            ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
+            nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit
+            anim id est laborum. -->
+        </div>
+        <div id="buttons">
+            <button id="no">
+                <!-- No --></button>
+            <button id="upgrade">
+                <!-- Update Now --></button>
+        </div>
+    </div>
+    <div id="mask">
+        <i class="icon-loading">
+            <svg viewBox="0 0 1024 1024" class="loading-spin">
+                <path
+                    d="M988 548c-19.9 0-36-16.1-36-36 0-59.4-11.6-117-34.6-171.3a440.45 440.45 0 0 0-94.3-139.9 437.71 437.71 0 0 0-139.9-94.3C629 83.6 571.4 72 512 72c-19.9 0-36-16.1-36-36s16.1-36 36-36c69.1 0 136.2 13.5 199.3 40.3C772.3 66 827 103 874 150c47 47 83.9 101.8 109.7 162.7 26.7 63.1 40.2 130.2 40.2 199.3.1 19.9-16 36-35.9 36z">
+                </path>
+            </svg>
+            <br/><br/>
+            <span id="downloadingProgress">
+                <!-- Downloading... -->
+            </span>
+            <span id="downloadingComplete" style="display: none;">
+                <!-- Download Complete. Will Quit and Install Updates Now! -->
+            </span>
+        </i>
+    </div>
+</body>
+<script type="application/javascript">
+    const ids = [
+        'title',
+        'head',
+        'newVersion',
+        'release',
+        'no',
+        'upgrade',
+        'downloadingProgress',
+        'downloadingComplete'
+    ];
+    const setLoadingPercentage = (perc) => {
+        document.getElementById('percentage').innerText = perc + '%';
+        document.getElementById('loading-bar').style.width = perc.toString() + '%';
+    }
+    const setLanguage = (currVersion, releaseVersion, releaseNotes) => {
+        ids.forEach((id) => {
+            setText(id);
+        });
+        $('#version').html($.i18n('version', releaseVersion, currVersion));
+        $('#info').html(releaseNotes);
+    }
+    const setText = (id) => {
+        $(`#${id}`).html($.i18n(id));
+    }
+    window.onload = () => {
+        const upgradeButton = document.getElementById('upgrade')
+        const quitButton = document.getElementById('no')
+        const downloadingProgress = document.getElementById('downloadingProgress')
+        const downloadingComplete = document.getElementById('downloadingComplete')
+
+        let currentVersion, releaseVersion, releaseDate, releaseNotes
+        
+        wand.emitter.on('update', function(key, val) {
+            new Promise((resolve, reject) => {
+                wand.request('query_config', {
+                    param: 'language'
+                }, function (err, val) {
+                    if (err) {
+                        return reject(err);
+                    } else {
+                        return resolve(val.language);
+                    }
+                })
+            }).then((res) => {
+                let lan = res;
+                $.i18n({
+                    locale: lan
+                }).load({
+                    [lan]: wand.isDev ? `../../config/i18n/locales/${lan}/systemUpdate.json` :
+                        `../locales/${lan}/systemUpdate.json`,
+                }).then((res) => {
+                    switch (key) {
+                        case 'versionInfo':
+                            const infoObj = JSON.parse(val)
+                            currentVersion = infoObj.currVersion
+                            releaseVersion = infoObj.releaseVersion
+                            releaseDate = infoObj.releaseDate
+                            releaseNotes = infoObj.releaseNotes
+
+                            setLanguage(currentVersion, releaseVersion, releaseNotes)
+
+                            break
+                        
+                        case 'upgradeProgress':
+                            if (val === 'done') {
+                                downloadingProgress.style.display = 'none'
+                                downloadingComplete.style.display = 'inline'
+                            }
+
+                            break
+                    }
+
+                    
+
+                }).catch((err) => {
+                    console.log(err);
+                });
+            }).catch((err) => {
+                console.log(err);
+            });
+        })
+
+        
+        upgradeButton.addEventListener('click', (e) => {
+
+            e.preventDefault()
+            e.stopPropagation()
+
+            if (!releaseVersion) {
+                return
+            }
+
+            wand.request('upgrade_start', {
+                choice: 1
+            })
+
+            document.getElementById('mask').style.display = 'block'
+        })
+
+        quitButton.addEventListener('click', (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+
+            wand.request('upgrade_start', {
+                choice: 0
+            })
+        })
+    }
+</script>
+
+</html>
