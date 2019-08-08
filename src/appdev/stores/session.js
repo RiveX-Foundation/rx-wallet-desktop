@@ -4,9 +4,11 @@ const os = require('os');
 const storage = require('electron-json-storage');
 
 class Session {
+  @observable IsLogin = false;
   @observable hasMnemonicOrNot = false;
   @observable hasUseAcc = false;
   @observable UserAccountExist = false;
+  @observable RequestSignIn = false;
 
   constructor() {
     //super();
@@ -19,6 +21,14 @@ class Session {
     this.hasUseAcc = val;
   }
   
+  @action setIsLogin(val){
+    this.IsLogin = val;
+  }
+
+  @action setRequestSignIn(val){
+    this.RequestSignIn = val;
+  }
+
   @action setUserAccountExist(val){
     this.UserAccountExist = val;    
   }
@@ -26,6 +36,7 @@ class Session {
     if(localStorage.getItem('user') == "" || localStorage.getItem('user') == null){
       this.UserAccountExist = false;
     }else{
+      this.setIsLogin(true);
       this.UserAccountExist = true;
     }
     /*

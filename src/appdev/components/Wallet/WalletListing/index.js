@@ -5,20 +5,26 @@ import intl from 'react-intl-universal';
 
 import './index.less';
 @inject(stores => ({
+  wallets : stores.walletCreation.walletlist,
+  loadWallet: () => stores.walletCreation.loadWallet(),
   setCurrent: current => stores.walletCreation.setCurrent(current),
   language: stores.languageIntl.language
 }))
 
 @observer
 class WalletListing extends Component {
-  state = {
-    mobilevalue : ""
+  componentDidMount(){
+    this.loadwallet();
   }
-
+  
   inputChanged = e => {
     this.setState({ mobilevalue : e.target.value }, () => {
       this.props.setMobile(this.state.mobilevalue);
     });
+  }
+
+  loadwallet = () => {
+    this.props.loadWallet();
   }
 
   createWallet = () => {
@@ -28,7 +34,16 @@ class WalletListing extends Component {
   render() {
     return (
       <div>
-        <Button type="primary" onClick={this.createWallet}>Create Wallet{intl.get('Register.next')}</Button>
+        {
+          this.props.wallets.map((item, i) =>
+            {
+              return ( <li key={i}>Wallet {i} ({item.rvx_balance})</li> )
+            }
+          )
+        }
+    
+    
+            <Button type="primary" onClick={this.createWallet}>Create Wallet{intl.get('Register.next')}</Button>
       </div>
     );
   }

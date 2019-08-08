@@ -5,9 +5,7 @@ import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
 
 import './index.less';
-import InputMobile from 'components/RegisterAcc/InputMobile';
-import InputOTP from 'components/RegisterAcc/InputOTP';
-import InputUserInfo from 'components/RegisterAcc/InputUserInfo';
+import LoginMobile from 'components/LoginMobile';
 
 //import { checkCryptographic, checkPhrase } from 'utils/support';
 
@@ -38,13 +36,7 @@ class Login extends Component {
   state = {
     steps: [{
       title: intl.get('Register.registerMobile'),
-      content: <InputMobile />,
-    }, {
-      title: intl.get('Register.registrationOTPEntry'),
-      content: <InputOTP />,
-    }, {
-      title: intl.get('Register.registerUserInfo'),
-      content: <InputUserInfo />,
+      content: <LoginMobile />,
     }]
   }
 

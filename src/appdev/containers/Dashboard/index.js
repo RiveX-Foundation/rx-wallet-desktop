@@ -154,10 +154,6 @@ class Dashboard extends Component {
           <div className="steps-content">{walletsteps[current].content}</div>
           <div className="steps-action">
             {
-              current == 0
-              && <Button type="primary" onClick={this.next}>{intl.get('Register.next')}</Button>
-            }
-            {
               (current == 1 || current == 2) && (<Button type="primary" onClick={this.next} >{intl.get('Register.Next')}</Button>)
             }
           </div>

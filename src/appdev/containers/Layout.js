@@ -20,6 +20,8 @@ import { getBalance } from 'utils/helper';
 @inject(stores => ({
   //auth: stores.session.auth,
   //addrInfo: stores.wanAddress.addrInfo,
+  IsLogin : stores.session.IsLogin,
+  RequestSignIn: stores.session.RequestSignIn,
   UserAccountExist: stores.session.UserAccountExist,
   hasMnemonicOrNot: stores.session.hasMnemonicOrNot,
   getMnemonic: () => stores.session.getMnemonic()
@@ -75,14 +77,14 @@ export default class Layout extends Component {
   }
 
   render() {
-    const { UserAccountExist } = this.props;//, auth, location } = this.props;
+    const { UserAccountExist , RequestSignIn , IsLogin } = this.props;//, auth, location } = this.props;
     //if (this.state.loading) {
     //  return <Loading />
     //} else {
       console.log("UserAccountExist",UserAccountExist);
-      if (!UserAccountExist) {
+      if (!UserAccountExist || RequestSignIn) {
         return <RegisterMobile />;
-      } else if (UserAccountExist) {
+      } else if (UserAccountExist && !IsLogin) {
         return <Login />
       } else {
         return <Dashboard />

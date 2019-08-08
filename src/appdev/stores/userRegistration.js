@@ -50,6 +50,10 @@ class UserRegistration {
     sessionstore.setUserAccountExist(val);
   }
 
+  @action setIsLogin(val){
+    sessionstore.setIsLogin(val);
+  }
+
   wsUserRegistration(){
     var bodyFormData = new FormData();
     bodyFormData.set('name', this.name);
@@ -96,6 +100,29 @@ class UserRegistration {
     });
   }
 
+  wsLogin(){
+    var bodyFormData = new FormData();
+    console.log(this.mobile);
+    bodyFormData.set('mobile', this.mobile);
+    bodyFormData.set('password', this.password);
+    
+    axios({
+      method: 'post',
+      url: 'http://rvx.boxybanana.com/api/auth/Login',
+      data: bodyFormData,
+      config: { headers: {'Content-Type': 'multipart/form-data' }}
+    })
+    .then(function (response) {
+        //handle success
+        self.processMobileLogin(response.data);
+        console.log(response);
+    })
+    .catch(function (response) {
+        //handle error
+        console.log(response);
+    });
+  }
+
   wsOTPVerification(type){
     var bodyFormData = new FormData();
     bodyFormData.set('type', type);
@@ -125,6 +152,16 @@ class UserRegistration {
     }
   }
 
+  processMobileLogin(response){
+    if(response.status == 200){
+      console.log(response);
+      this.setIsLogin(true);
+      this.setUserAccountExist(true);
+      //self.setToken(response.token);
+      //self.setCurrent(1);
+    }
+  }
+
   processUserRegistration(response){
     if(response.status == 200){
 
@@ -143,6 +180,8 @@ class UserRegistration {
       localStorage.setItem('user',JSON.stringify(simpleUser));
 
       this.setUserAccountExist(true);
+
+      this.setIsLogin(true);
 
       //localStorage.setItem
 

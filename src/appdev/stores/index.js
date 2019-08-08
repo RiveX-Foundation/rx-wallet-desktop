@@ -19,7 +19,8 @@ const stores = {
     languageIntl,
     sendTransParams,
     userRegistration,
-    walletCreation
+    walletCreation,
+    crypto
 };
 
 export default stores;

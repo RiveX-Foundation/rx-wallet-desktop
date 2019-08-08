@@ -3,10 +3,15 @@ import { inject } from 'mobx-react';
 import axios from 'axios';
 import sessionstore from './session';
 import userstore from './UserRegistration';
+import { getCryptoBalance } from 'utils/cryptohelper';
+
 
 const bip39 = require('bip39');
 const HDKey = require('hdkey');
 const ethUtil = require('ethereumjs-util');
+const cryptobalanceurl = "https://api.tokenbalance.com/token/{tokencontract}/{ethaddr}";
+const tokencontract = "0x221535cbced4c264e53373d81b73c29d010832a5"; //XMOO CONTRACDT
+const sampleacc = "0x90aD0aC0E687A2A6C9bc43BA7F373B9e50353084"; //ETH ADDR
 
 class WalletCreation {
   @observable walletlist = [];
@@ -14,6 +19,42 @@ class WalletCreation {
   @observable seedphase = [];
   @observable seedphaseinstring = "";
   @observable ethaddress = [];
+
+  @action loadWallet(){
+    this.walletlist = localStorage.getItem("wallets");
+    if(this.walletlist != null){
+      this.walletlist = JSON.parse(this.walletlist);
+    }else{
+      this.walletlist = [];
+    }
+
+    this.walletlist[0].publicaddress = sampleacc;
+
+    this.walletlist.forEach(function(wallet){
+      console.log(wallet);
+      var url = cryptobalanceurl.replace("{tokencontract}", tokencontract).replace("{ethaddr}",wallet.publicaddress);
+
+      axios({
+        method: 'get',
+        url: url,
+        config: { headers: {'Content-Type': 'application/json' }}
+      })
+      .then(function (response) {
+          //handle success
+          wallet.rvx_balance = response.data.balance;
+          console.log(wallet.rvx_balance);
+          //self.processUserRegistration(response.data);
+      })
+      .catch(function (response) {
+          //handle error
+          console.log(response);
+      });
+    });
+
+    //    getCryptoBalance();
+
+    //return walletlist;
+  }
 
   @action setEthAddress(val) {
     this.ethaddress.push(val);
