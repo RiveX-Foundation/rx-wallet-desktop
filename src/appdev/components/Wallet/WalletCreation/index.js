@@ -8,8 +8,8 @@ const bip39 = require('bip39');
 import './index.less';
 import { setDefaultWordlist } from 'bip39';
 @inject(stores => ({
-  setSeedPhase: seedphase => stores.walletCreation.setSeedPhase(seedphase),
-  setSeedPhaseInString: seedphase => stores.walletCreation.setSeedPhaseInString(seedphase),
+  setSeedPhase: seedphase => stores.walletStore.setSeedPhase(seedphase),
+  setSeedPhaseInString: seedphase => stores.walletStore.setSeedPhaseInString(seedphase),
   language: stores.languageIntl.language
 }))
 

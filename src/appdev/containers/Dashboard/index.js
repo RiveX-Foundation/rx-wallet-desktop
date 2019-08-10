@@ -9,6 +9,8 @@ import WalletListing from 'components/Wallet/WalletListing';
 import WalletCreation from 'components/Wallet/WalletCreation';
 import WalletKeyInSeed from 'components/Wallet/WalletKeyInSeed';
 import WalletCreated from 'components/Wallet/WalletCreated';
+import WalletDetail from 'components/Wallet/WalletDetail';
+import TokenTransfer from 'components/Wallet/TokenTransfer';
 
 //import { checkCryptographic, checkPhrase } from 'utils/support';
 
@@ -24,9 +26,9 @@ const Step = Steps.Step;
   language: stores.languageIntl.language,
   isAllEmptyPwd: stores.mnemonic.isAllEmptyPwd,
   */
-  current: stores.walletCreation.current,
-  CreateEthAddress: () => stores.walletCreation.CreateEthAddress(),
-  setCurrent: current => stores.walletCreation.setCurrent(current),
+  current: stores.walletStore.current,
+  CreateEthAddress: () => stores.walletStore.CreateEthAddress(),
+  setCurrent: current => stores.walletStore.setCurrent(current),
   setUserAccountExist : val => stores.session.setUserAccountExist(val)
 }))
 
@@ -34,17 +36,23 @@ const Step = Steps.Step;
 class Dashboard extends Component {
   state = {
     walletsteps: [{
-      title: intl.get('Register.registerMobile'),
+      title: intl.get('Register.registerMobile'), //0
       content: <WalletListing />,
     },{
-      title: intl.get('Register.registerMobile'),
+      title: intl.get('Register.registerMobile'), //1
       content: <WalletCreation />,
     },{
-      title: intl.get('Register.registerMobile'),
+      title: intl.get('Register.registerMobile'), //2
       content: <WalletKeyInSeed />,
     },{
-      title: intl.get('Register.registerMobile'),
+      title: intl.get('Register.registerMobile'), //3
       content: <WalletCreated />,
+    },{
+      title: intl.get('Register.registerMobile'), //3
+      content: <WalletDetail />,
+    },{
+      title: intl.get('Register.registerMobile'), //3
+      content: <TokenTransfer />,
     }]
   }
 

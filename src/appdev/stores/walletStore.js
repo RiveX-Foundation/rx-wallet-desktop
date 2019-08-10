@@ -12,13 +12,23 @@ const ethUtil = require('ethereumjs-util');
 const cryptobalanceurl = "https://api.tokenbalance.com/token/{tokencontract}/{ethaddr}";
 const tokencontract = "0x221535cbced4c264e53373d81b73c29d010832a5"; //XMOO CONTRACDT
 const sampleacc = "0x90aD0aC0E687A2A6C9bc43BA7F373B9e50353084"; //ETH ADDR
+const sampleprivatekey = "068CA0B2F09D8D92B49465C3D8D961C7DAE372BD9D1D4E39132A1A2A11616731"; //ETH PRIVATE KEY
+const etherscanAPIKey = "Z92QFIY7SR8XYJQWHEIRVPNG92VZ274YS4";
 
-class WalletCreation {
+class walletStore {
   @observable walletlist = [];
   @observable current = 0;
   @observable seedphase = [];
   @observable seedphaseinstring = "";
   @observable ethaddress = [];
+  @observable selectedwallet = {};
+  @observable trxlist = [];
+
+  @action setSelectedWallet(walletindex){
+    this.current = 4;
+    this.selectedwallet = this.walletlist[walletindex];
+    this.LoadTransactionByAddress(this.selectedwallet.publicaddress);
+  }
 
   @action loadWallet(){
     this.walletlist = localStorage.getItem("wallets");
@@ -29,6 +39,7 @@ class WalletCreation {
     }
 
     this.walletlist[0].publicaddress = sampleacc;
+    this.walletlist[0].privatekey = sampleprivatekey;
 
     this.walletlist.forEach(function(wallet){
       console.log(wallet);
@@ -78,6 +89,24 @@ class WalletCreation {
 
   @action setUserAccountExist(val){
     sessionstore.setUserAccountExist(val);
+  }
+
+  @action LoadTransactionByAddress(addr){
+    axios({
+      method: 'get',
+      url: 'http://api.etherscan.io/api?module=account&action=txlist&address=' + addr + '&sort=desc&apikey=' + etherscanAPIKey,
+      data: {}
+    })
+    .then(function (response) {
+      console.log(response.data.result);
+      self.trxlist = response.data.result;
+      //handle success
+      //self.processUserRegistration(response.data);
+    })
+    .catch(function (response) {
+        //handle error
+        console.log(response);
+    });
   }
 
   SaveWallet(seedphase,privatekey,derivepath,publicaddress,addresstype){
@@ -164,5 +193,5 @@ class WalletCreation {
 
 }
 
-const self = new WalletCreation();
+const self = new walletStore();
 export default self;

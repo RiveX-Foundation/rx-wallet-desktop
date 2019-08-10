@@ -7,7 +7,7 @@ import languageIntl from './languageIntl';
 import sendTransParams from './sendTransParams';
 import staking from './staking';
 import userRegistration from './userRegistration';
-import walletCreation from './walletCreation';
+import walletStore from './walletStore';
 
 const stores = {
     session,
@@ -19,7 +19,7 @@ const stores = {
     languageIntl,
     sendTransParams,
     userRegistration,
-    walletCreation,
+    walletStore,
     crypto
 };
 

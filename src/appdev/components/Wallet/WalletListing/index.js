@@ -4,10 +4,13 @@ import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
 
 import './index.less';
+
+
 @inject(stores => ({
-  wallets : stores.walletCreation.walletlist,
-  loadWallet: () => stores.walletCreation.loadWallet(),
-  setCurrent: current => stores.walletCreation.setCurrent(current),
+  wallets : stores.walletStore.walletlist,
+  loadWallet: () => stores.walletStore.loadWallet(),
+  setSelectedWallet : index => stores.walletStore.setSelectedWallet(index),
+  setCurrent: current => stores.walletStore.setCurrent(current),
   language: stores.languageIntl.language
 }))
 
@@ -31,13 +34,19 @@ class WalletListing extends Component {
     this.props.setCurrent(1);
   }
 
+  selectWallet = i => {
+    this.props.setSelectedWallet(i);
+    this.props.setCurrent(4);
+  }
+
   render() {
+    const selectWallet = i => this.selectWallet(i);
     return (
       <div>
         {
           this.props.wallets.map((item, i) =>
             {
-              return ( <li key={i}>Wallet {i} ({item.rvx_balance})</li> )
+              return ( <li key={i} onClick={() => selectWallet(i)}>Wallet {i} ({item.rvx_balance})</li> )
             }
           )
         }

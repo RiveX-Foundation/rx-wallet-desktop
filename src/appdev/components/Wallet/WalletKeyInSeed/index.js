@@ -8,9 +8,9 @@ const { TextArea } = Input;
 import './index.less';
 import { setDefaultWordlist } from 'bip39';
 @inject(stores => ({
-  CreateEthAddress : () => stores.walletCreation.CreateEthAddress(),
-  seedphase: stores.walletCreation.seedphase,
-  ethaddress: stores.walletCreation.ethaddress,
+  CreateEthAddress : () => stores.walletStore.CreateEthAddress(),
+  seedphase: stores.walletStore.seedphase,
+  ethaddress: stores.walletStore.ethaddress,
   language: stores.languageIntl.language
 }))
 

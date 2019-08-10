@@ -5,7 +5,7 @@ import intl from 'react-intl-universal';
 
 import './index.less';
 @inject(stores => ({
-  setCurrent: current => stores.walletCreation.setCurrent(current),
+  setCurrent: current => stores.walletStore.setCurrent(current),
   language: stores.languageIntl.language
 }))
 
