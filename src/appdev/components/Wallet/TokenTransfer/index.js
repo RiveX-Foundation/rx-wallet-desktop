@@ -20,6 +20,7 @@ const web3Provider = "https://mainnet.infura.io:443";
   CreateEthAddress : () => stores.walletStore.CreateEthAddress(),
   seedphase: stores.walletStore.seedphase,
   ethaddress: stores.walletStore.ethaddress,
+  setCurrent: current => stores.walletStore.setCurrent(current),
   language: stores.languageIntl.language
 }))
 
@@ -75,6 +76,10 @@ class TokenTransfer extends Component {
     return prices;
   }
 
+  back = () => {
+    this.props.setCurrent("walletdetail");
+  }
+
   transfer = async () => {
     const web3 = new Web3(web3Provider);
 
@@ -124,7 +129,8 @@ class TokenTransfer extends Component {
       <div>
         <div><Input onChange={this.onChangeTokenValue} /></div>
         <div><Input onChange={this.onChangeReceiver} /></div>
-          <Button type="primary" onClick={this.transfer} >Transfer{intl.get('Register.Next')}</Button>           
+          <Button type="primary" onClick={this.transfer} >{intl.get('Token.Transfer')}</Button>           
+          <Button type="primary" onClick={this.back} >{intl.get('Common.Back')}</Button>
       </div>
     );
   }

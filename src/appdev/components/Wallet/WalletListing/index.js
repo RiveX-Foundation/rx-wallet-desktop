@@ -31,12 +31,12 @@ class WalletListing extends Component {
   }
 
   createWallet = () => {
-    this.props.setCurrent(1);
+    this.props.setCurrent("wallettypeselection");
   }
 
   selectWallet = i => {
     this.props.setSelectedWallet(i);
-    this.props.setCurrent(4);
+    this.props.setCurrent("walletdetail");
   }
 
   render() {
@@ -46,13 +46,13 @@ class WalletListing extends Component {
         {
           this.props.wallets.map((item, i) =>
             {
-              return ( <li key={i} onClick={() => selectWallet(i)}>Wallet {i} ({item.rvx_balance})</li> )
+              return ( <li key={i} onClick={() => selectWallet(i)}>{item.walletname} ({item.rvx_balance})</li> )
             }
           )
         }
     
     
-            <Button type="primary" onClick={this.createWallet}>Create Wallet{intl.get('Register.next')}</Button>
+            <Button type="primary" onClick={this.createWallet}>{intl.get('Wallet.CreateWallet')}</Button>
       </div>
     );
   }

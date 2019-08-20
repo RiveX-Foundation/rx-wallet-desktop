@@ -11,6 +11,7 @@ import './index.less';
   pageTitle: stores.languageIntl.pageTitle,
   ledgerAddrList: stores.wanAddress.ledgerAddrList,
   trezorAddrList: stores.wanAddress.trezorAddrList,
+  getTitle: () => stores.languageIntl.getTitle(),
   setAuth: val => stores.session.setAuth(val),
   getMnemonic: ret => stores.session.getMnemonic(ret),
   updateAddress: (type, newAddress) => stores.wanAddress.updateAddress(type, newAddress),
@@ -42,7 +43,7 @@ class MHeader extends Component {
       <div className="header">
         <Row className="header-top">
             <Col span={12} className="title">
-              <em className = "comLine"></em><span>{ pageTitle }</span>
+              <em className = "comLine"></em><span>{ this.props.getTitle() }</span>
               { (pageTitle === 'Ledger' && ledgerAddrList.length !== 0) || (pageTitle === 'Trezor' && trezorAddrList.length !== 0)
                   ? <Button className="creatBtnHead" type="primary" shape="round" size="large" onClick={this.handleDisconnect}><Icon type="usb" theme="filled" />{intl.get('MHeader.disconnect')}</Button>
                   : ''

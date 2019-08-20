@@ -13,6 +13,14 @@ class LanguageIntl {
     self.title = newTitle;
   }
 
+  @action setTitle(newTitle) {
+    self.title = newTitle;
+  }
+
+  getTitle() {
+    return self.title;
+  }
+
   @computed get pageTitle() {
     return self.language && intl.get(self.title);
   }

@@ -1,4 +1,4 @@
-import { observable, action } from 'mobx';
+import { observable, action, intercept } from 'mobx';
 import { inject } from 'mobx-react';
 import axios from 'axios';
 import sessionstore from './session';
@@ -17,17 +17,38 @@ const etherscanAPIKey = "Z92QFIY7SR8XYJQWHEIRVPNG92VZ274YS4";
 
 class walletStore {
   @observable walletlist = [];
-  @observable current = 0;
+  @observable current = "walletlisting";
+  @observable walletname = "";
   @observable seedphase = [];
   @observable seedphaseinstring = "";
   @observable ethaddress = [];
+  @observable wallettype = "";
   @observable selectedwallet = {};
+  @observable totalowners = 0;
+  @observable totalsignatures = 0;
   @observable trxlist = [];
+  @observable WalletEntryNextDirection = "";
 
   @action setSelectedWallet(walletindex){
-    this.current = 4;
     this.selectedwallet = this.walletlist[walletindex];
     this.LoadTransactionByAddress(this.selectedwallet.publicaddress);
+    this.current = "walletdetail";
+  }
+
+  @action setWalletType(wallettype){
+    this.wallettype = wallettype;
+  }
+
+  @action setTotalSignatures(totalsignatures){
+    this.totalsignatures = totalsignatures;
+  }
+
+  @action setTotalOwners(totalowners){
+    this.totalowners = totalowners;
+  }
+
+  @action setWalletName(walletname){
+    this.walletname = walletname;
   }
 
   @action loadWallet(){
@@ -38,8 +59,10 @@ class walletStore {
       this.walletlist = [];
     }
 
-    this.walletlist[0].publicaddress = sampleacc;
-    this.walletlist[0].privatekey = sampleprivatekey;
+    if(this.walletlist.length > 0){
+      this.walletlist[0].publicaddress = sampleacc;
+      this.walletlist[0].privatekey = sampleprivatekey;
+    }
 
     this.walletlist.forEach(function(wallet){
       console.log(wallet);
@@ -69,6 +92,10 @@ class walletStore {
 
   @action setEthAddress(val) {
     this.ethaddress.push(val);
+  }
+
+  @action setWalletEntryNextDirection(val) {
+    this.WalletEntryNextDirection = val;
   }
 
   @action setSeedPhase(val) {
@@ -109,14 +136,18 @@ class walletStore {
     });
   }
 
-  SaveWallet(seedphase,privatekey,derivepath,publicaddress,addresstype){
+  SaveWallet(walletname,seedphase,privatekey,derivepath,publicaddress,addresstype,wallettype,totalowners,totalsignatures){
     var wallet = {
+      walletname : walletname,
       userid : userstore.userid,
       seedphase : seedphase,
       privatekey : privatekey,
       derivepath : derivepath,
       publicaddress : publicaddress,
-      addresstype : addresstype
+      addresstype : addresstype,
+      wallettype : wallettype,
+      totalowners: parseInt(totalowners),
+      totalsignatures: parseInt(totalsignatures)
     };
 
     var localwallets = [];
@@ -129,9 +160,12 @@ class walletStore {
     localwallets.push(wallet);
 
     localStorage.setItem('wallets',JSON.stringify(localwallets));
+    this.loadWallet();
+    this.setSelectedWallet(localwallets.length-1);
   }
 
   async CreateEthAddress(){
+    //this.seedphaseinstring = "scene brain typical travel fire error danger domain athlete initial salad video";
     var seedval = this.seedphaseinstring;//"allow result spell hip million juice era garden trigger dwarf disease unable";
     const seed = await bip39.mnemonicToSeed(seedval);
     //console.log(seed);
@@ -147,12 +181,12 @@ class walletStore {
     //console.log("Pub Key",pubKey);
 
     const addr = ethUtil.publicToAddress(pubKey).toString('hex');
-    //console.log("addr",addr);
+    console.log("addr",addr);
 
     const address = ethUtil.toChecksumAddress(addr);
     //console.log("address",address);
 
-    this.SaveWallet(seedval,addrNode._privateKey.toString('hex'),derivepath,address,"eth");
+    this.SaveWallet(this.walletname,seedval,addrNode._privateKey.toString('hex'),derivepath,address,"eth",this.wallettype,this.totalowners,this.totalsignatures);
 
     //console.log(hdkey);
     //console.log(hdkey.privateExtendedKey)

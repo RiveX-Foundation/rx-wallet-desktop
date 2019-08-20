@@ -1,8 +1,13 @@
 //import wanUtil from "wanchain-util";
+import { Row, Col } from 'antd';
 import React, { Component } from 'react';
 import { Button, message, Steps } from 'antd';
+import SideBar from '../Sidebar';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
+import MHeader from 'components/MHeader';
+import MFooter from 'components/MFooter';
+import Loading from 'components/Loading';
 
 import './index.less';
 import WalletListing from 'components/Wallet/WalletListing';
@@ -10,7 +15,12 @@ import WalletCreation from 'components/Wallet/WalletCreation';
 import WalletKeyInSeed from 'components/Wallet/WalletKeyInSeed';
 import WalletCreated from 'components/Wallet/WalletCreated';
 import WalletDetail from 'components/Wallet/WalletDetail';
+import WalletNameEntry from 'components/Wallet/WalletNameEntry';
+import WalletTypeSelection from 'components/Wallet/WalletTypeSelection';
 import TokenTransfer from 'components/Wallet/TokenTransfer';
+import TokenReceive from 'components/Wallet/TokenReceive';
+import WalletRestorebySeed from 'components/Wallet/WalletRestorebySeed';
+import CreateShareWallet from 'components/Wallet/CreateShareWallet';
 
 //import { checkCryptographic, checkPhrase } from 'utils/support';
 
@@ -27,8 +37,10 @@ const Step = Steps.Step;
   isAllEmptyPwd: stores.mnemonic.isAllEmptyPwd,
   */
   current: stores.walletStore.current,
+  changeTitle: newTitle => stores.languageIntl.changeTitle(newTitle),
   CreateEthAddress: () => stores.walletStore.CreateEthAddress(),
   setCurrent: current => stores.walletStore.setCurrent(current),
+  CreateEthAddress: () => stores.walletStore.CreateEthAddress(),
   setUserAccountExist : val => stores.session.setUserAccountExist(val)
 }))
 
@@ -36,27 +48,65 @@ const Step = Steps.Step;
 class Dashboard extends Component {
   state = {
     walletsteps: [{
-      title: intl.get('Register.registerMobile'), //0
+      title: intl.get('Register.registerMobile'),
       content: <WalletListing />,
+      key:'walletlisting'
     },{
-      title: intl.get('Register.registerMobile'), //1
+      title: intl.get('Register.registerMobile'),
+      content: <WalletTypeSelection />,
+      key:'wallettypeselection'
+    },{
+      title: intl.get('Register.registerMobile'),
+      content: <WalletNameEntry />,
+      key:'walletnameentry'
+    },{
+      title: intl.get('Register.registerMobile'),
       content: <WalletCreation />,
+      key:'walletcreation'
     },{
-      title: intl.get('Register.registerMobile'), //2
+      title: intl.get('Register.registerMobile'),
       content: <WalletKeyInSeed />,
+      key:'walletkeyinseed'
     },{
-      title: intl.get('Register.registerMobile'), //3
+      title: intl.get('Register.registerMobile'),
       content: <WalletCreated />,
+      key:'walletcreated'
     },{
-      title: intl.get('Register.registerMobile'), //3
+      title: intl.get('Register.registerMobile'),
       content: <WalletDetail />,
+      key:'walletdetail'
     },{
-      title: intl.get('Register.registerMobile'), //3
+      title: intl.get('Register.registerMobile'),
       content: <TokenTransfer />,
+      key:'tokentransfer'
+    },{
+      title: intl.get('Register.registerMobile'),
+      content: <WalletRestorebySeed />,
+      key:'walletrestorebyseed'
+    },{
+      title: intl.get('Register.registerMobile'),
+      content: <CreateShareWallet />,
+      key:'createsharewallet'
+    },{
+      title: intl.get('Register.registerMobile'),
+      content: <TokenReceive />,
+      key:'tokenreceive'
     }]
   }
 
+  constructor(props) {
+    super(props);
+    this.props.changeTitle(intl.get('Dashboard.Title'));
+    //this.props.CreateEthAddress();
+  }
+    
+  //  componentDidMount(){
+  //  console.log("TEST");
+  //  console.log(intl.get('Dashboard.Title'));
+  //}
+
   next = async () => {
+    /*
     const { mobile } = this.props;
     const { current} = this.props;
     if(current === 0){
@@ -68,6 +118,7 @@ class Dashboard extends Component {
       this.props.CreateEthAddress();
       this.props.setCurrent(3);
     }
+    */
       //if(isAllEmptyPwd) {
         //console.log(mobile);
         //message.error(intl.get('Register.passwordsEmpty'));
@@ -115,58 +166,22 @@ class Dashboard extends Component {
     setIndex(current - 1);
   }
 
-  /*
-  done = () => {
-    const { mnemonic, newPhrase, pwd, addAddress } = this.props;
-    if (newPhrase.join(' ') === mnemonic) {
-      wand.request('phrase_import', { phrase: mnemonic, pwd }, (err) => {
-        if (err) {
-          message.error(intl.get('Register.writeSeedPhraseToDatabaseFailed'));
-          return;
-        }
-        wand.request('wallet_unlock', { pwd: pwd }, (err, val) => {
-          if (err) {
-            console.log(intl.get('Register.unlockWalletFailed'), err)
-          } else {
-            let path = "m/44'/5718350'/0'/0/0";
-            wand.request('address_getOne', { walletID: 1, chainType: 'WAN', path: path }, (err, val_address_get) => {
-              if (!err) {
-                wand.request('account_create', { walletID: 1, path: path, meta: { name: 'Account1', addr: `0x${val_address_get.address}` } }, (err, val_account_create) => {
-                  if (!err && val_account_create) {
-                    let addressInfo = {
-                      start: 0,
-                      address: wanUtil.toChecksumAddress(`0x${val_address_get.address}`)
-                    }
-                    addAddress(addressInfo);
-                    this.props.setMnemonicStatus(true);
-                    this.props.setAuth(true);
-                  }
-                });
-              }
-            });
-          }
-        })
-      });
-    } else {
-      message.error(intl.get('Register.seedPhraseMismatched'));
-    }
-  }
-  */
-
   render() {
     const { walletsteps } = this.state;
-    const { current } = this.props;
+    const { current,location } = this.props;
     return (
-      <div className="zContent">
-        <div className="registerContent">
-          <div className="steps-content">{walletsteps[current].content}</div>
-          <div className="steps-action">
-            {
-              (current == 1 || current == 2) && (<Button type="primary" onClick={this.next} >{intl.get('Register.Next')}</Button>)
-            }
-          </div>
-        </div>
-      </div>
+      <Row className="container">
+        <Col className="nav-left">
+          <SideBar path={'/'}/>
+        </Col>
+        <Col className="main">
+          <MHeader />
+          <Row className="content">
+            {walletsteps.find(x => x.key === current).content}
+          </Row>
+          <MFooter />
+        </Col>
+      </Row>
     );
   }
 }

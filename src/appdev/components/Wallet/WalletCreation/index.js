@@ -8,8 +8,11 @@ const bip39 = require('bip39');
 import './index.less';
 import { setDefaultWordlist } from 'bip39';
 @inject(stores => ({
+  seedphase: stores.walletStore.seedphase,
+  seedphaseinstring : stores.walletStore.seedphaseinstring,
   setSeedPhase: seedphase => stores.walletStore.setSeedPhase(seedphase),
   setSeedPhaseInString: seedphase => stores.walletStore.setSeedPhaseInString(seedphase),
+  setCurrent: current => stores.walletStore.setCurrent(current),
   language: stores.languageIntl.language
 }))
 
@@ -17,9 +20,12 @@ import { setDefaultWordlist } from 'bip39';
 class WalletCreation extends Component {
   state = {
     seedphase : [],
-    seedphaseel : null
+    mnemonic : "",
+    seedphaseel : null,
   }
 
+  inputEl1 = null;
+  
   componentDidMount(){
     this.generate12SeedPhase();
   }
@@ -31,12 +37,22 @@ class WalletCreation extends Component {
   }
 
   generate12SeedPhase = () => {
-    const mnemonic = bip39.generateMnemonic();
-    this.state.seedphase = mnemonic.split(" ");
+    
+    
+    let mnemonic = "";
+    if(this.props.seedphaseinstring!=""){
+      mnemonic = this.props.seedphaseinstring;
+    }else{
+      mnemonic = bip39.generateMnemonic();
+    }
+    this.setState({mnemonic : mnemonic});
+    this.setState({seedphase : mnemonic.split(" ") });
+
+
+    const seedphase = mnemonic.split(" ");
     this.props.setSeedPhase(mnemonic.split(" "));
     this.props.setSeedPhaseInString(mnemonic);
-    console.log(this.state.seedphase);
-    const seedel = this.state.seedphase.map((item, i) =>
+    const seedel = seedphase.map((item, i) =>
     {
       return (
         <li key={i}>{item}</li>
@@ -47,7 +63,21 @@ class WalletCreation extends Component {
   }
 
   copy = () => {
-    console.log("COPY");
+    this.inputEl1.select();
+    document.execCommand('copy');
+    console.log("COPY DONE");
+    // This is just personal preference.
+    // I prefer to not show the the whole text area selected.
+    //e.target.focus();
+    //setCopySuccess('Copied!');
+  }
+
+  next = () => {
+    this.props.setCurrent("walletkeyinseed");
+  }
+
+  back = () => {
+    this.props.setCurrent("walletnameentry");
   }
 
   render() {
@@ -56,7 +86,12 @@ class WalletCreation extends Component {
     return (
       <div>
           <ul>{this.state.seedphaseel}</ul>       
-          <Button type="primary" onClick={this.copy} >Copy{intl.get('Register.Copy')}</Button>           
+          <Button type="primary" onClick={this.copy} >{intl.get('Backup.copyToClipboard')}</Button>     
+          <div className="steps-action">
+            <Button type="primary" onClick={this.next} >{intl.get('Register.next')}</Button>
+            <input style={{marginTop:-99999,position:"absolute"}} ref={(input) => { this.inputEl1 = input; }} type="text" value={this.state.mnemonic} id="hiddenphase" />
+            <Button type="primary" onClick={this.back} >{intl.get('Common.Back')}</Button>
+          </div>
       </div>
     );
   }

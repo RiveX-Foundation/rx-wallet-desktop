@@ -274,5 +274,17 @@ const en_US = {
     'popup.cancel': 'Cancel',
     'title.imported': 'Imported Address',
 
+    'Dashboard.Title': 'Dashboard',
+    'Wallet.CreateWallet': 'Create Wallet',
+    'Common.Back': 'Back',
+    'Token.Transfer': 'Transfer',
+    'Token.Receive': 'Receive',
+    'Wallet.BasicWallet': 'Basic Wallet',
+    'Wallet.SharedWallet': 'Shared Wallet',
+    'Wallet.ImportWallet': 'Import Wallet',
+    'Wallet.Trezor': 'Trezor',
+    'Wallet.Ledger': 'Ledger',
+    'Wallet.TotalOwners': 'Total Owners',
+    'Wallet.TotalSignatures': 'Total Signatures',
 }
 export default en_US;

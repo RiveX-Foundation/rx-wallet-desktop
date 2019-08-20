@@ -21,15 +21,15 @@ class WalletCreated extends Component {
     });
   }
 
-  createWallet = () => {
-    this.props.setCurrent(1);
+  back = () => {
+    this.props.setCurrent("walletlisting");
   }
 
   render() {
     return (
       <div>
         <div>Wallet Created!</div>
-        <Button type="primary" onClick={this.createWallet}>Create Wallet{intl.get('Register.next')}</Button>
+        <Button type="primary" onClick={this.back}>{intl.get('Common.Back')}</Button>
       </div>
     );
   }
