@@ -103,37 +103,51 @@ class LanguageIntl {
 
   @computed get sidebarColumns() {
     return self.language && [
+      /*
       {
         title: intl.get('menuConfig.portfolio'),
         step: '1',
         key: '/',
         icon: 'user'
       },
+      */
       {
         title: intl.get('menuConfig.wallet'),
         step: '1',
-        key: '/wallet',
+        key: '/',
         icon: 'wallet',
+        iconpath: '../../static/image/icon/wallet.png',
         children: [
           {
-            title: intl.get('menuConfig.wan'),
-            key: '/wanAccount',
-            icon: 'block'
+            title: intl.get('menuConfig.basicwallet'),
+            key: '/basicwallet',
+            icon: 'wallet'
+          },
+          {
+            title: intl.get('menuConfig.sharedwallet'),
+            key: '/sharedwallet',
+            icon: 'wallet'
+          },
+          {
+            title: intl.get('menuConfig.hardwarewallet'),
+            key: '/hardwarewallet',
+            icon: 'wallet'
           }
         ]
       },
+      /*,
       {
         title: intl.get('menuConfig.hardwareWallet'),
         step: '1',
         key: '/hardwareWallet',
         icon: 'usb',
+        iconpath: '../../static/image/icon/wallet.png',
         children: [
           {
             title: intl.get('menuConfig.ledger'),
             key: '/ledger',
             icon: 'block'
           },
-          /** TODO */
           // {
           //   title: intl.get('menuConfig.trezor'),
           //   key: '/trezor',
@@ -146,6 +160,7 @@ class LanguageIntl {
         step: '1',
         key: '/staking',
         icon: 'pie-chart',
+        iconpath: '../../static/image/icon/wallet.png',
         children: [
           {
             title: intl.get('menuConfig.delegation'),
@@ -153,10 +168,11 @@ class LanguageIntl {
             icon: 'block'
           },
         ]
-      },
+      },*/
       {
         title: intl.get('menuConfig.settings'),
         step: '1',
+        iconpath: '../../static/image/icon/wallet.png',
         key: '/settings',
         icon: 'setting'
       },

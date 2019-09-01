@@ -89,14 +89,14 @@ class WalletKeyInSeed extends Component {
   next = async () => {
     //this.validateseedphase();
     await this.props.CreateEthAddress();
-    this.props.setCurrent("walletdetail");
+    this.props.setCurrent("walletcreated");
   }
 
   validateseedphase = () => {
     console.log(toJS(this.props.seedphase));
     console.log(this.state.selectedseedphase);
     if(JSON.stringify(toJS(this.props.seedphase)) == JSON.stringify(this.state.selectedseedphase)){
-      this.setState({nextbuttonstyle : {display:"block"}});
+      this.setState({nextbuttonstyle : {display:"inline-block"}});
     }else{
       this.setState({nextbuttonstyle : {display:"none"}});
     }
@@ -111,25 +111,25 @@ class WalletKeyInSeed extends Component {
     const _SeedonClick = this.SeedonClick;
     const _RestoreonClick = this.RestoreonClick;
     return (
-      <div>
-        <div>
-          {
-            originalseedphase.map(function(item, i){
-              return <li key={i} data-val={item} onClick={_SeedonClick}>{item}</li>
-            })
-          }
-        </div>
-        <div style={{marginTop:"50px"}}>
-          {
-            selectedseedphase.map(function(item, i){
-              return <li key={i} data-val={item} onClick={_RestoreonClick}>{item}</li>
-            })
-          }
-        </div>
-        <ul>{this.state.seedphaseel}</ul>       
-        <Button type="primary" onClick={this.back} >{intl.get('Common.Back')}</Button>
-        <div className="steps-action">
-          <Button type="primary" style={nextbuttonstyle} onClick={this.next} >{intl.get('Register.next')}</Button>
+      <div className="walletkeyinseedpanel">
+        <div className="title" ><span><img onClick={this.back} width="20px" src="../../static/image/icon/back.png" /></span><span style={{marginLeft:"20px"}}>{intl.get('Wallet.VerifyRecoveryPhrase')}</span></div>
+        <div className="centerpanel">
+          <div className="selectedseedpanel" style={{marginTop:"0px"}}>
+            {
+              selectedseedphase.map(function(item, i){
+                return <li key={i} data-val={item} onClick={_RestoreonClick}>{item}</li>
+              })
+            }
+          </div>
+          <div className="buttonpanel"><Button className="curvebutton" style={nextbuttonstyle} onClick={this.next} >{intl.get('Wallet.Confirm')}</Button></div>
+          <div style={{height:"260px",width:"600px",display:"inline-block"}}>
+            {
+              originalseedphase.map(function(item, i){
+                return <li key={i} data-val={item} onClick={_SeedonClick}>{item}</li>
+              })
+            }
+          </div>
+          <ul>{this.state.seedphaseel}</ul>       
         </div>
       </div>
     );

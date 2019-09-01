@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { Button, message, Steps } from 'antd';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
-
+import {NotificationContainer, NotificationManager} from 'react-notifications';
 import './index.less';
 import LoginMobile from 'components/LoginMobile';
 
@@ -24,6 +24,7 @@ const Step = Steps.Step;
   current: stores.userRegistration.current,
   mobile : stores.userRegistration.mobile,
   otp : stores.userRegistration.otp,
+  setCurrent: val => stores.userRegistration.setCurrent(val),
   setHasAcc : val => stores.session.setHasAcc(val),
   setUserAccountExist : val => stores.session.setUserAccountExist(val),
   wsMobileRegistration : () => stores.userRegistration.wsMobileRegistration(),
@@ -37,7 +38,12 @@ class Login extends Component {
     steps: [{
       title: intl.get('Register.registerMobile'),
       content: <LoginMobile />,
+      key: 'inputmobile'
     }]
+  }
+
+  constructor(props){
+    super(props);
   }
 
   next = async () => {
@@ -138,12 +144,9 @@ class Login extends Component {
   render() {
     const { steps } = this.state;
     const { current } = this.props;
+    console.log(current);
     return (
-      <div className="zContent">
-        <div className="registerContent">
-          <div className="steps-content">{steps[current].content}</div>
-        </div>
-      </div>
+      <div className="steps-content">{steps.find(x=>x.key===current).content}<NotificationContainer/></div>
     );
   }
 }

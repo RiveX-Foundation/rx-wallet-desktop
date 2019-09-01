@@ -10,6 +10,7 @@ import { setDefaultWordlist } from 'bip39';
 @inject(stores => ({
   seedphase: stores.walletStore.seedphase,
   seedphaseinstring : stores.walletStore.seedphaseinstring,
+  generate12SeedPhase : () => stores.walletStore.generate12SeedPhase(),
   setSeedPhase: seedphase => stores.walletStore.setSeedPhase(seedphase),
   setSeedPhaseInString: seedphase => stores.walletStore.setSeedPhaseInString(seedphase),
   setCurrent: current => stores.walletStore.setCurrent(current),
@@ -27,7 +28,8 @@ class WalletCreation extends Component {
   inputEl1 = null;
   
   componentDidMount(){
-    this.generate12SeedPhase();
+    var seed = this.props.generate12SeedPhase();
+    this.generateSeedPhaseList(seed);
   }
 
   inputChanged = e => {
@@ -36,14 +38,14 @@ class WalletCreation extends Component {
     });
   }
 
-  generate12SeedPhase = () => {
+  generateSeedPhaseList = seed => {
     
     
     let mnemonic = "";
     if(this.props.seedphaseinstring!=""){
       mnemonic = this.props.seedphaseinstring;
     }else{
-      mnemonic = bip39.generateMnemonic();
+      mnemonic = seed;
     }
     this.setState({mnemonic : mnemonic});
     this.setState({seedphase : mnemonic.split(" ") });
@@ -77,21 +79,28 @@ class WalletCreation extends Component {
   }
 
   back = () => {
-    this.props.setCurrent("walletnameentry");
+    this.props.setCurrent("backupwalletutorial");
   }
 
   render() {
     const { seedphaseel } = this.state;
     console.log(this.state.seedphaseel);
     return (
-      <div>
-          <ul>{this.state.seedphaseel}</ul>       
-          <Button type="primary" onClick={this.copy} >{intl.get('Backup.copyToClipboard')}</Button>     
-          <div className="steps-action">
-            <Button type="primary" onClick={this.next} >{intl.get('Register.next')}</Button>
-            <input style={{marginTop:-99999,position:"absolute"}} ref={(input) => { this.inputEl1 = input; }} type="text" value={this.state.mnemonic} id="hiddenphase" />
-            <Button type="primary" onClick={this.back} >{intl.get('Common.Back')}</Button>
-          </div>
+      <div className="walletcreationpanel">
+        <div className="title" ><span><img onClick={this.back} width="20px" src="../../static/image/icon/back.png" /></span><span style={{marginLeft:"20px"}}>{intl.get('Wallet.RecoveryPhrase')}</span></div>
+        <div className="centerpanel">
+          <center>
+            <div style={{width:"600px"}}>
+              <div className="hint">{intl.get('Wallet.WriteDownRecoveryPhrase')}</div>
+              <ul>{this.state.seedphaseel}</ul>       
+              <div><Button className="copybutton" onClick={this.copy} >{intl.get('Backup.copyToClipboard')}</Button></div>
+              <div className="hint2" style={{marginTop:"40px"}}>{intl.get('Wallet.NeverShareRecovery')}</div>
+              <div><Button className="curvebutton"  onClick={this.next} >{intl.get('Wallet.IHaveBackupMySeed')}</Button></div>
+
+              <input style={{marginTop:-99999,position:"absolute"}} ref={(input) => { this.inputEl1 = input; }} type="text" value={this.state.mnemonic} id="hiddenphase" />
+            </div>
+          </center>
+        </div>
       </div>
     );
   }

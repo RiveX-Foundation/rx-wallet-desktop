@@ -8,8 +8,8 @@ import './index.less';
 import InputMobile from 'components/RegisterAcc/InputMobile';
 import InputOTP from 'components/RegisterAcc/InputOTP';
 import InputUserInfo from 'components/RegisterAcc/InputUserInfo';
-
 import ConfirmPhrase from 'components/Mnemonic/ConfirmPhrase';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
 
 //import { checkCryptographic, checkPhrase } from 'utils/support';
 
@@ -30,9 +30,7 @@ const Step = Steps.Step;
   otp : stores.userRegistration.otp,
   setHasAcc : val => stores.session.setHasAcc(val),
   setUserAccountExist : val => stores.session.setUserAccountExist(val),
-  wsMobileRegistration : () => stores.userRegistration.wsMobileRegistration(),
-  wsUserRegistration : () => stores.userRegistration.wsUserRegistration(),
-  wsOTPVerification : type => stores.userRegistration.wsOTPVerification(type)
+  //wsMobileRegistration : () => stores.userRegistration.wsMobileRegistration(),
 }))
 
 @observer
@@ -41,25 +39,31 @@ class RegisterMobile extends Component {
     steps: [{
       title: intl.get('Register.registerMobile'),
       content: <InputMobile />,
+      key: 'inputmobile'
     }, {
       title: intl.get('Register.registrationOTPEntry'),
       content: <InputOTP />,
+      key: 'inputotp'
     }, {
       title: intl.get('Register.registerUserInfo'),
       content: <InputUserInfo />,
+      key: 'inputuserinfo'
     }]
   }
 
   next = async () => {
-    const { mobile } = this.props;
-    const { current} = this.props;
-    if (current === 0) {
+    /*
+    const { mobile,current } = this.props;
+    const { steps } = this.state;
+    if (steps[current].key === 'inputmobile') {
       this.props.wsMobileRegistration();
-    } else if(current === 1){
+    } else if(steps[current].key === 'inputmobile'){
       this.props.wsOTPVerification('registration');
     } else if(current === 2){
       this.props.wsUserRegistration();
     }
+    */
+
       //if(isAllEmptyPwd) {
         //console.log(mobile);
         //message.error(intl.get('Register.passwordsEmpty'));
@@ -149,23 +153,11 @@ class RegisterMobile extends Component {
     const { steps } = this.state;
     const { current } = this.props;
     return (
-      <div className="zContent">
+      <div className="zContent" style={{backgroundImage: 'url(../../static/image/graphic/loginbg.jpg)'}}>
         <div className="registerContent">
-          <div className="steps-content">{steps[current].content}</div>
-          <div className="steps-action">
-            {
-              current < steps.length - 1
-              && <Button type="primary" onClick={this.next}>{intl.get('Register.next')}</Button>
-            }
-            {
-              current > 1 && (<Button onClick={this.prev} className="cancel">{intl.get('Register.previous')}</Button>)
-            }
-            {
-              current === steps.length - 1
-              && <Button style={{ marginLeft: 8 }} type="primary" onClick={this.next}>{intl.get('Register.done')}</Button>
-            }
-          </div>
+          {steps.find(x=>x.key===current).content}
         </div>
+        <NotificationContainer/>
       </div>
     );
   }

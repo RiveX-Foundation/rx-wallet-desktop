@@ -40,25 +40,32 @@ class WalletTypeSelection extends Component {
   }
 
   basicwallet = () => {
-    this.props.setTotalSignatures(0);
-    this.props.setTotalOwners(0);
-    this.props.setWalletEntryNextDirection("basicwallet");
-    this.props.setCurrent("walletnameentry");
-    this.props.setWalletType("basicwallet");
+    //this.props.setTotalSignatures(0);
+    //this.props.setTotalOwners(0);
+    //this.props.setWalletEntryNextDirection("basicwallet");
+    //this.props.setCurrent("walletnameentry");
+    //this.props.setWalletType("basicwallet");
   }
 
   sharedwallet = () => {
     this.props.setWalletEntryNextDirection("sharedwallet");
-    this.props.setCurrent("walletnameentry");
-    this.props.setWalletType("sharedwallet");
+    this.props.setCurrent("createsharewallet");
+    //this.props.setCurrent("walletnameentry");
+    //this.props.setWalletType("sharedwallet");
+  }
+
+  joinwallet = () => {
+    this.props.setWalletEntryNextDirection("joinwallet");
+    this.props.setCurrent("joinsharewallet");
+    //this.props.setWalletType("sharedwallet");
   }
 
   importwallet = () => {
-    this.props.setTotalSignatures(0);
-    this.props.setTotalOwners(0);
-    this.props.setWalletEntryNextDirection("importwallet");
-    this.props.setCurrent("walletnameentry");
-    this.props.setWalletType("basicwallet");
+    //this.props.setTotalSignatures(0);
+    //this.props.setTotalOwners(0);
+    //this.props.setWalletEntryNextDirection("importwallet");
+    //this.props.setCurrent("walletnameentry");
+    //this.props.setWalletType("basicwallet");
   }
 
   trezor = () => {
@@ -73,9 +80,27 @@ class WalletTypeSelection extends Component {
 
   render() {
     return (
-      <div>
+      <div className="wallettypeselectionpanel">
+        <div className="title" ><span style={{marginLeft:"20px"}}>{intl.get('Wallet.SHAREDWALLET')}</span></div>
+        <div className="centerpanel">
+          <center>
+            <div className="panelwrapper borderradiusfull spacebetween" onClick={this.sharedwallet} style={{marginBottom:"10px"}}>
+              <div className="panelleft"><img src="../../static/image/icon/createsharedwallet.png" /><span>{intl.get('Wallet.CreateSharedWallet')}</span></div>
+              <div className="panelright"><img src="../../static/image/icon/next.png" /></div>
+            </div>
+            <div className="panelwrapper borderradiusfull spacebetween" onClick={this.joinwallet} style={{marginBottom:"10px"}}>
+              <div className="panelleft"><img src="../../static/image/icon/joinsharedwallet.png" /><span>{intl.get('Wallet.JoinSharedWallet')}</span></div>
+              <div className="panelright"><img src="../../static/image/icon/next.png" /></div>
+            </div>
+          </center>
+        </div>
+
+        {
+          /*
+          <div>
           <Button type="primary" onClick={this.basicwallet} >{intl.get('Wallet.BasicWallet')}</Button>     
           <Button type="primary" onClick={this.sharedwallet} >{intl.get('Wallet.SharedWallet')}</Button>     
+          <Button type="primary" onClick={this.joinwallet} >{intl.get('Wallet.JoinWallet')}</Button>     
           <Button type="primary" onClick={this.importwallet} >{intl.get('Wallet.ImportWallet')}</Button>     
           <Button type="primary" onClick={this.trezor} >{intl.get('Wallet.Trezor')}</Button>
           <Button type="primary" onClick={this.ledger} >{intl.get('Wallet.Ledger')}</Button>
@@ -83,6 +108,9 @@ class WalletTypeSelection extends Component {
           <div className="steps-action">
             <Button type="primary" onClick={this.back} >{intl.get('Common.Back')}</Button>
           </div>
+        </div>
+        */
+        }
       </div>
     );
   }

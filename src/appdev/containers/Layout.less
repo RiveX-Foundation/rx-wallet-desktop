@@ -1,6 +1,7 @@
 @nav-left-bg: #151625!important;
 @content-right-bg: #1A1B2C!important;
 @nav-width: 230px;
+@wallet-width: 190px;
 .ant-menu-dark, .ant-menu-dark .ant-menu-sub{
   color: rgba(255,255,255,0.6);
   background-color: @nav-left-bg!important;
@@ -15,9 +16,24 @@
 .container {
   .main {
     background-color: @content-right-bg;
+    margin-left: @nav-width+@wallet-width;
+    height: calc(100vh);
+    overflow: auto;
+  }
+  .fullmain {
+    background-color: @content-right-bg;
     margin-left: @nav-width;
     height: calc(100vh);
     overflow: auto;
+  }
+  .walletcol {
+    background-color: @content-right-bg;
+    width: @wallet-width;
+    height: calc(100vh);
+    overflow: auto;
+    float:left;
+    padding-top:40px;
+    border-right:2px solid #3834d8;
   }
   .content {
     position: relative;

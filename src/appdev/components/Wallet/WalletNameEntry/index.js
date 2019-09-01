@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Input, Radio, Tooltip, Button } from 'antd';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
+import { createNotification } from 'utils/helper';
 
 const { TextArea } = Input;
 
@@ -20,16 +21,29 @@ import { setDefaultWordlist } from 'bip39';
 @observer
 class WalletNameEntry extends Component {
   state = {
+    walletname : ""
   }
 
   componentDidMount(){
   }
 
   onChange = e => {
-    this.props.setWalletName(e.target.value);
+    this.setState({walletname:e.target.value}, () =>{
+      this.props.setWalletName(this.state.walletname);
+    })
   }
 
   next = () => {
+
+    console.log(this.state.walletname);
+    if(this.state.walletname == ""){
+      createNotification("error",intl.get('Error.Walletnameisempty'));
+      return;
+    }
+
+    this.props.setCurrent("backupwallettutorial");
+
+    /*
     switch(this.props.WalletEntryNextDirection){
       case "basicwallet":
           this.props.setCurrent("walletcreation");
@@ -41,21 +55,26 @@ class WalletNameEntry extends Component {
           this.props.setCurrent("walletrestorebyseed");
           break;
     }
+    */
   }
 
   back = () => {
-    this.props.setCurrent("wallettypeselection");
+    this.props.setCurrent("splashbasicwalletcreation");
   }
 
   render() {
     const { seedphaseel } = this.state;
     console.log(this.state.seedphaseel);
     return (
-      <div>
-        <div><Input onChange={this.onChange} /></div>
-        <div className="steps-action">
-          <Button type="primary" onClick={this.next} >{intl.get('Register.next')}</Button>
-          <Button type="primary" onClick={this.back} >{intl.get('Common.Back')}</Button>
+      <div className="walletnameentrypanel">
+        <div className="title" ><span><img onClick={this.back} width="20px" src="../../static/image/icon/back.png" /></span><span style={{marginLeft:"20px"}}>{intl.get('Wallet.KeyInWalletName')}</span></div>
+        <div className="centerpanel">
+          <div style={{marginBottom:"30px"}}><img src="../../static/image/graphic/artboard2.png" /></div>
+          <div className="subtitle">{intl.get('Wallet.walletname')}</div>
+          <div className="panelwrapper borderradiusfull">
+            <Input className="inputTransparent" onChange={this.onChange} />
+            <Button className="nextbutton" onClick={this.next}><img src="../../static/image/icon/buttonnextarrow.png" /></Button>
+          </div>
         </div>
       </div>
     );

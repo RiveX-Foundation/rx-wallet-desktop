@@ -13,7 +13,7 @@ import Login from 'containers/Login';
 import MHeader from 'components/MHeader';
 import MFooter from 'components/MFooter';
 import Loading from 'components/Loading';
-
+import '../../../static/lib/notifications.css';
 
 import { getBalance } from 'utils/helper';
 
@@ -24,7 +24,9 @@ import { getBalance } from 'utils/helper';
   RequestSignIn: stores.session.RequestSignIn,
   UserAccountExist: stores.session.UserAccountExist,
   hasMnemonicOrNot: stores.session.hasMnemonicOrNot,
-  getMnemonic: () => stores.session.getMnemonic()
+  getMnemonic: () => stores.session.getMnemonic(),
+  getuserStore: () => stores.userRegistration.getthisstore(),
+  setuserstore: thestore => stores.walletStore.setuserstore(thestore)
   //updateWANBalance: newBalanceArr => stores.wanAddress.updateWANBalance(newBalanceArr),
 }))
 
@@ -55,6 +57,7 @@ export default class Layout extends Component {
   */
 
   componentDidMount() {
+    this.props.setuserstore(this.props.getuserStore());
     //this.wanTimer = setInterval(() => this.updateWANBalanceForInter(), 5000);
     //this.waitUntilSdkReady();
   }
@@ -81,9 +84,11 @@ export default class Layout extends Component {
     //if (this.state.loading) {
     //  return <Loading />
     //} else {
-      console.log("UserAccountExist",UserAccountExist);
+
+      console.log(UserAccountExist);
+
       if (!UserAccountExist || RequestSignIn) {
-        return <RegisterMobile />;
+        return <RegisterMobile />
       } else if (UserAccountExist && !IsLogin) {
         return <Login />
       } else {

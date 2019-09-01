@@ -1,5 +1,6 @@
 import { fromWei } from 'utils/support';
 import { BigNumber } from 'bignumber.js';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
 
 let emitterHandlers = {};
 
@@ -34,6 +35,38 @@ let emitterHandlers = {};
     })
     */
 //};
+
+export const createNotification = (type,message) => {
+  console.log('TYPE',type);
+  switch (type) {
+    case 'info':
+      return NotificationManager.info('Info', message, 5000);
+      break;
+    case 'success':
+      NotificationManager.success('Success', message, 5000);
+      break;
+    case 'warning':
+      NotificationManager.warning('Warning', 'Close after 3000ms', 3000);
+      break;
+    case 'error':
+      NotificationManager.error('Error', message, 5000);
+    //case 'error':
+    //  NotificationManager.error('Error', message, 5000, () => {
+    //    alert('callback');
+    //  }
+    //);
+      break;
+  };
+};
+
+export const getDatefromTimestamp = function (timestamp){
+  return new Date(timestamp*1000);
+}
+
+
+export const getUnixTime = function (dateobj) { 
+  return dateobj.getTime()/1000|0 
+};
 
 
 export const getBalance = function (arr) {

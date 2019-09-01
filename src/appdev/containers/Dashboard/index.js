@@ -20,7 +20,17 @@ import WalletTypeSelection from 'components/Wallet/WalletTypeSelection';
 import TokenTransfer from 'components/Wallet/TokenTransfer';
 import TokenReceive from 'components/Wallet/TokenReceive';
 import WalletRestorebySeed from 'components/Wallet/WalletRestorebySeed';
+import WalletRestorebyPrivateKey from 'components/Wallet/WalletRestorebyPrivateKey';
 import CreateShareWallet from 'components/Wallet/CreateShareWallet';
+import TransactionDetail from 'components/Wallet/TransactionDetail';
+import JoinShareWallet from 'components/Wallet/JoinShareWallet';
+import TokenTransferConfirmation from 'components/Wallet/TokenTransferConfirmation';
+import SplashBasicWalletCreation from 'components/Wallet/SplashBasicWalletCreation';
+import BackupWalletTutorial from 'components/Wallet/BackupWalletTutorial';
+import TokenTransferSuccessful from 'components/Wallet/TokenTransferSuccessful';
+import ImportWalletTypeSelection from 'components/Wallet/ImportWalletTypeSelection';
+import Settings from 'components/Settings';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
 
 //import { checkCryptographic, checkPhrase } from 'utils/support';
 
@@ -41,7 +51,8 @@ const Step = Steps.Step;
   CreateEthAddress: () => stores.walletStore.CreateEthAddress(),
   setCurrent: current => stores.walletStore.setCurrent(current),
   CreateEthAddress: () => stores.walletStore.CreateEthAddress(),
-  setUserAccountExist : val => stores.session.setUserAccountExist(val)
+  setUserAccountExist : val => stores.session.setUserAccountExist(val),
+  IsShowWalletListing : stores.session.IsShowWalletListing
 }))
 
 @observer
@@ -85,12 +96,45 @@ class Dashboard extends Component {
       key:'walletrestorebyseed'
     },{
       title: intl.get('Register.registerMobile'),
+      content: <WalletRestorebyPrivateKey />,
+      key:'walletrestorebyprivatekey'
+    },{
+      title: intl.get('Register.registerMobile'),
       content: <CreateShareWallet />,
       key:'createsharewallet'
     },{
       title: intl.get('Register.registerMobile'),
       content: <TokenReceive />,
       key:'tokenreceive'
+    },{
+      title: intl.get('Register.registerMobile'),
+      content: <JoinShareWallet />,
+      key:'joinsharewallet'
+    },{
+      title: intl.get('Register.registerMobile'),
+      content: <TransactionDetail />,
+      key:'transactiondetail'
+    },{
+      title: intl.get('Register.registerMobile'),
+      content: <TokenTransferConfirmation />,
+      key:'tokentransferconfirmation'
+    },{
+      title: intl.get('Register.registerMobile'),
+      content: <SplashBasicWalletCreation />,
+      key:'splashbasicwalletcreation'
+    },{
+      title: intl.get('Register.registerMobile'),
+      content: <BackupWalletTutorial />,
+      key:'backupwallettutorial'
+    },{
+      content: <TokenTransferSuccessful />,
+      key:'tokentransfersuccessful'
+    },{
+      content: <ImportWalletTypeSelection />,
+      key:'importwallettypeselection'
+    },{
+      content: <Settings />,
+      key:'settings'
     }]
   }
 
@@ -105,82 +149,43 @@ class Dashboard extends Component {
   //  console.log(intl.get('Dashboard.Title'));
   //}
 
-  next = async () => {
-    /*
-    const { mobile } = this.props;
-    const { current} = this.props;
-    if(current === 0){
-      this.props.setCurrent(1);
-      //this.props.wsOTPVerification('registration');
-    } else if(current === 1){
-      this.props.setCurrent(2);
-    } else if(current === 2){
-      this.props.CreateEthAddress();
-      this.props.setCurrent(3);
-    }
-    */
-      //if(isAllEmptyPwd) {
-        //console.log(mobile);
-        //message.error(intl.get('Register.passwordsEmpty'));
-        //return;
-      //}
-      /*
-      if (isSamePwd) {
-        if (checkCryptographic(pwd)) {
-          if (method === 'create') {
-            wand.request('phrase_generate', { pwd: pwd }, (err, val) => {
-              if (err) {
-                message.error(intl.get('Register.createSeedPhraseFailed'));
-                return;
-              }
-              console.log(val);
-              this.props.setMnemonic(val);
-              setIndex(1);
-            });
-          } else {
-            setIndex(1);
-          }
-        } else {
-          message.error(intl.get('Register.passwordTip'));
-        }
-      } else {
-        message.error(intl.get('Register.passwordsMismatched'));
-      }
-      */
-     /*
-    } else if (current === 1 && method === 'import') {
-      if (checkPhrase(mnemonic)) {
-        this.props.setMnemonic(mnemonic);
-        setIndex(current + 1);
-      } else {
-        message.error(intl.get('Register.seedPhraseIsInvalid'));
-      }
-    */
-    //} else {
-    //  setIndex(current + 1);
-    //}
-  }
-
-  prev = () => {
-    const { setIndex, current } = this.props;
-    setIndex(current - 1);
-  }
-
   render() {
     const { walletsteps } = this.state;
-    const { current,location } = this.props;
+    const { current,IsShowWalletListing } = this.props;
+
+    var IsDoubleColumn = (
+      current == "walletlisting" || 
+      current == "tokentransfer" || 
+      current == "transactiondetail" || 
+      current == "walletdetail"
+    );
+
     return (
       <Row className="container">
         <Col className="nav-left">
           <SideBar path={'/'}/>
         </Col>
-        <Col className="main">
-          <MHeader />
-          <Row className="content">
-            {walletsteps.find(x => x.key === current).content}
-          </Row>
-          <MFooter />
-        </Col>
+        {IsDoubleColumn && 
+          <div>
+            <Col className="walletcol">
+              <WalletListing />
+            </Col>
+            <Col className="main">
+              <Row>
+                {walletsteps.find(x => x.key === current).content}
+              </Row>
+            </Col>
+          </div>
+        }
+
+        {!IsDoubleColumn &&
+          <Col className="fullmain">
+            <Row>
+              {walletsteps.find(x => x.key === current).content}
+            </Row>
+          </Col>
+        }
+        <NotificationContainer/>
       </Row>
     );
   }

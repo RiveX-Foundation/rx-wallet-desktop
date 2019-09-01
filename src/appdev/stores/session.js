@@ -9,6 +9,8 @@ class Session {
   @observable hasUseAcc = false;
   @observable UserAccountExist = false;
   @observable RequestSignIn = false;
+  @observable IsShowWalletListing = true;
+  
 
   constructor() {
     //super();
@@ -21,6 +23,10 @@ class Session {
     this.hasUseAcc = val;
   }
   
+  @action setIsShowWalletListing(val){
+    this.IsShowWalletListing = val;
+  }
+
   @action setIsLogin(val){
     this.IsLogin = val;
   }
@@ -32,11 +38,19 @@ class Session {
   @action setUserAccountExist(val){
     this.UserAccountExist = val;    
   }
+
+  @action logout(){
+    console.log("LOGOUT2");
+    localStorage.setItem('user','');
+    this.setIsLogin(false);
+    console.log("LOGOUT3");
+  }
+
   @action getUserAcc() {
-    if(localStorage.getItem('user') == "" || localStorage.getItem('user') == null){
+    if(localStorage.getItem('registeredbefore') == "" || localStorage.getItem('registeredbefore') == null){
       this.UserAccountExist = false;
     }else{
-      this.setIsLogin(true);
+      //this.setIsLogin(true);
       this.UserAccountExist = true;
     }
     /*

@@ -1,37 +1,202 @@
-  @com-modal-bg: #272840;
-  @com-white-color: #FFFFFF!important;
-  .zContent{
-  width: 100%;
-  background: @com-modal-bg;
-  .registerContent {
-    width: 780px;
-    color: #000;
-    margin: 0 0;
-    //position: sticky;
-    //top: 50%;
-    //margin-top: -382px;
-    background: @com-modal-bg;
-    .steps-content {
-      margin-top: 16px;
-      border-radius: 6px;
-      text-align: center;
-      padding-top: 50px;
-    }
-    .ant-steps{
-      // display: inline-block;
-      padding: 50px 20px 0;
-    }
-    .ant-steps-item-title{
-      color: @com-white-color!important;
-    }
-    .steps-action {
-      padding: 50px 0 45px;
-      text-align: center;
-      button{
-        width:150px;
-        height:40px;
-        border-radius:20px;
-      }
+@modal-input-bg: #1F2034;
+
+.textc {
+  color: black;
+  font-size: 50px;
+
+
+  input {
+    margin-bottom: 0!important;
+  }
+}
+
+.zContent .registerContent {
+  position: relative;
+}
+
+.leftpanel{
+  width:50% !important;
+  text-align: center;
+  width:calc(100vw);
+  height:calc(100vh);
+  display: table-cell;
+  vertical-align: middle;
+  position:relative;
+  color:#fff;
+
+  .loginbutton{
+    color:#63ede5;
+    cursor: pointer;
+  }
+
+  .loginbutton:hover{
+    color:#aaf1eb;
+  }
+
+  .line{
+    border-top:1px solid #ffffff42;
+    width:80px;
+    margin-left:10px;
+    display: inline-block;
+    margin-right:10px;
+    margin-bottom:1px;
+  }
+
+  .circlewrapper{
+    display:inline-block;
+  }
+
+  .outterCircle{
+    width:20px;
+    height:20px;
+    border:1px solid #fff;
+    border-radius: 50%;
+    background-color:transparent;
+    display: flex;
+    justify-content: center;
+  }
+
+  .innerCircle{
+    width:5px;
+    height:5px;
+    margin-top:6.5px;
+    margin-left:0.5px;
+    border-radius: 50%;
+    background-color:#fff;
+  }
+
+  .steppanel{
+    margin:30px 0px 50px 0px;
+  }
+
+  .inputwrapper{
+    width:100%;
+  }
+
+  .panelwrapper{
+    background-color:#ffffff21;
+    padding:5px;
+    width:280px;
+    position: relative;
+  }    
+
+  .borderradiusleft{
+    border-radius:50px 0px 0px 50px;
+  }
+
+  .borderradiusright{
+    border-radius:0px 50px 50px 0px;
+  }
+
+  .borderradiusfull{
+    border-radius: 10px;
+  }
+
+  .countrycodewrapper{
+    width:100px;
+    display:inline-block;
+    margin-right:10px;
+
+    input{
+      width:90% !important;
     }
   }
+
+  .phonewrapper{
+    width:220px;
+    display:inline-block;
+
+    input{
+      width:90% !important;
+    }
+  }
+
+  .buttonpanel{
+    margin-top:30px;
+    text-align: right;
+    width: 300px;
+    display: inline-flex;
+    justify-content: space-between;
+  }
+
+  .nextbutton{
+    width:30px;
+    height:30px;
+    border:2px solid #fff;
+    border-radius: 50%;
+    background-color:transparent;
+
+    img{
+      width:15px;
+      margin-left: -7px;
+      margin-top: -2px;
+    }
+  }
+
+  .inputTransparent{
+      border: none;
+      color:#fff;
+      width:80%;
+      margin-left:10px;
+      background-color: transparent;
+  }
+
+  .inputTransparent:focus {
+    box-shadow: none !important;
+    border: none !important;
+    outline: none !important;
+  }    
+
+  .subtitle{
+    font-size:1.3em;
+    margin-top:50px;
+    margin-bottom:30px;
+  }
+
+  .autolisthide{
+    display:none;
+  }
+
+  .autolist{
+    position:absolute;
+    z-index:10;
+    margin-top:10px;
+    text-align: left;
+    width:230px;
+    background-color:#1b1b30;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    border-radius:10px;
+    border:2px solid #1b1b30;
+    max-height:250px;
+    overflow-y: auto;
+
+    /*display:none;*/
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+
+    .noResult{
+      text-align: center;
+      padding:10px;
+      color:#6e6eba;
+    }
+
+    ul{
+      padding-inline-start: 0;
+    }
+
+    li{
+      padding:10px 15px 10px 15px;
+      list-style: none;
+      padding:5px 15px 5px 15px;
+      cursor: pointer;
+    }
+
+    li:hover{
+      background-color:#6e6eba;
+    }
+
+    .show{
+      display:block
+    }
+  }
+
 }

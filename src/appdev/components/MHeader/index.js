@@ -49,12 +49,6 @@ class MHeader extends Component {
                   : ''
               }
             </Col>
-            <Col span={12} className="user">
-              <div className="log">
-                <Icon className="logOutIco" type="poweroff" />
-                <span onClick={this.logOut} className="logOut">{intl.get('MHeader.logout')}</span>
-              </div>
-            </Col>
         </Row>
       </div>
     );

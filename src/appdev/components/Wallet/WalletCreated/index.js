@@ -5,6 +5,7 @@ import intl from 'react-intl-universal';
 
 import './index.less';
 @inject(stores => ({
+  selectedWallet : stores.walletStore.selectedwallet,
   setCurrent: current => stores.walletStore.setCurrent(current),
   language: stores.languageIntl.language
 }))
@@ -21,15 +22,19 @@ class WalletCreated extends Component {
     });
   }
 
-  back = () => {
-    this.props.setCurrent("walletlisting");
+  next = () => {
+    this.props.setCurrent("walletdetail");
   }
 
   render() {
     return (
-      <div>
-        <div>Wallet Created!</div>
-        <Button type="primary" onClick={this.back}>{intl.get('Common.Back')}</Button>
+      <div className="walletcreatedpanel">
+        <div className="centerpanel">
+          <div style={{marginBottom:"30px"}}><img src="../../static/image/graphic/artboard4.png" /></div>
+          <div className="subtitle">{this.props.selectedWallet.walletname} {intl.get('Wallet.WalletCreated')}</div>
+          <div className="hint">{this.props.selectedWallet.publicaddress}</div>
+          <Button className="curvebutton" onClick={this.next}>{intl.get('Wallet.Confirm')}</Button>
+        </div>
       </div>
     );
   }

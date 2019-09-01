@@ -24,3 +24,148 @@
   .zContent .registerContent {
     position: relative;
   }
+
+  .nowalletpanel{
+    text-align: center;
+    width:calc(100vw);
+    height:calc(100vh);
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  .nowalletpanel .label{
+    position: absolute;
+    right: 0;
+    left: 0;
+    margin-top: 120px;
+  }
+
+  .walletdetailpanel{
+    .walletname{
+      font-size:1.5em;
+      margin-bottom:30px;
+      padding: 20px;
+    }
+
+    table {
+      width:100%;
+    }
+
+    .tablewrapper{
+      padding:20px;
+    }
+
+    tr:hover {
+      background-color: #464a5d;
+      cursor: pointer;
+    }
+
+    thead{
+      border-top:1px solid #464a5d;
+      font-weight: 600;
+
+      .header{
+        font-size:1em;
+        padding-top:20px;
+        padding-bottom:20px;  
+        border:0px !important;
+      }
+    }
+
+    .tdgrey{
+      color: #b5b0b0;
+      padding:5px 0px 5px 0px;
+    }
+
+    .tdgreen {
+      color:#64f44c;
+      padding:5px 0px 5px 0px;
+    }
+
+    .tdred {
+      color:#ef3333;
+      padding:5px 0px 5px 0px;
+    }
+
+    .tdcenter{
+      text-align: center;
+    }
+
+    .tdright{
+      text-align: right;
+    }
+
+    .tdellipsis{
+      width:150px;
+      white-space: nowrap; 
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: inline-block;
+    }
+
+    .subtitle{
+      padding-top:30px;
+      padding-bottom:15px;
+      text-align: center;
+      font-size:1.2em;
+    }
+
+    .rvxbalance{
+      color: #fff;
+      font-size: 1.5em;
+      font-weight: 700;
+      margin-bottom: 5px;
+      margin-top:20px;
+    }
+
+    .usdbalance{
+      color: #5f617d;
+      font-size: 1.2em;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .contentpanel{
+      text-align: center;
+    }
+
+    .button{
+      width:120px;
+      height:30px;
+      border-radius:50px !important;
+      transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+      background-color:transparent !important;
+      border:1.5px solid;
+
+      span{
+        font-size:0.8em;
+      }
+
+      img{
+        width:20px;
+        margin-top:-2px;
+      }
+    }
+
+    .butreceive{
+      border-color : #ff5a5a !important;
+
+      span{
+        color:#ff5a5a;
+      }
+    }
+
+    .button:hover{
+      opacity: 1;        
+    }
+  
+    .butsend{
+      border-color : #ff9852 !important;
+
+      span{
+        color:#ff9852;
+      }
+    }
+
+  }
+
