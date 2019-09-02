@@ -23,7 +23,8 @@ const SubMenu = Menu.SubMenu;
 class Sidebar extends Component {
 
   state = {
-    selectedwallettype : "basicwallet"
+    selectedwallettype : "basicwallet",
+    selectedtab : "basicwallet"
   }
 
   renderMenu = data => {
@@ -49,7 +50,7 @@ class Sidebar extends Component {
   selectwallettype = e => {
     var that = this;
     var wallettype = e.currentTarget.getAttribute('data-wallettype');
-    this.setState({selectedwallettype:wallettype},function(){
+    this.setState({selectedwallettype:wallettype,selectedtab:"wallet"},function(){
       that.props.clearSelectedWallet();
       that.props.setselectedwallettype(wallettype);
       that.props.setCurrent('walletdetail');
@@ -62,6 +63,7 @@ class Sidebar extends Component {
   }
 
   selectsettings = () => {
+    this.setState({selectedtab:"setting"});
     this.props.setCurrent('settings');
   }
 
@@ -72,12 +74,15 @@ class Sidebar extends Component {
   
   render() {
     const { sidebarColumns, settings } = this.props;
-    const { selectedwallettype } = this.state;
+    const { selectedwallettype,selectedtab } = this.state;
 
-    const basicwalletstyle = (selectedwallettype == "basicwallet") ? "ant-menu-item fontcolor_red ant-menu-item-selected" : "ant-menu-item fontcolor_red";
-    const sharedwalletstyle = (selectedwallettype == "sharedwallet") ? "ant-menu-item fontcolor_orange ant-menu-item-selected" : "ant-menu-item fontcolor_orange";
-    const hardwarewalletstyle = (selectedwallettype == "hardwarewallet") ? "ant-menu-item fontcolor_green ant-menu-item-selected" : "ant-menu-item fontcolor_green";
-    const importwalletstyle = (selectedwallettype == "importwallet") ? "ant-menu-item fontcolor_purple ant-menu-item-selected" : "ant-menu-item fontcolor_purple";
+    console.log(selectedtab);
+
+    const basicwalletstyle = (selectedtab == "wallet" && selectedwallettype == "basicwallet") ? "ant-menu-item fontcolor_red ant-menu-item-selected" : "ant-menu-item fontcolor_red";
+    const sharedwalletstyle = (selectedtab == "wallet" && selectedwallettype == "sharedwallet") ? "ant-menu-item fontcolor_orange ant-menu-item-selected" : "ant-menu-item fontcolor_orange";
+    const hardwarewalletstyle = (selectedtab == "wallet" && selectedwallettype == "hardwarewallet") ? "ant-menu-item fontcolor_green ant-menu-item-selected" : "ant-menu-item fontcolor_green";
+    const importwalletstyle = (selectedtab == "wallet" && selectedwallettype == "importwallet") ? "ant-menu-item fontcolor_purple ant-menu-item-selected" : "ant-menu-item fontcolor_purple";
+    const settingstyle = (selectedtab == "setting") ? "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open ant-menu-submenu-selected" : "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open";
 
 
     if(settings && settings.staking_advance) {
@@ -128,23 +133,23 @@ class Sidebar extends Component {
         }
 
           <ul className="ant-menu menuTreeNode ant-menu-dark ant-menu-root ant-menu-inline" role="menu">
-            <li className="ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open ant-menu-submenu-selected" role="menuitem">
+            <li className="ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open" role="menuitem">
               <div className="ant-menu-submenu-title" aria-expanded="true" aria-haspopup="true" aria-owns="/$Menu">
                 <span><img src="../../static/image/icon/wallet.png" width="20px" /><span>{intl.get('menuConfig.wallet')}</span></span>
               </div>
               <ul id="/$Menu" className="ant-menu ant-menu-sub ant-menu-inline" role="menu">
-                <li className={basicwalletstyle} data-wallettype="basicwallet" onClick={this.selectwallettype} role="menuitem"><img src='../../static/image/icon/basicwallet.png' width="25px" />{intl.get('menuConfig.basicwallet')}</li>
-                <li className={sharedwalletstyle} data-wallettype="sharedwallet" onClick={this.selectwallettype} role="menuitem"><img src='../../static/image/icon/sharedwallet.png' width="25px" />{intl.get('menuConfig.sharedwallet')}</li>
-                <li className={hardwarewalletstyle} data-wallettype="hardwarewallet" onClick={this.selectwallettype} role="menuitem"><img src='../../static/image/icon/hardwarewallet.png' width="25px" />{intl.get('menuConfig.hardwarewallet')}</li>
-                <li className={importwalletstyle} data-wallettype="importwallet" onClick={this.selectimportwallettype} role="menuitem"><img src='../../static/image/icon/importwallet.png' width="25px" />{intl.get('menuConfig.importwallet')}</li>
+                <li className={basicwalletstyle} data-tabvalue="wallet" data-wallettype="basicwallet" onClick={this.selectwallettype} role="menuitem"><img src='../../static/image/icon/basicwallet.png' width="25px" />{intl.get('menuConfig.basicwallet')}</li>
+                <li className={sharedwalletstyle} data-tabvalue="wallet" data-wallettype="sharedwallet" onClick={this.selectwallettype} role="menuitem"><img src='../../static/image/icon/sharedwallet.png' width="25px" />{intl.get('menuConfig.sharedwallet')}</li>
+                <li className={hardwarewalletstyle} data-tabvalue="wallet" data-wallettype="hardwarewallet" onClick={this.selectwallettype} role="menuitem"><img src='../../static/image/icon/hardwarewallet.png' width="25px" />{intl.get('menuConfig.hardwarewallet')}</li>
+                <li className={importwalletstyle} data-tabvalue="wallet" data-wallettype="importwallet" onClick={this.selectimportwallettype} role="menuitem"><img src='../../static/image/icon/importwallet.png' width="25px" />{intl.get('menuConfig.importwallet')}</li>
               </ul>
             </li>
-            <li className="ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open ant-menu-submenu-selected" onClick={this.selectsettings} role="menuitem">
+            <li data-tabvalue="setting" className={settingstyle} onClick={this.selectsettings} role="menuitem">
               <div className="ant-menu-submenu-title" aria-expanded="true" aria-haspopup="true" aria-owns="/$Menu">
                 <span><img src="../../static/image/icon/settings.png" width="20px" /><span>{intl.get('Settings.settings')}</span></span>
               </div>
             </li>
-            <li className="ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open ant-menu-submenu-selected" role="menuitem">
+            <li className="ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open" role="menuitem">
               <div className="ant-menu-submenu-title" aria-expanded="true" aria-haspopup="true" aria-owns="/$Menu">
                 <span><img src="../../static/image/icon/notification.png" width="20px" /><span>{intl.get('Notification.Notification')}</span></span>
               </div>

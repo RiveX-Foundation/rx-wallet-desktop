@@ -4,6 +4,8 @@ import { Button, message, Steps, Tabs } from 'antd';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
 import {NotificationContainer, NotificationManager} from 'react-notifications';
+import ManageWallet from 'components/Settings/ManageWallet';
+import ManageWalletDetail from 'components/Settings/ManageWalletDetail';
 import './index.less';
 
 //import { checkCryptographic, checkPhrase } from 'utils/support';
@@ -11,29 +13,23 @@ import './index.less';
 const Step = Steps.Step;
 
 @inject(stores => ({
-  /*
-  pwd: stores.mnemonic.pwd,
-  method: stores.mnemonic.method,
-  mnemonic: stores.mnemonic.mnemonic,
-  newPhrase: stores.mnemonic.newPhrase,
-  isSamePwd: stores.mnemonic.isSamePwd,
-  language: stores.languageIntl.language,
-  isAllEmptyPwd: stores.mnemonic.isAllEmptyPwd,
-  */
-  current: stores.userRegistration.current,
-  mobile : stores.userRegistration.mobile,
-  otp : stores.userRegistration.otp,
-  setCurrent: val => stores.userRegistration.setCurrent(val),
-  setHasAcc : val => stores.session.setHasAcc(val),
-  setUserAccountExist : val => stores.session.setUserAccountExist(val),
-  wsMobileRegistration : () => stores.userRegistration.wsMobileRegistration(),
-  wsUserRegistration : () => stores.userRegistration.wsUserRegistration(),
-  wsOTPVerification : type => stores.userRegistration.wsOTPVerification(type)
+  current: stores.setting.current,
+  setCurrent: val => stores.setting.setCurrent(val)
 }))
 
 @observer
 class Settings extends Component {
-  state = {}
+  state = {
+    walletsteps: [
+      {
+      content: <ManageWallet />,
+      key:'managewalletlist'
+      },
+      {
+        content: <ManageWalletDetail />,
+        key:'managewalletdetail'  
+    }]
+  }
 
   constructor(props){
     super(props);
@@ -51,8 +47,8 @@ class Settings extends Component {
     return (
       <div className="tabcontainer">
         <Tabs defaultActiveKey="1" onChange={this.callback}>
-          <TabPane tab="Tab 1" key="1">
-            Content of Tab Pane 1
+          <TabPane tab={intl.get('Settings.ManageWallets')} key="1">
+            {this.state.walletsteps.find(x => x.key === current).content}
           </TabPane>
           <TabPane tab="Tab 2" key="2">
             Content of Tab Pane 2

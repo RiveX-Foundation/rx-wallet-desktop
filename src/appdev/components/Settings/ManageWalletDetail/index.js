@@ -8,15 +8,15 @@ const bip39 = require('bip39');
 import './index.less';
 import { setDefaultWordlist } from 'bip39';
 @inject(stores => ({
-  setCurrent: current => stores.setting.setCurrent(current),
-  setSelectedWalletAddress: address => stores.setting.setSelectedWalletAddress(address),
+  setCurrent: current => stores.walletStore.setCurrent(current),
+  selectedwalletaddress: stores.setting.selectedwalletaddress,
   removeWallet: publicaddress => stores.walletStore.removeWallet(publicaddress),
   walletlist: stores.walletStore.walletlist,
   language: stores.languageIntl.language
 }))
 
 @observer
-class ManageWallet extends Component {
+class ManageWalletDetail extends Component {
   state = {
     removemodalvisible: false,
     selectedwalletaddress: "",
@@ -68,8 +68,6 @@ class ManageWallet extends Component {
   }
 
   removewallet = e => {
-    e.preventDefault();
-    e.stopPropagation();
     const walletaddress = e.currentTarget.getAttribute('data-publicaddress');
     const walletname = e.currentTarget.getAttribute('data-walletname');
     this.setState({selectedwalletaddress:walletaddress,selectedwalletname:walletname,removemodalvisible:true});
@@ -80,15 +78,6 @@ class ManageWallet extends Component {
       removemodalvisible: false
     });
     this.props.removeWallet(this.state.selectedwalletaddress);
-  }
-
-  selectwallet = e => {
-    const walletaddress = e.currentTarget.getAttribute('data-publicaddress');
-    const walletname = e.currentTarget.getAttribute('data-walletname');
-    this.props.setCurrent('managewalletdetail');
-    this.props.setSelectedWalletAddress(walletaddress);
-    this.setState({selectedwalletaddress:walletaddress,selectedwalletname:walletname});
-    console.log(walletaddress);
   }
 
   handleCancel = () => {
@@ -106,39 +95,20 @@ class ManageWallet extends Component {
   }
 
   render() {
+
+    const wallet = this.props.walletlist.find(x=>x.publicaddress == this.props.selectedwalletaddress);
+
     return (
       <div className="managewalletpanel">
         <div className="centerpanel">
           <div className="content">
             <div className="title" ><span style={{marginLeft:"10px"}}>{intl.get('Settings.ManageWallets')}</span></div>
-            {
-              this.props.walletlist.map((item, i) =>
-                {
-                  let wallettype = "";
-                  if(item.wallettype=="basic"){
-                    wallettype = intl.get('Wallet.BasicWallet');
-                  }else{
-                    wallettype = intl.get('Wallet.SharedWallet') + " [" + item.totalsignatures + "/" + item.totalowners + "]";
-                  }
-                  return (
-                    <div key={i} data-publicaddress={item.publicaddress} className="panelwrapper borderradiusfull spacebetween" onClick={this.selectwallet} style={{marginBottom:"10px"}}>
-                      <div>
-                        <div className="panelleft walletname">{item.walletname}</div>
-                        <div className="panelleft wallettype">{wallettype}</div>
-                        <div className="panelleft balance">{item.rvx_balance} RVX</div>
-                      </div>
-                      <div className="panelright" data-walletname={item.walletname} data-publicaddress={item.publicaddress} onClick={this.removewallet}><img src="../../static/image/icon/whitecross.png" /></div>
-                    </div>
-                  )
-                }
-              )
 
-              /*
-              <div className="panelwrapper borderradiusfull dashborder" onClick={this.addnewwallet} style={{marginBottom:"10px"}}>
-                <div className="panelleft"><img width="20px" src="../../static/image/icon/plussign.png" /><span>{intl.get('Wallet.AddNewWallet')}</span></div>
-              </div>
-              */
-            }
+            <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"10px"}}>
+              <div className="panellabel">{wallet.walletname}</div>
+              <div className="panelvalue"></div>
+            </div>
+
             <Modal
               title=""
               visible={this.state.removemodalvisible}
@@ -172,4 +142,4 @@ class ManageWallet extends Component {
   }
 }
 
-export default ManageWallet;
+export default ManageWalletDetail;

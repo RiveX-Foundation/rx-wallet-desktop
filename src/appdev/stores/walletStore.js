@@ -306,6 +306,14 @@ class walletStore {
     }
   }
 
+  @action removeWallet(publicaddress){
+    const filterwalletlist = this.walletlist.filter(x => x.publicaddress !== publicaddress);
+    this.walletlist = filterwalletlist;
+    console.log(this.walletlist);
+    localStorage.setItem('wallets',JSON.stringify(this.walletlist));
+
+  }
+
   wsRequestTransferOTP(){
     var bodyFormData = new FormData();
     bodyFormData.set('token', this.userstore.token);

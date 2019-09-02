@@ -8,6 +8,7 @@ import sendTransParams from './sendTransParams';
 import staking from './staking';
 import userRegistration from './userRegistration';
 import walletStore from './walletStore';
+import setting from './setting';
 
 const stores = {
     session,
@@ -20,7 +21,8 @@ const stores = {
     sendTransParams,
     userRegistration,
     walletStore,
-    crypto
+    crypto,
+    setting
 };
 
 export default stores;

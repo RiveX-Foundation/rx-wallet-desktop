@@ -170,6 +170,10 @@ const en_US = {
     'Dashboard.Title': 'Dashboard',
 
     'Settings.Restore': 'Restore',
+    'Settings.ManageWallets': 'Manage Wallets',
+
+    'Modal.RemoveWallet': 'Remove Wallet ?',
+    'Modal.AreYouSureRemoveWallet': 'Are you confirm to remove {walletname} ?',
 
     'Wallet.CreateWallet': 'Create Wallet',
     'Wallet.BasicWallet': 'Basic Wallet',
@@ -209,6 +213,7 @@ const en_US = {
     'Wallet.RESTOREMNEMONICPHRASE': 'RESTORE MNEMONIC PHRASE',
     'Wallet.RESTOREPRIVATEKEY': 'RESTORE PRIVATE KEY',
     'Wallet.PrivateKey': 'Private Key',
+    'Wallet.AddNewWallet': 'Add New Wallet',
 
     'Sidebar.RVX': 'RVX',
 
