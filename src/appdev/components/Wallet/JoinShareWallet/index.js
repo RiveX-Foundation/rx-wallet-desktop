@@ -51,7 +51,7 @@ class JoinShareWallet extends Component {
 
   render() {
     return (
-      <div className="joinwalletpanel">
+      <div className="joinwalletpanel fadeInAnim">
         <div className="title" ><span><img onClick={this.back} width="20px" src="../../static/image/icon/back.png" /></span><span style={{marginLeft:"20px"}}>{intl.get('Wallet.JOINSHAREDWALLET')}</span></div>
         <div className="centerpanel">
           <center>

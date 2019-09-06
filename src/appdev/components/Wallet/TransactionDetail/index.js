@@ -152,7 +152,7 @@ class TransactionDetail extends Component {
 
   render() {
     return (
-      <div className="trxdetailpanel">
+      <div className="trxdetailpanel fadeInAnim">
         <div className="title" ><span><img onClick={this.back} width="20px" src="../../static/image/icon/back.png" /></span><span style={{marginLeft:"20px"}}>{intl.get('Transaction.Detail')}</span></div>
         <div className="content">
           <center>

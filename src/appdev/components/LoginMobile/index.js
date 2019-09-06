@@ -111,7 +111,7 @@ class LoginMobile extends Component {
     const {filterlist,autoliststyle} = this.state;
 
     return (
-      <div style={{backgroundImage: 'url(../../static/image/graphic/loginbg.jpg)'}}>
+      <div className="fadeInAnim" style={{backgroundImage: 'url(../../static/image/graphic/loginbg.jpg)'}}>
         <div className="leftpanel" onClick={this.panelClick}>
 
           <img width="130px" src="../../static/image/graphic/logo.png" />

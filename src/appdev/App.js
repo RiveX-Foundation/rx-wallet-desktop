@@ -9,7 +9,7 @@ import intl from 'react-intl-universal';
 import Router from './Routes';
 import stores from './stores';
 import locales from './locales';
-//import { initEmitterHandler, regEmitterHandler, isSdkReady } from 'utils/helper';
+import { initEmitterHandler, regEmitterHandler, isSdkReady } from 'utils/helper';
 
 class App extends Component {
   constructor(props) {
@@ -49,13 +49,6 @@ class App extends Component {
       }
     });
 
-    regEmitterHandler('hdwallet', val => {
-      if (['Ledger', 'Trezor'].includes(val.Device)) {
-        message.warn(intl.get('HwWallet.disconnected'));
-        wand.request('wallet_deleteLedger');
-        stores.wanAddress.updateAddress(val.Device.toLowerCase());
-      }
-    });
 
     regEmitterHandler('network', net => {
       wand.request('wallet_lock', null, (err, val) => {

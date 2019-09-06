@@ -29,7 +29,7 @@ class TokenTransferSuccessful extends Component {
 
   render() {
     return (
-      <div className="walletcreatedpanel">
+      <div className="walletcreatedpanel fadeInAnim">
         <div className="centerpanel">
           <div style={{marginBottom:"30px"}}><img src="../../static/image/graphic/artboard5.png" /></div>
           <div className="subtitle">{intl.get('Transaction.TransactionSuccessful')}</div>

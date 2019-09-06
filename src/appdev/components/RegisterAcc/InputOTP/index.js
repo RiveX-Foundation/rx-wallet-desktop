@@ -75,7 +75,7 @@ class InputOTP extends Component {
 
   render() {
     return (
-      <div>
+      <div className="fadeInAnim">
         <div className="otpinputleftpanel" onClick={this.panelClick}>
           <div className="steppanel">
             <div className="backbutton"><img onClick={this.back} width="20px" src="../../static/image/icon/back.png" /></div>

@@ -51,7 +51,7 @@ class InputUserInfo extends Component {
 
   render() {
     return (
-      <div className="userinfoleftpanel">
+      <div className="userinfoleftpanel fadeInAnim">
         <div className="steppanel">
           <div className="circlewrapper"><div className="innerCircle"></div></div>
           <div className="line"></div>

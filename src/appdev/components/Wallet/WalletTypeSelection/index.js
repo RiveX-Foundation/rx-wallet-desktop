@@ -80,7 +80,7 @@ class WalletTypeSelection extends Component {
 
   render() {
     return (
-      <div className="wallettypeselectionpanel">
+      <div className="wallettypeselectionpanel fadeInAnim">
         <div className="title" ><span style={{marginLeft:"20px"}}>{intl.get('Wallet.SHAREDWALLET')}</span></div>
         <div className="centerpanel">
           <center>

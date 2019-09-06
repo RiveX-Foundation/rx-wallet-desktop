@@ -34,7 +34,6 @@ const en_US = {
     'Backup.copyToClipboard': 'Copy to clipboard',
     'Backup.enterPassword': 'Enter Password',
 
-    'Ledger.ledger': 'Ledger',
     'Ledger.followInstructionsToConnectLedgerWallet': 'Please follow the below instructions to connect your Ledger wallet',
     'Ledger.connectLedgerWalletToComputer': 'Connect your Ledger wallet directly to your computer',
     'Ledger.enterPinCode': 'Enter pin code to unlock your Ledger wallet',
@@ -62,7 +61,6 @@ const en_US = {
     'Config.option': 'Security Options',
     'Config.inputPwd': 'Input password again while sending transaction',
 
-    'Trezor.trezor': 'Trezor',
     'Trezor.installBridge': 'Install Trezor bridge from trezor.io',
     'Trezor.connectTrezorWalletToComputer': 'Connect your Trezor wallet directly to your computer',
     'Trezor.signTransactionFailed': 'Sign transaction failed. Please try again',
@@ -82,7 +80,6 @@ const en_US = {
     'HwWallet.Connect.address': 'Address',
     'HwWallet.Connect.balance': 'Balance',
     'HwWallet.Connect.connectFailed': 'Connect failed',
-    'HwWallet.Connect.connectAHardwareWallet': 'Connect a Hardware Wallet',
     'HwWallet.Connect.continue': 'Continue',
     'HwWallet.Connect.selectAddress': 'Select Address',
     'HwWallet.Connect.previousAddresses': 'Previous addresses',
@@ -170,7 +167,12 @@ const en_US = {
     'Dashboard.Title': 'Dashboard',
 
     'Settings.Restore': 'Restore',
+    'Settings.Profile': 'Profile',
+    'Settings.Currency': 'Currency',
+    'Settings.EditWalletName': 'Edit Wallet Name',
     'Settings.ManageWallets': 'Manage Wallets',
+    'Settings.ExportPrivateKey': 'Export Private Key',
+    'Settings.ExportPrivateKeyDesc': 'It is essential to understand that the Private Key is the most important and sensitive part of your account information. Whoever has knowledge of a Private Key has full control over the associated funds and assets. It is important for restoring your account so you should never lose it, but also keep it top secret. ',
 
     'Modal.RemoveWallet': 'Remove Wallet ?',
     'Modal.AreYouSureRemoveWallet': 'Are you confirm to remove {walletname} ?',
@@ -214,6 +216,10 @@ const en_US = {
     'Wallet.RESTOREPRIVATEKEY': 'RESTORE PRIVATE KEY',
     'Wallet.PrivateKey': 'Private Key',
     'Wallet.AddNewWallet': 'Add New Wallet',
+
+    'HWWallet.ConnectHWWallet': 'Connect a Hardware Wallet',
+    'HWWallet.Ledger': 'Ledger',
+    'HWWallet.Trezor': 'Trezor',
 
     'Sidebar.RVX': 'RVX',
 

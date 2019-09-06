@@ -29,6 +29,7 @@ import SplashBasicWalletCreation from 'components/Wallet/SplashBasicWalletCreati
 import BackupWalletTutorial from 'components/Wallet/BackupWalletTutorial';
 import TokenTransferSuccessful from 'components/Wallet/TokenTransferSuccessful';
 import ImportWalletTypeSelection from 'components/Wallet/ImportWalletTypeSelection';
+import HWWalletSelection from 'components/Wallet/HWWalletSelection';
 import Settings from 'components/Settings';
 import {NotificationContainer, NotificationManager} from 'react-notifications';
 
@@ -133,6 +134,9 @@ class Dashboard extends Component {
       content: <ImportWalletTypeSelection />,
       key:'importwallettypeselection'
     },{
+      content: <HWWalletSelection />,
+      key:'hwwalletselection'
+    },{
       content: <Settings />,
       key:'settings'
     }]
@@ -187,6 +191,8 @@ class Dashboard extends Component {
         }
         <NotificationContainer/>
       </Row>
+
+
     );
   }
 }

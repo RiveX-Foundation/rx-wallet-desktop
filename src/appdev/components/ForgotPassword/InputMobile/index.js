@@ -23,7 +23,7 @@ class InputMobile extends Component {
 
   render() {
     return (
-      <div className="textc">
+      <div className="textc fadeInAnim">
         <h1 className="mneCom-h1">{intl.get('Mnemonic.InputPwd.createAWANWallet')}</h1>
         <div className="mne-input">
           <p className="pwdTitle">{intl.get('Mnemonic.InputPwd.confirmPassword')}:</p>

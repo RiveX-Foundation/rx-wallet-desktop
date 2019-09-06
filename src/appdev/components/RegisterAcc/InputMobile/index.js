@@ -110,7 +110,7 @@ class InputMobile extends Component {
     console.log(this.props.UserAccountExist);
 
     return (
-      <div>
+      <div className="fadeInAnim">
         <div className="leftpanel" onClick={this.panelClick}>
           <div className="steppanel">
             <div className="circlewrapper"><div className="outterCircle"><div className="innerCircle"></div></div></div>

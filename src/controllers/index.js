@@ -7,7 +7,7 @@ import { hdUtil, ccUtil } from 'wanchain-js-sdk'
 import Logger from '~/src/utils/Logger'
 import setting from '~/src/utils/Settings'
 import Web3 from 'web3';
-import { dateFormat } from '../app/utils/support';
+import { dateFormat } from '../appdev/utils/support';
 
 const web3 = new Web3();
 import { Windows, walletBackend } from '~/src/modules'
@@ -207,6 +207,7 @@ ipc.on(ROUTE_WALLET, async (event, actionUni, payload) => {
             }
 
         case 'connectToLedger':
+            console.log("COME HERE LAH");
             let data = false;
             try {
                 await hdUtil.connectToLedger()

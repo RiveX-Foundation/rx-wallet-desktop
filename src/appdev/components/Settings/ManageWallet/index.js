@@ -107,10 +107,9 @@ class ManageWallet extends Component {
 
   render() {
     return (
-      <div className="managewalletpanel">
+      <div className="managewalletpanel fadeInAnim">
         <div className="centerpanel">
-          <div className="content">
-            <div className="title" ><span style={{marginLeft:"10px"}}>{intl.get('Settings.ManageWallets')}</span></div>
+            <div className="title" ><span>{intl.get('Settings.ManageWallets')}</span></div>
             {
               this.props.walletlist.map((item, i) =>
                 {
@@ -148,7 +147,6 @@ class ManageWallet extends Component {
               <p className='modalcontent'>{intl.get('Modal.AreYouSureRemoveWallet').replace('{walletname}',this.state.selectedwalletname)}</p>
             </Modal>
 
-          </div>
         </div>
 
         {

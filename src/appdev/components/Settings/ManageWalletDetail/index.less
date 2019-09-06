@@ -25,14 +25,24 @@
   background-color:#24284a;
   border-radius:20px;
 
+
+  .inputEditWalletName{
+    border-radius:50px;
+    color:#000;
+    width:300px;
+    padding:20px;
+  }
+  
   .ant-modal-title{
-    font-weight: 100;
+    font-weight: 600;
+    padding-top:30px;
+    text-align: center;
   }
 
   .ant-modal-body{
     text-align: center;
     padding-bottom:0px;
-    padding-top:50px;
+    padding-top:20px;
   }
 
   .modalcontent{
@@ -90,7 +100,9 @@
   }
 }
 
-.managewalletpanel{
+.managewalletdetailpanel{
+  height:calc(~"100vh - 120px");
+  
   .content{
     width:800px;
     padding-left:50px !important;
@@ -109,14 +121,29 @@
     font-size:1.2em;
     padding-bottom: 20px;
     text-align: left;
+
+    img{
+      cursor: pointer;
+    }
   }
 
   .centerpanel{
     text-align: center;
     width:calc(100vw);
-    height:calc(100vh);
+    height:calc(~"100vh - 120px");
     display: table-cell;
     vertical-align: middle;
+  }
+
+  .removepanelcolor{
+    cursor: pointer;
+    background-color: #3a273a !important;
+    color:#b52e3a  !important;
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  }
+
+  .removepanelcolor:hover{
+    background-color: #5a161c !important;
   }
 
   .panelwrapper{
@@ -125,7 +152,6 @@
     width:600px;
     position: relative;
     margin-bottom:20px;
-    cursor: pointer;
     transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
   }    
 

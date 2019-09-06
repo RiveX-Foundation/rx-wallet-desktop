@@ -69,7 +69,7 @@ class WalletDetail extends Component {
   render() {
     console.log(this.props.selectedWallet);
     return (
-      <div className="walletdetailpanel">
+      <div className="walletdetailpanel fadeInAnim">
         {this.props.selectedWallet.walletname != null &&
           <div>
             <div className="walletname" >{this.props.selectedWallet.walletname}</div>

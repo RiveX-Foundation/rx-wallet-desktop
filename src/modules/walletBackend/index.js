@@ -15,6 +15,7 @@ class WalletBackend extends EventEmitter {
     }
   
     async init(config) {
+
         this.config = Object.assign(configService.getConfig(), config)
         try {
             this.logger.info('start creating walletbackend')
@@ -24,7 +25,7 @@ class WalletBackend extends EventEmitter {
         } catch (e) {
             this.logger.error(e.message || e.stack) 
         }
-        
+
         this.sdk.on('disconnect', this.hdWalletDisconnectHandler)
         this.sdk.on('probeloss', this.hdWalletDisconnectHandler)
         this.logger.info('added event listeners for hardware wallet')

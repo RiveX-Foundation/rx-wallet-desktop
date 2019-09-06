@@ -154,7 +154,7 @@ class TokenTransfer extends Component {
 
   render() {
     return (
-      <div className="tokentransferpanel">
+      <div className="tokentransferpanel fadeInAnim">
         <div className="title" ><span><img onClick={this.back} width="20px" src="../../static/image/icon/back.png" /></span><span style={{marginLeft:"20px"}}>{intl.get('TokenTransfer.SendToken')}</span></div>
         <div className="centerpanel">
           <center>

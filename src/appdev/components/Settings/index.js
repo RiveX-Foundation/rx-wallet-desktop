@@ -6,6 +6,8 @@ import intl from 'react-intl-universal';
 import {NotificationContainer, NotificationManager} from 'react-notifications';
 import ManageWallet from 'components/Settings/ManageWallet';
 import ManageWalletDetail from 'components/Settings/ManageWalletDetail';
+import ExportPrivateKey from 'components/Settings/ExportPrivateKey';
+import Currency from 'components/Settings/Currency';
 import './index.less';
 
 //import { checkCryptographic, checkPhrase } from 'utils/support';
@@ -28,6 +30,10 @@ class Settings extends Component {
       {
         content: <ManageWalletDetail />,
         key:'managewalletdetail'  
+      },
+      {
+        content: <ExportPrivateKey />,
+        key:'exportprivatekey'
     }]
   }
 
@@ -50,10 +56,10 @@ class Settings extends Component {
           <TabPane tab={intl.get('Settings.ManageWallets')} key="1">
             {this.state.walletsteps.find(x => x.key === current).content}
           </TabPane>
-          <TabPane tab="Tab 2" key="2">
-            Content of Tab Pane 2
+          <TabPane tab={intl.get('Settings.Currency')} key="2">
+            <Currency />
           </TabPane>
-          <TabPane tab="Tab 3" key="3">
+          <TabPane tab={intl.get('Settings.Profile')} key="3">
             Content of Tab Pane 3
           </TabPane>
         </Tabs>

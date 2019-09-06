@@ -33,7 +33,9 @@ module.exports = (function() {
                 _callbacks[route][action][cbID] = cb
                 endpoint = endpoint + '#' + cbID
             }
-    
+
+            console.log("REQUEST4 !!");
+
             postMessage({
                 _type: 'renderer_makeRequest',
                 endpoint,
@@ -42,6 +44,7 @@ module.exports = (function() {
         }
 
         function _wndMsgHandler(event) {
+
             let msg
             try {
                 msg = JSON.parse(event.data)
@@ -78,6 +81,8 @@ module.exports = (function() {
                     const [route, action] = endpoint.split('_') 
                 
                     if (_.isEmpty(payload)) {
+                        console.log(route);
+                        console.log(action);
                         ipcRenderer.send(route, action)
                     } else {
                         ipcRenderer.send(route, action, payload)

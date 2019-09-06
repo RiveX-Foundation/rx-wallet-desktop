@@ -86,7 +86,7 @@ class WalletCreation extends Component {
     const { seedphaseel } = this.state;
     console.log(this.state.seedphaseel);
     return (
-      <div className="walletcreationpanel">
+      <div className="walletcreationpanel fadeInAnim">
         <div className="title" ><span><img onClick={this.back} width="20px" src="../../static/image/icon/back.png" /></span><span style={{marginLeft:"20px"}}>{intl.get('Wallet.RecoveryPhrase')}</span></div>
         <div className="centerpanel">
           <center>

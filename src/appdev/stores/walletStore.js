@@ -225,9 +225,23 @@ class walletStore {
     //  this.walletlist[0].publicaddress = sampleacc;
     //  this.walletlist[0].privatekey = sampleprivatekey;
     //}
+    const web3 = new Web3(web3Provider);
+    var abiArray = JSON.parse(fs.readFileSync(__dirname + '/containers/Config/tokenabi.json', 'utf-8'));
+    // Get ERC20 Token contract instance
+    console.log(tokencontract);
+    let contract = new web3.eth.Contract(abiArray, tokencontract);
 
     this.walletlist.forEach(function(wallet){
-      console.log(wallet);
+      
+      web3.eth.call({
+        to: tokencontract,
+        data: contract.methods.balanceOf(wallet.publicaddress).encodeABI()
+      }).then(balance => {  
+        balance = balance / (10**18);
+        wallet.rvx_balance = balance;
+      })
+
+      /*
       var url = cryptobalanceurl.replace("{tokencontract}", tokencontract).replace("{ethaddr}",wallet.publicaddress);
 
       axios({
@@ -245,6 +259,7 @@ class walletStore {
           //handle error
           console.log(response);
       });
+      */
     });
 
     //    getCryptoBalance();
@@ -296,6 +311,12 @@ class walletStore {
         //handle error
         console.log(response);
     });
+  }
+
+  @action changeWalletName(walletpublicaddress,newwalletname){
+    let wallet = this.walletlist.find(x => x.publicaddress == walletpublicaddress);
+    wallet.walletname = newwalletname;
+    localStorage.setItem('wallets',JSON.stringify(this.walletlist));
   }
 
   ParseTrxStatus(status){

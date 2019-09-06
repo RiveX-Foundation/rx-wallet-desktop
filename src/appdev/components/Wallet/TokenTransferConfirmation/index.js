@@ -172,7 +172,7 @@ class TokenTransferConfirmation extends Component {
 
   render() {
     return (
-      <div className="tokentransferconfirmationpanel">
+      <div className="tokentransferconfirmationpanel fadeInAnim">
         <div className="title" ><span><img onClick={this.back} width="20px" src="../../static/image/icon/back.png" /></span><span style={{marginLeft:"20px"}}>{intl.get('TokenTransfer.Confirmation')}</span></div>
         <div className="centerpanel">
           <center>

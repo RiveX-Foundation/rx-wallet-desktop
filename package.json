@@ -1,12 +1,12 @@
 {
-  "name": "wanwallet",
-  "productName": "Wan Wallet",
-  "version": "2.0.0",
-  "description": "Wanchain's new multicoin wallet",
+  "name": "rvxwallet",
+  "productName": "RVX Wallet",
+  "version": "1.0.0",
+  "description": "RiveX Wallet",
   "main": "./build/main.js",
   "author": {
-    "name": "Wanchain Foundation",
-    "email": "dev-team@wanchain.org"
+    "name": "RiveX Research Lab",
+    "email": "dev-team@rivex.org"
   },
   "scripts": {
     "start": "electron .",
@@ -74,6 +74,7 @@
     "qrcode.react": "^0.9.3",
     "rc-tween-one": "^2.4.1",
     "react": "^16.8.4",
+    "react-addons-css-transition-group": "^15.6.2",
     "react-cool-tabs": "^1.1.6",
     "react-dom": "^16.8.4",
     "react-i18next": "^10.6.1",
@@ -82,6 +83,7 @@
     "react-notifications": "^1.4.3",
     "react-router-dom": "^5.0.0",
     "react-sidemenu": "^1.1.0",
+    "react-transition-group": "^4.2.2",
     "trezor-connect": "7.0.2-electron.4",
     "uuid": "^3.3.2",
     "wanchain-js-sdk": "github:wanchain/wanchain-js-sdk#pos-beta",

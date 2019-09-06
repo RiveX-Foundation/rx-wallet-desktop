@@ -23,6 +23,7 @@ class MenuFactoryService extends EventEmitter {
     }
 
     buildMenu(i18n) {
+        /*
         this._logger.debug(`building an ${i18n.language} menu on platform ${process.platform}`)
         if (process.platform === 'darwin') {
             this.menu = Menu.buildFromTemplate(darwinTemplate(i18n))
@@ -34,6 +35,7 @@ class MenuFactoryService extends EventEmitter {
         if (setting.language !== i18n.language) {
             setting.switchLang(i18n.language)
         }
+        */
     }
 }
 

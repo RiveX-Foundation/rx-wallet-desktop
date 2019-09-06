@@ -111,7 +111,7 @@ class WalletKeyInSeed extends Component {
     const _SeedonClick = this.SeedonClick;
     const _RestoreonClick = this.RestoreonClick;
     return (
-      <div className="walletkeyinseedpanel">
+      <div className="walletkeyinseedpanel fadeInAnim">
         <div className="title" ><span><img onClick={this.back} width="20px" src="../../static/image/icon/back.png" /></span><span style={{marginLeft:"20px"}}>{intl.get('Wallet.VerifyRecoveryPhrase')}</span></div>
         <div className="centerpanel">
           <div className="selectedseedpanel" style={{marginTop:"0px"}}>

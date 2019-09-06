@@ -8,9 +8,10 @@ const bip39 = require('bip39');
 import './index.less';
 import { setDefaultWordlist } from 'bip39';
 @inject(stores => ({
-  setCurrent: current => stores.walletStore.setCurrent(current),
+  setCurrent: current => stores.setting.setCurrent(current),
   selectedwalletaddress: stores.setting.selectedwalletaddress,
   removeWallet: publicaddress => stores.walletStore.removeWallet(publicaddress),
+  changeWalletName: (publicaddress,newwalletname) => stores.walletStore.changeWalletName(publicaddress,newwalletname),
   walletlist: stores.walletStore.walletlist,
   language: stores.languageIntl.language
 }))
@@ -19,58 +20,33 @@ import { setDefaultWordlist } from 'bip39';
 class ManageWalletDetail extends Component {
   state = {
     removemodalvisible: false,
+    exportprivatekeymodalvisible: false,
+    changewalletnamemodalvisible: false,
     selectedwalletaddress: "",
-    selectedwalletname: ""
+    selectedwalletname: "",
+    newwalletname: ""
   }
 
-  inputEl1 = null;
-  
   componentDidMount(){
   }
 
   inputChanged = e => {
-    this.setState({ mobilevalue : e.target.value }, () => {
-      this.props.setMobile(this.state.mobilevalue);
-    });
+    this.setState({ newwalletname : e.target.value });
   }
 
-  basicwallet = () => {
-    //this.props.setTotalSignatures(0);
-    //this.props.setTotalOwners(0);
-    //this.props.setWalletEntryNextDirection("basicwallet");
-    //this.props.setCurrent("walletnameentry");
-    //this.props.setWalletType("basicwallet");
-  }
-
-  sharedwallet = () => {
-    this.props.setWalletEntryNextDirection("sharedwallet");
-    this.props.setCurrent("createsharewallet");
-    //this.props.setCurrent("walletnameentry");
-    //this.props.setWalletType("sharedwallet");
-  }
-
-  joinwallet = () => {
-    this.props.setWalletEntryNextDirection("joinwallet");
-    this.props.setCurrent("joinsharewallet");
-    //this.props.setWalletType("sharedwallet");
-  }
-
-  importwallet = () => {
-    //this.props.setTotalSignatures(0);
-    //this.props.setTotalOwners(0);
-    //this.props.setWalletEntryNextDirection("importwallet");
-    //this.props.setCurrent("walletnameentry");
-    //this.props.setWalletType("basicwallet");
-  }
-
-  selectseedphrase = () => {
-    this.props.setCurrent("walletrestorebyseed");
+  exportprivatekey = e => {
+    const walletaddress = e.currentTarget.getAttribute('data-publicaddress');
+    this.setState({selectedwalletaddress:walletaddress,exportprivatekeymodalvisible:true});
   }
 
   removewallet = e => {
     const walletaddress = e.currentTarget.getAttribute('data-publicaddress');
     const walletname = e.currentTarget.getAttribute('data-walletname');
     this.setState({selectedwalletaddress:walletaddress,selectedwalletname:walletname,removemodalvisible:true});
+  }
+
+  editwalletname = e => {
+    this.setState({changewalletnamemodalvisible:true});
   }
 
   handleRemoveWalletOk = () => {
@@ -80,18 +56,36 @@ class ManageWalletDetail extends Component {
     this.props.removeWallet(this.state.selectedwalletaddress);
   }
 
-  handleCancel = () => {
+  handleExportPrivateKeyOk = () => {
     this.setState({
-      removemodalvisible: false
+      exportprivatekeymodalvisible: false
+    }, () => {
+      this.props.setCurrent('exportprivatekey');
     });
   }
 
-  selectprivatekey = () => {
-    this.props.setCurrent("walletrestorebyprivatekey");
+  handleCancel = () => {
+    this.setState({
+      removemodalvisible: false,
+      exportprivatekeymodalvisible: false,
+      changewalletnamemodalvisible: false
+    });
+  }
+
+  handleChangeWalletNameOk = () => {
+    this.setState({
+      changewalletnamemodalvisible: false
+    },() => {
+      this.props.changeWalletName(this.props.selectedwalletaddress,this.state.newwalletname);
+    });
+  }
+
+  handleFocus = e => {
+    e.target.select();
   }
 
   back = () => {
-    this.props.setCurrent("walletdetail");
+    this.props.setCurrent("managewalletlist");
   }
 
   render() {
@@ -99,13 +93,25 @@ class ManageWalletDetail extends Component {
     const wallet = this.props.walletlist.find(x=>x.publicaddress == this.props.selectedwalletaddress);
 
     return (
-      <div className="managewalletpanel">
+      <div className="managewalletdetailpanel fadeInAnim">
         <div className="centerpanel">
           <div className="content">
-            <div className="title" ><span style={{marginLeft:"10px"}}>{intl.get('Settings.ManageWallets')}</span></div>
+            <div className="title"><span><img onClick={this.back} width="20px" src="../../static/image/icon/back.png" /></span><span style={{marginLeft:"10px"}}>{intl.get('Settings.ManageWallets')}</span></div>
 
             <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"10px"}}>
               <div className="panellabel">{wallet.walletname}</div>
+              <div className="panelvalue"><img onClick={this.editwalletname} style={{cursor:"pointer"}} width="20px" src="../../static/image/icon/edit.png" /></div>
+            </div>
+            <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"10px"}}>
+              <div className="panellabel">{wallet.rvx_balance} RVX</div>
+              <div className="panelvalue"></div>
+            </div>
+            <div onClick={this.exportprivatekey} className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"30px"}}>
+              <div className="panellabel">{intl.get('Settings.ExportPrivateKey')}</div>
+              <div className="panelvalue"><img style={{cursor:"pointer"}} width="20px" src="../../static/image/icon/next.png" /></div>
+            </div>
+            <div onClick={this.removewallet} data-walletname={wallet.walletname} data-publicaddress={wallet.publicaddress} className="panelwrapper borderradiusfull spacebetween removepanelcolor" style={{marginBottom:"10px"}}>
+              <div className="panellabel">{intl.get('Modal.RemoveWallet')}</div>
               <div className="panelvalue"></div>
             </div>
 
@@ -116,6 +122,29 @@ class ManageWalletDetail extends Component {
               onCancel={this.handleCancel}
             >
               <p className='modalcontent'>{intl.get('Modal.AreYouSureRemoveWallet').replace('{walletname}',this.state.selectedwalletname)}</p>
+            </Modal>
+
+            <Modal
+              title=""
+              visible={this.state.exportprivatekeymodalvisible}
+              onOk={this.handleExportPrivateKeyOk}
+              onCancel={this.handleCancel}
+            >
+              <p className='modalcontent'>{intl.get('Settings.ExportPrivateKeyDesc')}</p>
+            </Modal>
+
+            <Modal
+              title={intl.get('Settings.EditWalletName')}
+              visible={this.state.changewalletnamemodalvisible}
+              onOk={this.handleChangeWalletNameOk}
+              onCancel={this.handleCancel}
+            >
+              <p className='modalcontent'>
+                <div></div>
+                <div className="panelwrapper borderradiusfull">
+                  <Input className="inputEditWalletName" onChange={this.inputChanged} />
+                </div>
+              </p>
             </Modal>
 
           </div>

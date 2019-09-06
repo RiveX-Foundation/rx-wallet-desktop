@@ -68,7 +68,7 @@ class InputOTP extends Component {
 
   render() {
     return (
-      <div className="textc">
+      <div className="textc fadeInAnim">
         <h1 className="mneCom-h1">{intl.get('Mnemonic.InputPwd.createAWANWallet')}</h1>
         <div className="mne-input">
           <Input ref={(input) => { this.inputEl1 = input; }} className="inputOTP" id="otpvalue1" onChange={this.inputChanged} />

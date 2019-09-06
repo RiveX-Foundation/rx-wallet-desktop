@@ -27,7 +27,7 @@ class SplashBasicWalletCreation extends Component {
 
   render() {
     return (
-      <div className="splashcreatebasicwalletpanel">
+      <div className="splashcreatebasicwalletpanel fadeInAnim">
         <div className="title" ><span><img onClick={this.back} width="20px" src="../../static/image/icon/back.png" /></span><span style={{marginLeft:"20px"}}>{intl.get('Wallet.CreateBasicWallet')}</span></div>
         <div className="centerpanel">
           <div style={{marginBottom:"30px"}}><img src="../../static/image/graphic/splashcreatbasicwallet.png" /></div>

@@ -19,7 +19,7 @@ const logger = Logger.getLogger('main')
 
 // register i18n event handlers
 i18n.on('languageChanged', () => {
-  menuFactoryService.buildMenu(i18n)
+  //menuFactoryService.buildMenu(i18n)
   Windows.broadcast('notification', 'language', setting.language)
 })
 
@@ -118,9 +118,9 @@ async function onReady() {
   await walletBackend.init()
 
   // check updates only if under production mode
-  if (process.env.NODE_ENV === 'production') {
-    updater.start()
-  }
+  //if (process.env.NODE_ENV === 'production') {
+  //  updater.start()
+  //}
 }
 
 // This method will be called when Electron has done everything 

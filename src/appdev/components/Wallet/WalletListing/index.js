@@ -51,7 +51,7 @@ class WalletListing extends Component {
 
   render() {
     return (
-      <div className='walllistingpanel'>
+      <div className='walllistingpanel fadeInAnim'>
         <div className="plussign" onClick={this.createWallet}><img src="../../static/image/icon/plussign.png" /></div>
         <ul>
         {

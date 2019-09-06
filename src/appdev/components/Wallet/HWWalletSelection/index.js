@@ -7,6 +7,12 @@ const bip39 = require('bip39');
 
 import './index.less';
 import { setDefaultWordlist } from 'bip39';
+
+const WAN_PATH = "m/44'/5718350'/0'";
+const WALLET_ID = 0x02;
+const CHAIN_TYPE = 'WAN';
+const LEDGER = 'ledger';
+
 @inject(stores => ({
   setCurrent: current => stores.walletStore.setCurrent(current),
   setselectedimporttype: val => stores.walletStore.setselectedimporttype(val),
@@ -14,7 +20,7 @@ import { setDefaultWordlist } from 'bip39';
 }))
 
 @observer
-class ImportWalletTypeSelection extends Component {
+class HWWalletSelection extends Component {
   state = {
     seedphase : [],
     mnemonic : "",
@@ -47,13 +53,15 @@ class ImportWalletTypeSelection extends Component {
     //this.props.setWalletType("sharedwallet");
   }
 
-  joinwallet = () => {
-    this.props.setWalletEntryNextDirection("joinwallet");
-    this.props.setCurrent("joinsharewallet");
+  trezor = () => {
+    //this.props.setWalletEntryNextDirection("joinwallet");
+    //this.props.setCurrent("joinsharewallet");
     //this.props.setWalletType("sharedwallet");
   }
 
-  importwallet = () => {
+  ledger = () => {
+    //this.props.setWalletType("ledger");
+    //this.props.setCurrent("walletrestorebyseed");
     //this.props.setTotalSignatures(0);
     //this.props.setTotalOwners(0);
     //this.props.setWalletEntryNextDirection("importwallet");
@@ -61,12 +69,46 @@ class ImportWalletTypeSelection extends Component {
     //this.props.setWalletType("basicwallet");
   }
 
-  selectseedphrase = () => {
-    this.props.setCurrent("walletrestorebyseed");
+  selectledger = callback => {
+    console.log("connect to ledger")
+    wand.request('wallet_connectToLedger', {}, (err, val) => {
+      if (err) {
+        console.log("HAHAHA");
+        callback(err, val);
+      } else {
+        console.log("HEHEHE");
+        this.getPublicKey(callback);
+      }
+    });
+    
+    //this.props.setCurrent("walletrestorebyseed");
   }
 
-  selectprivatekey = () => {
-    this.props.setCurrent("walletrestorebyprivatekey");
+  getPublicKey = callback => {
+    console.log("GET PUBLIC KEY");
+    console.log(WALLET_ID);
+    console.log(WAN_PATH);
+    wand.request('wallet_getPubKeyChainId', {
+      walletID: WALLET_ID,
+      path: WAN_PATH
+    }, (err, val) => {
+      this.getPublicKeyDone(err, val);
+    });
+  }
+
+  getPublicKeyDone = (err, result) => {
+    if (err) {
+      message.warn(intl.get('HwWallet.Connect.connectFailed'));
+    } else {
+      console.log(result);
+      //this.publicKey = result.publicKey;
+      //this.chainCode = result.chainCode;
+      //this.deriveAddresses(this.page * this.pageSize, this.pageSize, true);
+    }
+  }
+
+  selecttrezor = () => {
+    //this.props.setCurrent("walletrestorebyprivatekey");
   }
 
   back = () => {
@@ -76,15 +118,15 @@ class ImportWalletTypeSelection extends Component {
   render() {
     return (
       <div className="wallettypeselectionpanel fadeInAnim">
-        <div className="title" ><span style={{marginLeft:"20px"}}>{intl.get('Wallet.IMPORTWALLET')}</span></div>
+        <div className="title" ><span style={{marginLeft:"20px"}}>{intl.get('HWWallet.ConnectHWWallet')}</span></div>
         <div className="centerpanel">
           <center>
-            <div className="panelwrapper borderradiusfull spacebetween" onClick={this.selectseedphrase} style={{marginBottom:"10px"}}>
-              <div className="panelleft"><img src="../../static/image/icon/mnemonicphrase.png" /><span>{intl.get('Wallet.Mnemonicphrase')}</span></div>
+            <div className="panelwrapper borderradiusfull spacebetween" onClick={this.selectledger} style={{marginBottom:"10px"}}>
+              <div className="panelleft"><img src="../../static/image/icon/ledger.png" /><span>{intl.get('HWWallet.Ledger')}</span></div>
               <div className="panelright"><img src="../../static/image/icon/next.png" /></div>
             </div>
-            <div className="panelwrapper borderradiusfull spacebetween" onClick={this.selectprivatekey} style={{marginBottom:"10px"}}>
-              <div className="panelleft"><img src="../../static/image/icon/privatekey.png" /><span>{intl.get('Wallet.PrivateKey')}</span></div>
+            <div className="panelwrapper borderradiusfull spacebetween" onClick={this.selecttrezor} style={{marginBottom:"10px"}}>
+              <div className="panelleft"><img src="../../static/image/icon/trezor.png" /><span>{intl.get('HWWallet.Trezor')}</span></div>
               <div className="panelright"><img src="../../static/image/icon/next.png" /></div>
             </div>
           </center>
@@ -111,4 +153,4 @@ class ImportWalletTypeSelection extends Component {
   }
 }
 
-export default ImportWalletTypeSelection;
+export default HWWalletSelection;
