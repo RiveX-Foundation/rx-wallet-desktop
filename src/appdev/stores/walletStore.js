@@ -4,7 +4,7 @@ import axios from 'axios';
 import sessionstore from './session';
 import { getCryptoBalance } from 'utils/cryptohelper';
 import { getDatefromTimestamp,getUnixTime } from 'utils/helper';
-import { createNotification } from 'utils/helper';
+import { createNotification,convertHexToDecimal } from 'utils/helper';
 import Web3 from 'web3';
 import intl from 'react-intl-universal';
 import { toJS } from "mobx";
@@ -19,9 +19,12 @@ const sampleacc = "0x90aD0aC0E687A2A6C9bc43BA7F373B9e50353084"; //ETH ADDR
 const sampleprivatekey = "068CA0B2F09D8D92B49465C3D8D961C7DAE372BD9D1D4E39132A1A2A11616731"; //ETH PRIVATE KEY
 const etherscanAPIKey = "Z92QFIY7SR8XYJQWHEIRVPNG92VZ274YS4";
 const web3Provider = "https://mainnet.infura.io:443";
-
+const InputDataDecoder = require('ethereum-input-data-decoder');
+const web3 = new Web3(web3Provider);
 var Tx = require('ethereumjs-tx');
 var fs = require('fs');
+var abiArray = JSON.parse(fs.readFileSync(__dirname + '/containers/Config/tokenabi.json', 'utf-8'));
+const decoder = new InputDataDecoder(__dirname + '/containers/Config/tokenabi.json');
 
 
 
@@ -225,8 +228,6 @@ class walletStore {
     //  this.walletlist[0].publicaddress = sampleacc;
     //  this.walletlist[0].privatekey = sampleprivatekey;
     //}
-    const web3 = new Web3(web3Provider);
-    var abiArray = JSON.parse(fs.readFileSync(__dirname + '/containers/Config/tokenabi.json', 'utf-8'));
     // Get ERC20 Token contract instance
     console.log(tokencontract);
     let contract = new web3.eth.Contract(abiArray, tokencontract);
@@ -295,15 +296,29 @@ class walletStore {
     sessionstore.setUserAccountExist(val);
   }
 
-  @action LoadTransactionByAddress(addr){
+  @action async LoadTransactionByAddress(addr){
     axios({
       method: 'get',
       url: 'http://api.etherscan.io/api?module=account&action=txlist&address=' + addr + '&sort=desc&apikey=' + etherscanAPIKey,
       data: {}
     })
-    .then(function (response) {
+    .then(async function (response) {
       console.log(response.data.result);
-      self.trxlist = response.data.result;
+      var rawtrxlist = response.data.result;
+
+      rawtrxlist.map(async (item, i) =>
+      {
+        var tokenvalueinhex = item.input.slice(-32);
+        item.value = convertHexToDecimal(tokenvalueinhex);
+
+        //var hash = item.hash;
+        //var data = await web3.eth.getTransaction(hash);
+        //console.log(hash);
+        //console.log(tokenvalueinhex);
+        //console.log(decoder.decodeData(data.input));
+      });
+
+      self.trxlist = rawtrxlist.filter(x => x.value != 0);
       //handle success
       //self.processUserRegistration(response.data);
     })
@@ -542,10 +557,8 @@ class walletStore {
     //EXECUTE BLOCKCHAIN TRANSFER
     
     if(isexecute){
-      const web3 = new Web3(web3Provider);
       createNotification('info',intl.get('Info.Waiting'));
 
-      var abiArray = JSON.parse(fs.readFileSync(__dirname + '/containers/Config/tokenabi.json', 'utf-8'));
       var count = await web3.eth.getTransactionCount(this.selectedwallet.publicaddress);
       var gasPrices = await this.getCurrentGasPrices();
       console.log(gasPrices);

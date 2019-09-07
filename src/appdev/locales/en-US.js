@@ -268,7 +268,7 @@ const en_US = {
 
     'Transaction.Detail': 'TRANSACTION DETAIL',
     'Transaction.Block' : 'Block',
-    'Transaction.Hash' : 'Block',
+    'Transaction.Hash' : 'Hash',
     'Transaction.From': 'From',
     'Transaction.To': 'To',
     'Transaction.Amount': 'Amount',

@@ -60,71 +60,54 @@ const Step = Steps.Step;
 class Dashboard extends Component {
   state = {
     walletsteps: [{
-      title: intl.get('Register.registerMobile'),
       content: <WalletListing />,
       key:'walletlisting'
     },{
-      title: intl.get('Register.registerMobile'),
       content: <WalletTypeSelection />,
       key:'wallettypeselection'
     },{
-      title: intl.get('Register.registerMobile'),
       content: <WalletNameEntry />,
       key:'walletnameentry'
     },{
-      title: intl.get('Register.registerMobile'),
       content: <WalletCreation />,
       key:'walletcreation'
     },{
-      title: intl.get('Register.registerMobile'),
       content: <WalletKeyInSeed />,
       key:'walletkeyinseed'
     },{
-      title: intl.get('Register.registerMobile'),
       content: <WalletCreated />,
       key:'walletcreated'
     },{
-      title: intl.get('Register.registerMobile'),
       content: <WalletDetail />,
       key:'walletdetail'
     },{
-      title: intl.get('Register.registerMobile'),
       content: <TokenTransfer />,
       key:'tokentransfer'
     },{
-      title: intl.get('Register.registerMobile'),
       content: <WalletRestorebySeed />,
       key:'walletrestorebyseed'
     },{
-      title: intl.get('Register.registerMobile'),
       content: <WalletRestorebyPrivateKey />,
       key:'walletrestorebyprivatekey'
     },{
-      title: intl.get('Register.registerMobile'),
       content: <CreateShareWallet />,
       key:'createsharewallet'
     },{
-      title: intl.get('Register.registerMobile'),
       content: <TokenReceive />,
       key:'tokenreceive'
     },{
-      title: intl.get('Register.registerMobile'),
       content: <JoinShareWallet />,
       key:'joinsharewallet'
     },{
-      title: intl.get('Register.registerMobile'),
       content: <TransactionDetail />,
       key:'transactiondetail'
     },{
-      title: intl.get('Register.registerMobile'),
       content: <TokenTransferConfirmation />,
       key:'tokentransferconfirmation'
     },{
-      title: intl.get('Register.registerMobile'),
       content: <SplashBasicWalletCreation />,
       key:'splashbasicwalletcreation'
     },{
-      title: intl.get('Register.registerMobile'),
       content: <BackupWalletTutorial />,
       key:'backupwallettutorial'
     },{

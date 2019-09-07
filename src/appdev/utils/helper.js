@@ -306,3 +306,63 @@ export const getNameAndIcon = function (address) {
     });
   })
 };
+
+export const convertHexToDecimal = function(val) {
+  var hex = val;
+  hex = hex.replace("0x","");
+  hex = hex.replace("0X","");
+  var x;
+  try {
+    x = new BigNumber(hex, 16);
+  }
+  catch(err) {
+    return 0;
+  }
+  var xx=x.toString(10);
+  return xx;
+  /*
+  document.getElementById("y3").value = x.toString(2);
+  if( x.isInt() && x.gte(0) ) {
+    if( hex.length==2 && x.gte("80", 16) ) { x=x.minus("100",16); }
+    if( hex.length==4 && x.gte("8000", 16) ) { x=x.minus("10000",16); }
+    if( hex.length==8 && x.gte("80000000", 16) ) { x=x.minus("100000000",16); }
+    var t1 = new BigNumber("8000000000000000",16);
+    var t2 = new BigNumber("10000000000000000",16);
+    if( hex.length==16 && x.gte(t1) ) { x=x.minus(t2); }
+    if( hex.length==2 || hex.length==4 || hex.length==8 || hex.length==16 )
+      document.getElementById("y2").value = x.toString(10);
+    else
+      document.getElementById("y2").value = "N/A";
+  }
+  else
+    document.getElementById("y2").value = "N/A";
+  hex=hex.toUpperCase();
+  var txt=hex+" = ";
+  var d,e,minus=false;
+  var len=hex.length;
+  if( hex[0]=="-" ) { txt+="-["; hex=hex.substr(1); len--; minus=true; }
+  var idot=hex.indexOf(".");
+  if( idot>=0 ) { hex=hex.substring(0,idot)+hex.substring(idot+1,len); len--; }
+  else idot=len;
+  etbl = ["\u2070","\u00B9","\u00B2","\u00B3","\u2074","\u2075","\u2076","\u2077","\u2078","\u2079"];
+  for(var i=0; i<len; i++) {
+    d = hex.charCodeAt(i);
+    if( d<58 ) d-=48;
+    else if( d>64 ) d-=55;
+    //e = len-i-1;
+    e = idot-i-1;
+    e=e.toString();
+    txt+="("+d+" \u00D7 16";
+    for(var k=0; k<e.length; k++)
+      if( e[k]=="-" )
+        txt+="\u207B";
+      else
+        txt+=etbl[e[k]];
+    txt+=")";
+    if( i<len-1 ) txt+=" + ";
+  }
+  if( minus ) txt+="]";
+  txt+=" = "+xx;
+  document.getElementById("y4").value = txt;
+  */
+}

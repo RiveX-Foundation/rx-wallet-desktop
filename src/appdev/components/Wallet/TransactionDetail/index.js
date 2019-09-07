@@ -58,7 +58,7 @@ class TransactionDetail extends Component {
           <div className="panelwrapper borderradiusfull" style={{marginBottom:"15px"}}>
             <div className="spacebetween" style={{marginBottom:"10px"}}>
               <div className="panellabel">{intl.get('Transaction.Amount')}</div>
-              <div className="panelvalue">{this.props.trxdetail.value}</div>
+              <div className="panelvalue">{this.props.trxdetail.value} RVX</div>
             </div>
 
             <div className="spacebetween" style={{marginBottom:"15px"}}>
@@ -103,7 +103,7 @@ class TransactionDetail extends Component {
           </div>
           <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"10px"}}>
             <div className="panellabel">{intl.get('Transaction.Amount')}</div>
-            <div className="panelvalue">{this.props.trxdetail.value}</div>
+            <div className="panelvalue">{this.props.trxdetail.value}  RVX</div>
           </div>
           <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"10px"}}>
             <div className="panellabel">{intl.get('Transaction.CreatedOn')}</div>
@@ -157,19 +157,21 @@ class TransactionDetail extends Component {
         <div className="content">
           <center>
             <div>{this.state.layout}</div>
-            <div className="spacebetween" style={{width:"600px"}}>
-              <div className="panelwrapper borderradiusfull signerspanelcolor" style={{marginBottom:"10px",padding:"10px",width:"500px"}}>
-              {
-                
-                this.props.selectedwallet.wallettype == "sharedwallet" &&  
-                this.props.multisigtrxloglist.map(function(item, i){
-                  return (
-                    <div key={i} className="panellabel logname"><span className="multisigtick"><img src="../../static/image/icon/multisigtick.png" /></span>{item.UserName}</div>
-                  )
-                })
-              }
+            { this.props.selectedwallet.wallettype == "sharedwallet" &&
+              <div className="spacebetween" style={{width:"600px"}}>
+                <div className="panelwrapper borderradiusfull signerspanelcolor" style={{marginBottom:"10px",padding:"10px",width:"500px"}}>
+                {
+                  
+                  this.props.selectedwallet.wallettype == "sharedwallet" &&  
+                  this.props.multisigtrxloglist.map(function(item, i){
+                    return (
+                      <div key={i} className="panellabel logname"><span className="multisigtick"><img src="../../static/image/icon/multisigtick.png" /></span>{item.UserName}</div>
+                    )
+                  })
+                }
+                </div>
               </div>
-            </div>
+            }
           </center>
         </div>
       </div>

@@ -130,7 +130,7 @@ class WalletDetail extends Component {
                         data-confirmation={item.confirmation}
                         onClick={this.loadtrxdetail}>
                           <td className="tdcenter tdgrey">{intl.get('STATUS.' + item.status)}</td>
-                          <td className={valueClass}>{plusminusSign} {item.value}</td>
+                          <td className={valueClass}>{plusminusSign} {item.value} RVX</td>
                           <td className="tdcenter tdgrey"><span className="tdellipsis">{item.from}</span></td>
                           <td className="tdcenter tdgrey"><span className="tdellipsis">{item.to}</span></td>
                           <td className="tdcenter tdgrey">{dateobj.getFullYear() + "-" + (dateobj.getMonth()+1).toString().padStart(2, '0') + "-" + dateobj.getDate().toString().padStart(2, '0') + " " + dateobj.getHours().toString().padStart(2, '0') + ":" + dateobj.getMinutes().toString().padStart(2, '0') + ":" + dateobj.getSeconds().toString().padStart(2, '0')}</td>

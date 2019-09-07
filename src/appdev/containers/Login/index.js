@@ -36,7 +36,6 @@ const Step = Steps.Step;
 class Login extends Component {
   state = {
     steps: [{
-      title: intl.get('Register.registerMobile'),
       content: <LoginMobile />,
       key: 'inputmobile'
     }]
