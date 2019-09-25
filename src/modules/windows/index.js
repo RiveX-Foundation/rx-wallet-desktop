@@ -55,6 +55,7 @@ class Window extends EventEmitter {
             this.emit('closed')
         })
 
+            /*
         this.window.on('blur', () => {
             if (this.type === 'main') {
                 if (global.chainManager && !this.isClosed) {
@@ -81,7 +82,9 @@ class Window extends EventEmitter {
                 }
             }
         })
+            */
 
+            /*
         this.window.on('focus', () => {
             if (this.type === 'main') {
                 if (this._timer) {
@@ -115,6 +118,7 @@ class Window extends EventEmitter {
                 }
             }
         })
+        */
 
         this.webContents.once('did-finish-load', () => {
             this.isContentReady = true

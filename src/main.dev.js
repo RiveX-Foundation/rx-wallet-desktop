@@ -19,7 +19,7 @@ const logger = Logger.getLogger('main')
 
 // register i18n event handlers
 i18n.on('languageChanged', () => {
-  //menuFactoryService.buildMenu(i18n)
+  menuFactoryService.buildMenu(i18n)
   Windows.broadcast('notification', 'language', setting.language)
 })
 
@@ -64,26 +64,25 @@ async function createMain () {
   mainWindowState.manage(mainWindow.window)
  
   if (setting.isDev) {
-    //mainWindow.load(`file://${__dirname}/app/index.html`)
-    mainWindow.load(`file://${__dirname}/appdev/index.html`)
+    mainWindow.load(`file://${__dirname}/app/index.html`)
   } else {
     mainWindow.load(`file://${__dirname}/index.html`)
   }
   
   // Open the DevTools under development.
   if (setting.isDev) {
-    mainWindow.webContents.openDevTools()
+    //mainWindow.webContents.openDevTools()
   }
 
   mainWindow.on('ready', () => {
     logger.info('ready to show main window')
     mainWindow.show()
     Windows.broadcast('notification', 'language', setting.language)
-    if (global.chainManager) {
+    //if (global.chainManager) {
       sendReadyNotifications();
-    } else {
-      Windows.broadcast('notification', 'sdk', 'init')
-    }
+    //} else {
+    //  Windows.broadcast('notification', 'sdk', 'init')
+    //}
   })
 
   mainWindow.on('closed', function () {

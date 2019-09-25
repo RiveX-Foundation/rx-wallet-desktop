@@ -16,7 +16,7 @@ const options = {
     mode: 'production',
     
     entry: [
-        path.join(__dirname, '..', '..', 'src', 'appdev/App.js')
+        path.join(__dirname, '..', '..', 'src', 'app/App.js')
     ],
 
     output: {

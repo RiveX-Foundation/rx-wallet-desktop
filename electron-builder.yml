@@ -1,7 +1,7 @@
-appId: org.wallet.wanchain
-copyright: Wanchain Foundation
-productName: Wan Wallet
-artifactName: Wan-Wallet-${version}-${os}.${ext}
+appId: org.pixielabel.wallet
+copyright: PixieLab
+productName: RVX Wallet
+artifactName: RVX-Wallet-${version}-${os}.${ext}
 
 asar: true
 
@@ -15,8 +15,8 @@ files:
 
 publish:
   - provider: github
-    owner: wanchain
-    repo: wan-wallet-desktop
+    owner: pixielab
+    repo: rvx-desktop-wallet
 
 mac:
   category: public.app-category.finance
@@ -41,19 +41,19 @@ linux:
     - appImage
 
 dmg:
-  artifactName: Wan-Wallet-${version}-${os}.dmg
+  artifactName: RVX-Wallet-${version}-${os}.dmg
   sign: false
 
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
   installerIcon: build/assets/icon.ico
-  artifactName: Wan-Wallet-${version}-${os}.exe
+  artifactName: RVX-Wallet-${version}-${os}.exe
 
 deb:
-  artifactName: Wan-Wallet-${version}-${os}.deb
+  artifactName: RVX-Wallet-${version}-${os}.deb
 
 appImage:
-  artifactName: Wan-Wallet-${version}-${os}.AppImage
+  artifactName: RVX-Wallet-${version}-${os}.AppImage
 
 afterSign: scripts/notarize.js

@@ -1,4 +1,4 @@
-# WAN Wallet
+# RVX Wallet
 [![GitHub License][license]][license-url]
 
 This is a desktop wallet
@@ -15,7 +15,7 @@ This is a desktop wallet
 
 ### Initialization
 
-Before install WAN wallet's dependencies, you need to pre-install following tools:
+Before install RVX Wallet's dependencies, you need to pre-install following tools:
 
 Windows :
 * Node.js
@@ -101,7 +101,7 @@ Then, create a file named ".env" in the root directory of the project and add yo
 
 ## License
 
-WAN Wallet is open source software licensed as GPL-3.0
+RVX Wallet is open source software licensed as GPL-3.0
 
 [license]: https://img.shields.io/badge/license-GNUGPL3-blue.svg
 [license-url]:https://github.com/wanchain/wan-wallet-desktop/blob/master/LICENSE

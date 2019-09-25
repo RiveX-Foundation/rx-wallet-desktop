@@ -4,6 +4,8 @@ import setting from '../utils/Settings'
 import { app, shell, dialog } from 'electron'
 import { walletBackend, updater, Windows } from '~/src/modules'
 import menuFactoryService from '~/src/services/menuFactory'
+import intl from 'react-intl-universal';
+import locales from '../../src/app/locales';
 
 export default (i18n) => {
     const menu = []
@@ -93,6 +95,7 @@ export default (i18n) => {
 
     // Language menu
     const languageMenu = LANGUAGES.map((languageCode) => {
+        console.log(languageCode);
         return {
             label: i18n.t(`main.applicationMenu.setting.lang.code.${languageCode}`),
             type: 'radio',
@@ -151,14 +154,7 @@ export default (i18n) => {
             {
                 label: i18n.t('main.applicationMenu.help.web'),
                 click: () => {
-                    shell.openExternal(i18n.t('main.applicationMenu.help.webURL'))
-                }
-            },
-            {
-                label: i18n.t('main.applicationMenu.help.explorer'),
-                click: () => {
-                    const url = setting.network.includes('main') ? 'https://www.wanscan.org' : 'http://testnet.wanscan.org'
-                    shell.openExternal(url)
+                    shell.openExternal('https://www.rivex.io')
                 }
             }
         ]
@@ -168,46 +164,6 @@ export default (i18n) => {
     const developerMenu = {
         label: i18n.t('main.applicationMenu.app.developer.label'),
         submenu: [
-            {
-                label: i18n.t('main.applicationMenu.app.developer.assets.label'),
-                submenu: [
-                    {
-                        label: i18n.t('main.applicationMenu.app.developer.assets.wan.label'),
-                        submenu: [
-                            {   
-                                label: i18n.t('main.applicationMenu.app.developer.assets.wan.import'),
-                                click: () => {
-
-                                    Windows.createModal('importKeyFile', {
-                                        width: 1200, height: 800, alwaysOnTop: true
-                                    })
-                                }
-                            }
-                        ]
-                    }
-                ]
-            },
-            { type: 'separator' },
-            {
-                label: i18n.t('main.applicationMenu.app.developer.data.label'),
-                submenu: [
-                    {
-                        label: i18n.t('main.applicationMenu.app.developer.data.db'),
-                        click: () => {
-                            const dataDir = setting.userDataPath
-                            shell.showItemInFolder(path.join(dataDir, 'Db'))
-                        }
-                    },
-                    {
-                        label: i18n.t('main.applicationMenu.app.developer.data.log'),
-                        click: () => {
-                            const logDir = setting.appLogPath
-                            shell.showItemInFolder(logDir)
-                        }
-                    }
-                ]
-            },
-            { type: 'separator' },
             {
                 label: i18n.t('main.applicationMenu.help.toggle'),
                 accelerator: 'Alt+CommandOrControl+I',

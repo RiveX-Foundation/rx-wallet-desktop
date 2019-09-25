@@ -34,8 +34,6 @@ module.exports = (function() {
                 endpoint = endpoint + '#' + cbID
             }
 
-            console.log("REQUEST4 !!");
-
             postMessage({
                 _type: 'renderer_makeRequest',
                 endpoint,
@@ -81,8 +79,6 @@ module.exports = (function() {
                     const [route, action] = endpoint.split('_') 
                 
                     if (_.isEmpty(payload)) {
-                        console.log(route);
-                        console.log(action);
                         ipcRenderer.send(route, action)
                     } else {
                         ipcRenderer.send(route, action, payload)

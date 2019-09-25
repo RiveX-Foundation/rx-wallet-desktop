@@ -63,7 +63,7 @@ class Settings {
     }
 
     get appName() {
-        return 'WAN Wallet'
+        return 'RVX Wallet'
     }
 
     get cscContractAddr() {

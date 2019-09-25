@@ -15,7 +15,7 @@ export default {
     mode: 'development',
     entry: [
         'react-hot-loader/patch',
-        './src/appdev/App.js',
+        './src/app/App.js',
     ],
     output: {
         path: path.resolve(__dirname, '..', '..', 'dist'),
@@ -105,11 +105,11 @@ export default {
       extensions: ['.js', '.jsx', '.json'],
       alias: {
         static: resolve('static/'),
-        constants: resolve('src/appdev/constants/'),
-        components: resolve('src/appdev/components/'),
-        containers: resolve('src/appdev/containers/'),
-        services: resolve('src/appdev/services/'),
-        utils: resolve('src/appdev/utils/')
+        constants: resolve('src/app/constants/'),
+        components: resolve('src/app/components/'),
+        containers: resolve('src/app/containers/'),
+        services: resolve('src/app/services/'),
+        utils: resolve('src/app/utils/')
       }
     },
     plugins: [

@@ -196,7 +196,7 @@ export default (i18n) => {
     // Language menu
     const languageMenu = LANGUAGES.map((languageCode) => {
         return {
-            label: i18n.t(`main.applicationMenu.setting.lang.code.${languageCode}`),
+            label: i18n.t(`Settings.Lang.${languageCode}`),
             type: 'radio',
             checked: i18n.language === languageCode,
             click: () => {

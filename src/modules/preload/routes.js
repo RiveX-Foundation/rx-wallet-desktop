@@ -7,5 +7,6 @@ module.exports = {
     query: [ 'config', 'getGasPrice' ],
     staking: [ 'getContractAddr', 'info', 'delegateIn', 'delegateOut', 'getContractData', 'insertTransToDB', 'getNameAndIcon', 'posInfo' ],
     setting: ['switchNetwork', 'set', 'get'],
+    system: ['reload'],
     upgrade: ['start']
 }

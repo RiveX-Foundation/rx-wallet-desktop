@@ -1,1 +1,0 @@
-[ { "name": "Mainnet", "shortcode": "mainnet", "contractaddr": "", "contractabi": "" },{ "name": "MYR - Malaysia Ringgit", "shortcode": "MYR", "rate":[{"with":"RVX","rate":0.50}] },{ "name": "CNY - Chinese Yen", "shortcode": "CNY", "rate":[{"with":"RVX","rate":0.70}] } ]

@@ -7,7 +7,7 @@ import { hdUtil, ccUtil } from 'wanchain-js-sdk'
 import Logger from '~/src/utils/Logger'
 import setting from '~/src/utils/Settings'
 import Web3 from 'web3';
-import { dateFormat } from '../appdev/utils/support';
+import { dateFormat } from '../app/utils/support';
 
 const web3 = new Web3();
 import { Windows, walletBackend } from '~/src/modules'
@@ -422,6 +422,7 @@ ipc.on(ROUTE_ACCOUNT, (event, actionUni, payload) => {
     }
 })
 
+/*
 ipc.on(ROUTE_TX, async (event, actionUni, payload) => {
     let ret, err
     const [action, id] = actionUni.split('#')
@@ -470,15 +471,6 @@ ipc.on(ROUTE_TX, async (event, actionUni, payload) => {
             sendResponse([ROUTE_TX, [action, id].join('#')].join('_'), event, { err: err, data: ret })
             break
 
-        /**
-         * tx = {
-         *   from: from,
-         *   to: to,
-         *   value: value,
-         *   data: data,
-         *   gas: defaultGas
-         * }
-         */
         case 'estimateGas':
             try {
                 logger.info('Try to estimate gas: ' + payload.chainType + ',' + JSON.stringify(payload.tx));
@@ -517,6 +509,18 @@ ipc.on(ROUTE_TX, async (event, actionUni, payload) => {
             break;
     }
 })
+*/
+
+ipc.on("system", async (event, actionUni, payload) => {
+    let ret, err
+    const [action, id] = actionUni.split('#')
+    switch (action) {
+        case 'reload':
+            let mainWin = Windows.getByType('main')
+            mainWin.reload();
+            break;
+    }
+});
 
 ipc.on(ROUTE_QUERY, async (event, actionUni, payload) => {
     let ret, err
@@ -557,6 +561,7 @@ ipc.on(ROUTE_QUERY, async (event, actionUni, payload) => {
 
 })
 
+/*
 ipc.on(ROUTE_STAKING, async (event, actionUni, payload) => {
     let ret, err
     const [action, id] = actionUni.split('#')
@@ -760,6 +765,7 @@ ipc.on(ROUTE_STAKING, async (event, actionUni, payload) => {
             break;
     }
 })
+*/
 
 ipc.on(ROUTE_SETTING, async (event, actionUni, payload) => {
     let ret, err, keys, vals = []
@@ -985,6 +991,7 @@ async function buildStakingList(delegateInfo, incentive, epochID, base) {
             }
         }
 
+        /*
         if (epochs.length > 0) {
             epochs.sort((a, b) => { return a - b })
             let days = (epochID - epochs[0]) * (global.slotCount * global.slotTime) / (24 * 3600); // 1 epoch last 2 days.
@@ -1002,6 +1009,7 @@ async function buildStakingList(delegateInfo, incentive, epochID, base) {
         let d = new Date()
         d.setDate(d.getDate() - longestDays);
         base.startFrom = dateFormat(d / 1000);
+        */
     }
 
     return list;
