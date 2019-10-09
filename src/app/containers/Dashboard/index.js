@@ -12,6 +12,7 @@ import WalletCreation from 'components/Wallet/WalletCreation';
 import WalletKeyInSeed from 'components/Wallet/WalletKeyInSeed';
 import WalletCreated from 'components/Wallet/WalletCreated';
 import WalletDetail from 'components/Wallet/WalletDetail';
+import SelectedWallet from 'components/Wallet/SelectedWallet';
 import WalletNameEntry from 'components/Wallet/WalletNameEntry';
 import WalletTypeSelection from 'components/Wallet/WalletTypeSelection';
 import TokenTransfer from 'components/Wallet/TokenTransfer';
@@ -29,7 +30,10 @@ import ImportWalletTypeSelection from 'components/Wallet/ImportWalletTypeSelecti
 import HWWalletSelection from 'components/Wallet/HWWalletSelection';
 import Settings from 'components/Settings';
 import {NotificationContainer, NotificationManager} from 'react-notifications';
-
+import {
+  HashRouter,
+  Route
+} from "react-router-dom";
 //import { checkCryptographic, checkPhrase } from 'utils/support';
 
 const Step = Steps.Step;
@@ -50,7 +54,8 @@ const Step = Steps.Step;
   setCurrent: current => stores.walletStore.setCurrent(current),
   CreateEthAddress: () => stores.walletStore.CreateEthAddress(),
   setUserAccountExist : val => stores.session.setUserAccountExist(val),
-  IsShowWalletListing : stores.session.IsShowWalletListing
+  IsShowWalletListing : stores.session.IsShowWalletListing,
+  GetPrimaryTokenAssetByNetwork: () => stores.walletStore.GetPrimaryTokenAssetByNetwork()
 }))
 
 @observer
@@ -77,6 +82,9 @@ class Dashboard extends Component {
     },{
       content: <WalletDetail />,
       key:'walletdetail'
+    },{
+      content: <SelectedWallet />,
+      key:'selectedwallet'
     },{
       content: <TokenTransfer />,
       key:'tokentransfer'
@@ -128,10 +136,9 @@ class Dashboard extends Component {
     //this.props.CreateEthAddress();
   }
     
-  //  componentDidMount(){
-  //  console.log("TEST");
-  //  console.log(intl.get('Dashboard.Title'));
-  //}
+   componentDidMount(){
+    this.props.GetPrimaryTokenAssetByNetwork();
+  }
 
   render() {
     const { walletsteps } = this.state;
@@ -141,16 +148,16 @@ class Dashboard extends Component {
       current == "walletlisting" || 
       current == "tokentransfer" || 
       current == "transactiondetail" || 
-      current == "walletdetail"
+      current == "walletdetail" ||
+      current == "selectedwallet"
     );
-
     return (
       <Row className="container">
         <Col className="nav-left">
           <SideBar path={'/'}/>
         </Col>
         {IsDoubleColumn && 
-          <div>
+          <div className="parent">
             <Col className="walletcol">
               <WalletListing />
             </Col>
@@ -171,8 +178,50 @@ class Dashboard extends Component {
         }
         <NotificationContainer/>
       </Row>
+      // <Row className="container">
+      //   <Col className="nav-left">
+      //     <SideBar path={'/'}/>
+      //   </Col>
+      //   {IsDoubleColumn && 
+      //     <div>
+      //       <Col className="walletcol">
+      //         <WalletListing />
+      //       </Col>
+      //       <Col className="main">
+      //         <Row>
+      //           <HashRouter>
+      //               <Route path="/" exact component={ WalletDetail } />
+      //               {
+      //                 walletsteps.map((route,index)=>{
+      //                   return(
+      //                     <Route key={index} path={`/${route.key}`} component={ () => route.content} />
+      //                   )
+      //                 })
+      //               }
+      //           </HashRouter>
+      //         </Row>
+      //       </Col>
+      //     </div>
+      //   }
 
-
+      //   {!IsDoubleColumn &&
+      //     <Col className="fullmain">
+      //       <Row>
+      //         <HashRouter>
+      //             <Route path="/" exact component={ WalletDetail } />
+      //             {
+      //               walletsteps.map((route,index)=>{
+      //                 return(
+      //                   <Route key={index} path={`/${route.key}`} component={ () => route.content} />
+      //                 )
+      //               })
+      //             }
+      //         </HashRouter>
+      //       </Row>
+      //     </Col>
+      //   }
+      //   <NotificationContainer/>
+      // </Row>
     );
   }
 }

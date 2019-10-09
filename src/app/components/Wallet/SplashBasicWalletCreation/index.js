@@ -19,7 +19,7 @@ class SplashBasicWalletCreation extends Component {
   }
 
   back = () => {
-    this.props.setCurrent("walletdetail");
+    this.props.setCurrent("selectedwallet");
   }
 
   create = () => {
@@ -32,7 +32,7 @@ class SplashBasicWalletCreation extends Component {
       <div className="splashcreatebasicwalletpanel fadeInAnim">
         <div className="title" ><span><img onClick={this.back} width="20px" src={buttonback} /></span><span style={{marginLeft:"20px"}}>{intl.get('Wallet.CreateBasicWallet')}</span></div>
         <div className="centerpanel">
-          <div style={{marginBottom:"30px"}}><img src={splashcreatbasicwallet} /></div>
+          <div style={{marginBottom:"30px"}}><img src={splashcreatbasicwallet} width="350px"/></div>
           <Button className="curvebutton" onClick={this.create}>{intl.get('Wallet.CREATE')}</Button>
           <div className="hint">{intl.get('Wallet.newbasicwallet')}</div>
         </div>

@@ -3,6 +3,7 @@ import { Input, Radio, Icon, Tooltip, Button } from 'antd';
 import { observer, inject, computed } from 'mobx-react';
 import intl from 'react-intl-universal';
 import buttonplussign from 'static/image/icon/plussign.png';
+import { numberWithCommas } from 'utils/helper';
 import './index.less';
 
 
@@ -13,13 +14,28 @@ import './index.less';
   setSelectedWallet : publicaddress => stores.walletStore.setSelectedWallet(publicaddress),
   setCurrent: current => stores.walletStore.setCurrent(current),
   language: stores.languageIntl.language,
-  selectedwalletlist: stores.walletStore.selectedwalletlist
+  selectedwalletlist: stores.walletStore.selectedwalletlist,
+  convertrate:stores.walletStore.convertrate
 }))
 
 @observer
 class WalletListing extends Component {
-    componentDidMount(){
+  constructor(props){
+    super(props);
+    this.state = {
+      selectedwalletaddress:''
+    }
+  }
+
+  componentDidMount(){
     this.loadwallet();
+  }
+
+  componentWillReceiveProps(newProps){
+    // console.log(JSON.stringify(newProps.selectedwalletlist));
+    if(newProps.selectedwalletlist.length > 0){
+      this.selectWalletOnLoad(newProps.selectedwalletlist[0].publicaddress);
+    }
   }
   
   inputChanged = e => {
@@ -45,8 +61,26 @@ class WalletListing extends Component {
 
   selectWallet = e => {
     var walletpublicaddress = e.currentTarget.getAttribute("data-publicaddress");
-    this.props.setSelectedWallet(walletpublicaddress);
-    this.props.setCurrent("walletdetail");
+    this.selectWalletOnLoad(walletpublicaddress);
+  }
+
+  selectWalletOnLoad = (walletpublicaddress) =>{
+    this.setState({
+      selectedwalletaddress:walletpublicaddress
+    },()=>{
+      this.props.setSelectedWallet(walletpublicaddress);
+      this.props.setCurrent("selectedwallet");
+    });
+  }
+
+  _getTotalWorth(selectedWallet){
+    var totalworth = 0;
+    if(selectedWallet.tokenassetlist.length > 0){
+      selectedWallet.tokenassetlist.map((asset,index)=>{
+        totalworth += asset.TokenBalance;
+      })
+    }
+    return `$${numberWithCommas(parseFloat(!isNaN(this.props.convertrate * totalworth) ? this.props.convertrate * totalworth : 0),true)}`;
   }
 
   render() {
@@ -58,9 +92,10 @@ class WalletListing extends Component {
           this.props.selectedwalletlist.map((item, i) =>
             {
               return (
-                <li key={i} onClick={this.selectWallet} data-publicaddress={item.publicaddress}>
+                <li key={i} onClick={this.selectWallet} className={this.state.selectedwalletaddress == item.publicaddress ? `active` : null} data-publicaddress={item.publicaddress}>
                   <div className='walletname'>{item.walletname}</div>
-                  <div className='walletbalance'>{item.rvx_balance} RVX</div>
+                  {/* <div className='walletbalance'>{item.rvx_balance} RVX</div> */}
+                  <div className='walletbalance'>{this._getTotalWorth(item)} USD</div>
                 </li> 
               )
             }

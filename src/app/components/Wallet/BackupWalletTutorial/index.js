@@ -32,7 +32,7 @@ class BackupWalletTutorial extends Component {
       <div className="splashcreatebasicwalletpanel fadeInAnim">
         <div className="title" ><span><img onClick={this.back} width="20px" src={buttonback} /></span><span style={{marginLeft:"20px"}}>{intl.get('Wallet.BackupWallet')}</span></div>
         <div className="centerpanel">
-          <div style={{marginBottom:"30px"}}><img src={buttonartboard3} /></div>
+          <div style={{marginBottom:"30px"}}><img src={buttonartboard3} width="350px" /></div>
           <div className="guidelabel">
             <ul>
               <li>{intl.get('BackupTutorial.guide1')}</li>

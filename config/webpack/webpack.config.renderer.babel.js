@@ -55,7 +55,8 @@ export default {
                     modules: false,
                     modifyVars: {
                         "@text-color": "#fff",
-                        "@nav-left-bg": "#151625",
+                        "@nav-left-bg": "#272A53",
+                        // "@nav-left-bg": "#151625",
                         "@content-right-bg": "#1A1B2C",
                         "@table-header-color": "#fff",
                         "@table-row-hover-bg": "#1F2034"

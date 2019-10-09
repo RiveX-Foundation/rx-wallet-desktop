@@ -11,7 +11,7 @@ let emitterHandlers = {};
       //});
 
       /*
-    axios.post('http://rvx.boxybanana.com/api/auth/RegisterMobileOTP', {
+    axios.post('http://rvxadmin.boxybanana.com/api/auth/RegisterMobileOTP', {
       mobile: "131313"
     })
     .then(function (response) {
@@ -367,4 +367,16 @@ export const convertHexToDecimal = function(val) {
   txt+=" = "+xx;
   document.getElementById("y4").value = txt;
   */
+}
+
+export const isNullOrEmpty = (value) => {
+  return (value == null || value == "") ? true : false;
+}
+
+export const toFixedNoRounding = (str,n) =>{
+  return str.toFixed(n);
+}
+
+export const numberWithCommas = (x,fixed) =>{
+  return fixed? x.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }

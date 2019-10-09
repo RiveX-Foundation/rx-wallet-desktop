@@ -148,6 +148,7 @@ class InputMobile extends Component {
             </div>
           </div>
           <div className="buttonpanel">
+            <div className="loginbutton" onClick={this.login}>{intl.get('Register.BackToLogin')}</div>
             { this.props.UserAccountExist && 
               <div className="loginbutton" onClick={this.login}>{intl.get('Register.BackToLogin')}</div>
             }

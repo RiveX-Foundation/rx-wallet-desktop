@@ -3,7 +3,7 @@ import { inject } from 'mobx-react';
 import axios from 'axios';
 import sessionstore from './session';
 import { getCryptoBalance } from 'utils/cryptohelper';
-import { getDatefromTimestamp,getUnixTime } from 'utils/helper';
+import { getDatefromTimestamp,getUnixTime, isNullOrEmpty } from 'utils/helper';
 import { createNotification,convertHexToDecimal } from 'utils/helper';
 import Web3 from 'web3';
 import intl from 'react-intl-universal';
@@ -29,7 +29,7 @@ var abiArray = tokenabi;//JSON.parse(fs.readFileSync(__dirname + '/containers/Co
 
 class walletStore {
   @observable walletlist = [];
-  @observable current = "walletdetail";
+  @observable current = "selectedwallet";
   @observable walletname = "";
   @observable seedphase = [];
   @observable seedphaseinstring = "";
@@ -55,7 +55,12 @@ class walletStore {
   @observable selectedimporttype = "";
   @observable restoreseedphrase = "";
   @observable restoreprivatekey = "";
-  
+  @observable TokenSparkLine = [];
+  @observable primaryTokenAsset = [];
+  @observable convertrate = 1.34;
+  @observable selectedassettokenlist = [];
+  @observable totalassetworth = 0;
+  @observable selectedTokenAsset = {};
 
   userstore = null;
   networkstore = null;
@@ -84,6 +89,7 @@ class walletStore {
   }
 
   @computed get selectedwalletlist(){
+    // console.log("selectedwalletlist", JSON.stringify(this.walletlist));
     var walletlist = this.walletlist.filter(x => x.wallettype == this.selectedwallettype);
     if(walletlist == null) walletlist = [];
     return walletlist;
@@ -211,8 +217,9 @@ class walletStore {
 
   @action setSelectedWallet(publicaddress){
     this.selectedwallet = this.walletlist.find(x=>x.publicaddress == publicaddress);
-    this.LoadTransactionByAddress(this.selectedwallet.publicaddress);
-    this.wsGetMultiSigTrx(this.selectedwallet.publicaddress);
+    // this.LoadTransactionByAddress(this.selectedwallet.publicaddress);
+    // this.wsGetMultiSigTrx(this.selectedwallet.publicaddress);
+    this.loadTokenAssetList();
     //this.current = "walletdetail";
   }
 
@@ -306,6 +313,7 @@ class walletStore {
 
   @action setCurrent(val) {
     this.current = val;
+    // window.location.hash = `/${val}`;
   }
 
   @action setEmail(val) {
@@ -316,6 +324,10 @@ class walletStore {
     sessionstore.setUserAccountExist(val);
   }
 
+  @action setselectedTokenAsset(tokenasset){
+    this.selectedTokenAsset = tokenasset;
+  }
+
   @action async LoadTransactionByAddress(addr){
     axios({
       method: 'get',
@@ -323,13 +335,15 @@ class walletStore {
       data: {}
     })
     .then(async function (response) {
-      console.log(response.data.result);
+      console.log("LoadTransactionByAddress", response.data.result);
       var rawtrxlist = response.data.result;
 
       rawtrxlist.map(async (item, i) =>
       {
         var tokenvalueinhex = item.input.slice(-32);
-        item.value = convertHexToDecimal(tokenvalueinhex);
+        if(self.selectedTokenAsset.TokenType != "eth"){
+          item.value = convertHexToDecimal(tokenvalueinhex);
+        }
 
         //var hash = item.hash;
         //var data = await web3.eth.getTransaction(hash);
@@ -370,6 +384,16 @@ class walletStore {
 
   }
 
+  // @computed get setTokenSparkLine(sparklinelist){
+  //   let newsparkline = [];
+  //   if(sparklinelist.length > 0){
+  //     sparklinelist.map((item,index)=>{
+  //       newsparkline.push(item.value);
+  //     })
+  //   }
+  //   return newsparkline;
+  // }
+
   wsRequestTransferOTP(){
     var bodyFormData = new FormData();
     bodyFormData.set('token', this.userstore.token);
@@ -379,7 +403,7 @@ class walletStore {
 
     axios({
       method: 'post',
-      url: 'http://rvx.boxybanana.com/api/auth/RequestTransferTokenOTP',
+      url: 'http://rvxadmin.boxybanana.com/api/auth/RequestTransferTokenOTP',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
@@ -409,7 +433,9 @@ class walletStore {
       wallettype : wallettype,
       totalowners: parseInt(totalowners),
       totalsignatures: parseInt(totalsignatures),
-      holders: holders
+      holders: holders,
+      tokenassetlist:this.primaryTokenAsset,
+      isCloud:false
     };
 
     var localwallets = [];
@@ -522,7 +548,7 @@ class walletStore {
 
     axios({
       method: 'post',
-      url: 'http://rvx.boxybanana.com/api/multisig/CreateTrx',
+      url: 'http://rvxadmin.boxybanana.com/api/multisig/CreateTrx',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
@@ -544,6 +570,7 @@ class walletStore {
   }
 
   wsGetMultiSigTrx(walletpublicaddress){
+    // console.log("wsGetMultiSigTrx")
     var bodyFormData = new FormData();
     bodyFormData.set('walletpublicaddress', walletpublicaddress);
     bodyFormData.set('token', this.userstore.token);
@@ -551,7 +578,7 @@ class walletStore {
     
     axios({
       method: 'post',
-      url: 'http://rvx.boxybanana.com/api/multisig/GetMultiSigTrxByWalletPublicAddress',
+      url: 'http://rvxadmin.boxybanana.com/api/multisig/GetMultiSigTrxByWalletPublicAddress',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
@@ -640,7 +667,7 @@ class walletStore {
 
     axios({
       method: 'post',
-      url: 'http://rvx.boxybanana.com/api/multisig/ApproveTrx',
+      url: 'http://rvxadmin.boxybanana.com/api/multisig/ApproveTrx',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
@@ -670,7 +697,7 @@ class walletStore {
     bodyFormData.set('network', this.networkstore.selectednetwork.shortcode);
     axios({
       method: 'post',
-      url: 'http://rvx.boxybanana.com/api/multisig/GetMultiSigTrxLogByTrxID',
+      url: 'http://rvxadmin.boxybanana.com/api/multisig/GetMultiSigTrxLogByTrxID',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
@@ -701,7 +728,7 @@ class walletStore {
     
     axios({
       method: 'post',
-      url: 'http://rvx.boxybanana.com/api/multisig/CreateMultiSigWallet',
+      url: 'http://rvxadmin.boxybanana.com/api/multisig/CreateMultiSigWallet',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
@@ -723,7 +750,7 @@ class walletStore {
     
     axios({
       method: 'post',
-      url: 'http://rvx.boxybanana.com/api/multisig/JoinMultiSigWallet',
+      url: 'http://rvxadmin.boxybanana.com/api/multisig/JoinMultiSigWallet',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
@@ -747,6 +774,102 @@ class walletStore {
     });
   }
 
+  getTokenSparkLineByAssetCode(crypto){
+    var bodyFormData = new FormData();
+    bodyFormData.set('crypto', crypto);
+    bodyFormData.set('token', this.userstore.token);
+
+    axios({
+      method: 'post',
+      url: 'http://rvxadmin.boxybanana.com/api/token/GetTokenSparkLine',
+      data: bodyFormData,
+      config: { headers: {'Content-Type': 'multipart/form-data' }}
+    })
+    .then(function (response) {
+        //handle success //response.sparkline.sparkline
+        // console.log(response);
+        if(response.data.status == 200){
+          // console.log("SUCCESS", response.data);
+          let newsparkline = [];
+          let sparklinelist = response.data.sparkline.sparkline;
+          self.TokenSparkLine = sparklinelist;
+          // if(sparklinelist.length > 0){
+          //   sparklinelist.map((item,index)=>{
+          //     newsparkline.push(item.value);
+          //   })
+          //   self.TokenSparkLine = newsparkline;
+          //   console.log("getTokenSparkLineByAssetCode", self.TokenSparkLine);
+          // }
+
+        }else{
+          createNotification('error',intl.get('Error.' + response.data.msg));
+        }
+        console.log(response);
+    })
+    .catch(function (response) {
+        //handle error
+        createNotification('error','Error.' + intl.get(response.data.msg));
+        console.log(response);
+    });
+  }
+
+  GetPrimaryTokenAssetByNetwork(){
+    var bodyFormData = new FormData();
+    bodyFormData.set('token', this.userstore.token);
+    bodyFormData.set('network', this.networkstore.selectednetwork.shortcode);
+
+    axios({
+      method: 'post',
+      url: 'http://rvxadmin.boxybanana.com/api/token/GetPrimaryTokenAssetByNetwork',
+      data: bodyFormData,
+      config: { headers: {'Content-Type': 'multipart/form-data' }}
+    })
+    .then(function (response) {
+        if(response.data.status == 200){
+          self.primaryTokenAsset = response.data.tokenassetlist;
+        }else{
+          createNotification('error',intl.get('Error.' + response.data.msg));
+        }
+        console.log("GetPrimaryTokenAssetByNetwork", response);
+    })
+    .catch(function (response) {
+        //handle error
+        createNotification('error','Error.' + intl.get(response.data.msg));
+        console.log(response);
+    });
+  }
+
+  loadTokenAssetList = () =>{
+    this.selectedassettokenlist = [];
+    this.totalassetworth = 0;
+    const web3 = new Web3(this.networkstore.selectednetwork.infuraendpoint);
+    this.selectedwallet.tokenassetlist.map(async(tokenitem,index) =>{
+      // console.log("tokenitem.TokenType" , tokenitem.TokenType)
+      if(tokenitem.TokenType == "eth"){
+        web3.eth.getBalance(this.selectedwallet.publicaddress).then(balance => { 
+          balance = balance / (10**18);
+          tokenitem.TokenBalance = balance;
+          self.totalassetworth += (this.convertrate * balance);
+        })
+      }else{
+        var TokenInfo = tokenitem.TokenInfoList.find(x => x.Network == this.networkstore.selectednetwork.shortcode);
+        TokenInfo = toJS(TokenInfo);
+        var tokenAbiArray = JSON.parse(TokenInfo.AbiArray);
+        // Get ERC20 Token contract instance
+        let contract = new web3.eth.Contract(tokenAbiArray, TokenInfo.ContractAddress);
+        web3.eth.call({
+          to: !isNullOrEmpty(TokenInfo.ContractAddress) ? TokenInfo.ContractAddress : null,
+          data: contract.methods.balanceOf(this.selectedwallet.publicaddress).encodeABI()
+        }).then(balance => {  
+          balance = balance / (10**18);
+          tokenitem.TokenBalance = balance;
+          self.totalassetworth += (this.convertrate * balance);
+        });
+        self.selectedassettokenlist.push(tokenitem);
+      }
+    });
+    console.log(JSON.stringify(self.selectedassettokenlist));
+  }
 }
 
 const self = new walletStore();

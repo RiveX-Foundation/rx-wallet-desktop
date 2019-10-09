@@ -31,6 +31,7 @@ class WalletKeyInSeed extends Component {
   }
 
   componentDidMount(){
+    // console.log("TESTING")
     this.get12SeedPhase();
   }
 
@@ -41,7 +42,8 @@ class WalletKeyInSeed extends Component {
   }
 
   get12SeedPhase = () => {
-    this.setState({originalseedphase: Array.from(this.props.seedphase) });
+    console.log(this.props.seedphase);
+    this.setState({originalseedphase: this.shuffle(Array.from(this.props.seedphase))});
   }
 
   SeedonClick = e => {
@@ -94,8 +96,8 @@ class WalletKeyInSeed extends Component {
   }
 
   validateseedphase = () => {
-    console.log(toJS(this.props.seedphase));
-    console.log(this.state.selectedseedphase);
+    // console.log(toJS(this.props.seedphase));
+    // console.log(this.state.selectedseedphase);
     if(JSON.stringify(toJS(this.props.seedphase)) == JSON.stringify(this.state.selectedseedphase)){
       this.setState({nextbuttonstyle : {display:"inline-block"}});
     }else{
@@ -107,6 +109,20 @@ class WalletKeyInSeed extends Component {
     this.props.setCurrent("walletcreation");
   }
 
+  shuffle = (arr) =>{
+    var i,
+        j,
+        temp;
+    for (i = arr.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }   
+
+    return arr;
+  };
+
   render() {
     const { selectedseedphase,originalseedphase,nextbuttonstyle } = this.state;
     const _SeedonClick = this.SeedonClick;
@@ -115,7 +131,7 @@ class WalletKeyInSeed extends Component {
       <div className="walletkeyinseedpanel fadeInAnim">
         <div className="title" ><span><img onClick={this.back} width="20px" src={buttonback} /></span><span style={{marginLeft:"20px"}}>{intl.get('Wallet.VerifyRecoveryPhrase')}</span></div>
         <div className="centerpanel">
-          <div className="selectedseedpanel" style={{marginTop:"0px"}}>
+          <div className="selectedseedpanel">
             {
               selectedseedphase.map(function(item, i){
                 return <li key={i} data-val={item} onClick={_RestoreonClick}>{item}</li>
@@ -123,7 +139,7 @@ class WalletKeyInSeed extends Component {
             }
           </div>
           <div className="buttonpanel"><Button className="curvebutton" style={nextbuttonstyle} onClick={this.next} >{intl.get('Wallet.Confirm')}</Button></div>
-          <div className="originalseedpanel" style={{height:"260px",width:"600px",display:"inline-block"}}>
+          <div className="originalseedpanel" style={{height:"200px",width:"600px",display:"inline-block",marginTop:"30px"}}>
             {
               originalseedphase.map(function(item, i){
                 return <li key={i} data-val={item} onClick={_SeedonClick}>{item}</li>

@@ -4,7 +4,7 @@ import Logger from '~/src/utils/Logger'
 import EventEmitter from 'events'
 import setting from '~/src/utils/Settings'
 import desktopIdle from 'desktop-idle'
-
+var path = require('path');
 const logger = Logger.getLogger('Windows')
 
 class Window extends EventEmitter {

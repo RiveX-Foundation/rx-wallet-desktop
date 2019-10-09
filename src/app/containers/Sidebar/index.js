@@ -27,7 +27,8 @@ const SubMenu = Menu.SubMenu;
   setCurrent: current => stores.walletStore.setCurrent(current),
   logout: () => stores.session.logout(),
   clearSelectedWallet: () => stores.walletStore.clearSelectedWallet(),
-  setselectedwallettype: wallettype => stores.walletStore.setselectedwallettype(wallettype)
+  setselectedwallettype: wallettype => stores.walletStore.setselectedwallettype(wallettype),
+  selectedwallettype:stores.walletStore.selectedwallettype
 }))
 
 @observer
@@ -35,7 +36,7 @@ class Sidebar extends Component {
 
   state = {
     selectedwallettype : "basicwallet",
-    selectedtab : "basicwallet"
+    selectedtab : "wallet"
   }
 
   renderMenu = data => {
@@ -64,7 +65,7 @@ class Sidebar extends Component {
     this.setState({selectedwallettype:wallettype,selectedtab:"wallet"},function(){
       that.props.clearSelectedWallet();
       that.props.setselectedwallettype(wallettype);
-      that.props.setCurrent('walletdetail');
+      that.props.setCurrent('selectedwallet');
     })
   }
 
@@ -72,7 +73,7 @@ class Sidebar extends Component {
     var that = this;    
     this.setState({selectedwallettype:"importwallet",selectedtab:"wallet"},function(){
       that.props.clearSelectedWallet();
-      that.props.setselectedwallettype("importwallet");
+      that.props.setselectedwallettype("basicwallet");
       that.props.setCurrent('importwallettypeselection');
     })
   }
@@ -81,7 +82,7 @@ class Sidebar extends Component {
     var that = this;    
     this.setState({selectedwallettype:"hwwallet",selectedtab:"wallet"},function(){
       that.props.clearSelectedWallet();
-      that.props.setselectedwallettype("hwwallet");
+      that.props.setselectedwallettype("basicwallet");
       that.props.setCurrent('hwwalletselection');
     })
   }

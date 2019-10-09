@@ -71,7 +71,7 @@ class WalletNameEntry extends Component {
       <div className="walletnameentrypanel fadeInAnim">
         <div className="title" ><span><img onClick={this.back} width="20px" src={buttonback} /></span><span style={{marginLeft:"20px"}}>{intl.get('Wallet.KeyInWalletName')}</span></div>
         <div className="centerpanel">
-          <div style={{marginBottom:"30px"}}><img src={buttonartboard2} /></div>
+          <div style={{marginBottom:"30px"}}><img src={buttonartboard2} width="350px" /></div>
           <div className="subtitle">{intl.get('Wallet.walletname')}</div>
           <div className="panelwrapper borderradiusfull">
             <Input className="inputTransparent" onChange={this.onChange} />

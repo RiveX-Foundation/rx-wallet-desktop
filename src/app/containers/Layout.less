@@ -1,4 +1,5 @@
-@nav-left-bg: #151625!important;
+@nav-left-bg: #272A53!important;
+// @nav-left-bg: #151625!important;
 @content-right-bg: #1A1B2C!important;
 @nav-width: 230px;
 @wallet-width: 190px;
@@ -14,8 +15,11 @@
   background-color: @nav-left-bg!important;
 }
 .container {
+  .parent{
+    background-image: linear-gradient(to bottom, #1c1f46, #171e3f, #141d37, #131b30, #121928);
+  }
   .main {
-    background-color: @content-right-bg;
+    // background-color: @content-right-bg;
     margin-left: @nav-width+@wallet-width;
     height: calc(100vh);
     overflow: auto;
@@ -27,7 +31,7 @@
     overflow: auto;
   }
   .walletcol {
-    background-color: @content-right-bg;
+    // background-color: @content-right-bg;
     width: @wallet-width;
     height: calc(100vh);
     overflow: auto;

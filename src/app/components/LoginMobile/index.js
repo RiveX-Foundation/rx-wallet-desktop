@@ -38,6 +38,13 @@ class LoginMobile extends Component {
     }
   }
 
+  onKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      this.login();
+    }
+  }
+
+
   componentDidMount(){
 
     this.props.setCountryCode("+60");
@@ -155,7 +162,7 @@ class LoginMobile extends Component {
             </div>
 
             <div className="panelwrapper borderradiusfull loginpanel">
-              <Input id="loginpassword" type="password" placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} />
+              <Input id="loginpassword" type="password" placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
             </div>
           </center>
           <div className="buttonpanel">

@@ -9,7 +9,7 @@ let emitterHandlers = {};
       //});
 
       /*
-    axios.post('http://rvx.boxybanana.com/api/auth/RegisterMobileOTP', {
+    axios.post('http://rvxadmin.boxybanana.com/api/auth/RegisterMobileOTP', {
       mobile: "131313"
     })
     .then(function (response) {

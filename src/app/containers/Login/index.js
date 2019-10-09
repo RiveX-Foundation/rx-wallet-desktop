@@ -6,6 +6,7 @@ import intl from 'react-intl-universal';
 import {NotificationContainer, NotificationManager} from 'react-notifications';
 import './index.less';
 import LoginMobile from 'components/LoginMobile';
+import { isNullOrEmpty } from '../../utils/helper';
 
 //import { checkCryptographic, checkPhrase } from 'utils/support';
 
@@ -24,12 +25,17 @@ const Step = Steps.Step;
   current: stores.userRegistration.current,
   mobile : stores.userRegistration.mobile,
   otp : stores.userRegistration.otp,
-  setCurrent: val => stores.userRegistration.setCurrent(val),
+  setCurrent: val => stores.walletStore.setCurrent(val),
+  setselectedwallettype:val => stores.walletStore.setselectedwallettype(val),
   setHasAcc : val => stores.session.setHasAcc(val),
   setUserAccountExist : val => stores.session.setUserAccountExist(val),
   wsMobileRegistration : () => stores.userRegistration.wsMobileRegistration(),
   wsUserRegistration : () => stores.userRegistration.wsUserRegistration(),
-  wsOTPVerification : type => stores.userRegistration.wsOTPVerification(type)
+  wsOTPVerification : type => stores.userRegistration.wsOTPVerification(type),
+  setIsLogin: status => stores.userRegistration.setIsLogin(status),
+  setUserAccountExist: status => stores.userRegistration.setUserAccountExist(status),
+  setToken: token => stores.userRegistration.setToken(token),
+  setUserObject: userObj => stores.userRegistration.setUserObject(userObj)
 }))
 
 @observer
@@ -43,6 +49,24 @@ class Login extends Component {
 
   constructor(props){
     super(props);
+  }
+
+  componentDidMount(){
+    this.checkUserExist();
+  }
+
+  checkUserExist = () =>{
+    let userinfo = localStorage.getItem('user');
+    if(!isNullOrEmpty(userinfo)){
+    //  console.log("userinfo", JSON.parse(userinfo));
+     let simpleUser = JSON.parse(userinfo);
+     this.props.setUserObject(simpleUser.userid,simpleUser.mobile,simpleUser.name,simpleUser.email,simpleUser.loginid);
+     this.props.setIsLogin(true);
+     this.props.setUserAccountExist(true);
+     this.props.setToken(simpleUser.logintoken);
+     this.props.setselectedwallettype('basicwallet');
+     this.props.setCurrent('selectedwallet');
+    }
   }
 
   next = async () => {

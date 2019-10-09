@@ -43,7 +43,7 @@
   .walletdetailpanel{
     .walletname{
       font-size:1.5em;
-      margin-bottom:30px;
+      // margin-bottom:30px;
       padding: 20px;
     }
 
@@ -52,7 +52,9 @@
     }
 
     .tablewrapper{
-      padding:20px;
+      padding: 0px 20px;
+      border-top: 2px solid #25294D;
+      margin: 0px 20px;
     }
 
     .hovernone:hover{
@@ -61,12 +63,12 @@
     }
 
     tr:hover {
-      background-color: #464a5d;
+      background-color: #25294d;
       cursor: pointer;
     }
 
     thead{
-      border-top:1px solid #464a5d;
+      // border-top:1px solid #464a5d;
       font-weight: 600;
 
       .header{
@@ -119,16 +121,19 @@
 
     .rvxbalance{
       color: #fff;
-      font-size: 1.5em;
-      font-weight: 700;
-      margin-bottom: 5px;
-      margin-top:20px;
+      font-size: 26px;
+      /* font-weight: 700; */
+      /* margin-bottom: 5px; */
+      margin-top: 20px;
+      span{
+        font-size: 20px;
+        margin-left: 5px;
+      }
     }
 
     .usdbalance{
       color: #5f617d;
       font-size: 1.2em;
-      font-weight: 500;
       margin-bottom: 20px;
     }
 
@@ -138,11 +143,14 @@
 
     .button{
       width:120px;
-      height:30px;
+      height:40px;
       border-radius:50px !important;
       transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
       background-color:transparent !important;
       border:1.5px solid;
+      align-items: center;
+      display: inline-flex;
+      justify-content: center;
 
       span{
         font-size:0.8em;
@@ -159,6 +167,7 @@
 
       span{
         color:#ff5a5a;
+        font-weight: bold;
       }
     }
 
@@ -171,6 +180,7 @@
 
       span{
         color:#ff9852;
+        font-weight: bold;
       }
     }
 

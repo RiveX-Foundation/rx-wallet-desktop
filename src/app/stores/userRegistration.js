@@ -136,7 +136,7 @@ class UserRegistration {
     
     axios({
       method: 'post',
-      url: 'http://rvx.boxybanana.com/api/auth/UpdateCustomer',
+      url: 'http://rvxadmin.boxybanana.com/api/auth/UpdateCustomer',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
@@ -199,7 +199,7 @@ class UserRegistration {
     
     axios({
       method: 'post',
-      url: 'http://rvx.boxybanana.com/api/auth/UpdateCustomerRegistration',
+      url: 'http://rvxadmin.boxybanana.com/api/auth/UpdateCustomerRegistration',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
@@ -229,7 +229,7 @@ class UserRegistration {
     
     axios({
       method: 'post',
-      url: 'http://rvx.boxybanana.com/api/auth/RegisterMobileOTP',
+      url: 'http://rvxadmin.boxybanana.com/api/auth/RegisterMobileOTP',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
@@ -246,6 +246,7 @@ class UserRegistration {
   }
 
   wsLogin(){
+    // console.log("wsLogin");
     var bodyFormData = new FormData();
     bodyFormData.set('mobile', this.mobile);
     bodyFormData.set('countrycode', this.countrycode);
@@ -253,7 +254,7 @@ class UserRegistration {
     
     axios({
       method: 'post',
-      url: 'http://rvx.boxybanana.com/api/auth/Login',
+      url: 'http://rvxadmin.boxybanana.com/api/auth/Login',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
@@ -276,7 +277,7 @@ class UserRegistration {
     bodyFormData.set('token', this.token);
     axios({
       method: 'post',
-      url: 'http://rvx.boxybanana.com/api/auth/VerifyMobileOTP',
+      url: 'http://rvxadmin.boxybanana.com/api/auth/VerifyMobileOTP',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
@@ -310,7 +311,7 @@ class UserRegistration {
 
     axios({
       method: 'post',
-      url: 'http://rvx.boxybanana.com/api/auth/RequestUpdateProfileTokenOTP',
+      url: 'http://rvxadmin.boxybanana.com/api/auth/RequestUpdateProfileTokenOTP',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
@@ -348,7 +349,8 @@ class UserRegistration {
         mobile : mobile,
         countrycode:countrycode,
         loginid:loginid,
-        userid : userid
+        userid : userid,
+        logintoken:response.token
       }
 
       this.setUserObject(userid,mobile,name,email,loginid);
