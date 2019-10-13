@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { Input, Radio, Icon, Tooltip, Button, Modal } from 'antd';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
+import { numberWithCommas } from 'utils/helper';
 import buttonclose from 'static/image/icon/whitecross.png';
+import { createNotification } from 'utils/helper';
 
 const bip39 = require('bip39');
 
@@ -13,13 +15,19 @@ import { setDefaultWordlist } from 'bip39';
   setSelectedWalletAddress: address => stores.setting.setSelectedWalletAddress(address),
   removeWallet: publicaddress => stores.walletStore.removeWallet(publicaddress),
   walletlist: stores.walletStore.walletlist,
-  language: stores.languageIntl.language
+  language: stores.languageIntl.language,
+  currencycode:stores.setting.currencycode,
+  convertrate:stores.walletStore.convertrate,
+  getTotalWorth: wallet => stores.walletStore.getTotalWorth(wallet),
+  RemoveMultiSigWallet: (publicaddress, cb) => stores.walletStore.RemoveMultiSigWallet(publicaddress,cb),
+  ExitMultiSigWallet: (publicaddress, cb) => stores.walletStore.ExitMultiSigWallet(publicaddress,cb),
 }))
 
 @observer
 class ManageWallet extends Component {
   state = {
     removemodalvisible: false,
+    selectedremovewallet:{},
     selectedwalletaddress: "",
     selectedwalletname: ""
   }
@@ -68,19 +76,50 @@ class ManageWallet extends Component {
     this.props.setCurrent("walletrestorebyseed");
   }
 
-  removewallet = e => {
+  removewallet = (e, wallet) => {
     e.preventDefault();
     e.stopPropagation();
     const walletaddress = e.currentTarget.getAttribute('data-publicaddress');
     const walletname = e.currentTarget.getAttribute('data-walletname');
-    this.setState({selectedwalletaddress:walletaddress,selectedwalletname:walletname,removemodalvisible:true});
+    this.setState({
+      selectedremovewallet:wallet,
+      selectedwalletaddress:walletaddress,
+      selectedwalletname:walletname,
+      removemodalvisible:true
+    });
   }
 
   handleRemoveWalletOk = () => {
     this.setState({
       removemodalvisible: false
+    },()=>{
+      if(this.state.selectedremovewallet.isCloud && this.state.selectedremovewallet.wallettype == "basicwallet"){
+        console.log("remove condition 1")
+        this.props.RemoveMultiSigWallet(this.state.selectedwalletaddress,()=>{
+          this.props.removeWallet(this.state.selectedwalletaddress);
+          createNotification('success',intl.get('Settings.SuccessfullyRemoved'));
+        })
+      }
+      if(!this.state.selectedremovewallet.isCloud && this.state.selectedremovewallet.wallettype == "basicwallet"){
+        console.log("remove condition 2")
+        this.props.removeWallet(this.state.selectedwalletaddress);
+        createNotification('success',intl.get('Settings.SuccessfullyRemoved'));
+      }
+      if(this.state.selectedremovewallet.isOwner && this.state.selectedremovewallet.wallettype == "sharedwallet"){
+        console.log("remove condition 3")
+        this.props.RemoveMultiSigWallet(this.state.selectedwalletaddress,()=>{
+          this.props.removeWallet(this.state.selectedwalletaddress);
+          createNotification('success',intl.get('Settings.SuccessfullyRemoved'));
+        })
+      }
+      if(!this.state.selectedremovewallet.isOwner && this.state.selectedremovewallet.wallettype == "sharedwallet"){
+        console.log("remove condition 4")
+        this.props.ExitMultiSigWallet(this.state.selectedwalletaddress,()=>{
+          this.props.removeWallet(this.state.selectedwalletaddress);
+          createNotification('success',intl.get('Settings.SuccessfullyRemoved'));
+        })
+      }
     });
-    this.props.removeWallet(this.state.selectedwalletaddress);
   }
 
   selectwallet = e => {
@@ -115,7 +154,7 @@ class ManageWallet extends Component {
               this.props.walletlist.map((item, i) =>
                 {
                   let wallettype = "";
-                  if(item.wallettype=="basic"){
+                  if(item.wallettype=="basicwallet"){
                     wallettype = intl.get('Wallet.BasicWallet');
                   }else{
                     wallettype = intl.get('Wallet.SharedWallet') + " [" + item.totalsignatures + "/" + item.totalowners + "]";
@@ -125,9 +164,9 @@ class ManageWallet extends Component {
                       <div>
                         <div className="panelleft walletname">{item.walletname}</div>
                         <div className="panelleft wallettype">{wallettype}</div>
-                        <div className="panelleft balance">{item.rvx_balance} RVX</div>
+                        <div className="panelleft balance">{this.props.getTotalWorth(item)} {this.props.currencycode}</div>
                       </div>
-                      <div className="panelright" data-walletname={item.walletname} data-publicaddress={item.publicaddress} onClick={this.removewallet}><img src={buttonclose} /></div>
+                      <div className="panelright" data-walletname={item.walletname} data-publicaddress={item.publicaddress} onClick={ e => this.removewallet(e,item)}><img src={buttonclose} /></div>
                     </div>
                   )
                 }
@@ -139,7 +178,7 @@ class ManageWallet extends Component {
               onOk={this.handleRemoveWalletOk}
               onCancel={this.handleCancel}
             >
-              <p className='modalcontent'>{intl.get('Modal.AreYouSureRemoveWallet').replace('{walletname}',this.state.selectedwalletname)}</p>
+              <p className='modalcontent'>{intl.get('Modal.AreYouSureRemoveWallet',{walletname:this.state.selectedwalletname})}</p>
             </Modal>
 
         </div>

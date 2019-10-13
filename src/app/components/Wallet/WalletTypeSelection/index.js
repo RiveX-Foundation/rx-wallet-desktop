@@ -5,7 +5,7 @@ import intl from 'react-intl-universal';
 import buttoncreatesharedwallet from 'static/image/icon/createsharedwallet.png';
 import buttonnext from 'static/image/icon/next.png';
 import buttonjoinsharedwallet from 'static/image/icon/joinsharedwallet.png';
-
+import buttonback from 'static/image/icon/back.png';
 const bip39 = require('bip39');
 
 import './index.less';
@@ -78,13 +78,15 @@ class WalletTypeSelection extends Component {
   }
 
   back = () => {
-    this.props.setCurrent("walletlisting");
+    // this.props.setCurrent("walletlisting");
+    this.props.setCurrent("selectedwallet");
   }
 
   render() {
     return (
       <div className="wallettypeselectionpanel fadeInAnim">
-        <div className="title" ><span style={{marginLeft:"20px"}}>{intl.get('Wallet.SHAREDWALLET')}</span></div>
+        {/* <div className="title" ><span style={{marginLeft:"20px"}}>{intl.get('Wallet.SHAREDWALLET')}</span></div> */}
+        <div className="title" ><span><img onClick={this.back} width="20px" src={buttonback} /></span><span style={{marginLeft:"20px"}}>{intl.get('Wallet.SHAREDWALLET')}</span></div>
         <div className="centerpanel">
           <center>
             <div className="panelwrapper borderradiusfull spacebetween" onClick={this.sharedwallet} style={{marginBottom:"10px"}}>

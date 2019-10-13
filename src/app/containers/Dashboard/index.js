@@ -13,6 +13,7 @@ import WalletKeyInSeed from 'components/Wallet/WalletKeyInSeed';
 import WalletCreated from 'components/Wallet/WalletCreated';
 import WalletDetail from 'components/Wallet/WalletDetail';
 import SelectedWallet from 'components/Wallet/SelectedWallet';
+import TokenAssetList from 'components/Wallet/TokenAssetList';
 import WalletNameEntry from 'components/Wallet/WalletNameEntry';
 import WalletTypeSelection from 'components/Wallet/WalletTypeSelection';
 import TokenTransfer from 'components/Wallet/TokenTransfer';
@@ -28,6 +29,7 @@ import BackupWalletTutorial from 'components/Wallet/BackupWalletTutorial';
 import TokenTransferSuccessful from 'components/Wallet/TokenTransferSuccessful';
 import ImportWalletTypeSelection from 'components/Wallet/ImportWalletTypeSelection';
 import HWWalletSelection from 'components/Wallet/HWWalletSelection';
+import BasicWalletTypeSelection from 'components/Wallet/BasicWalletTypeSelection';
 import Settings from 'components/Settings';
 import {NotificationContainer, NotificationManager} from 'react-notifications';
 import {
@@ -55,7 +57,8 @@ const Step = Steps.Step;
   CreateEthAddress: () => stores.walletStore.CreateEthAddress(),
   setUserAccountExist : val => stores.session.setUserAccountExist(val),
   IsShowWalletListing : stores.session.IsShowWalletListing,
-  GetPrimaryTokenAssetByNetwork: () => stores.walletStore.GetPrimaryTokenAssetByNetwork()
+  GetPrimaryTokenAssetByNetwork: () => stores.walletStore.GetPrimaryTokenAssetByNetwork(),
+  GetAllTokenAssetByNetwork:() => stores.walletStore.GetAllTokenAssetByNetwork()
 }))
 
 @observer
@@ -85,6 +88,9 @@ class Dashboard extends Component {
     },{
       content: <SelectedWallet />,
       key:'selectedwallet'
+    },{
+      content: <TokenAssetList />,
+      key:'tokenassetlist'
     },{
       content: <TokenTransfer />,
       key:'tokentransfer'
@@ -125,6 +131,9 @@ class Dashboard extends Component {
       content: <HWWalletSelection />,
       key:'hwwalletselection'
     },{
+      content: <BasicWalletTypeSelection />,
+      key:'basicwallettypeselection'
+    },{
       content: <Settings />,
       key:'settings'
     }]
@@ -138,6 +147,7 @@ class Dashboard extends Component {
     
    componentDidMount(){
     this.props.GetPrimaryTokenAssetByNetwork();
+    this.props.GetAllTokenAssetByNetwork();
   }
 
   render() {
@@ -147,9 +157,11 @@ class Dashboard extends Component {
     var IsDoubleColumn = (
       current == "walletlisting" || 
       current == "tokentransfer" || 
+      current == "tokenreceive" || 
       current == "transactiondetail" || 
       current == "walletdetail" ||
-      current == "selectedwallet"
+      current == "selectedwallet" || 
+      current == "tokenassetlist"
     );
     return (
       <Row className="container">

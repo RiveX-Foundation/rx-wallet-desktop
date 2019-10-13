@@ -29,8 +29,8 @@ import { setDefaultWordlist } from 'bip39';
 class CreateShareWallet extends Component {
 
   state = {
-    totalowners: 0,
-    totalsignatures: 0,
+    totalowners: 2,
+    totalsignatures: 2,
     walletname: "",
     buttonlabel: ""
   }
@@ -46,17 +46,17 @@ class CreateShareWallet extends Component {
     
   }
 
-  TotalPlayerOnChange = e => {
-    var val = e.target.value;
-    if(val != "") val = val.replace(/[^0-9.]/g,'');
-    val = val.replace(/e/g,'').replace("-",'').replace("+",'');
-    e.target.value = val;
+  TotalPlayerOnChange = val => {
+    // var val = e.target.value;
+    // if(val != "") val = val.replace(/[^0-9.]/g,'');
+    // val = val.replace(/e/g,'').replace("-",'').replace("+",'');
+    // e.target.value = val;
     this.setState({totalowners : val}, () => { this.setButtonLabel(); } );
   }
 
-  TotalSignatureOnChange = e => {
-    var val = e.target.value;
-    if(val != "") val = parseInt(val);
+  TotalSignatureOnChange = val => {
+    // var val = e.target.value;
+    // if(val != "") val = parseInt(val);
     this.setState({totalsignatures : val}, () => { this.setButtonLabel(); });
   }
 
@@ -113,16 +113,18 @@ class CreateShareWallet extends Component {
               </div>
 
               <div className="subtitle">{intl.get('Wallet.TotalCoPlayer')}</div>
-              <div className="panelwrapper borderradiusfull" style={{width:"150px"}}>
-                <input type="number" className="inputTransparent" onChange={this.TotalPlayerOnChange} />
+              <div className="panelwrapper borderradiusfull" style={{width:"150px",padding:'0px'}}>
+                {/* <input type="number" className="inputTransparent" onChange={this.TotalPlayerOnChange} /> */}
+                <InputNumber style={{height:"45px"}} min={2} max={6} defaultValue={2} className="inputTransparent" onChange={this.TotalPlayerOnChange} />
               </div>
 
               <div className="subtitle">{intl.get('Wallet.TotalSignatures')}</div>
-              <div className="panelwrapper borderradiusfull" style={{width:"150px"}}>
-                <input type="number" className="inputTransparent" onChange={this.TotalSignatureOnChange} />
+              <div className="panelwrapper borderradiusfull" style={{width:"150px",padding:'0px'}}>
+                {/* <input type="number" className="inputTransparent" onChange={this.TotalSignatureOnChange} /> */}
+                <InputNumber style={{height:"45px"}} min={2} max={6} defaultValue={2} className="inputTransparent" onChange={this.TotalSignatureOnChange} />
               </div>
 
-              <Button className="curvebutton" onClick={this.next} >{this.state.buttonlabel}</Button>
+              <Button className="curvebutton" onClick={this.next} style={{width:'200px'}}>{this.state.buttonlabel}</Button>
             </div>
           </center>
         </div>

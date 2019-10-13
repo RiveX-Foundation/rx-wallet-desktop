@@ -16,10 +16,16 @@ const en_US = {
     'Settings.Language': 'Language',
     'Settings.ExportPrivateKey': 'Export Private Key',
     'Settings.ExportPrivateKeyDesc': 'It is essential to understand that the Private Key is the most important and sensitive part of your account information. Whoever has knowledge of a Private Key has full control over the associated funds and assets. It is important for restoring your account so you should never lose it, but also keep it top secret. ',
+    "Settings.ExportPrivateKey.Msg1":"It is essential to understand that the Private Key is the most important and sensitive part of your account information.",
+    "Settings.ExportPrivateKey.Msg2":"Whoever has knowledge of a Private Key has full control over the associated funds and assets.",
+    "Settings.ExportPrivateKey.Msg3":"It is important for restoring your account so you should never lose it, but also keep it top secret.",
+    "Settings.SuccessfullyRemoved":"Successfully Removed",
 
     'Modal.RemoveWallet': 'Remove Wallet ?',
     'Modal.AreYouSureRemoveWallet': 'Are you confirm to remove {walletname} ?',
-    'Modal.AreYouSureChangeNetwork': 'Changing network will reload the app <br> Do you still want to change?',
+    'Modal.AreYouSureChangeNetwork.Msg1': 'Changing network will reload the app',
+    'Modal.AreYouSureChangeNetwork.Msg2': 'Do you still want to change?',
+    'Modal.AreYouSureRemoveTokenAsset':'Are you sure want to remove asset ?',
 
     'Wallet.CreateWallet': 'Create Wallet',
     'Wallet.BasicWallet': 'Basic Wallet',
@@ -61,6 +67,14 @@ const en_US = {
     'Wallet.RESTOREPRIVATEKEY': 'RESTORE PRIVATE KEY',
     'Wallet.PrivateKey': 'Private Key',
     'Wallet.AddNewWallet': 'Add New Wallet',
+    'Wallet.AddMore':'Add More',
+    'Wallet.AddNewTokenAsset':'Add New Token Asset',
+    'Wallet.TokenAssetAlreadyExist':'Token Asset Already Exist',
+    'Wallet.RemoveAsset':'Remove Asset',
+    "Wallet.AddedNewAssetToken":"Successfully Added - {code}",
+    "Wallet.RemovedTokenAsset":"Successfully Removed - {code}",
+    "Wallet.StoreOnLocal":"Store On Local",
+    "Wallet.StoreOnCloud":"Store On Cloud",
 
     'HWWallet.ConnectHWWallet': 'Connect a Hardware Wallet',
     'HWWallet.Ledger': 'Ledger',
@@ -128,6 +142,7 @@ const en_US = {
     'Transaction.TransactionID': 'Transaction ID',
     'Transaction.TotalSigners': 'Total Signers',
     'Transaction.TransactionSuccessful': 'Transaction Successful',
+    'Transaction.NoTransaction': 'No Transction',
 
     'menuConfig.wallet': 'Wallet',
     'menuConfig.basicwallet': 'Basic Wallet',
@@ -147,6 +162,7 @@ const en_US = {
     'Info.Info': 'Info',
     'Info.Waiting': 'Waiting ...',
     'Info.CopyDone': 'Copy Done',
+    'Info.Warning':'WARNING!',
 
     'Success.ProfileUpdated': 'Profile Updated Successfully',
 
@@ -188,9 +204,8 @@ const en_US = {
     'Error.Privatekeyisempty': 'Private Key is empty',
     'Error.InvalidPrivateKey': 'Invalid Private Key',
     'Error.LoginIDExisted' : 'Login ID Existed',
-    'Error.LoginIDisempty': 'Login ID is empty'
-    
+    'Error.LoginIDisempty': 'Login ID is empty',
 
-
+    "Success.Success":"Success"
 }
 export default en_US;

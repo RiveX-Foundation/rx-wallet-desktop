@@ -14,10 +14,16 @@ const zh_CN = {
     'Settings.Language': '语言',
     'Settings.ExportPrivateKey': '导出私钥',
     'Settings.ExportPrivateKeyDesc': '必须了解私钥是您帐户信息中最重要的部分。占有私钥的人可以完全控制相关的资金和资产。备份您的帐户非常重要，要保持秘密, 以及永远不应该丢失它。 ',
+    "Settings.ExportPrivateKey.Msg1":"您必须清楚了解私钥是您账户中最重要与最敏感的资讯。",
+    "Settings.ExportPrivateKey.Msg2":"任何人知道了您的私钥将能够全面控制您钱包里的资金与资产。",
+    "Settings.ExportPrivateKey.Msg3":"它将是还原您钱包很重要的一项，千万不能将它公开，收为己用。",
+    "Settings.SuccessfullyRemoved":"删除成功",
 
     'Modal.RemoveWallet': '删除钱包 ?',
     'Modal.AreYouSureRemoveWallet': '你确认要删除 {walletname} ?',
-    'Modal.AreYouSureChangeNetwork': '更改网络将重啓应用程序 <br> 您確定更換吗？',
+    'Modal.AreYouSureChangeNetwork.Msg1': '更改网络将重啓应用程序',
+    'Modal.AreYouSureChangeNetwork.Msg2': '您確定更換吗？',
+    "Modal.AreYouSureRemoveTokenAsset":"您确定要删除资产吗？",
 
     'Wallet.CreateWallet': '创建钱包',
     'Wallet.BasicWallet': '基本钱包',
@@ -59,6 +65,14 @@ const zh_CN = {
     'Wallet.RESTOREPRIVATEKEY': '恢复私匙',
     'Wallet.PrivateKey': '私匙',
     'Wallet.AddNewWallet': '增加新钱包',
+    'Wallet.AddMore':'添加更多',
+    'Wallet.AddNewTokenAsset':'创建代币资产',
+    'Wallet.TokenAssetAlreadyExist':'代币资产已存在',
+    'Wallet.RemoveAsset':'删除资产',
+    "Wallet.AddedNewAssetToken":"成功添加 - {code}",
+    "Wallet.RemovedTokenAsset":"成功删除 - {code}",
+    "Wallet.StoreOnLocal":"存储在设备上",
+    "Wallet.StoreOnCloud":"储存在云端",
 
     'HWWallet.ConnectHWWallet': '连接硬件钱包',
     'HWWallet.Ledger': 'Ledger',
@@ -126,6 +140,7 @@ const zh_CN = {
     'Transaction.TransactionID': '交易ID',
     'Transaction.TotalSigners': '总签名者',
     'Transaction.TransactionSuccessful': '交易成功',
+    'Transaction.NoTransaction': '没有任何交易',
 
     'menuConfig.wallet': '錢包',
     'menuConfig.basicwallet': '基本錢包',
@@ -145,6 +160,7 @@ const zh_CN = {
     'Info.Info': '信息',
     'Info.Waiting': '等待 ...',
     'Info.CopyDone': '复制完成',
+    'Info.Warning':'注意!',
 
     'Success.ProfileUpdated': '用户资料更改成功',
 
@@ -186,10 +202,10 @@ const zh_CN = {
     'Error.Privatekeyisempty': '私钥是空的',
     'Error.InvalidPrivateKey': '私钥无效',
     'Error.LoginIDExisted' : '登录ID已经存在',
-    'Error.LoginIDisempty': '登录ID是空的'
+    'Error.LoginIDisempty': '登录ID是空的',
 
     
-
+    "Success.Success":"成功"
 
 }
 export default zh_CN;

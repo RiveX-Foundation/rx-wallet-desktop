@@ -32,6 +32,7 @@ class WalletCreation extends Component {
   componentDidMount(){
     var seed = this.props.generate12SeedPhase();
     this.generateSeedPhaseList(seed);
+    console.log(seed);
   }
 
   inputChanged = e => {

@@ -42,16 +42,16 @@ export const createNotification = (type,message) => {
   //console.log(message);
   switch (type) {
     case 'info':
-      return NotificationManager.info(intl.get('Info.Info'), message, 5000);
+      return NotificationManager.info(message, intl.get('Info.Info'), 5000);
       break;
     case 'success':
-      NotificationManager.success(intl.get('Success.Success'), message, 5000);
+      NotificationManager.success(message, intl.get('Success.Success'), 5000);
       break;
     case 'warning':
-      NotificationManager.warning(intl.get('Warning.Warning'), 'Close after 3000ms', 3000);
+      NotificationManager.warning(message, intl.get('Warning.Warning'), 3000);
       break;
     case 'error':
-      NotificationManager.error(intl.get('Error.Error'), message, 5000);
+      NotificationManager.error(message, intl.get('Error.Error'), 5000);
     //case 'error':
     //  NotificationManager.error('Error', message, 5000, () => {
     //    alert('callback');

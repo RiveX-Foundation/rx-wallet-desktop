@@ -15,7 +15,9 @@ import './index.less';
   setCurrent: current => stores.walletStore.setCurrent(current),
   language: stores.languageIntl.language,
   selectedwalletlist: stores.walletStore.selectedwalletlist,
-  convertrate:stores.walletStore.convertrate
+  convertrate:stores.walletStore.convertrate,
+  currencycode:stores.setting.currencycode,
+  getTotalWorth: wallet => stores.walletStore.getTotalWorth(wallet)
 }))
 
 @observer
@@ -23,7 +25,9 @@ class WalletListing extends Component {
   constructor(props){
     super(props);
     this.state = {
-      selectedwalletaddress:''
+      selectedwalletaddress:'',
+      barheight:0,
+      baroffsettop:0
     }
   }
 
@@ -51,7 +55,8 @@ class WalletListing extends Component {
   createWallet = () => {
     switch(this.props.selectedwallettype){
       case "basicwallet":
-        this.props.setCurrent("splashbasicwalletcreation");
+        // this.props.setCurrent("splashbasicwalletcreation");
+        this.props.setCurrent("basicwallettypeselection");
         break;
       case "sharedwallet":
         this.props.setCurrent("wallettypeselection");
@@ -61,6 +66,10 @@ class WalletListing extends Component {
 
   selectWallet = e => {
     var walletpublicaddress = e.currentTarget.getAttribute("data-publicaddress");
+    this.setState({
+      barheight:e.currentTarget.clientHeight,
+      baroffsettop:e.currentTarget.offsetTop
+    })
     this.selectWalletOnLoad(walletpublicaddress);
   }
 
@@ -70,37 +79,32 @@ class WalletListing extends Component {
     },()=>{
       this.props.setSelectedWallet(walletpublicaddress);
       this.props.setCurrent("selectedwallet");
-    });
-  }
-
-  _getTotalWorth(selectedWallet){
-    var totalworth = 0;
-    if(selectedWallet.tokenassetlist.length > 0){
-      selectedWallet.tokenassetlist.map((asset,index)=>{
-        totalworth += asset.TokenBalance;
+      var firstele = document.getElementById("rvxwallet_0");
+      this.setState({
+        barheight:firstele.clientHeight
       })
-    }
-    return `$${numberWithCommas(parseFloat(!isNaN(this.props.convertrate * totalworth) ? this.props.convertrate * totalworth : 0),true)}`;
+    });
   }
 
   render() {
     return (
       <div className='walllistingpanel fadeInAnim'>
         <div className="plussign" onClick={this.createWallet}><img src={buttonplussign} /></div>
-        <ul>
+        <ul style={{position:'relative'}}>
         {
           this.props.selectedwalletlist.map((item, i) =>
             {
               return (
-                <li key={i} onClick={this.selectWallet} className={this.state.selectedwalletaddress == item.publicaddress ? `active` : null} data-publicaddress={item.publicaddress}>
+                <li key={i} id={`rvxwallet_${i}`} onClick={this.selectWallet} data-publicaddress={item.publicaddress}>
                   <div className='walletname'>{item.walletname}</div>
                   {/* <div className='walletbalance'>{item.rvx_balance} RVX</div> */}
-                  <div className='walletbalance'>{this._getTotalWorth(item)} USD</div>
+                  <div className='walletbalance'>{this.props.getTotalWorth(item)} {this.props.currencycode}</div>
                 </li> 
               )
             }
           )
         }
+        <div className="activebar" style={{height:`${this.state.barheight}px`,top:`${this.state.baroffsettop}px`}}></div>
         </ul>
       </div>
     );

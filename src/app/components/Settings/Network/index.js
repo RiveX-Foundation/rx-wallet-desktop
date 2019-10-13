@@ -114,7 +114,7 @@ class Network extends Component {
                 {
                   filterlist.length > 0 && 
                   <ul>
-                    {filterlist.map((item, index) => <li key={index} data-code={item.shortcode} onMouseDown={this.selectnetwork}>{item.name}</li>)}
+                    {filterlist.map((item, index) => <li key={index} data-code={item.shortcode} onMouseDown={this.selectnetwork} style={{color:item.color}}>{item.name}</li>)}
                   </ul>
                 }
 
@@ -132,7 +132,8 @@ class Network extends Component {
               onOk={this.handleOk}
               onCancel={this.handleCancel}
             >
-          <p className='modalcontent'>{intl.get('Modal.AreYouSureChangeNetwork')}</p>
+          <p className='modalcontent'>{intl.get('Modal.AreYouSureChangeNetwork.Msg1')}</p>
+          <p className='modalcontent'>{intl.get('Modal.AreYouSureChangeNetwork.Msg2')}</p>
         </Modal>
 
       </div>

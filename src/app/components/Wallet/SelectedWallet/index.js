@@ -9,8 +9,9 @@ import logo from 'static/image/graphic/logo.png';
 import buttonreceive from 'static/image/icon/receive.png';
 import buttonsend from 'static/image/icon/send.png';
 import rivelogo500 from 'static/image/graphic/rivexlogo50opa.png';
+import plusicon from 'static/image/icon/plus-symbol.png';
 import {
-  AreaChart, defs, Area, linearGradient, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Curve
 } from 'recharts';
 var Web3 = require('web3');
 
@@ -28,17 +29,21 @@ var Web3 = require('web3');
   TokenSparkLine:stores.walletStore.TokenSparkLine,
   convertrate:stores.walletStore.convertrate,
   totalassetworth:stores.walletStore.totalassetworth,
-  setselectedTokenAsset: tokenasset => stores.walletStore.setselectedTokenAsset(tokenasset)
+  setselectedTokenAsset: tokenasset => stores.walletStore.setselectedTokenAsset(tokenasset),
+  currencycode:stores.setting.currencycode,
+  getTotalWorth: wallet => stores.walletStore.getTotalWorth(wallet)
 }))
 
 @observer
 class SelectedWallet extends Component {
 
   state = {
-    trxlist : []
+    trxlist : [],
+    modalIsOpen:false
   }
 
   componentDidMount(){
+    // console.log("totalassetworth", this.props.totalassetworth)
     this.props.getTokenSparkLineByAssetCode('rvx');
   }
   
@@ -52,11 +57,15 @@ class SelectedWallet extends Component {
     this.props.LoadTransactionByAddress(this.props.selectedWallet.publicaddress);
   }
 
-  transferToken = () => {
+  transferToken = (e,tokenitem) => {
+    e.stopPropagation();
+    this.props.setselectedTokenAsset(tokenitem);
     this.props.setCurrent("tokentransfer");
   }
 
-  receiveToken = () => {
+  receiveToken = (e,tokenitem) => {
+    e.stopPropagation();
+    this.props.setselectedTokenAsset(tokenitem);
     this.props.setCurrent("tokenreceive");
   }
 
@@ -66,26 +75,31 @@ class SelectedWallet extends Component {
     this.loadTransaction();
   }
 
+  goToAssetTokenList = () =>{
+    this.props.setCurrent("tokenassetlist");
+  }
+
   render() {
-    // console.log(this.props.TokenSparkLine);
     return (
-      <div className="selectedwalletpanel fadeInAnim">
+      <div id="selectwalletmainctn" className="selectedwalletpanel fadeInAnim">
         {this.props.selectedWallet.walletname != null &&
           <div>
             <div className="walletname" >{this.props.selectedWallet.walletname}</div>
             <div className="contentpanel">
               <div className="totalworth">
-                <div className="amount">{numberWithCommas(parseFloat(this.props.totalassetworth),true)}</div>
-                <div className="currency">USD</div>
+                <div className="amount">{this.props.getTotalWorth(this.props.selectedWallet)}</div>
+                <div className="currency">{this.props.currencycode}</div>
               </div>
             </div>
             <div className="tokenwrapper">              
               {
                 this.props.selectedWallet.tokenassetlist.map((item,index)=>{
+                  const dataMax = Math.max(...this.props.TokenSparkLine.map(i => i.value));
+                  const dataMin = Math.min(...this.props.TokenSparkLine.map(i => i.value));
                   return(
                     <div key={index} className="tokenassetitem" onClick={() => this.openTokenDetail(item)}>
                       <div className="tokenassetitemrow">
-                        <img src={item.LogoUrl} />
+                        <img src={item.LogoUrl} className="tokenimg"/>
                         <div className="infoctn">
                           <div className="assetcode">{item.AssetCode.toUpperCase()}</div>
                           <div className="assetcodename">{item.Name}</div>
@@ -94,27 +108,28 @@ class SelectedWallet extends Component {
                       <div className="tokenassetitemrow">
                         <div className="amountctn">
                           <div className="totalcoin">{item.TokenBalance ? `${item.TokenBalance % 1 != 0 ? toFixedNoRounding(item.TokenBalance,4) : toFixedNoRounding(item.TokenBalance,2)}` : `0.00`}<span>{item.AssetCode.toUpperCase()}</span></div>
-                          <div className="totalcurrency">${numberWithCommas(parseFloat(!isNaN(this.props.convertrate * item.TokenBalance) ? this.props.convertrate * item.TokenBalance : 0),true)} USD</div>
+                          <div className="totalcurrency">${numberWithCommas(parseFloat(!isNaN(this.props.convertrate * item.TokenBalance) ? this.props.convertrate * item.TokenBalance : 0),true)} {this.props.currencycode}</div>
                         </div>
                         <div className="chartctn">
-                          <ResponsiveContainer width={'100%'} height={50}>
-                            <AreaChart data={this.props.TokenSparkLine}>
+                          <ResponsiveContainer width={'100%'} height={200}>
+                            <AreaChart data={this.props.TokenSparkLine}  baseValue={dataMin}>
                               <defs>
                                 <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
-                                  <stop offset="5%" stopColor="rgb(100, 244, 244)" stopOpacity={0.4}/>
+                                  <stop offset="5%" stopColor="rgb(100, 244, 244)" stopOpacity={0.7}/>
                                   <stop offset="95%" stopColor="rgb(28, 31, 70)" stopOpacity={0}/>
                                 </linearGradient>
                               </defs>
+                              <Curve type={"natural"} />
                               <Area type="monotone" dataKey="value" stroke="rgb(100, 244, 244)" fillOpacity={1} fill="url(#gradient)" />
                             </AreaChart>
                           </ResponsiveContainer>
                         </div>
                         <div className="buttonctn">
                           <div className="btnitem">
-                            <img src={buttonreceive} />
+                            <img src={buttonreceive} onClick={e => this.receiveToken(e,item)}/>
                           </div>
                           <div className="btnitem">
-                            <img src={buttonsend} />
+                            <img src={buttonsend} onClick={e => this.transferToken(e,item)} />
                           </div>
                         </div>
                       </div>
@@ -122,6 +137,10 @@ class SelectedWallet extends Component {
                   )
                 })
               }
+              <div className="addmorebtn" onClick={this.goToAssetTokenList}>
+                <img src={plusicon} />
+                <div>{intl.get("Wallet.AddMore").toUpperCase()}</div>
+              </div>
             </div>
           </div>
 
@@ -134,7 +153,6 @@ class SelectedWallet extends Component {
             <img src={rivelogo500} />
           </div>
         }
-
       </div>
     );
   }

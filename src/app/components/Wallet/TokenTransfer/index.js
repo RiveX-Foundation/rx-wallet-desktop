@@ -23,7 +23,8 @@ import Axios from 'axios';
   ethaddress: stores.walletStore.ethaddress,
   setCurrent: current => stores.walletStore.setCurrent(current),
   settokentransfervalue: (token,receiver) => stores.walletStore.settokentransfervalue(token,receiver),
-  language: stores.languageIntl.language
+  language: stores.languageIntl.language,
+  selectedTokenAsset:stores.walletStore.selectedTokenAsset
 }))
 
 @observer
@@ -83,6 +84,8 @@ class TokenTransfer extends Component {
   }
 
   pastetoken = event => {
+    this.inputEl1.select();
+    document.execCommand('paste');
     console.log(event.clipboardData);//.items[0].getAsString());
   }
 
@@ -116,8 +119,8 @@ class TokenTransfer extends Component {
         <div className="centerpanel">
           <center>
             <div className="subtitle">{intl.get("TokenTransfer.ReceipientAddress")}</div>
-            <div className="panelwrapper borderradiusfull" style={{marginBottom:"10px"}}><Input className="inputTransparent" onChange={this.onChangeReceiver} /><div className="pasteicon"><img onClick={this.pastetoken} src={buttonpaste} /></div></div>
-            <div className="panelwrapper borderradiusfull" style={{marginBottom:"30px"}}><Input className="inputTransparent" onChange={this.onChangeTokenValue} /><div className="currency">RVX</div></div>
+            <div className="panelwrapper borderradiusfull" style={{marginBottom:"10px"}}><Input className="inputTransparent" ref={(input) => { this.inputEl1 = input; }} onChange={this.onChangeReceiver} /><img onClick={this.pastetoken} src={buttonpaste} className="pasteicon" /></div>
+            <div className="panelwrapper borderradiusfull" style={{marginBottom:"30px"}}><Input className="inputTransparent" onChange={this.onChangeTokenValue} /><div className="currency">{this.props.selectedTokenAsset.AssetCode.toUpperCase()}</div></div>
             <div><Button className="curvebutton" onClick={this.transfer} >{intl.get('Token.Transfer')}</Button></div>
           </center>
         </div>

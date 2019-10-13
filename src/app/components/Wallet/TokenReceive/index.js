@@ -28,7 +28,7 @@ class TokenReceive extends Component {
   inputEl1 = null;
 
   componentDidMount(){
-    this.loadwallet();
+    // this.loadwallet();
   }
   
   inputChanged = e => {
@@ -64,10 +64,14 @@ class TokenReceive extends Component {
           <center>
             <div className="inputwrapper">
               <div style={{marginBottom:"10px"}} className="subtitle" >{this.props.selectedWallet.walletname}</div>
-              <QRCode fgColor="#192c57" size={256} value={this.props.selectedWallet.publicaddress} style={{marginBottom:"30px"}} />
-              <div className="panelwrapper borderradiusfull" style={{width:"500px"}}>
-                {this.props.selectedWallet.publicaddress}
-                <div className="copyicon"><img src={buttoncopy} onClick={this.copy} /></div>
+              <div className="qrcodectn">
+                <div className="inner">
+                  <QRCode fgColor="#4954AE" size={180} value={this.props.selectedWallet.publicaddress} />
+                </div>
+              </div>
+              <div className="panelwrapper borderradiusfull">
+                <div>{this.props.selectedWallet.publicaddress}</div>
+                <img src={buttoncopy} onClick={this.copy} className="copyicon" />
               </div>
 
               <input style={{marginTop:-99999,position:"absolute"}} ref={(input) => { this.inputEl1 = input; }} type="text" value={this.props.selectedWallet.publicaddress} id="hiddenphase" />

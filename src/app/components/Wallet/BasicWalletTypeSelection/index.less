@@ -25,7 +25,7 @@
   position: relative;
 }
 
-.createwalletpanel{
+.wallettypeselectionpanel{
   height:calc(100vh);
 
   .title{
@@ -47,51 +47,18 @@
     vertical-align: middle;
   }
 
-  .inputTransparent{
-    border: none;
-    color:#fff;
-    width:100%;
-    padding:10px;
-    background-color: transparent;
-    display: flex;
-    align-items: center;
-    .ant-input-number-handler-wrap{
-      background-color: #515173;
-      border: none;
-      .ant-input-number-handler-down{
-        border-top: 1px solid #24284a;
-      }
-      .ant-input-number-handler-up-inner,.ant-input-number-handler-down-inner{
-        color:#fff
-      }
-    }
-  }
-
-  .inputTransparent:focus {
-    box-shadow: none !important;
-    border: none !important;
-    outline: none !important;
-  }    
-
-  .subtitle{
-    font-size:1em;
-    margin-left:10px;
-    margin-bottom:10px;
-    text-align: left;
-  }
-
-  .inputwrapper{
-    width:600px;
-    position: relative;
-    text-align: left;
-  }
-
   .panelwrapper{
     background-color:#24284a;
-    padding:5px;
+    padding:15px;
     width:600px;
     position: relative;
     margin-bottom:20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  }    
+
+  .panelwrapper:hover{
+    background-color:#494c65;
   }    
 
   .panelleft{
@@ -116,7 +83,7 @@
 
   .borderradiusfull{
     border-radius: 10px;
-    /*padding:5px;*/
+    padding:20px;
   }
 
   .guidelabel{
@@ -146,13 +113,12 @@
   }
 
   .curvebutton{
-    margin-top:10px;
+    margin-top:30px;
     border-radius:50px;
     background-color:#3834d8;
     color:#fff;
     border: none;
-    height:auto!important;
-    padding:10px 20px 10px 20px !important;
+    padding:5px 15px 5px 15px !important;
     width: 150px;
     transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
   }

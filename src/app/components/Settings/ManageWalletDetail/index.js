@@ -17,7 +17,9 @@ import { setDefaultWordlist } from 'bip39';
   removeWallet: publicaddress => stores.walletStore.removeWallet(publicaddress),
   changeWalletName: (publicaddress,newwalletname) => stores.walletStore.changeWalletName(publicaddress,newwalletname),
   walletlist: stores.walletStore.walletlist,
-  language: stores.languageIntl.language
+  language: stores.languageIntl.language,
+  getTotalWorth: wallet => stores.walletStore.getTotalWorth(wallet),
+  currencycode:stores.setting.currencycode,
 }))
 
 @observer
@@ -107,7 +109,8 @@ class ManageWalletDetail extends Component {
               <div className="panelvalue"><img onClick={this.editwalletname} style={{cursor:"pointer"}} width="20px" src={buttonedit} /></div>
             </div>
             <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"10px"}}>
-              <div className="panellabel">{wallet.rvx_balance} RVX</div>
+              {/* <div className="panellabel">{wallet.rvx_balance} RVX</div> */}
+              <div className="panellabel">{this.props.getTotalWorth(wallet)} {this.props.currencycode}</div>
               <div className="panelvalue"></div>
             </div>
 
@@ -157,7 +160,12 @@ class ManageWalletDetail extends Component {
               onOk={this.handleExportPrivateKeyOk}
               onCancel={this.handleCancel}
             >
-              <p className='modalcontent'>{intl.get('Settings.ExportPrivateKeyDesc')}</p>
+              <div className="pheader">{intl.get('Info.Warning')}</div>
+              <div>
+                <div className='pmodalcontent'>{intl.get('Settings.ExportPrivateKey.Msg1')}</div>
+                <div className='pmodalcontent'>{intl.get('Settings.ExportPrivateKey.Msg2')}</div>
+                <div className='pmodalcontent'>{intl.get('Settings.ExportPrivateKey.Msg3')}</div>
+              </div>
             </Modal>
 
             <Modal

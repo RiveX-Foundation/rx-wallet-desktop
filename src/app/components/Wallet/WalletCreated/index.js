@@ -24,15 +24,16 @@ class WalletCreated extends Component {
   }
 
   next = () => {
-    this.props.setCurrent("walletdetail");
+    this.props.setCurrent("selectedwallet");
   }
 
   render() {
     return (
       <div className="walletcreatedpanel fadeInAnim">
         <div className="centerpanel">
-          <div style={{marginBottom:"30px"}}><img src={artboard4} /></div>
-          <div className="subtitle">{this.props.selectedWallet.walletname} {intl.get('Wallet.WalletCreated')}</div>
+          <div style={{marginBottom:"30px"}}><img src={artboard4} width="350px" /></div>
+          <div className="subtitle" style={{marginBottom:"0px",fontSize:"30px"}}>{intl.get('Wallet.WalletCreated')}</div>
+          <div className="subtitle" style={{color:"#fff"}}>{this.props.selectedWallet.walletname}</div>
           <div className="hint">{this.props.selectedWallet.publicaddress}</div>
           <Button className="curvebutton" onClick={this.next}>{intl.get('Wallet.Confirm')}</Button>
         </div>

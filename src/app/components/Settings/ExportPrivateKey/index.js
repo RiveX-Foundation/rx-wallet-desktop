@@ -61,7 +61,11 @@ class ExportPrivateKey extends Component {
           <center>
             <div className="inputwrapper">
               <div style={{marginBottom:"10px"}} className="subtitle" >{wallet.walletname}</div>
-              <QRCode fgColor="#192c57" size={256} value={wallet.privatekey} style={{marginBottom:"30px"}} />
+              <div className="qrcodectn">
+                <div className="inner">
+                  <QRCode fgColor="#4954AE" size={180} value={wallet.privatekey} />
+                </div>
+              </div>
               <div className="panelwrapper borderradiusfull" style={{width:"650px"}}>
                 {wallet.privatekey}
                 <div className="copyicon"><img src={buttoncopy} onClick={this.copy} /></div>

@@ -27,7 +27,8 @@ import buttonback from 'static/image/icon/back.png';
   wsRequestTransferOTP: () => stores.walletStore.wsRequestTransferOTP(),
   tokentransferreceiver: stores.walletStore.tokentransferreceiver,
   tokentransfertoken: stores.walletStore.tokentransfertoken,
-  language: stores.languageIntl.language
+  language: stores.languageIntl.language,
+  selectedTokenAsset:stores.walletStore.selectedTokenAsset
 }))
 
 @observer
@@ -122,48 +123,83 @@ class TokenTransferConfirmation extends Component {
       this.props.wsCreateTrx(this.props.selectedwallet.publicaddress,this.props.tokentransferreceiver,this.props.tokentransfertoken);
     }else{ //DIRECT EXECUTE TRX
       createNotification('info',intl.get('Info.Waiting'));
-
-      var abiArray = tokenabi.abiarray;//JSON.parse(fs.readFileSync(__dirname + '/containers/Config/tokenabi.json', 'utf-8'));
-      var count = await web3.eth.getTransactionCount(this.props.selectedwallet.publicaddress);
-      var gasPrices = await this.getCurrentGasPrices();
-      console.log(gasPrices);
-      //var contractdata = new web3.eth.Contract(abiArray, tokencontract, {from: this.props.selectedwallet.publicaddress}); //).at(this.tokencontract);
-      var contractdata = new web3.eth.Contract(abiArray, this.tokencontract);//, {from: this.props.selectedwallet.publicaddress}); //).at(this.tokencontract);
-      var rawTransaction = {};
-      try{
-        rawTransaction = {
-          "from": this.props.selectedwallet.publicaddress,
-          "nonce": count,
-          "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-          "gas": web3.utils.toHex("519990"),//"0x7458",
-          "gasLimit": web3.utils.toHex("519990"),//"0x7458",
-          "to": this.tokencontract,
-          "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
-          "data": contractdata.methods.transfer(this.props.tokentransferreceiver,web3.utils.toWei(this.props.tokentransfertoken, 'ether')).encodeABI(),//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
-          "chainId": this.props.selectednetwork.chainid
-        };
-
-        console.log(rawTransaction);
-
-        var privKey = new Buffer(this.props.selectedwallet.privatekey, 'hex');
-
-        var tx = new Tx(rawTransaction);
-        tx.sign(privKey);
-        var serializedTx = tx.serialize();
-  
-        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function(err, hash) {
-          if (!err) { //SUCCESS
-            console.log(hash);
-            that.props.setsuccessulhash(hash);
-            that.props.setCurrent("tokentransfersuccessful");
-          }else{
-            createNotification('error',intl.get('Error.TransactionFailed'));
-            console.log(err);
+      if(this.props.selectedTokenAsset.TokenType == "eth"){
+        var from = this.props.selectedwallet.publicaddress;
+        var targetaddr = this.props.tokentransferreceiver;
+        var amountToSend = this.props.tokentransfertoken;
+        let gasPrices = await this.getCurrentGasPrices();
+        var nonce = 0;
+        web3.eth.getTransactionCount(from).then(txCount => {
+          nonce = txCount++;
+          let details = {
+            "from": from,
+            "to": targetaddr,
+            "value": web3.utils.toHex( web3.utils.toWei(amountToSend, 'ether') ),
+            "gas": 21000,
+            "gasPrice": gasPrices.high * 1000000000, 
+            "nonce": nonce,
+            "chainId": this.props.selectednetwork.chainid
           }
-        });    
-      }catch(e){
-        createNotification('error',intl.get('Error.TransactionFailed'));
-        console.log("ERR",e);
+  
+          var transaction = this.props.selectednetwork.shortcode == "mainnet" ? new Tx(details) : new Tx(details, {chain:this.props.selectednetwork.shortcode, hardfork: 'petersburg'});
+          transaction.sign(Buffer.from(this.props.selectedwallet.privatekey, 'hex'))
+          const serializedTransaction = transaction.serialize()
+          web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, hash) => {
+            if (!err){ //SUCCESS
+              console.log(hash);
+              that.props.setsuccessulhash(hash);
+              that.props.setCurrent("tokentransfersuccessful");
+            }else{
+              createNotification('error',intl.get('Error.TransactionFailed'));
+              console.log(err);
+            }
+          });
+        });
+      }else{
+        // var abiArray = tokenabi.abiarray;//JSON.parse(fs.readFileSync(__dirname + '/containers/Config/tokenabi.json', 'utf-8'));
+        var count = await web3.eth.getTransactionCount(this.props.selectedwallet.publicaddress);
+        var gasPrices = await this.getCurrentGasPrices();
+        // console.log(gasPrices);
+        var TokenInfo = this.props.selectedTokenAsset.TokenInfoList[0];
+        var abiArray = JSON.parse(TokenInfo.AbiArray);
+        //var contractdata = new web3.eth.Contract(abiArray, tokencontract, {from: this.props.selectedwallet.publicaddress}); //).at(this.tokencontract);
+        var contractdata = new web3.eth.Contract(abiArray, TokenInfo.ContractAddress);//, {from: this.props.selectedwallet.publicaddress}); //).at(this.tokencontract);
+        var rawTransaction = {};
+        try{
+          rawTransaction = {
+            "from": this.props.selectedwallet.publicaddress,
+            "nonce": count,
+            "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
+            "gas": web3.utils.toHex("519990"),//"0x7458",
+            "gasLimit": web3.utils.toHex("519990"),//"0x7458",
+            "to": TokenInfo.ContractAddress,//this.tokencontract,
+            "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+            "data": contractdata.methods.transfer(this.props.tokentransferreceiver,web3.utils.toWei(this.props.tokentransfertoken, 'ether')).encodeABI(),//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+            "chainId": this.props.selectednetwork.chainid
+          };
+
+          console.log(rawTransaction);
+
+          var privKey = new Buffer(this.props.selectedwallet.privatekey, 'hex');
+
+          var tx = new Tx(rawTransaction);
+          tx.sign(privKey);
+          var serializedTx = tx.serialize();
+
+          web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function(err, hash) {
+            if (!err) { //SUCCESS
+              console.log(hash);
+              that.props.setsuccessulhash(hash);
+              that.props.setCurrent("tokentransfersuccessful");
+            }else{
+              createNotification('error',intl.get('Error.TransactionFailed'));
+              console.log(err);
+            }
+          });    
+        }catch(e){
+          createNotification('error',intl.get('Error.TransactionFailed'));
+          console.log("ERR",e);
+        }
       }
     }
 
@@ -193,7 +229,7 @@ class TokenTransferConfirmation extends Component {
                 <div className="panellabel">{intl.get('TokenTransferConfirmation.To')}</div><div className="panelvalue">{this.props.tokentransferreceiver}</div>
               </div>
               <div className="spacebetween" style={{marginTop:"10px"}}>
-                <div className="panellabel">{intl.get('TokenTransferConfirmation.Amount')}</div><div className="panelvalue">{this.props.tokentransfertoken} RVX</div>
+                <div className="panellabel">{intl.get('TokenTransferConfirmation.Amount')}</div><div className="panelvalue">{this.props.tokentransfertoken} {this.props.selectedTokenAsset.AssetCode.toUpperCase()}</div>
               </div>
             </div>
             <div className="width600 spacebetween" style={{marginBottom:"30px"}}>

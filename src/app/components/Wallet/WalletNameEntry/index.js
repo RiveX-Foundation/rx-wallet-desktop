@@ -61,7 +61,14 @@ class WalletNameEntry extends Component {
   }
 
   back = () => {
-    this.props.setCurrent("splashbasicwalletcreation");
+    // this.props.setCurrent("splashbasicwalletcreation");
+    this.props.setCurrent("basicwallettypeselection");
+  }
+
+  onKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      this.next();
+    }
   }
 
   render() {
@@ -74,7 +81,7 @@ class WalletNameEntry extends Component {
           <div style={{marginBottom:"30px"}}><img src={buttonartboard2} width="350px" /></div>
           <div className="subtitle">{intl.get('Wallet.walletname')}</div>
           <div className="panelwrapper borderradiusfull">
-            <Input className="inputTransparent" onChange={this.onChange} />
+            <Input className="inputTransparent" autoFocus onChange={this.onChange} onKeyDown={this.onKeyDown}/>
             <Button className="nextbutton" onClick={this.next}><img src={buttonnext} /></Button>
           </div>
         </div>

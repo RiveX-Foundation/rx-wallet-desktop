@@ -32,7 +32,7 @@ class TokenTransferSuccessful extends Component {
     return (
       <div className="walletcreatedpanel fadeInAnim">
         <div className="centerpanel">
-          <div style={{marginBottom:"30px"}}><img src={artboard5} /></div>
+          <div style={{marginBottom:"30px"}}><img src={artboard5} width="350px" /></div>
           <div className="subtitle">{intl.get('Transaction.TransactionSuccessful')}</div>
           <div className="hint">{this.props.successulhash}</div>
           <Button className="curvebutton" onClick={this.next}>{intl.get('Wallet.Confirm')}</Button>

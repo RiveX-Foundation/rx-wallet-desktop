@@ -3,7 +3,7 @@ import { inject } from 'mobx-react';
 import axios from 'axios';
 import sessionstore from './session';
 import { getCryptoBalance } from 'utils/cryptohelper';
-import { getDatefromTimestamp,getUnixTime, isNullOrEmpty } from 'utils/helper';
+import { getDatefromTimestamp,getUnixTime, isNullOrEmpty, numberWithCommas } from 'utils/helper';
 import { createNotification,convertHexToDecimal } from 'utils/helper';
 import Web3 from 'web3';
 import intl from 'react-intl-universal';
@@ -57,10 +57,12 @@ class walletStore {
   @observable restoreprivatekey = "";
   @observable TokenSparkLine = [];
   @observable primaryTokenAsset = [];
+  @observable allTokenAsset = [];
   @observable convertrate = 1.34;
   @observable selectedassettokenlist = [];
   @observable totalassetworth = 0;
   @observable selectedTokenAsset = {};
+  @observable basicwallettype = "";
 
   userstore = null;
   networkstore = null;
@@ -217,6 +219,7 @@ class walletStore {
 
   @action setSelectedWallet(publicaddress){
     this.selectedwallet = this.walletlist.find(x=>x.publicaddress == publicaddress);
+    console.log(JSON.stringify(this.selectedwallet))
     // this.LoadTransactionByAddress(this.selectedwallet.publicaddress);
     // this.wsGetMultiSigTrx(this.selectedwallet.publicaddress);
     this.loadTokenAssetList();
@@ -312,6 +315,7 @@ class walletStore {
   }
 
   @action setCurrent(val) {
+    console.log(val)
     this.current = val;
     // window.location.hash = `/${val}`;
   }
@@ -384,6 +388,10 @@ class walletStore {
 
   }
 
+  @action setBasicWalletType(type){
+    this.basicwallettype = type;
+  }
+
   // @computed get setTokenSparkLine(sparklinelist){
   //   let newsparkline = [];
   //   if(sparklinelist.length > 0){
@@ -397,7 +405,7 @@ class walletStore {
   wsRequestTransferOTP(){
     var bodyFormData = new FormData();
     bodyFormData.set('token', this.userstore.token);
-    bodyFormData.set('smsnotification', true);
+    bodyFormData.set('smsnotification', false);
     
     var that = this;
 
@@ -421,7 +429,7 @@ class walletStore {
     });
   }
 
-  SaveWallet(walletname,seedphase,privatekey,derivepath,publicaddress,addresstype,wallettype,totalowners,totalsignatures,holders){
+  SaveWallet(ownerId,walletname,seedphase,privatekey,derivepath,publicaddress,addresstype,wallettype,totalowners,totalsignatures,holders){
     var wallet = {
       walletname : walletname,
       userid : this.userstore.userid,
@@ -434,8 +442,10 @@ class walletStore {
       totalowners: parseInt(totalowners),
       totalsignatures: parseInt(totalsignatures),
       holders: holders,
+      ownerid:ownerId,
+      isOwner:ownerId == this.userstore.userid,
       tokenassetlist:this.primaryTokenAsset,
-      isCloud:false
+      isCloud:wallettype == "basicwallet" ? this.basicwallettype == "local" ? false : true : true
     };
 
     var localwallets = [];
@@ -479,7 +489,15 @@ class walletStore {
 
     //console.log("address",address);
 
-    this.SaveWallet(this.walletname,seedval,addrNode._privateKey.toString('hex'),derivepath,address,"eth",this.selectedwallettype,this.totalowners,this.totalsignatures,[{ "UserId": this.userstore.userid, "UserName": this.userstore.name }]);
+    console.log(this.basicwallettype);
+    if(this.basicwallettype == "cloud"){
+      this.CreateBasicWalletOnCloud(()=>{
+        // for make sure when call api store wallet is success, in order to save in local storage
+        this.SaveWallet(this.userstore.userid,this.walletname,seedval,addrNode._privateKey.toString('hex'),derivepath,address,"eth",this.selectedwallettype,this.totalowners,this.totalsignatures,[{ "UserId": this.userstore.userid, "UserName": this.userstore.name }]);
+      })
+    }else{
+      this.SaveWallet(this.userstore.userid,this.walletname,seedval,addrNode._privateKey.toString('hex'),derivepath,address,"eth",this.selectedwallettype,this.totalowners,this.totalsignatures,[{ "UserId": this.userstore.userid, "UserName": this.userstore.name }]);
+    }
 
     //console.log(hdkey);
     //console.log(hdkey.privateExtendedKey)
@@ -515,7 +533,7 @@ class walletStore {
 
       //console.log("address",address);
 
-      this.SaveWallet(this.walletname,seedval,this.restoreprivatekey.toString('hex'),derivepath,address,"eth","basicwallet",0,0,[]);
+      this.SaveWallet(this.userstore.userid,this.walletname,seedval,this.restoreprivatekey.toString('hex'),derivepath,address,"eth","basicwallet",0,0,[]);
       this.setCurrent("walletcreated");
     }catch(e){
       console.log(e);
@@ -712,6 +730,37 @@ class walletStore {
     });
   }
 
+  CreateBasicWalletOnCloud = (cb) =>{
+    // console.log(acctoken,walletinfo)
+    var bodyFormData = new FormData();
+    bodyFormData.append('token', this.userstore.token);
+    bodyFormData.append('walletname', this.walletname);
+    bodyFormData.append('seedphase', this.seedphaseinstring);
+    bodyFormData.append('privatekey', this.privateaddress);
+    bodyFormData.append('derivepath', this.derivepath);
+    bodyFormData.append('publicaddress', this.publicaddress);
+    bodyFormData.append('addresstype', "eth");
+    bodyFormData.append('network', this.networkstore.selectednetwork.shortcode);
+
+    axios({
+      method: 'post',
+      url: 'http://rvxadmin.boxybanana.com/api/multisig/CreateBasicWallet',
+      data: bodyFormData,
+      config: { headers: {'Content-Type': 'multipart/form-data' }}
+    })
+    .then(function (response) {
+        //handle success
+        console.log("CreateBasicWalletOnCloud",response);
+        if(response.data.status == 200){
+          cb();
+        }
+    })
+    .catch(function (response) {
+        //handle error
+        console.log(response);
+    });
+  }
+
   wsCreateWallet(){
     var bodyFormData = new FormData();
     bodyFormData.set('walletname', this.walletname);
@@ -760,7 +809,7 @@ class walletStore {
         if(response.data.status == 200){
           console.log("SUCCESS", response.data);
           var wallet = response.data.wallet;
-          self.SaveWallet(wallet.WalletName,wallet.Seedphase,wallet.PrivateAddress,wallet.DerivePath,wallet.PublicAddress,wallet.AddressType,"sharedwallet",wallet.NumbersOfOwners,wallet.NumbersOfSigners,wallet.Holders);
+          self.SaveWallet(wallet.OwnerId,wallet.WalletName,wallet.Seedphase,wallet.PrivateAddress,wallet.DerivePath,wallet.PublicAddress,wallet.AddressType,"sharedwallet",wallet.NumbersOfOwners,wallet.NumbersOfSigners,wallet.Holders);
           self.setCurrent("walletcreated");
         }else{
           createNotification('error',intl.get('Error.' + response.data.msg));
@@ -804,7 +853,7 @@ class walletStore {
         }else{
           createNotification('error',intl.get('Error.' + response.data.msg));
         }
-        console.log(response);
+        // console.log(response);
     })
     .catch(function (response) {
         //handle error
@@ -839,9 +888,35 @@ class walletStore {
     });
   }
 
+  GetAllTokenAssetByNetwork(){
+    var bodyFormData = new FormData();
+    bodyFormData.set('token', this.userstore.token);
+    bodyFormData.set('network', this.networkstore.selectednetwork.shortcode);
+
+    axios({
+      method: 'post',
+      url: 'http://rvxadmin.boxybanana.com/api/token/GetAllTokenAssetByNetwork',
+      data: bodyFormData,
+      config: { headers: {'Content-Type': 'multipart/form-data' }}
+    })
+    .then(function (response) {
+        if(response.data.status == 200){
+          self.allTokenAsset = response.data.tokenassetlist;
+        }else{
+          createNotification('error',intl.get('Error.' + response.data.msg));
+        }
+        console.log("GetPrimaryTokenAssetByNetwork", response);
+    })
+    .catch(function (response) {
+        //handle error
+        createNotification('error','Error.' + intl.get(response.data.msg));
+        console.log(response);
+    });
+  }
+
   loadTokenAssetList = () =>{
-    this.selectedassettokenlist = [];
-    this.totalassetworth = 0;
+    self.selectedassettokenlist = [];
+    self.totalassetworth = 0;
     const web3 = new Web3(this.networkstore.selectednetwork.infuraendpoint);
     this.selectedwallet.tokenassetlist.map(async(tokenitem,index) =>{
       // console.log("tokenitem.TokenType" , tokenitem.TokenType)
@@ -868,7 +943,126 @@ class walletStore {
         self.selectedassettokenlist.push(tokenitem);
       }
     });
-    console.log(JSON.stringify(self.selectedassettokenlist));
+  }
+
+  InsertTokenAssetToCloudWallet(tokenasset,cb){
+    var bodyFormData = new FormData();
+    bodyFormData.set('token', this.userstore.token);
+    bodyFormData.set('publicaddress', this.selectedwallet.publicaddress);
+    bodyFormData.set('shortcode', tokenasset.AssetCode.toUpperCase());
+    bodyFormData.set('network', this.networkstore.selectednetwork.shortcode);
+
+    axios({
+      method: 'post',
+      url: 'http://rvxadmin.boxybanana.com/api/token/InsertTokenAssetToCloudWallet',
+      data: bodyFormData,
+      config: { headers: {'Content-Type': 'multipart/form-data' }}
+    })
+    .then(function (response) {
+      console.log(response);
+        if(response.data.status == 200){
+          cb();
+        }else{
+          createNotification('error',intl.get('Error.' + response.data.msg));
+        }
+    })
+    .catch(function (response) {
+        //handle error
+        createNotification('error','Error.' + intl.get(response.data.msg));
+        console.log(response);
+    });
+  }
+
+  RemoveTokenAssetInCloudWallet(cb){
+    var bodyFormData = new FormData();
+    bodyFormData.set('token', this.userstore.token);
+    bodyFormData.set('publicaddress', this.selectedwallet.publicaddress);
+    bodyFormData.set('shortcode', this.selectedTokenAsset.AssetCode.toUpperCase());
+    bodyFormData.set('network', this.networkstore.selectednetwork.shortcode);
+
+    axios({
+      method: 'post',
+      url: 'http://rvxadmin.boxybanana.com/api/token/RemoveTokenAssetInCloudWallet',
+      data: bodyFormData,
+      config: { headers: {'Content-Type': 'multipart/form-data' }}
+    })
+    .then(function (response) {
+      console.log(response);
+        if(response.data.status == 200){
+          cb();
+        }else{
+          createNotification('error',intl.get('Error.' + response.data.msg));
+        }
+    })
+    .catch(function (response) {
+        //handle error
+        createNotification('error','Error.' + intl.get(response.data.msg));
+        console.log(response);
+    });
+  }
+
+  @action getTotalWorth(selectedWallet){
+    var totalworth = 0;
+    if(selectedWallet.tokenassetlist.length > 0){
+      selectedWallet.tokenassetlist.map((asset,index)=>{
+        totalworth += asset.TokenBalance;
+      })
+    }
+    return `$${numberWithCommas(parseFloat(!isNaN(this.convertrate * totalworth) ? this.convertrate * totalworth : 0),true)}`;
+  }
+
+  @action ExitMultiSigWallet(publicaddress,cb){
+    var bodyFormData = new FormData();
+    bodyFormData.set('token', this.userstore.token);
+    bodyFormData.set('walletpublicaddress', publicaddress);
+    bodyFormData.set('network', this.networkstore.selectednetwork.shortcode);
+
+    axios({
+      method: 'post',
+      url: 'http://rvxadmin.boxybanana.com/api/multisig/ExitMultiSigWallet',
+      data: bodyFormData,
+      config: { headers: {'Content-Type': 'multipart/form-data' }}
+    })
+    .then(function (response) {
+      console.log(response);
+        if(response.data.status == 200){
+          cb();
+        }else{
+          createNotification('error',intl.get('Error.' + response.data.msg));
+        }
+    })
+    .catch(function (response) {
+        //handle error
+        createNotification('error','Error.' + intl.get(response.data.msg));
+        console.log(response);
+    });
+  }
+
+  @action RemoveMultiSigWallet(publicaddress,cb){
+    var bodyFormData = new FormData();
+    bodyFormData.set('token', this.userstore.token);
+    bodyFormData.set('walletpublicaddress', publicaddress);
+    bodyFormData.set('network', this.networkstore.selectednetwork.shortcode);
+
+    axios({
+      method: 'post',
+      url: 'http://rvxadmin.boxybanana.com/api/multisig/RemoveMultiSigWallet',
+      data: bodyFormData,
+      config: { headers: {'Content-Type': 'multipart/form-data' }}
+    })
+    .then(function (response) {
+      console.log(response);
+        if(response.data.status == 200){
+          cb();
+        }else{
+          createNotification('error',intl.get('Error.' + response.data.msg));
+        }
+    })
+    .catch(function (response) {
+        //handle error
+        createNotification('error','Error.' + intl.get(response.data.msg));
+        console.log(response);
+    });
   }
 }
 

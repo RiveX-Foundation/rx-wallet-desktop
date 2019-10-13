@@ -40,11 +40,44 @@
     margin-top: 120px;
   }
 
+  .ant-dropdown-menu{
+    background-color: #24284a;
+    padding: 0px;
+    overflow: hidden;
+  }
+  .ant-dropdown-menu-item{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    padding: 8px 12px;
+    img{
+      width: 15px;
+      margin-right: 10px;
+    }
+  }
+  .ant-dropdown-menu-item:hover{
+    background-color: #2f3461;
+  }
+
+  .ant-modal-content .ant-btn:hover{
+    background-color: transparent !important;
+    color: #fff !important;
+  }
+  .ant-modal-content .ant-btn-primary{
+    background-color: #2D2CA0 !important;
+    color: #fff !important;
+  }
+  .ant-modal-content .ant-btn-primary:hover{
+    background-color: #2D2CA0 !important;
+  }
+
   .walletdetailpanel{
     .walletname{
       font-size:1.5em;
-      // margin-bottom:30px;
       padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     table {
@@ -158,15 +191,15 @@
 
       img{
         width:20px;
-        margin-top:-2px;
+        // margin-top:-2px;
       }
     }
 
     .butreceive{
-      border-color : #ff5a5a !important;
+      border-color : #66fa74 !important;
 
       span{
-        color:#ff5a5a;
+        color:#66fa74;
         font-weight: bold;
       }
     }
@@ -176,13 +209,24 @@
     }
   
     .butsend{
-      border-color : #ff9852 !important;
+      border-color : #ef3333 !important;
 
       span{
-        color:#ff9852;
+        color:#ef3333;
         font-weight: bold;
       }
     }
 
+    .notransaction{
+      text-align: center;
+      font-size: 21px;
+      margin-top: 100px;
+    }
+  }
+
+  .middletitle{
+    font-size: 20px;
+    color: #fff;
+    font-family: NotoSans-Bold;
   }
 

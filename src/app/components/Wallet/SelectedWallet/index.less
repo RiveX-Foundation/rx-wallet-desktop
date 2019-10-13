@@ -154,7 +154,7 @@
         transition: 0.3s all ease;
         cursor: pointer;
 
-        img{
+        img.tokenimg{
           width: 35px;
           height: 35px;
           margin-right: 20px;
@@ -188,11 +188,35 @@
         }
         .chartctn{
           width: 150px;
+          height: 50px;
           margin: 0px 20px;
+        }
+        .btnitem:first-child{
+          margin-right: 25px;
+        }
+        .btnitem img{
+          width: 22px;
+          height: 22px;;
         }
       }
       .tokenassetitem:hover{
         background-image: linear-gradient(to right, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d);
+      }
+      .addmorebtn{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px dashed #326C79;
+        color: #326C79;
+        height: 65px;
+        margin-top: 10px;
+        border-radius: 10px;
+        font-weight: bold;
+        cursor: pointer;
+        img{
+          width: 18px;
+          margin-right: 10px;
+        }
       }
     }
   }
