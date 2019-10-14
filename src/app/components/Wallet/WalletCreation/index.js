@@ -32,7 +32,6 @@ class WalletCreation extends Component {
   componentDidMount(){
     var seed = this.props.generate12SeedPhase();
     this.generateSeedPhaseList(seed);
-    console.log(seed);
   }
 
   inputChanged = e => {
@@ -42,8 +41,6 @@ class WalletCreation extends Component {
   }
 
   generateSeedPhaseList = seed => {
-    
-    
     let mnemonic = "";
     if(this.props.seedphaseinstring!=""){
       mnemonic = this.props.seedphaseinstring;
@@ -59,12 +56,13 @@ class WalletCreation extends Component {
     this.props.setSeedPhaseInString(mnemonic);
     const seedel = seedphase.map((item, i) =>
     {
+      // console.log(item)
       return (
         <li key={i}>{item}</li>
       )
     }
     );    
-    this.setState({ seedphaseel : seedel }); 
+    this.setState({ seedphaseel : seedel },()=>{console.log(this.state.seedphaseel)}); 
   }
 
   copy = () => {
@@ -82,7 +80,7 @@ class WalletCreation extends Component {
   }
 
   back = () => {
-    this.props.setCurrent("backupwalletutorial");
+    this.props.setCurrent("backupwallettutorial");
   }
 
   render() {

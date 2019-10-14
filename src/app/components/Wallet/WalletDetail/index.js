@@ -176,7 +176,7 @@ class WalletDetail extends Component {
               <img width="80px" src={this.props.selectedTokenAsset.LogoUrl} />
               <div className="rvxbalance">{this.props.selectedTokenAsset.TokenBalance ? `${this.props.selectedTokenAsset.TokenBalance % 1 != 0 ? toFixedNoRounding(this.props.selectedTokenAsset.TokenBalance,4) : toFixedNoRounding(this.props.selectedTokenAsset.TokenBalance,2)}` : `0.00`}<span>{this.props.selectedTokenAsset.AssetCode.toUpperCase()}</span></div>
               <div className="usdbalance">${numberWithCommas(parseFloat(!isNaN(this.props.convertrate * this.props.selectedTokenAsset.TokenBalance) ? this.props.convertrate * this.props.selectedTokenAsset.TokenBalance : 0),true)} {this.props.currencycode}</div>
-              <div style={{height:'100px'}}>
+              <div style={{height:'100px',position:'relative'}}>
                 <ResponsiveContainer width={'100%'} height={500}>
                   <AreaChart data={this.props.TokenSparkLine} baseValue={dataMin}>
                     <defs>
@@ -193,13 +193,15 @@ class WalletDetail extends Component {
                     <Area type="monotone" dataKey="value" baseLine={5} stroke="rgb(100, 244, 244)" fillOpacity={1} fill="url(#gradient)" />
                   </AreaChart>
                 </ResponsiveContainer>
+                <div className="chartvalue-high">{dataMax}</div>
+                <div className="chartvalue-low">{dataMin}</div>
               </div>
               <Button className="butreceive button" onClick={this.receiveToken} style={{marginRight:"20px"}}><span><img src={buttonreceive} /></span><span style={{marginLeft:"10px"}}>{intl.get('Token.Receive')}</span></Button>
               <Button className="butsend button" onClick={this.transferToken}><span><img src={buttonsend} /></span><span style={{marginLeft:"10px"}}>{intl.get('Token.Send')}</span></Button>
             </div>
             {
               this.props.gettrxlist.length > 0 ?
-              <div>
+              <div className="tablewrapperctn">
                 <div className="subtitle" >{intl.get('Transaction.TransactionHistory').toUpperCase()}</div>
                 <div className="tablewrapper">              
                   <table>

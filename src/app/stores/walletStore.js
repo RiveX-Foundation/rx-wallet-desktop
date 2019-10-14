@@ -25,6 +25,7 @@ var Tx = require('ethereumjs-tx');
 //var fs = require('fs');
 var abiArray = tokenabi;//JSON.parse(fs.readFileSync(__dirname + '/containers/Config/tokenabi.json', 'utf-8'));
 
+import languageIntl from '../stores/languageIntl';
 
 
 class walletStore {
@@ -544,7 +545,12 @@ class walletStore {
 
   generate12SeedPhase = () => {
     let mnemonic = "";
-    mnemonic = bip39.generateMnemonic();
+    let selectedwordlist = bip39.wordlists.english;
+    // console.log(languageIntl.language)
+    if(languageIntl.language == "zh_CN") selectedwordlist = bip39.wordlists.chinese_simplified;
+    if(languageIntl.language == "zh_TW") selectedwordlist = bip39.wordlists.chinese_traditional;
+    // console.log("generate12SeedPhase", languageIntl.language)
+    mnemonic = bip39.generateMnemonic(null,null,selectedwordlist);
     return mnemonic;
   }
 
