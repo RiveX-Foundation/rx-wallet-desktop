@@ -27,6 +27,7 @@ class UserRegistration {
   }
 
   @action setUserObject(userid,mobile,name,email,loginid){
+    console.log("setUserObject", userid,mobile,name,email,loginid)
     this.userid = userid;
     this.mobile = mobile;
     this.name = name;
@@ -134,6 +135,7 @@ class UserRegistration {
     bodyFormData.set('loginid', loginid);
     bodyFormData.set('mobile', mobile);
     
+    var that = this;
     axios({
       method: 'post',
       url: 'http://rvxadmin.boxybanana.com/api/auth/UpdateCustomer',
@@ -148,7 +150,19 @@ class UserRegistration {
         that.countrycode = countrycode;
         that.name = name;
         createNotification('success',intl.get('Success.ProfileUpdated'));
-
+        var simpleUser = {
+          name : name,
+          email : email,
+          mobile : mobile,
+          countrycode:countrycode,
+          loginid:loginid,
+          userid : that.userid,
+          logintoken:that.token
+        }
+        localStorage.setItem('user',JSON.stringify(simpleUser));
+        console.log(JSON.stringify(simpleUser))
+        that.setotpupdateprofiletoken("");
+        that.settokenupdateprofile("");
         //self.processUserRegistration(response.data);
     })
     .catch(function (response) {
@@ -357,7 +371,7 @@ class UserRegistration {
 
       this.walletstore.clearSelectedWallet();
       this.walletstore.setselectedwallettype('basicwallet');
-      this.walletstore.setCurrent('walletdetail');
+      this.walletstore.setCurrent('selectedwallet');
 
       localStorage.setItem('user',JSON.stringify(simpleUser));
       this.setIsLogin(true);

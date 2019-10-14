@@ -35,7 +35,7 @@ const Step = Steps.Step;
   setIsLogin: status => stores.userRegistration.setIsLogin(status),
   setUserAccountExist: status => stores.userRegistration.setUserAccountExist(status),
   setToken: token => stores.userRegistration.setToken(token),
-  setUserObject: userObj => stores.userRegistration.setUserObject(userObj)
+  setUserObject: (userid,mobile,name,email,loginid) => stores.userRegistration.setUserObject(userid,mobile,name,email,loginid)
 }))
 
 @observer
@@ -58,7 +58,7 @@ class Login extends Component {
   checkUserExist = () =>{
     let userinfo = localStorage.getItem('user');
     if(!isNullOrEmpty(userinfo)){
-    //  console.log("userinfo", JSON.parse(userinfo));
+     console.log("userinfo", JSON.parse(userinfo));
      let simpleUser = JSON.parse(userinfo);
      this.props.setUserObject(simpleUser.userid,simpleUser.mobile,simpleUser.name,simpleUser.email,simpleUser.loginid);
      this.props.setIsLogin(true);

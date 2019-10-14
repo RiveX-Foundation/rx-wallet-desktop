@@ -39,6 +39,7 @@ class Profile extends Component {
   }
 
   componentDidMount(){
+    console.log(this.props.email);
     this.setState({
       name : this.props.name,
       email : this.props.email,
@@ -57,6 +58,10 @@ class Profile extends Component {
 
 
     //this.readTextFile("../../static/countrymobile.json");
+  }
+
+  componentWillReceiveProps(newProps){
+    console.log(newProps.name);
   }
 
   readTextFile = file => {
@@ -174,7 +179,7 @@ class Profile extends Component {
     }
 
     this.props.wsUpdateProfile(this.state.name,this.state.email,this.state.mobile,this.state.countrycode,this.state.password,this.state.otp,this.state.loginid);
-
+    this.setState({otp:""});
   }
 
   render() {
@@ -186,19 +191,23 @@ class Profile extends Component {
 
           <div className="inputpanel">
             <div className="panelwrapper borderradiusfull">
-              <Input id="name" value={this.state.name} placeholder={intl.get('Register.Name')} className="inputTransparent" onChange={this.inputChanged} />
+              {/* <Input id="name" value={this.state.name} placeholder={intl.get('Register.Name')} className="inputTransparent" onChange={this.inputChanged} /> */}
+              <Input id="name" value={this.state.name} placeholder={this.state.name} className="inputTransparent" onChange={this.inputChanged} />
             </div>
 
             <div className="panelwrapper borderradiusfull">
-              <Input id="email" value={this.state.email} placeholder={intl.get('Register.Email')} className="inputTransparent" onChange={this.inputChanged} />
+              {/* <Input id="email" value={this.state.email} placeholder={intl.get('Register.Email')} className="inputTransparent" onChange={this.inputChanged} /> */}
+              <Input id="email" value={this.state.email} placeholder={this.state.email} className="inputTransparent" onChange={this.inputChanged} />
             </div>
 
             <div className="panelwrapper borderradiusfull">
-              <Input id="loginid" value={this.state.loginid} placeholder={intl.get('Register.LoginId')} className="inputTransparent" onChange={this.inputChanged} />
+              {/* <Input id="loginid" value={this.state.loginid} placeholder={intl.get('Register.LoginId')} className="inputTransparent" onChange={this.inputChanged} /> */}
+              <Input id="loginid" value={this.state.loginid} placeholder={this.state.loginid} className="inputTransparent" onChange={this.inputChanged} />
             </div>
 
             <div className="panelwrapper borderradiusleft countrycodewrapper">
-              <Input id="countrycode" value={this.state.countrycode} placeholder={intl.get('Register.CountryCode')} onClick={this.showlist} onBlur={this.hidelist} onFocus={this.showlist} className="inputTransparent" onChange={this.setfilterlist} />
+              {/* <Input id="countrycode" value={this.state.countrycode} placeholder={intl.get('Register.CountryCode')} onClick={this.showlist} onBlur={this.hidelist} onFocus={this.showlist} className="inputTransparent" onChange={this.setfilterlist} /> */}
+              <Input id="countrycode" value={this.state.countrycode} placeholder={this.state.countrycode} onClick={this.showlist} onBlur={this.hidelist} onFocus={this.showlist} className="inputTransparent" onChange={this.setfilterlist} />
               <div className={autoliststyle}>
                 {filterlist.length > 0 && 
                   <ul>
@@ -212,7 +221,8 @@ class Profile extends Component {
               </div>
             </div>
             <div className="panelwrapper borderradiusright phonewrapper">
-              <Input id="mobile" value={this.state.mobile} placeholder={intl.get('Register.PhoneNumber')} className="inputTransparent" onChange={this.inputChanged} />
+              {/* <Input id="mobile" value={this.state.mobile} placeholder={intl.get('Register.PhoneNumber')} className="inputTransparent" onChange={this.inputChanged} /> */}
+              <Input id="mobile" value={this.state.mobile} placeholder={this.state.mobile} className="inputTransparent" onChange={this.inputChanged} />
             </div>
 
             <div className="panelwrapper borderradiusfull">
@@ -224,7 +234,7 @@ class Profile extends Component {
             </div>
 
             <div className="panelwrapper borderradiusfull spacebetween">
-              <div className="panellabel" style={{paddingLeft:"0px",marginTop:"5px"}}><Input id="otp" className="inputTransparent otpinputclass" onChange={this.inputChanged} placeholder={intl.get('Auth.EnterOTP')} /></div>
+              <div className="panellabel" style={{paddingLeft:"0px",marginTop:"5px"}}><Input id="otp" className="inputTransparent otpinputclass" value={this.state.otp} onChange={this.inputChanged} placeholder={intl.get('Auth.EnterOTP')} /></div>
               <div className="panelvalue" style={{paddingRight:"0px"}}><Button className="radiusbutton" onClick={this.requestotp} >{intl.get('Auth.RequestOTP')}</Button></div>
             </div>
 

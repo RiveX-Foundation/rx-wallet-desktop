@@ -219,7 +219,7 @@ class walletStore {
 
   @action setSelectedWallet(publicaddress){
     this.selectedwallet = this.walletlist.find(x=>x.publicaddress == publicaddress);
-    console.log(JSON.stringify(this.selectedwallet))
+    // console.log(JSON.stringify(this.selectedwallet))
     // this.LoadTransactionByAddress(this.selectedwallet.publicaddress);
     // this.wsGetMultiSigTrx(this.selectedwallet.publicaddress);
     this.loadTokenAssetList();
