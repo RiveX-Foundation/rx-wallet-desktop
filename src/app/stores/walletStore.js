@@ -263,15 +263,17 @@ class walletStore {
     console.log(tokencontract);
     let contract = new web3.eth.Contract(abiArray, tokencontract);
 
-    this.walletlist.forEach(function(wallet){
-      
-      web3.eth.call({
-        to: tokencontract,
-        data: contract.methods.balanceOf(wallet.publicaddress).encodeABI()
-      }).then(balance => {  
-        balance = balance / (10**18);
-        wallet.rvx_balance = balance;
-      })
+    try{
+      this.walletlist.forEach(function(wallet){
+        web3.eth.call({
+          to: tokencontract,
+          data: contract.methods.balanceOf(wallet.publicaddress).encodeABI()
+        }).then(balance => {  
+          balance = balance / (10**18);
+          wallet.rvx_balance = balance;
+        })
+      });
+    }catch(e){}
 
       /*
       var url = cryptobalanceurl.replace("{tokencontract}", tokencontract).replace("{ethaddr}",wallet.publicaddress);
@@ -292,7 +294,6 @@ class walletStore {
           console.log(response);
       });
       */
-    });
 
     //    getCryptoBalance();
 
@@ -373,6 +374,11 @@ class walletStore {
     localStorage.setItem('wallets',JSON.stringify(this.walletlist));
   }
 
+  @action setWalletList(walletlist){
+    localStorage.setItem('wallets',JSON.stringify(walletlist));
+    //this.loadWallet();
+  }
+
   ParseTrxStatus(status){
     if(status == "0"){
       return "Failed";
@@ -430,7 +436,7 @@ class walletStore {
     });
   }
 
-  SaveWallet(ownerId,walletname,seedphase,privatekey,derivepath,publicaddress,addresstype,wallettype,totalowners,totalsignatures,holders){
+  @action SaveWallet(ownerId,walletname,seedphase,privatekey,derivepath,publicaddress,addresstype,wallettype,totalowners,totalsignatures,holders){
     var wallet = {
       walletname : walletname,
       userid : this.userstore.userid,
@@ -445,10 +451,10 @@ class walletStore {
       holders: holders,
       ownerid:ownerId,
       isOwner:ownerId == this.userstore.userid,
-      tokenassetlist:this.primaryTokenAsset,
+      tokenassetlist:toJS(this.primaryTokenAsset),
       isCloud:wallettype == "basicwallet" ? this.basicwallettype == "local" ? false : true : true
     };
-
+    
     var localwallets = [];
     localwallets = localStorage.getItem('wallets');
     if(localwallets == null){
@@ -459,6 +465,7 @@ class walletStore {
     localwallets.push(wallet);
 
     localStorage.setItem('wallets',JSON.stringify(localwallets));
+    this.walletlist = localwallets;
     this.loadWallet();
     this.setSelectedWallet(publicaddress);
   }
@@ -539,6 +546,17 @@ class walletStore {
     }catch(e){
       console.log(e);
       createNotification('error',intl.get('Error.InvalidPrivateKey'));
+    }
+
+  }
+
+  async CreateHWWallet(walletname,publicaddress,derivepath,tokentype,wallettype){
+    try{
+      this.SaveWallet(this.userstore.userid,walletname,"","",derivepath,publicaddress,tokentype,wallettype,0,0,[{ "UserId": this.userstore.userid, "UserName": this.userstore.name }]);
+      createNotification('success',intl.get('Wallet.AddedNewAssetToken').replace("{code",publicaddress));
+    }catch(e){
+      console.log(e);
+      createNotification('error',intl.get('Error.Error'));
     }
 
   }

@@ -75,6 +75,7 @@ const en_US = {
     "Wallet.RemovedTokenAsset":"Successfully Removed - {code}",
     "Wallet.StoreOnLocal":"Store On Local",
     "Wallet.StoreOnCloud":"Store On Cloud",
+    "Wallet.Add":"Add",
 
     'HWWallet.ConnectHWWallet': 'Connect a Hardware Wallet',
     'HWWallet.Ledger': 'Ledger',

@@ -29,6 +29,7 @@ import BackupWalletTutorial from 'components/Wallet/BackupWalletTutorial';
 import TokenTransferSuccessful from 'components/Wallet/TokenTransferSuccessful';
 import ImportWalletTypeSelection from 'components/Wallet/ImportWalletTypeSelection';
 import HWWalletSelection from 'components/Wallet/HWWalletSelection';
+import HWWalletDetail from 'components/Wallet/HWWalletDetail';
 import BasicWalletTypeSelection from 'components/Wallet/BasicWalletTypeSelection';
 import Settings from 'components/Settings';
 import {NotificationContainer, NotificationManager} from 'react-notifications';
@@ -130,6 +131,9 @@ class Dashboard extends Component {
     },{
       content: <HWWalletSelection />,
       key:'hwwalletselection'
+    },{
+      content: <HWWalletDetail />,
+      key:'hwwalletdetail'
     },{
       content: <BasicWalletTypeSelection />,
       key:'basicwallettypeselection'

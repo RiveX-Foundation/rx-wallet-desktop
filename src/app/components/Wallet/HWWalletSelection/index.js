@@ -11,11 +11,6 @@ const bip39 = require('bip39');
 import './index.less';
 import { setDefaultWordlist } from 'bip39';
 
-const WAN_PATH = "m/44'/5718350'/0'";
-const WALLET_ID = 0x02;
-const CHAIN_TYPE = 'WAN';
-const LEDGER = 'ledger';
-
 @inject(stores => ({
   setCurrent: current => stores.walletStore.setCurrent(current),
   setselectedimporttype: val => stores.walletStore.setselectedimporttype(val),
@@ -73,41 +68,9 @@ class HWWalletSelection extends Component {
   }
 
   selectledger = callback => {
-    console.log("connect to ledger")
-    wand.request('wallet_connectToLedger', {}, (err, val) => {
-      if (err) {
-        console.log("HAHAHA");
-        callback(err, val);
-      } else {
-        console.log("HEHEHE");
-        this.getPublicKey(callback);
-      }
-    });
+    this.props.setCurrent('hwwalletdetail');
     
     //this.props.setCurrent("walletrestorebyseed");
-  }
-
-  getPublicKey = callback => {
-    console.log("GET PUBLIC KEY");
-    console.log(WALLET_ID);
-    console.log(WAN_PATH);
-    wand.request('wallet_getPubKeyChainId', {
-      walletID: WALLET_ID,
-      path: WAN_PATH
-    }, (err, val) => {
-      this.getPublicKeyDone(err, val);
-    });
-  }
-
-  getPublicKeyDone = (err, result) => {
-    if (err) {
-      message.warn(intl.get('HwWallet.Connect.connectFailed'));
-    } else {
-      console.log(result);
-      //this.publicKey = result.publicKey;
-      //this.chainCode = result.chainCode;
-      //this.deriveAddresses(this.page * this.pageSize, this.pageSize, true);
-    }
   }
 
   selecttrezor = () => {

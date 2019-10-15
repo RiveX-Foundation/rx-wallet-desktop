@@ -73,6 +73,8 @@ const zh_CN = {
     "Wallet.RemovedTokenAsset":"成功删除 - {code}",
     "Wallet.StoreOnLocal":"存储在设备上",
     "Wallet.StoreOnCloud":"储存在云端",
+    "Wallet.Add":"添加",
+
 
     'HWWallet.ConnectHWWallet': '连接硬件钱包',
     'HWWallet.Ledger': 'Ledger',
