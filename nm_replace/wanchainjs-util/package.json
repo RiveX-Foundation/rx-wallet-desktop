@@ -1,0 +1,92 @@
+{
+  "_args": [
+    [
+      "wanchainjs-util@5.2.1",
+      "C:\\Project\\wanwallet\\wan-wallet-desktop"
+    ]
+  ],
+  "_from": "wanchainjs-util@5.2.1",
+  "_id": "wanchainjs-util@5.2.1",
+  "_inBundle": false,
+  "_integrity": "sha512-2UDi24H5IsvEtsNYgIxMwLHPEf6r6dVfWXwRicr7FTajtSgZg5Yq+xE6EJ8eNcd3N3MsXB1t2nTv3oLzrgsdlw==",
+  "_location": "/wanchainjs-util",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "wanchainjs-util@5.2.1",
+    "name": "wanchainjs-util",
+    "escapedName": "wanchainjs-util",
+    "rawSpec": "5.2.1",
+    "saveSpec": null,
+    "fetchSpec": "5.2.1"
+  },
+  "_requiredBy": [
+    "/",
+    "/wanchainjs-tx"
+  ],
+  "_resolved": "https://registry.npmjs.org/wanchainjs-util/-/wanchainjs-util-5.2.1.tgz",
+  "_spec": "5.2.1",
+  "_where": "C:\\Project\\wanwallet\\wan-wallet-desktop",
+  "author": {
+    "name": "Tyrion70",
+    "email": "tyrion70@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/WanJS/wanchainjs-util/issues"
+  },
+  "dependencies": {
+    "bn.js": "^4.11.0",
+    "create-hash": "^1.1.2",
+    "ethjs-util": "^0.1.6",
+    "keccak": "^1.0.2",
+    "rlp": "^2.0.0",
+    "safe-buffer": "^5.1.1",
+    "secp256k1": "^3.0.1"
+  },
+  "description": "a collection of utility functions for Wanchain",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babelify": "^8.0.0",
+    "browserify": "^14.0.0",
+    "contributor": "^0.1.25",
+    "coveralls": "^3.0.0",
+    "documentation": "^5.2.0",
+    "eslint": "^5.5.0",
+    "karma": "^2.0.0",
+    "karma-browserify": "^5.0.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-detect-browsers": "2.2.6",
+    "karma-env-preprocessor": "^0.1.1",
+    "karma-firefox-launcher": "^1.0.0",
+    "karma-mocha": "^1.3.0",
+    "mocha": "^4.0.0",
+    "nyc": "^13.0.1"
+  },
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://github.com/WanJS/wanchainjs-util",
+  "keywords": [
+    "ethereum",
+    "utilties"
+  ],
+  "license": "MPL-2.0",
+  "main": "dist/index.js",
+  "name": "wanchainjs-util",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WanJS/wanchainjs-util.git"
+  },
+  "scripts": {
+    "build:dist": "babel index.js --source-root ./ -d ./dist",
+    "build:docs": "documentation build ./index.js --github --sort-order='alpha' -f md > ./docs/index.md",
+    "lint": "eslint .",
+    "test:browser": "npm run build:dist && karma start karma.conf.js",
+    "test:coverage": "nyc npm run test:unit && npm run test:coveralls-upload",
+    "test:coveralls-upload": "if [ $COVERALLS_REPO_TOKEN ]; then nyc report --reporter=text-lcov | coveralls; fi",
+    "test:unit": "npm run build:dist && npm run build:docs && mocha"
+  },
+  "version": "5.2.1"
+}

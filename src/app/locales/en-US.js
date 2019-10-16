@@ -168,6 +168,7 @@ const en_US = {
     'Success.ProfileUpdated': 'Profile Updated Successfully',
 
     'Error.Error': 'Error',
+    'Error.ConnectLedgerError' : 'Error Connect Ledger',
     'Error.Totalsignaturelarger': 'Total signatures should not more than co-players',
     'Error.Publicaddressisempty': 'Public address is empty',
     'Error.Mobileisregistered': 'Mobile is registered',

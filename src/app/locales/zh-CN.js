@@ -167,6 +167,7 @@ const zh_CN = {
     'Success.ProfileUpdated': '用户资料更改成功',
 
     'Error.Error': '错误',
+    'Error.ConnectLedgerError' : '连接Ledger失败',
     'Error.Totalsignaturelarger': '总签名不应超过共同参与者',
     'Error.Publicaddressisempty': '公址为空',
     'Error.Mobileisregistered': '电话已注册',

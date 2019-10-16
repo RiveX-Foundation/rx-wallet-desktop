@@ -82,9 +82,16 @@ class Sidebar extends Component {
     var that = this;    
     this.setState({selectedwallettype:"hwwallet",selectedtab:"wallet"},function(){
       that.props.clearSelectedWallet();
+      that.props.setselectedwallettype("hwwallet");
+      that.props.setCurrent('selectedwallet');
+    })
+    /*
+    this.setState({selectedwallettype:"hwwallet",selectedtab:"wallet"},function(){
+      that.props.clearSelectedWallet();
       that.props.setselectedwallettype("basicwallet");
       that.props.setCurrent('hwwalletselection');
     })
+    */
   }
 
   selectsettings = () => {

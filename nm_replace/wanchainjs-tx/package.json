@@ -1,0 +1,99 @@
+{
+  "_args": [
+    [
+      "wanchainjs-tx@1.5.0",
+      "C:\\Project\\wanwallet\\wan-wallet-desktop"
+    ]
+  ],
+  "_from": "wanchainjs-tx@1.5.0",
+  "_id": "wanchainjs-tx@1.5.0",
+  "_inBundle": false,
+  "_integrity": "sha512-gIpJzKWmqueqXK+Zm5XBY15bRo5r20S4mWTusFJU1myqv6oNl0Nl89mnxvkyphWa/y1bQtlNAW6IY9HztxqU2Q==",
+  "_location": "/wanchainjs-tx",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "wanchainjs-tx@1.5.0",
+    "name": "wanchainjs-tx",
+    "escapedName": "wanchainjs-tx",
+    "rawSpec": "1.5.0",
+    "saveSpec": null,
+    "fetchSpec": "1.5.0"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/wanchainjs-tx/-/wanchainjs-tx-1.5.0.tgz",
+  "_spec": "1.5.0",
+  "_where": "C:\\Project\\wanwallet\\wan-wallet-desktop",
+  "author": {
+    "name": "tyrion70",
+    "email": "tyrion70@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/WanJS/wanchainjs-tx/issues"
+  },
+  "dependencies": {
+    "wanchain-common": "^0.3.0",
+    "wanchainjs-util": "^5.2.1"
+  },
+  "description": "An simple module for creating, manipulating and signing wanchain transactions",
+  "devDependencies": {
+    "async": "^2.0.0",
+    "babel-cli": "^6.22.2",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-0": "^6.16.0",
+    "babelify": "^7.3.0",
+    "browserify": "^13.0.0",
+    "contributor": "^0.1.25",
+    "coveralls": "^2.11.4",
+    "documentation": "^3.0.4",
+    "ethereumjs-testing": "0.0.1",
+    "karma": "^1.1.1",
+    "karma-browserify": "^5.1.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-detect-browsers": "^2.0.2",
+    "karma-env-preprocessor": "^0.1.1",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-safari-launcher": "^1.0.0",
+    "karma-tap": "^2.0.1",
+    "minimist": "^1.2.0",
+    "nyc": "^13.0.1",
+    "standard": "^7.1.2",
+    "tape": "^4.0.3"
+  },
+  "homepage": "https://github.com/WanJS/wanchainjs-tx",
+  "keywords": [
+    "ethereum",
+    "transactions"
+  ],
+  "license": "MPL-2.0",
+  "main": "es5/index.js",
+  "name": "wanchainjs-tx",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WanJS/wanchainjs-tx.git"
+  },
+  "scripts": {
+    "build:docs": "documentation --github  -f md ./index.js > ./docs/index.md && contributor",
+    "build:es5": "babel index.js --source-root ./ -d ./es5",
+    "coverage": "istanbul cover ./test/index.js",
+    "coveralls": "npm run coverage && coveralls <coverage/lcov.info",
+    "lint": "standard",
+    "test": "npm run lint && npm run test:unit && npm run test:browser",
+    "test:browser": "karma start karma.conf.js",
+    "test:coverage": "nyc npm run test:unit && npm run test:coveralls-upload",
+    "test:coveralls-upload": "if [ $COVERALLS_REPO_TOKEN ]; then nyc report --reporter=text-lcov | coveralls; fi",
+    "test:unit": "tape ./test/index.js"
+  },
+  "standard": {
+    "ignore": [
+      "es5/**",
+      "dist/**",
+      "package-init.js",
+      "package.js"
+    ]
+  },
+  "version": "1.5.0"
+}

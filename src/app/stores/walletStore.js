@@ -64,6 +64,7 @@ class walletStore {
   @observable totalassetworth = 0;
   @observable selectedTokenAsset = {};
   @observable basicwallettype = "";
+  @observable ledgerresult = {};
 
   userstore = null;
   networkstore = null;
@@ -96,6 +97,10 @@ class walletStore {
     var walletlist = this.walletlist.filter(x => x.wallettype == this.selectedwallettype);
     if(walletlist == null) walletlist = [];
     return walletlist;
+  }
+
+  @action setledgerresult(val){
+    this.ledgerresult = val;
   }
 
   @action sethideautocomplete(val){

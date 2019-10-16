@@ -165,6 +165,7 @@ class Dashboard extends Component {
       current == "transactiondetail" || 
       current == "walletdetail" ||
       current == "selectedwallet" || 
+      current == "hwwalletselection" || 
       current == "tokenassetlist"
     );
     return (

@@ -21,6 +21,7 @@ const LEDGER = 'ledger';
 @inject(stores => ({
   selectednetwork: stores.network.selectednetwork,
   wallets : stores.walletStore.walletlist,
+  ledgerresult : stores.walletStore.ledgerresult,
   allTokenAsset:stores.walletStore.allTokenAsset,
   setCurrent: current => stores.walletStore.setCurrent(current),
   selectedWallet : stores.walletStore.selectedwallet,
@@ -42,57 +43,38 @@ class HWWalletDetail extends Component {
   constructor(props) {
     super(props);
     this.page = 0;
-    this.pageSize = 5;
+    this.pageSize = 50;
     this.dPath = RVX_PATH;
-    this.connectToLedger();
   }
 
-  connectToLedger = () =>{
-    console.log("connect to ledger")
-    wand.request('wallet_connectToLedger', {}, (err, val) => {
-      if (err) {
-        console.log(err);
-        //callback(err, val);
-      } else {
-        console.log(val);
-        this.getPublicKey();
-      }
-    });
+  componentDidMount(){
+    this.publicKey = this.props.ledgerresult.publicKey;
+    this.chainCode = this.props.ledgerresult.chainCode;
+    this.deriveAddresses(this.page * this.pageSize, this.pageSize, true);
   }
 
   back = () =>{
     this.props.setCurrent("hwwalletselection");
   }
 
-  getPublicKey = () => {
-    console.log("GET PUBLIC KEY");
-    wand.request('wallet_getPubKeyChainId', {
-      walletID: WALLET_ID,
-      path: RVX_PATH
-    }, (err, val) => {
-      this.getPublicKeyDone(err, val);
-    });
-  }
-
-  getPublicKeyDone = (err, result) => {
-    if (err) {
-      message.warn(intl.get('HwWallet.Connect.connectFailed'));
-    } else {
-      console.log(result);
-      this.publicKey = result.publicKey;
-      this.chainCode = result.chainCode;
-      this.deriveAddresses(this.page * this.pageSize, this.pageSize, true);
-    }
-  }
 
   deriveAddresses = (start, limit, visible = false) => {
     let wallet = new HwWallet(this.publicKey, this.chainCode, this.dPath);
     let hdKeys = wallet.getHdKeys(start, limit);
     let addresses = [];
     hdKeys.forEach(hdKey => {
-      console.log(wanUtil.toChecksumAddress(hdKey.address));
-      addresses.push({ key: hdKey.address, address: wanUtil.toChecksumAddress(hdKey.address), balance: 0, path: hdKey.path });
+      //console.log(wanUtil.toChecksumAddress(hdKey.address));
+      addresses.push({ key: hdKey.address, address: wanUtil.toChecksumAddress(hdKey.address), balance: 0, path: hdKey.path,used:false });
     });
+
+    this.props.wallets.forEach(wallet =>{
+      wallet.tokenassetlist.forEach(token => {
+        if(addresses.find(x => x.address === token.PublicAddress) != null) {
+          addresses.find(x => x.address === token.PublicAddress).used = true;
+        }
+      });
+    });
+    console.log(addresses);
 
     this.setState({allAddress : addresses});
 
@@ -121,13 +103,13 @@ class HWWalletDetail extends Component {
     
     var selectedwalletindex = -1;
     this.props.wallets.map((wallet,index)=>{
-      if(wallet.wallettype == "ledger"){
+      if(wallet.walletname == walletname){
         selectedwalletindex = index;
       }
     });
 
     if(selectedwalletindex == -1){
-      this.props.CreateHWWallet(walletname,item.address,item.path,"eth","ledger");
+      this.props.CreateHWWallet(walletname,item.address,item.path,"eth","hwwallet");
       selectedwalletindex = this.props.wallets.length-1;
     }
 
@@ -196,7 +178,9 @@ class HWWalletDetail extends Component {
                     <div className="tokenassetitemrow">
                       <div className="tokenname">{item.address}</div>
                       <div className="tokenname">{item.balance}</div>
-                      <Button type="primary" onClick={e => this.addAddress(e,item)} >{intl.get('Wallet.Add')}</Button>
+                      { (!item.used) &&
+                        <Button type="primary" onClick={e => this.addAddress(e,item)} >{intl.get('Wallet.Add')}</Button>
+                      }
                     </div>
                   </div>
                 )

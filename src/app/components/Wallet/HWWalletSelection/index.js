@@ -5,14 +5,18 @@ import intl from 'react-intl-universal';
 import buttonledger from 'static/image/icon/ledger.png';
 import buttonnext from 'static/image/icon/next.png';
 import buttontrezor from 'static/image/icon/trezor.png';
+import { createNotification } from 'utils/helper';
 
 const bip39 = require('bip39');
+const RVX_PATH = "m/44'/5228350'/0'"; //5718350 
+const WALLET_ID = 0x02;
 
 import './index.less';
 import { setDefaultWordlist } from 'bip39';
 
 @inject(stores => ({
   setCurrent: current => stores.walletStore.setCurrent(current),
+  setledgerresult : result => stores.walletStore.setledgerresult(result),
   setselectedimporttype: val => stores.walletStore.setselectedimporttype(val),
   language: stores.languageIntl.language
 }))
@@ -68,9 +72,46 @@ class HWWalletSelection extends Component {
   }
 
   selectledger = callback => {
-    this.props.setCurrent('hwwalletdetail');
+    this.connectToLedger();
     
     //this.props.setCurrent("walletrestorebyseed");
+  }
+
+  connectToLedger = () =>{
+    console.log("connect to ledger")
+    wand.request('wallet_connectToLedger', {}, (err, val) => {
+      if (err) {
+        console.log(err);
+        createNotification('error',intl.get('Error.ConnectLedgerError'));        
+        //callback(err, val);
+      } else {
+        console.log(val);
+        this.getPublicKey();
+      }
+    });
+  }
+
+  
+  getPublicKey = () => {
+    console.log("GET PUBLIC KEY");
+    wand.request('wallet_getPubKeyChainId', {
+      walletID: WALLET_ID,
+      path: RVX_PATH
+    }, (err, val) => {
+      this.getPublicKeyDone(err, val);
+    });
+  }
+
+  getPublicKeyDone = (err, result) => {
+    if (err) {
+      console.log("GET PUBLIC KEY FAILED");
+      createNotification('error',intl.get('Error.ConnectLedgerError'));
+      //message.warn(intl.get('HwWallet.Connect.connectFailed'));
+    } else {
+      console.log(result);
+      this.props.setledgerresult(result);
+      this.props.setCurrent('hwwalletdetail');
+    }
   }
 
   selecttrezor = () => {

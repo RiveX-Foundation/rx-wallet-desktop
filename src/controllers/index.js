@@ -148,7 +148,6 @@ ipc.on(ROUTE_WALLET, async (event, actionUni, payload) => {
                     logger.error(e.message || e.stack)
                     err = e
                 }
-
                 sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, { err: err, data: pubKey })
                 break
             }

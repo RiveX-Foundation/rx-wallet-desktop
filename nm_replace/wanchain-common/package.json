@@ -1,0 +1,66 @@
+{
+  "_args": [
+    [
+      "wanchain-common@0.3.0",
+      "C:\\Project\\wanwallet\\wan-wallet-desktop"
+    ]
+  ],
+  "_from": "wanchain-common@0.3.0",
+  "_id": "wanchain-common@0.3.0",
+  "_inBundle": false,
+  "_integrity": "sha512-gAFYQjQkJw7mDsx/1ndZtpOyfcfF31/zr890dArB4ReKo6CCbsrOnpiF3lXF99itveoku7JnBDcySUOsyjJzQQ==",
+  "_location": "/wanchain-common",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "wanchain-common@0.3.0",
+    "name": "wanchain-common",
+    "escapedName": "wanchain-common",
+    "rawSpec": "0.3.0",
+    "saveSpec": null,
+    "fetchSpec": "0.3.0"
+  },
+  "_requiredBy": [
+    "/wanchainjs-tx"
+  ],
+  "_resolved": "https://registry.npmjs.org/wanchain-common/-/wanchain-common-0.3.0.tgz",
+  "_spec": "0.3.0",
+  "_where": "C:\\Project\\wanwallet\\wan-wallet-desktop",
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/WanJS/wanchain-common/issues"
+  },
+  "description": "Resources common to all Wanchain implementations",
+  "devDependencies": {
+    "coveralls": "^3.0.2",
+    "nyc": "^13.0.1",
+    "standard": "^12.0.1",
+    "tape": "^4.2.0"
+  },
+  "homepage": "https://github.com/WanJS/wanchain-common",
+  "keywords": [
+    "ethereum"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "Tyrion70",
+      "email": "tyrion70@gmail.com"
+    }
+  ],
+  "name": "wanchain-common",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WanJS/wanchain-common.git"
+  },
+  "scripts": {
+    "lint": "standard",
+    "test": "npm run lint && node tests/",
+    "test:coverage": "nyc npm run test:unit && npm run test:coveralls-upload",
+    "test:coveralls-upload": "if [ $COVERALLS_REPO_TOKEN ]; then nyc report --reporter=text-lcov | coveralls; fi",
+    "test:unit": "node tests/"
+  },
+  "version": "0.3.0"
+}

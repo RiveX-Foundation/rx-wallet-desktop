@@ -61,6 +61,9 @@ class WalletListing extends Component {
       case "sharedwallet":
         this.props.setCurrent("wallettypeselection");
         break;
+      case "hwwallet":
+        this.props.setCurrent("hwwalletselection");
+        break;
     }
   }
 

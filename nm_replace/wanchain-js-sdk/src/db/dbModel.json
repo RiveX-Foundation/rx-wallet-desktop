@@ -1,0 +1,50 @@
+{
+    "db_version": "1.0.0",
+    "wallet_version": "1.0.0",
+    "net": "",
+    "name" : "wanchainDb",
+    "collections": {
+        "normalTrans"   : [],
+        "crossTrans"    : [],
+        "crossTransBtc" : [],
+        "crossTransStatus": {
+            "eth": ["ApproveSending", "ApproveSendFail", "ApproveSendFailAfterRetries", "ApproveSent", "Approved",
+                "LockSending", "LockSendFail", "LockSendFailAfterRetries", "LockSent", "Locked",
+                "BuddyLocked",
+                "RedeemSending", "RedeemSendFail","RedeemSendFailAfterRetries","RedeemSent","Redeemed",
+                "RevokeSending", "RevokeSendFail","RevokeSendFailAfterRetries","RevokeSent","Revoked"
+            ]
+        }
+    },
+    "transModel": {
+        "wan": {
+            "txhash": "",
+            "from": "",
+            "to": "",
+            "value": "",
+            "time": "",
+            "chain": ""
+        },
+        "eth": {
+            "hashX" 					:"",
+            "x" 						:"",
+            "from"  				    :"",
+            "to"  					    :"",
+            "storeman" 					:"",
+            "value"  					:"",
+            "contractValue" 			:"",
+            "lockedTime" 				:"",
+            "buddyLockedTime" 			:"",
+            "srcChainAddr" 				:"",
+            "dstChainAddr" 				:"",
+            "srcChainType" 				:"",
+            "dstChainType" 				:"",
+            "status"  					:"",
+            "approveTxHash" 		    :"",
+            "lockTxHash" 				:"",
+            "redeemTxHash"  			:"",
+            "revokeTxHash"  			:"",
+            "buddyLockTxHash" 			:""
+        }
+    }
+}
