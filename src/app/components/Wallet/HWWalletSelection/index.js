@@ -13,6 +13,7 @@ const WALLET_ID = 0x02;
 
 import './index.less';
 import { setDefaultWordlist } from 'bip39';
+import { isNullOrEmpty } from '../../../utils/helper';
 
 @inject(stores => ({
   setCurrent: current => stores.walletStore.setCurrent(current),
@@ -32,6 +33,7 @@ class HWWalletSelection extends Component {
   inputEl1 = null;
   
   componentDidMount(){
+
   }
 
   inputChanged = e => {

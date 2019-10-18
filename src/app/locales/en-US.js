@@ -76,6 +76,7 @@ const en_US = {
     "Wallet.StoreOnLocal":"Store On Local",
     "Wallet.StoreOnCloud":"Store On Cloud",
     "Wallet.Add":"Add",
+    "Wallet.NotEnoughBalance":"Not Enough Balance",
 
     'HWWallet.ConnectHWWallet': 'Connect a Hardware Wallet',
     'HWWallet.Ledger': 'Ledger',

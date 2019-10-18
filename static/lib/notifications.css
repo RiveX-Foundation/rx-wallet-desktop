@@ -44,6 +44,10 @@
   color:#fff;
 }
 
+.notification .message{
+  word-break: break-word;
+}
+
 .notification:hover, .notification:focus {
   opacity: 1;
 }

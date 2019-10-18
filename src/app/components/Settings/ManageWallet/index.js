@@ -100,7 +100,7 @@ class ManageWallet extends Component {
           createNotification('success',intl.get('Settings.SuccessfullyRemoved'));
         })
       }
-      if(!this.state.selectedremovewallet.isCloud && this.state.selectedremovewallet.wallettype == "basicwallet"){
+      if(!this.state.selectedremovewallet.isCloud && this.state.selectedremovewallet.wallettype == "basicwallet" || this.state.selectedremovewallet.wallettype == "hwwallet"){
         console.log("remove condition 2")
         this.props.removeWallet(this.state.selectedwalletaddress);
         createNotification('success',intl.get('Settings.SuccessfullyRemoved'));
@@ -156,8 +156,10 @@ class ManageWallet extends Component {
                   let wallettype = "";
                   if(item.wallettype=="basicwallet"){
                     wallettype = intl.get('Wallet.BasicWallet');
-                  }else{
+                  }else if(item.wallettype=="sharedwallet"){
                     wallettype = intl.get('Wallet.SharedWallet') + " [" + item.totalsignatures + "/" + item.totalowners + "]";
+                  }else if(item.wallettype=="hwwallet"){
+                    wallettype = intl.get('menuConfig.hardwarewallet');
                   }
                   return (
                     <div key={i} data-publicaddress={item.publicaddress} className="panelwrapper borderradiusfull spacebetween" onClick={this.selectwallet} style={{marginBottom:"10px"}}>

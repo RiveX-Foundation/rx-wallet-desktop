@@ -65,10 +65,16 @@ class WalletDetail extends Component {
   }
 
   loadTransaction = () => {
-    this.props.LoadTransactionByAddress(this.props.selectedWallet.publicaddress);
+    // this.props.LoadTransactionByAddress(this.props.selectedWallet.publicaddress);
+    this.props.LoadTransactionByAddress(this.props.selectedTokenAsset.PublicAddress);
   }
 
   transferToken = () => {
+    var balance = this.props.selectedTokenAsset.TokenBalance ? `${this.props.selectedTokenAsset.TokenBalance % 1 != 0 ? toFixedNoRounding(this.props.selectedTokenAsset.TokenBalance,4) : toFixedNoRounding(this.props.selectedTokenAsset.TokenBalance,2)}` : `0.00`;
+    if(balance == "0.00"){
+      createNotification('error',intl.get('Wallet.NotEnoughBalance'));
+      return;
+    }
     this.props.setCurrent("tokentransfer");
   }
 
@@ -136,8 +142,8 @@ class WalletDetail extends Component {
         let walletlist = JSON.parse(value);
         if(walletlist.length > 0){
           walletlist.map((wallet,index)=>{
-            console.log(wallet.publicaddress , this.props.selectedWallet.publicaddress)
-            if(wallet.publicaddress == this.props.selectedWallet.publicaddress){
+            // console.log(wallet.publicaddress , this.props.selectedWallet.publicaddress)
+            if(wallet.publicaddress == this.props.selectedTokenAsset.PublicAddress){
               console.log("come in liao 2")
               createNotification('success',intl.get('Wallet.RemovedTokenAsset',{code:this.props.selectedTokenAsset.AssetCode.toUpperCase()}));
               wallet.tokenassetlist = wallet.tokenassetlist.filter(x => x.AssetCode != this.props.selectedTokenAsset.AssetCode);
@@ -222,7 +228,7 @@ class WalletDetail extends Component {
                           var plusminusSign = "+";
 
                           if(item.value != 0){
-                            if(this.props.selectedWallet.publicaddress.toLowerCase() == item.from.toLowerCase()){
+                            if(this.props.selectedTokenAsset.PublicAddress.toLowerCase() == item.from.toLowerCase()){
                               valueClass = "tdright tdred";
                               plusminusSign = "-";
                             }

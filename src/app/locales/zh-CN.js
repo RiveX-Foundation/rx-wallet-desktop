@@ -74,7 +74,7 @@ const zh_CN = {
     "Wallet.StoreOnLocal":"存储在设备上",
     "Wallet.StoreOnCloud":"储存在云端",
     "Wallet.Add":"添加",
-
+    "Wallet.NotEnoughBalance":"余额不足",
 
     'HWWallet.ConnectHWWallet': '连接硬件钱包',
     'HWWallet.Ledger': 'Ledger',

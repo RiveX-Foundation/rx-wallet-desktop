@@ -124,7 +124,7 @@ class TokenTransferConfirmation extends Component {
     }else{ //DIRECT EXECUTE TRX
       createNotification('info',intl.get('Info.Waiting'));
       if(this.props.selectedTokenAsset.TokenType == "eth"){
-        var from = this.props.selectedwallet.publicaddress;
+        var from = this.props.selectedTokenAsset.PublicAddress;
         var targetaddr = this.props.tokentransferreceiver;
         var amountToSend = this.props.tokentransfertoken;
         let gasPrices = await this.getCurrentGasPrices();
@@ -157,7 +157,7 @@ class TokenTransferConfirmation extends Component {
         });
       }else{
         // var abiArray = tokenabi.abiarray;//JSON.parse(fs.readFileSync(__dirname + '/containers/Config/tokenabi.json', 'utf-8'));
-        var count = await web3.eth.getTransactionCount(this.props.selectedwallet.publicaddress);
+        var count = await web3.eth.getTransactionCount(this.props.selectedTokenAsset.PublicAddress);
         var gasPrices = await this.getCurrentGasPrices();
         // console.log(gasPrices);
         var TokenInfo = this.props.selectedTokenAsset.TokenInfoList[0];
@@ -167,7 +167,7 @@ class TokenTransferConfirmation extends Component {
         var rawTransaction = {};
         try{
           rawTransaction = {
-            "from": this.props.selectedwallet.publicaddress,
+            "from": this.props.selectedTokenAsset.PublicAddress,
             "nonce": count,
             "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
             "gas": web3.utils.toHex("519990"),//"0x7458",
@@ -222,7 +222,7 @@ class TokenTransferConfirmation extends Component {
             <div className="subtitle">{this.props.selectedwallet.walletname}</div>
             <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"10px"}}>
               <div className="panellabel">{intl.get('TokenTransferConfirmation.From')}</div>
-              <div className="panelvalue">{this.props.selectedwallet.publicaddress}</div>
+              <div className="panelvalue">{this.props.selectedTokenAsset.PublicAddress}</div>
             </div>
             <div className="panelwrapper borderradiusfull" style={{marginBottom:"10px"}}>
               <div className="spacebetween">

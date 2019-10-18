@@ -65,6 +65,7 @@ class walletStore {
   @observable selectedTokenAsset = {};
   @observable basicwallettype = "";
   @observable ledgerresult = {};
+  @observable HWWalletType = "";
 
   userstore = null;
   networkstore = null;
@@ -157,6 +158,10 @@ class walletStore {
 
   @action setselectedwallettype(wallettype){
     this.selectedwallettype = wallettype;
+  }
+
+  @action setHWWalletType(type){
+    this.HWWalletType = type;
   }
 
   @computed get gettrxlist(){
@@ -451,13 +456,14 @@ class walletStore {
       publicaddress : publicaddress,
       addresstype : addresstype,
       wallettype : wallettype,
+      HWWalletType:this.HWWalletType,
       totalowners: parseInt(totalowners),
       totalsignatures: parseInt(totalsignatures),
       holders: holders,
       ownerid:ownerId,
       isOwner:ownerId == this.userstore.userid,
-      tokenassetlist:toJS(this.primaryTokenAsset),
-      isCloud:wallettype == "basicwallet" ? this.basicwallettype == "local" ? false : true : true
+      tokenassetlist:wallettype == "hwwallet" ? [] : this.insertPublicAddressToAssetList(this.primaryTokenAsset,publicaddress),
+      isCloud:this.checkisCloud(wallettype) //wallettype == "basicwallet" ? this.basicwallettype == "local" ? false : true : true
     };
     
     var localwallets = [];
@@ -468,11 +474,35 @@ class walletStore {
       localwallets = JSON.parse(localwallets);
     }
     localwallets.push(wallet);
-
+    // console.log("SaveWallet", JSON.stringify(wallet))
     localStorage.setItem('wallets',JSON.stringify(localwallets));
     this.walletlist = localwallets;
     this.loadWallet();
     this.setSelectedWallet(publicaddress);
+  }
+
+  insertPublicAddressToAssetList = (tokenassetlist,publicaddress) =>{
+    if(tokenassetlist.length > 0){
+      tokenassetlist.map((tokenitem,index)=>{
+        tokenitem.PublicAddress = publicaddress
+      })
+    }
+
+    return toJS(tokenassetlist);
+  }
+
+  checkisCloud(wallettype){
+    let isCloud = false;
+    if(wallettype == "basicwallet"){
+      if(this.basicwallettype == "local"){
+        isCloud = false;
+      }else{
+        isCloud = true;
+      }
+    }
+    if(wallettype == "sharedwallet") isCloud = true;
+    if(wallettype == "hwwallet") isCloud = false;
+    return isCloud;
   }
 
   async CreateEthAddress(){
@@ -558,7 +588,7 @@ class walletStore {
   async CreateHWWallet(walletname,publicaddress,derivepath,tokentype,wallettype){
     try{
       this.SaveWallet(this.userstore.userid,walletname,"","",derivepath,publicaddress,tokentype,wallettype,0,0,[{ "UserId": this.userstore.userid, "UserName": this.userstore.name }]);
-      createNotification('success',intl.get('Wallet.AddedNewAssetToken').replace("{code",publicaddress));
+      // createNotification('success',intl.get('Wallet.AddedNewAssetToken',{code:publicaddress}));
     }catch(e){
       console.log(e);
       createNotification('error',intl.get('Error.Error'));
@@ -950,7 +980,7 @@ class walletStore {
     this.selectedwallet.tokenassetlist.map(async(tokenitem,index) =>{
       // console.log("tokenitem.TokenType" , tokenitem.TokenType)
       if(tokenitem.TokenType == "eth"){
-        web3.eth.getBalance(this.selectedwallet.publicaddress).then(balance => { 
+        web3.eth.getBalance(tokenitem.PublicAddress).then(balance => { 
           balance = balance / (10**18);
           tokenitem.TokenBalance = balance;
           self.totalassetworth += (this.convertrate * balance);
@@ -972,6 +1002,14 @@ class walletStore {
         self.selectedassettokenlist.push(tokenitem);
       }
     });
+  }
+
+  @action getETHBalanceFromAddress(publicaddress){
+    const web3 = new Web3(this.networkstore.selectednetwork.infuraendpoint);
+    web3.eth.getBalance(publicaddress).then(balance => { 
+      balance = balance / (10**18);
+      return balance;
+    })
   }
 
   InsertTokenAssetToCloudWallet(tokenasset,cb){

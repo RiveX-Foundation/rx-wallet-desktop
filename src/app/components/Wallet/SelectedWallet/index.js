@@ -14,6 +14,9 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Curve
 } from 'recharts';
 var Web3 = require('web3');
+import { createNotification } from 'utils/helper';
+const RVX_PATH = "m/44'/5228350'/0'"; //5718350 
+const WALLET_ID = 0x02;
 
 @inject(stores => ({
   selectedWallet : stores.walletStore.selectedwallet,
@@ -31,7 +34,9 @@ var Web3 = require('web3');
   totalassetworth:stores.walletStore.totalassetworth,
   setselectedTokenAsset: tokenasset => stores.walletStore.setselectedTokenAsset(tokenasset),
   currencycode:stores.setting.currencycode,
-  getTotalWorth: wallet => stores.walletStore.getTotalWorth(wallet)
+  getTotalWorth: wallet => stores.walletStore.getTotalWorth(wallet),
+  selectedwallettype:stores.walletStore.selectedwallettype,
+  setledgerresult : result => stores.walletStore.setledgerresult(result),
 }))
 
 @observer
@@ -76,7 +81,50 @@ class SelectedWallet extends Component {
   }
 
   goToAssetTokenList = () =>{
-    this.props.setCurrent("tokenassetlist");
+    if(this.props.selectedwallettype == "basicwallet" || this.props.selectedwallettype == "sharedwallet"){
+      this.props.setCurrent("tokenassetlist");
+    }else if(this.props.selectedwallettype == "hwwallet"){
+      if(this.props.selectedWallet.HWWalletType == "Ledger"){
+        this.connectToLedger();
+      }
+    }
+  }
+
+  connectToLedger = () =>{
+    console.log("connect to ledger")
+    wand.request('wallet_connectToLedger', {}, (err, val) => {
+      if (err) {
+        console.log(err);
+        createNotification('error',intl.get('Error.ConnectLedgerError'));        
+        //callback(err, val);
+      } else {
+        console.log(val);
+        this.getPublicKey();
+      }
+    });
+  }
+
+  
+  getPublicKey = () => {
+    console.log("GET PUBLIC KEY");
+    wand.request('wallet_getPubKeyChainId', {
+      walletID: WALLET_ID,
+      path: RVX_PATH
+    }, (err, val) => {
+      this.getPublicKeyDone(err, val);
+    });
+  }
+
+  getPublicKeyDone = (err, result) => {
+    if (err) {
+      console.log("GET PUBLIC KEY FAILED");
+      createNotification('error',intl.get('Error.ConnectLedgerError'));
+      //message.warn(intl.get('HwWallet.Connect.connectFailed'));
+    } else {
+      console.log(result);
+      this.props.setledgerresult(result);
+      this.props.setCurrent('hwwalletdetail');
+    }
   }
 
   render() {
@@ -102,7 +150,12 @@ class SelectedWallet extends Component {
                         <img src={item.LogoUrl} className="tokenimg"/>
                         <div className="infoctn">
                           <div className="assetcode">{item.AssetCode.toUpperCase()}</div>
-                          <div className="assetcodename">{item.Name}</div>
+                          {
+                            this.props.selectedWallet.wallettype != "hwwallet" ?
+                            <div className="assetcodename">{item.Name}</div>
+                            :
+                            <div className="assetcodename">{item.Name} - <span>{item.PublicAddress}</span></div>
+                          }
                         </div>
                       </div>
                       <div className="tokenassetitemrow">

@@ -30,14 +30,19 @@ const LEDGER = 'ledger';
   getuserStore: () => stores.userRegistration.getthisstore(),
   setWalletList: (walletlist) => stores.walletStore.setWalletList(walletlist),
   CreateHWWallet: (walletname,publicaddress,derivepath,tokentype,wallettype) => stores.walletStore.CreateHWWallet(walletname,publicaddress,derivepath,tokentype,wallettype),
-  InsertTokenAssetToCloudWallet: (tokenasset, cb) => stores.walletStore.InsertTokenAssetToCloudWallet(tokenasset,cb)
+  InsertTokenAssetToCloudWallet: (tokenasset, cb) => stores.walletStore.InsertTokenAssetToCloudWallet(tokenasset,cb),
+  setHWWalletType: type => stores.walletStore.setHWWalletType(type),
 }))
 
 @observer
 class HWWalletDetail extends Component {
 
   state = {
-    allAddress : []
+    allAddress : [],
+    currentaddedaddress:[],
+    createhwwalletcb:false,
+    newaddedaddress:"",
+    calcbalanceaddress:[]
   }
 
   constructor(props) {
@@ -53,28 +58,47 @@ class HWWalletDetail extends Component {
     this.deriveAddresses(this.page * this.pageSize, this.pageSize, true);
   }
 
+  componentWillReceiveProps(newProps){
+    if(this.state.createhwwalletcb){
+      createNotification('success',intl.get('Wallet.AddedNewAssetToken',{code:this.state.newaddedaddress}));
+      this.updateTokenAssetList(newProps.wallets,newProps.wallets.length - 1);
+    }
+  }
+
   back = () =>{
     this.props.setCurrent("hwwalletselection");
   }
 
 
   deriveAddresses = (start, limit, visible = false) => {
+    const web3 = new Web3(this.props.selectednetwork.infuraendpoint);
     let wallet = new HwWallet(this.publicKey, this.chainCode, this.dPath);
     let hdKeys = wallet.getHdKeys(start, limit);
     let addresses = [];
     hdKeys.forEach(hdKey => {
-      //console.log(wanUtil.toChecksumAddress(hdKey.address));
-      addresses.push({ key: hdKey.address, address: wanUtil.toChecksumAddress(hdKey.address), balance: 0, path: hdKey.path,used:false });
+      // addresses.push({ key: hdKey.address, address: wanUtil.toChecksumAddress(hdKey.address), balance: 0, path: hdKey.path,used:false });
+      let checkedAddress = web3.utils.toChecksumAddress(hdKey.address);
+      let isUsed = JSON.stringify(this.props.wallets).indexOf(checkedAddress) > -1;
+      addresses.push({ key: hdKey.address, address: checkedAddress, balance: 0, path: hdKey.path,used:isUsed });
+      if(isUsed){
+        web3.eth.getBalance(checkedAddress).then(balance => { 
+          balance = balance / (10**18);
+          var balance = balance ? `${balance % 1 != 0 ? toFixedNoRounding(balance,4) : toFixedNoRounding(balance,2)}` : `0.00`;
+          let calcaddress = { address: checkedAddress, balance: balance };
+          this.setState({
+            calcbalanceaddress:[...this.state.calcbalanceaddress,calcaddress]
+          })
+        });
+      }
     });
 
-    this.props.wallets.forEach(wallet =>{
-      wallet.tokenassetlist.forEach(token => {
-        if(addresses.find(x => x.address === token.PublicAddress) != null) {
-          addresses.find(x => x.address === token.PublicAddress).used = true;
-        }
-      });
-    });
-    console.log(addresses);
+    // this.props.wallets.forEach(wallet =>{
+    //   wallet.tokenassetlist.forEach(token => {
+    //     if(addresses.find(x => x.address === token.PublicAddress) != null) {
+    //       addresses.find(x => x.address === token.PublicAddress).used = true;
+    //     }
+    //   });
+    // });
 
     this.setState({allAddress : addresses});
 
@@ -99,28 +123,52 @@ class HWWalletDetail extends Component {
   }
 
   addAddress = (e,item) =>{
-    var walletname = "Ledger";
+    this.setState({
+      currentaddedaddress:this.state.currentaddedaddress.concat(item.address),
+      newaddedaddress:item.address
+    },()=>{
+      var walletname = "Ledger";
     
-    var selectedwalletindex = -1;
-    this.props.wallets.map((wallet,index)=>{
-      if(wallet.walletname == walletname){
-        selectedwalletindex = index;
-      }
-    });
+      var selectedwalletindex = -1;
+      this.props.wallets.map((wallet,index)=>{
+        if(wallet.HWWalletType == "Ledger"){
+          selectedwalletindex = index;
+        }
+      });
+  
+      //why do this because CreateHWWallet, but save newtokenasset to old wallet list, 
+      //that why always push to old last wallet tokenassetlist (not the Ledger)
+      //in componentwillreceiveprop to check the updated props from walletStore
+      //when createhwwalletcb = true only updateTokenAssetList
+      this.setState({
+        createhwwalletcb:true
+      },()=>{
+        if(selectedwalletindex == -1){
+          this.props.setHWWalletType("Ledger");
+          this.props.CreateHWWallet(walletname,item.address,item.path,"eth","hwwallet");
+          // selectedwalletindex = this.props.wallets.length-1;
+        }else{
+          this.updateTokenAssetList(this.props.wallets,selectedwalletindex);
+          createNotification('success',intl.get('Wallet.AddedNewAssetToken',{code:this.state.newaddedaddress}));
+        }
+      })
+    })
+  }
 
-    if(selectedwalletindex == -1){
-      this.props.CreateHWWallet(walletname,item.address,item.path,"eth","hwwallet");
-      selectedwalletindex = this.props.wallets.length-1;
-    }
-
-    var tokenitem = {};
-    tokenitem.TokenType = "eth";
-    tokenitem.TokenBalance = 0;
-    tokenitem.AssetCode = "ETH";
-    tokenitem.PublicAddress = item.address;
-
-    this.props.wallets[selectedwalletindex].tokenassetlist.push(tokenitem);
-    this.props.setWalletList(this.props.wallets);
+  updateTokenAssetList = (walletlist,selectedwalletindex) =>{
+    this.setState({
+      createhwwalletcb:false
+    },()=>{
+      var tokenitem = toJS(this.props.allTokenAsset).find(x => x.AssetCode == "eth");
+      // var tokenitem = {};
+      // tokenitem.TokenType = "eth";
+      // tokenitem.TokenBalance = 0;
+      // tokenitem.AssetCode = "ETH";
+      tokenitem.PublicAddress = this.state.newaddedaddress;
+      console.log(tokenitem)
+      walletlist[selectedwalletindex].tokenassetlist.push(tokenitem);
+      this.props.setWalletList(walletlist);
+    })
   }
 
   addTokenToWallet = (tokenasset) =>{
@@ -173,13 +221,18 @@ class HWWalletDetail extends Component {
           <div className="tokenassetwrapper" style={{margin:"20px"}}>
             {
               this.state.allAddress.map((item,index)=>{
+                let balanceinfo = '...';
+                if(item.used && this.state.calcbalanceaddress.find(x => x.address == item.address)){
+                  balanceinfo = `${this.state.calcbalanceaddress.find(x => x.address == item.address).balance} ETH`;
+                }
                 return(
                   <div key={index} className="tokenassetitem">
-                    <div className="tokenassetitemrow">
+                    <div className="tokenassetitemrow_hw">
                       <div className="tokenname">{item.address}</div>
-                      <div className="tokenname">{item.balance}</div>
-                      { (!item.used) &&
+                      { !item.used && JSON.stringify(this.state.currentaddedaddress).indexOf(item.address) == -1 ?
                         <Button type="primary" onClick={e => this.addAddress(e,item)} >{intl.get('Wallet.Add')}</Button>
+                        :
+                        <div className="tokenname">{balanceinfo}</div>
                       }
                     </div>
                   </div>

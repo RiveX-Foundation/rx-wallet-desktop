@@ -13,7 +13,8 @@ import { setDefaultWordlist } from 'bip39';
 @inject(stores => ({
   setCurrent: current => stores.walletStore.setCurrent(current),
   setselectedimporttype: val => stores.walletStore.setselectedimporttype(val),
-  language: stores.languageIntl.language
+  language: stores.languageIntl.language,
+  setBasicWalletType: type => stores.walletStore.setBasicWalletType(type),
 }))
 
 @observer
@@ -27,6 +28,7 @@ class ImportWalletTypeSelection extends Component {
   inputEl1 = null;
   
   componentDidMount(){
+    this.props.setBasicWalletType("local")
   }
 
   inputChanged = e => {

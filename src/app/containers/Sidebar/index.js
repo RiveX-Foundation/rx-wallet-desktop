@@ -114,7 +114,7 @@ class Sidebar extends Component {
 
     const basicwalletstyle = (selectedtab == "wallet" && selectedwallettype == "basicwallet") ? "ant-menu-item fontcolor_red ant-menu-item-selected" : "ant-menu-item fontcolor_red";
     const sharedwalletstyle = (selectedtab == "wallet" && selectedwallettype == "sharedwallet") ? "ant-menu-item fontcolor_orange ant-menu-item-selected" : "ant-menu-item fontcolor_orange";
-    const hardwarewalletstyle = (selectedtab == "wallet" && selectedwallettype == "hardwarewallet") ? "ant-menu-item fontcolor_green ant-menu-item-selected" : "ant-menu-item fontcolor_green";
+    const hardwarewalletstyle = (selectedtab == "wallet" && selectedwallettype == "hwwallet") ? "ant-menu-item fontcolor_green ant-menu-item-selected" : "ant-menu-item fontcolor_green";
     const importwalletstyle = (selectedtab == "wallet" && selectedwallettype == "importwallet") ? "ant-menu-item fontcolor_purple ant-menu-item-selected" : "ant-menu-item fontcolor_purple";
     const settingstyle = (selectedtab == "setting") ? "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open ant-menu-submenu-selected" : "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open";
 

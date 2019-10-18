@@ -94,6 +94,12 @@ class ManageWalletDetail extends Component {
     this.props.setCurrent("managewalletlist");
   }
 
+  onKeyDownChangeName = (e) => {
+    if (e.key === 'Enter') {
+      this.handleChangeWalletNameOk();
+    }
+  }
+
   render() {
 
     const wallet = this.props.walletlist.find(x=>x.publicaddress == this.props.selectedwalletaddress);
@@ -177,7 +183,7 @@ class ManageWalletDetail extends Component {
               <p className='modalcontent'>
                 <div></div>
                 <div className="panelwrapper borderradiusfull">
-                  <Input className="inputEditWalletName" onChange={this.inputChanged} />
+                  <Input className="inputEditWalletName" onChange={this.inputChanged} onKeyDown={this.onKeyDownChangeName} />
                 </div>
               </p>
             </Modal>

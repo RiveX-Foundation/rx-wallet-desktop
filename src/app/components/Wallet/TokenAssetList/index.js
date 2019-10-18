@@ -32,6 +32,7 @@ class TokenAssetList extends Component {
   }
 
   addTokenToWallet = (tokenasset) =>{
+    tokenasset.PublicAddress = this.props.selectedWallet.publicaddress;
     if(this.props.selectedWallet.tokenassetlist.some(x => x.AssetCode == tokenasset.AssetCode)){
       console.log("already have")
       createNotification('error',intl.get('Wallet.TokenAssetAlreadyExist'));

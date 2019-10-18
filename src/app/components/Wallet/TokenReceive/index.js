@@ -12,6 +12,7 @@ var QRCode = require('qrcode.react');
 
 @inject(stores => ({
   selectedWallet : stores.walletStore.selectedwallet,
+  selectedTokenAsset:stores.walletStore.selectedTokenAsset,
   wallets : stores.walletStore.walletlist,
   LoadTransactionByAddress : addr => stores.walletStore.LoadTransactionByAddress(addr),
   loadWallet: () => stores.walletStore.loadWallet(),
@@ -66,15 +67,15 @@ class TokenReceive extends Component {
               <div style={{marginBottom:"10px"}} className="subtitle" >{this.props.selectedWallet.walletname}</div>
               <div className="qrcodectn">
                 <div className="inner">
-                  <QRCode fgColor="#4954AE" size={180} value={this.props.selectedWallet.publicaddress} />
+                  <QRCode fgColor="#4954AE" size={180} value={this.props.selectedTokenAsset.PublicAddress} />
                 </div>
               </div>
               <div className="panelwrapper borderradiusfull">
-                <div>{this.props.selectedWallet.publicaddress}</div>
+                <div>{this.props.selectedTokenAsset.PublicAddress}</div>
                 <img src={buttoncopy} onClick={this.copy} className="copyicon" />
               </div>
 
-              <input style={{marginTop:-99999,position:"absolute"}} ref={(input) => { this.inputEl1 = input; }} type="text" value={this.props.selectedWallet.publicaddress} id="hiddenphase" />
+              <input style={{marginTop:-99999,position:"absolute"}} ref={(input) => { this.inputEl1 = input; }} type="text" value={this.props.selectedTokenAsset.PublicAddress} id="hiddenphase" />
             </div>
           </center>
         </div>
