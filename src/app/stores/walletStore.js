@@ -943,7 +943,7 @@ class walletStore {
     .catch(function (response) {
         //handle error
         createNotification('error','Error.' + intl.get(response.data.msg));
-        console.log(response);
+        console.log("GetPrimaryTokenAssetByNetwork" , response);
     });
   }
 
@@ -964,12 +964,12 @@ class walletStore {
         }else{
           createNotification('error',intl.get('Error.' + response.data.msg));
         }
-        console.log("GetPrimaryTokenAssetByNetwork", response);
+        console.log("GetAllTokenAssetByNetwork", response);
     })
     .catch(function (response) {
         //handle error
         createNotification('error','Error.' + intl.get(response.data.msg));
-        console.log(response);
+        console.log("GetAllTokenAssetByNetwork",response);
     });
   }
 

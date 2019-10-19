@@ -367,16 +367,16 @@ class UserRegistration {
         logintoken:response.token
       }
 
+      this.setToken(response.token);
       this.setUserObject(userid,mobile,name,email,loginid);
+      this.setIsLogin(true);
+      this.setUserAccountExist(true);
 
       this.walletstore.clearSelectedWallet();
       this.walletstore.setselectedwallettype('basicwallet');
       this.walletstore.setCurrent('selectedwallet');
 
       localStorage.setItem('user',JSON.stringify(simpleUser));
-      this.setIsLogin(true);
-      this.setUserAccountExist(true);
-      this.setToken(response.token);
       //self.setCurrent(1);
     }else{
       console.log(intl.get('Error.'+response.msg));
