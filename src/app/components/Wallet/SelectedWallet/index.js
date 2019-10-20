@@ -37,6 +37,8 @@ const WALLET_ID = 0x02;
   getTotalWorth: wallet => stores.walletStore.getTotalWorth(wallet),
   selectedwallettype:stores.walletStore.selectedwallettype,
   setledgerresult : result => stores.walletStore.setledgerresult(result),
+  GetPrimaryTokenAssetByNetwork: () => stores.walletStore.GetPrimaryTokenAssetByNetwork(),
+  GetAllTokenAssetByNetwork:() => stores.walletStore.GetAllTokenAssetByNetwork()
 }))
 
 @observer
@@ -49,6 +51,8 @@ class SelectedWallet extends Component {
 
   componentDidMount(){
     // console.log("totalassetworth", this.props.totalassetworth)
+    this.props.GetPrimaryTokenAssetByNetwork();
+    this.props.GetAllTokenAssetByNetwork();
     this.props.getTokenSparkLineByAssetCode('rvx');
   }
   

@@ -57,9 +57,7 @@ const Step = Steps.Step;
   setCurrent: current => stores.walletStore.setCurrent(current),
   CreateEthAddress: () => stores.walletStore.CreateEthAddress(),
   setUserAccountExist : val => stores.session.setUserAccountExist(val),
-  IsShowWalletListing : stores.session.IsShowWalletListing,
-  GetPrimaryTokenAssetByNetwork: () => stores.walletStore.GetPrimaryTokenAssetByNetwork(),
-  GetAllTokenAssetByNetwork:() => stores.walletStore.GetAllTokenAssetByNetwork()
+  IsShowWalletListing : stores.session.IsShowWalletListing
 }))
 
 @observer
@@ -150,8 +148,7 @@ class Dashboard extends Component {
   }
     
    componentDidMount(){
-    this.props.GetPrimaryTokenAssetByNetwork();
-    this.props.GetAllTokenAssetByNetwork();
+
   }
 
   render() {

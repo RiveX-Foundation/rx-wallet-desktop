@@ -26,6 +26,7 @@ var Tx = require('ethereumjs-tx');
 var abiArray = tokenabi;//JSON.parse(fs.readFileSync(__dirname + '/containers/Config/tokenabi.json', 'utf-8'));
 
 import languageIntl from '../stores/languageIntl';
+import userRegistration from '../stores/userRegistration';
 
 
 class walletStore {
@@ -951,7 +952,7 @@ class walletStore {
     var bodyFormData = new FormData();
     bodyFormData.set('token', this.userstore.token);
     bodyFormData.set('network', this.networkstore.selectednetwork.shortcode);
-
+    console.log("GetAllTokenAssetByNetwork", this.networkstore.selectednetwork.shortcode)
     axios({
       method: 'post',
       url: 'http://rvxadmin.boxybanana.com/api/token/GetAllTokenAssetByNetwork',
@@ -964,7 +965,7 @@ class walletStore {
         }else{
           createNotification('error',intl.get('Error.' + response.data.msg));
         }
-        console.log("GetAllTokenAssetByNetwork", response);
+        console.log("GetAllTokenAssetByNetwork", response.data.tokenassetlist);
     })
     .catch(function (response) {
         //handle error
