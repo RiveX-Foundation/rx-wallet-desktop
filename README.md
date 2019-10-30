@@ -1,4 +1,4 @@
-# RVX Wallet
+# RVX Desktop Wallet
 [![GitHub License][license]][license-url]
 
 RVX Desktop Wallet using Eletron
