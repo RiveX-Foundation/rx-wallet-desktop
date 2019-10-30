@@ -1,0 +1,22 @@
+{
+  "main": {
+    "applicationMenu": {
+      "window": {
+        "toggle": "main.applicationMenu.window.toggle"
+      },
+      "setting": {
+        "lang": {
+          "code": {
+            "en_US": "main.applicationMenu.setting.lang.code.en_US",
+            "zh_CN": "main.applicationMenu.setting.lang.code.zh_CN"
+          }
+        }
+      },
+      "app": {
+        "developer": {
+          "label": "main.applicationMenu.app.developer.label"
+        }
+      }
+    }
+  }
+}
