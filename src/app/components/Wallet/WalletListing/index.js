@@ -100,7 +100,7 @@ class WalletListing extends Component {
               return (
                 <li key={i} id={`rvxwallet_${i}`} onClick={this.selectWallet} data-publicaddress={item.publicaddress}>
                   <div className='walletname'>{item.walletname}</div>
-                  <div className='walletbalance'>{this.props.getTotalWorth(item)} {this.props.currencycode}</div>
+                  {/*<div className='walletbalance'>{this.props.getTotalWorth(item)} {this.props.currencycode}</div>*/}
                 </li> 
               )
             }

@@ -5,7 +5,10 @@ import intl from 'react-intl-universal';
 import { createNotification } from 'utils/helper';
 import { toJS } from "mobx";
 import iWanUtils from '../../../utils/iwanUtils';
+const speakeasy = require("speakeasy");
+const base32 = require('hi-base32');
 
+var QRCode = require('qrcode.react');
 const { tokenabi,API_EthGas } = require('../../../../../config/common');
 var Tx = require('ethereumjs-tx');
 var wanTx = require('wanchain-util').wanchainTx;
@@ -22,6 +25,9 @@ import buttonback from 'static/image/icon/back.png';
   selectedwallet : stores.walletStore.selectedwallet,
   selectedethnetwork : stores.network.selectedethnetwork,
   selectedwannetwork : stores.network.selectedwannetwork,
+  twoFAType: stores.userRegistration.twoFAType,
+  twoFAPassword: stores.userRegistration.twoFAPassword,
+  googleAuthKey: stores.userRegistration.googleAuthKey,
   CreateEthAddress : () => stores.walletStore.CreateEthAddress(),
   wsCreateTrx: (fromwalletpublicaddress,towalletpublicaddress,totaltoken) => stores.walletStore.wsCreateTrx(fromwalletpublicaddress,towalletpublicaddress,totaltoken),
   seedphase: stores.walletStore.seedphase,
@@ -115,19 +121,46 @@ class TokenTransferConfirmation extends Component {
     console.log(event.clipboardData);//.items[0].getAsString());
   }
 
+  check2FAValid(googleauthkey,otp){
+    const secretAscii = base32.decode(googleauthkey);
+    const secretHex = this._toHex(secretAscii);
+    const authcode = speakeasy.totp({
+      secret: secretHex,
+      algorithm: 'sha1',
+      encoding: 'hex'
+    });
+    return authcode == otp;
+  }
+
+
+  _toHex = (key) =>{
+    return new Buffer(key, 'ascii').toString('hex');
+  }
+
   transfer = async () => {
 
     var that = this;
 
-    if(this.props.otptransfertoken == "" || this.state.otp != this.props.otptransfertoken){
+    //if(this.props.otptransfertoken == "" || this.state.otp != this.props.otptransfertoken){
+    //  createNotification('error',intl.get('Error.InvalidOTP'));
+    //  return;
+    //}
+
+    if(this.props.twoFAType == "sms" && this.state.otp != this.props.otptransfertoken) {
       createNotification('error',intl.get('Error.InvalidOTP'));
       return;
     }
 
+    if(this.props.twoFAType == "totp" && !this.check2FAValid(this.props.googleAuthKey,this.state.otp)) {
+      createNotification('error',intl.get('Error.Invalid2FAPassword'));
+      return;
+    }
 
-    //console.log(this.web3Provider);
+    if(this.props.twoFAType == "password" && this.props.twoFAPassword != this.state.otp) {
+      createNotification('error',intl.get('Error.Invalid2FAPassword'));
+      return;
+    }
 
-    //wallettype
     if(this.props.selectedwallet.wallettype == "sharedwallet"){ //PROPOSE TO CLOUD
       this.props.wsCreateTrx(this.props.selectedwallet.publicaddress,this.props.tokentransferreceiver,this.props.tokentransfertoken);
     }else{ //DIRECT EXECUTE TRX
@@ -319,6 +352,7 @@ class TokenTransferConfirmation extends Component {
   }
 
   render() {
+    var totpurl = "otpauth://totp/RVXWallet?secret=" + this.props.googleAuthKey;
     return (
       <div className="tokentransferconfirmationpanel fadeInAnim">
         <div className="title" ><span><img onClick={this.back} width="20px" src={buttonback} /></span><span style={{marginLeft:"20px"}}>{intl.get('TokenTransfer.Confirmation')}</span></div>
@@ -338,10 +372,43 @@ class TokenTransferConfirmation extends Component {
               </div>
             </div>
             <div className="width600 spacebetween" style={{marginBottom:"30px"}}>
-              <div className="panelwrapper borderradiusfull spacebetween" style={{width:"440px",paddingTop:"5px",paddingBottom:"5px"}}>
-                <div className="panellabel" style={{paddingLeft:"0px"}}><Input className="inputTransparent otpinputclass" onChange={this.OTPChange} placeholder={intl.get('Auth.EnterOTP')} /></div>
-              </div>
-              <div className="panelvalue" style={{paddingRight:"0px"}}><Button className="radiusbutton" onClick={this.requestotp} >{intl.get('Auth.RequestOTP')}</Button></div>
+
+              {
+                this.props.twoFAType == "sms" &&
+                <React.Fragment>
+                  <div className="panelwrapper borderradiusfull spacebetween" style={{width:"440px",paddingTop:"5px",paddingBottom:"5px"}}>
+                    <div className="panellabel" style={{paddingLeft:"0px"}}><Input className="inputTransparent otpinputclass" onChange={this.OTPChange} placeholder={intl.get('Auth.EnterOTP')} /></div>
+                  </div>
+                  <div className="panelvalue" style={{paddingRight:"0px"}}><Button className="radiusbutton" onClick={this.requestotp} >{intl.get('Auth.RequestOTP')}</Button></div>
+                </React.Fragment>
+              }
+
+              {
+                this.props.twoFAType == "password" && 
+                <div className="panelwrapper borderradiusfull spacebetween">
+                  <div className="panellabel" style={{marginTop:"5px"}}>{intl.get('Settings.2FASecurity.SecurityCode')}</div>
+                  <Input id="otp" type="password" className="inputTransparent" onChange={this.OTPChange} placeholder={intl.get('Settings.2FASecurity.SecurityCode')} />
+                </div>
+              }
+
+              {
+                this.props.twoFAType == "totp" &&
+                <React.Fragment>
+                  <div>
+                    <div className="panellabel" style={{marginTop:"20px"}}>{intl.get('Settings.2FASecurity.SecurityCode')}</div>
+                    <div className="qrcodectn">
+                      <div className="inner">
+                        <QRCode fgColor="#4954AE" size={130} value={totpurl} />
+                      </div>
+                    </div>
+                  </div>          
+
+                  <div style={{marginLeft:"20px",marginTop:"45px",height:"60px"}} className="panelwrapper borderradiusfull">
+                    <Input id="otp" type="password" className="inputTransparent" onChange={this.OTPChange} placeholder={intl.get('Settings.2FASecurity.SecurityCode')} />
+                  </div>
+                </React.Fragment>      
+              }
+
             </div>
 
             <div><Button className="curvebutton" onClick={this.transfer} >{intl.get('Wallet.Confirm')}</Button></div>

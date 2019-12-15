@@ -110,7 +110,8 @@ class iWanUtils{//extends WsInstance {
       };
 
       this.wss.onclose = (err) => {
-          console.log("ApiInstance notified socket has closed. code: (%s), reason: (%s)", code, reason);
+          //console.log("ApiInstance notified socket has closed. code: (%s), reason: (%s)", code, reason);
+          console.log("socket closed err: ",err);
           if (!this.wss.activeClose) {
               that.reconnect();
           }
@@ -152,11 +153,11 @@ class iWanUtils{//extends WsInstance {
                   } else {
                       that.wss.isAlive = false;
                       if (that.isOpen()) {
-                          that.wss.ping(function noop() {});
+                          //that.wss.ping(function noop() {});
                           // that.wss.ping('{"event": "ping"}');
                       } else {
                           that.events.on("open", () => {
-                              that.wss.ping(function noop() {});
+                              //that.wss.ping(function noop() {});
                               // that.wss.ping('{"event": "ping"}');
                           });
                       }
@@ -804,8 +805,10 @@ class iWanUtils{//extends WsInstance {
     return utils.promiseOrCallback(callback, cb => {
       this._request(method, params, (err, result) => {
         if (err) {
+          console.log("GETBALANCE", err);
           return cb(err);
         }
+        console.log("GETBALANCE", result);
         return cb(null, result);
       });
     });

@@ -3,11 +3,20 @@ import { inject } from 'mobx-react';
 import axios from 'axios';
 import { createNotification } from 'utils/helper';
 import intl from 'react-intl-universal';
+var speakeasy = require("speakeasy");
+const { API_Server } = require('../../../config/common/index');
 
 class Setting {
   @observable current = 'managewalletlist';
   @observable selectedwalletaddress = "";
   @observable currencycode = "USD";
+  @observable selectedprivateaddress = "";  
+
+  userstore = null;
+
+  setuserstore(store){
+    this.userstore = store;
+  }
 
   @action setCurrencyCode(currencycode){
     this.currencycode = currencycode;
@@ -16,6 +25,10 @@ class Setting {
 
   @action setSelectedWalletAddress(val){
     this.selectedwalletaddress = val;
+  }
+
+  @action setSelectedPrivateAddress(val){
+    this.selectedprivateaddress = val;
   }
 
   @action setCurrent(val) {
@@ -48,35 +61,41 @@ class Setting {
     }
   }
 
-  processMobileLogin(response){
-    if(response.status == 200){
-      console.log(response);
+  update2FA(info){
 
-      var name = response.user.Name;
-      var email = response.user.Email;
-      var mobile = response.user.Mobile;
-      var userid = response.user.Id;
-      var countrycode = response.user.CountryCode;
+    var that = this;
+    var googleauthkey = "";
 
-      var simpleUser = {
-        name : name,
-        email : email,
-        mobile : mobile,
-        countrycode:countrycode,
-        userid : userid
-      }
+    var bodyFormData = new FormData();
+    bodyFormData.set('token', this.userstore.token);
+    bodyFormData.set('googleAuthKey', this.userstore.googleAuthKey);
+    bodyFormData.set('twoFAType', info.twoFAType);
+    bodyFormData.set('twoFAPassword', info.password);
 
-      this.setUserObject(userid,mobile,name,email);
-
-      localStorage.setItem('user',JSON.stringify(simpleUser));
-      this.setIsLogin(true);
-      this.setUserAccountExist(true);
-      this.setToken(response.token);
-      //self.setCurrent(1);
-    }else{
-      createNotification('error',intl.get('Error.'+response.msg));
-      //createNotification
+    if(this.userstore.googleAuthKey == null || this.userstore.googleAuthKey == ""){
+      bodyFormData.set('googleAuthKey', speakeasy.generateSecret({length: 20}).base32);
     }
+
+    axios({
+      method: 'post',
+      url: API_Server + 'api/auth/Update2FA',
+      data: bodyFormData,
+      config: { headers: {'Content-Type': 'multipart/form-data' }}
+    })
+    .then(async function (response) {
+      if(response.data.status == 200){
+        createNotification('success',intl.get('Success.ProfileUpdated'));
+        var info = { twoFAType : response.data.user.TwoFAType, twoFAPassword : response.data.user.TwoFAPassword, googleAuthKey : response.data.user.GoogleAuthKey };
+        that.userstore.setTwoFA(info);
+      }else{
+        createNotification('error',response.data.msg);
+      }
+    })
+    .catch(function (response) {
+      createNotification('error',response);
+        //handle error
+      console.log(response);
+    });    
   }
 
 }

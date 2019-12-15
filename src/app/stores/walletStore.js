@@ -8,6 +8,8 @@ import Web3 from 'web3';
 import intl from 'react-intl-universal';
 import { toJS } from "mobx";
 import iWanUtils from '../utils/iwanUtils';
+import wanUtil from "wanchain-util";
+
 const { API_Server,API_EthGas,BIP44PATH,etherscanAPIKey } = require('../../../config/common/index');
 var wanTx = require('wanchain-util').wanchainTx;
 var Tx = require('ethereumjs-tx');
@@ -434,10 +436,10 @@ class walletStore {
   @action removeWallet(publicaddress){
     console.log(publicaddress);
     const filterwalletlist = this.walletlist.filter(x => x.publicaddress !== publicaddress);
+    console.log(toJS(filterwalletlist));
+    localStorage.setItem('wallets',JSON.stringify(filterwalletlist));
     this.walletlist = filterwalletlist;
-    console.log(toJS(this.walletlist));
-    localStorage.setItem('wallets',JSON.stringify(this.walletlist));
-
+    var abc = "";
   }
 
   @action setBasicWalletType(type){
@@ -586,6 +588,11 @@ class walletStore {
           tokenitem.PublicAddress = defaultpublicaddress;
           tokenitem.PrivateAddress = defaultprivatekey;
         }
+
+        if(tokenitem.TokenType == "wan" || tokenitem.TokenType == "wrc20"){ //IF WANCHAIN . CONVERT ALL ADDRESS TO LOWERCASE
+          tokenitem.PublicAddress = tokenitem.PublicAddress.toLowerCase();
+        }
+
         return tokenitem;
       });
 
@@ -630,6 +637,8 @@ class walletStore {
 
   async GenerateAddressByPrivateKey(privatekey){
     var privateaddress = new Buffer(privatekey, 'hex');
+
+    
     const pubKey = ethUtil.privateToPublic(privateaddress);
     const addr = ethUtil.publicToAddress(pubKey).toString('hex');
 

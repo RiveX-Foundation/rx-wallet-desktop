@@ -63,11 +63,13 @@ class TokenReceive extends Component {
           <center>
             <div className="inputwrapper">
               <div style={{marginBottom:"10px"}} className="subtitle" >{this.props.selectedWallet.walletname}</div>
-              <div className="qrcodectn">
-                <div className="inner">
-                  <QRCode fgColor="#4954AE" size={180} value={this.props.selectedTokenAsset.PublicAddress} />
+              <center>
+                <div className="qrcodectn">
+                  <div className="inner">
+                    <QRCode fgColor="#4954AE" size={180} value={this.props.selectedTokenAsset.PublicAddress} />
+                  </div>
                 </div>
-              </div>
+              </center>
               <div className="panelwrapper borderradiusfull">
                 <div>{this.props.selectedTokenAsset.PublicAddress}</div>
                 <img src={buttoncopy} onClick={this.copy} className="copyicon" />

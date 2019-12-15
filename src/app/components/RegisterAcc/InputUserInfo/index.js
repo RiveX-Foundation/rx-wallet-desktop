@@ -61,6 +61,7 @@ class InputUserInfo extends Component {
     return (
       <div className="fadeInAnim loginbg">
         <div className="userinfoleftpanel">
+          <img width="350px" src={logo} />
           <div className="steppanel">
             <div className="circlewrapper"><div className="innerCircle"></div></div>
             <div className="line"></div>
@@ -69,7 +70,6 @@ class InputUserInfo extends Component {
             <div className="circlewrapper"><div className="outterCircle"><div className="innerCircle"></div></div></div>
           </div>
 
-          <img width="130px" src={logo} />
           <div className="title">{intl.get('Register.CreateAccount')}</div>
 
           <div className="inputpanel">
@@ -78,9 +78,13 @@ class InputUserInfo extends Component {
                 <Input id="name" placeholder={intl.get('Register.Name')} className="inputTransparent" onChange={this.inputChanged} />
               </div>
 
-              <div className="panelwrapper borderradiusfull">
-                <Input id="email" placeholder={intl.get('Register.Email')} className="inputTransparent" onChange={this.inputChanged} />
-              </div>
+              {
+                /*
+                <div className="panelwrapper borderradiusfull">
+                  <Input id="email" placeholder={intl.get('Register.Email')} className="inputTransparent" onChange={this.inputChanged} />
+                </div>
+                */
+              }
 
               <div className="panelwrapper borderradiusfull">
                 <Input id="loginid" placeholder={intl.get('Register.LoginId')} className="inputTransparent" onChange={this.inputChanged} />

@@ -1,7 +1,7 @@
 {
   "name": "rvxwallet",
   "productName": "RVX Wallet",
-  "version": "1.0.0",
+  "version": "1.0.7",
   "description": "RiveX Wallet",
   "main": "./build/main.js",
   "author": {
@@ -63,6 +63,7 @@
     "fibers": "^4.0.1",
     "fs-extra": "^8.0.1",
     "hdkey": "^1.1.1",
+    "hi-base32": "^0.5.0",
     "i18next": "^15.0.8",
     "i18next-node-fs-backend": "^2.1.2",
     "jquery": "^3.4.1",
@@ -89,6 +90,7 @@
     "react-sidemenu": "^1.1.0",
     "react-transition-group": "^4.2.2",
     "recharts": "^1.7.1",
+    "speakeasy": "^2.0.0",
     "trezor-connect": "7.0.2-electron.4",
     "uuid": "^3.3.2",
     "wanchain-js-sdk": "github:wanchain/wanchain-js-sdk#pos-beta",

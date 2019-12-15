@@ -4,7 +4,9 @@ import axios from 'axios';
 import sessionstore from './session';
 import { createNotification } from 'utils/helper';
 import intl from 'react-intl-universal';
+const speakeasy = require("speakeasy");
 const { API_Server } = require('../../../config/common/index');
+const base32 = require('hi-base32');
 
 class UserRegistration {
   @observable userid = "";//"5d4bfba8c1241f1388a0c4be";
@@ -20,6 +22,9 @@ class UserRegistration {
   @observable countrycode = "+60";
   @observable otpupdateprofile = "";
   @observable tokenupdateprofile = "";
+  @observable twoFAType = "";
+  @observable twoFAPassword = "";
+  @observable googleAuthKey = "";
 
   walletstore = null;
 
@@ -27,12 +32,21 @@ class UserRegistration {
     this.walletstore = store;
   }
 
-  @action setUserObject(userid,mobile,name,email,loginid){
+  @action setUserObject(userid,mobile,name,email,loginid,twoFAType,twoFAPassword,googleAuthKey){
     this.userid = userid;
     this.mobile = mobile;
     this.name = name;
     this.email = email;
     this.loginid = loginid;
+    this.twoFAType = twoFAType;
+    this.twoFAPassword = twoFAPassword;
+    this.googleAuthKey = googleAuthKey;
+  }
+
+  @action setTwoFA(info){
+    this.twoFAType = info.twoFAType;
+    this.twoFAPassword = info.twoFAPassword;
+    this.googleAuthKey = info.googleAuthKey;
   }
 
   @action setCountryCode(val){
@@ -113,20 +127,47 @@ class UserRegistration {
     //return userRegistrationinstance;
   }
 
+  @action check2FAValid(googleauthkey,otp){
+    const secretAscii = base32.decode(googleauthkey);
+    const secretHex = this._toHex(secretAscii);
+    const authcode = speakeasy.totp({
+      secret: secretHex,
+      algorithm: 'sha1',
+      encoding: 'hex'
+    });
+    return authcode == otp;
+  }
+
+
+  _toHex = (key) =>{
+    return new Buffer(key, 'ascii').toString('hex');
+  }
+  
   wsUpdateProfile(name,email,mobile,countrycode,password,otp,loginid){
 
     var that = this;
 
     console.log(otp);
+    console.log(this.googleAuthKey);
 
-    if(this.otpupdateprofile != otp) {
+    if(this.twoFAType == "sms" && this.otpupdateprofile != otp) {
       createNotification('error',intl.get('Error.InvalidOTP'));
       return;
     }
     
+    if(this.twoFAType == "password" && this.twoFAPassword != otp) {
+      createNotification('error',intl.get('Error.Invalid2FAPassword'));
+      return;
+    }
+
+    if(this.twoFAType == "totp" && !this.check2FAValid(this.googleAuthKey,otp)) {
+      createNotification('error',intl.get('Error.Invalid2FAPassword'));
+      return;
+    }
+
     var bodyFormData = new FormData();
     bodyFormData.set('name', name);
-    bodyFormData.set('token', this.tokenupdateprofile);
+    bodyFormData.set('token', this.token);//USE NORMAL TOKEN INSTEAD //tokenupdateprofile);
     bodyFormData.set('email', email);
     bodyFormData.set('countrycode', countrycode);
     bodyFormData.set('password', password);
@@ -253,13 +294,44 @@ class UserRegistration {
     });
   }
 
+  wsEmailRegistration(){
+    var bodyFormData = new FormData();
+    if(this.email == "" || this.email == null){
+      createNotification('error',intl.get('Error.Emailisempty'));
+      return;
+    }
+
+    bodyFormData.set('email', this.email);
+    bodyFormData.set('emailnotification', true);
+    
+    axios({
+      method: 'post',
+      url: API_Server + 'api/auth/RegisterEmailOTP',
+      data: bodyFormData,
+      config: { headers: {'Content-Type': 'multipart/form-data' }}
+    })
+    .then(function (response) {
+        //handle success
+        self.processEmailRegistration(response.data);
+    })
+    .catch(function (response) {
+        //handle error
+        createNotification('error',response);
+        console.log(response);
+    });
+  }
+
   wsLogin(){
     // console.log("wsLogin");
     var bodyFormData = new FormData();
-    bodyFormData.set('mobile', this.mobile);
-    bodyFormData.set('countrycode', this.countrycode);
+    //bodyFormData.set('mobile', this.mobile);
+    //bodyFormData.set('countrycode', this.countrycode);
+    bodyFormData.set('email', this.email);
     bodyFormData.set('password', this.password);
     
+    console.log(this.email);
+    console.log(this.password);
+
     axios({
       method: 'post',
       url: API_Server + 'api/auth/Login',
@@ -267,6 +339,7 @@ class UserRegistration {
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
     .then(function (response) {
+      console.log(response);
         //handle success
         self.processMobileLogin(response.data);
     })
@@ -308,6 +381,16 @@ class UserRegistration {
     }
   }
 
+  processEmailRegistration(response){
+    if(response.status == 200){
+      console.log(response);
+      self.setToken(response.token);
+      self.setCurrent('inputotp');
+    }else{
+      createNotification('error',intl.get('Error.'+response.msg));
+    }
+  }
+
   wsRequestUpdateProfileTokenOTP(){
     var bodyFormData = new FormData();
     bodyFormData.set('token', this.token);
@@ -317,7 +400,7 @@ class UserRegistration {
 
     axios({
       method: 'post',
-      url: API_Server + '/api/auth/RequestUpdateProfileTokenOTP',
+      url: API_Server + 'api/auth/RequestUpdateProfileTokenOTP',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
@@ -339,8 +422,6 @@ class UserRegistration {
 
   processMobileLogin(response){
     if(response.status == 200){
-      console.log(response);
-
       //if(response.user.GenericAttributes.find(x => x.Key == "FirstName") == null) { name ="" }else{ name = response.user.GenericAttributes.find(x => x.Key == "FirstName").Value };
       var name = response.user.Name;
       var email = response.user.Email;
@@ -348,6 +429,9 @@ class UserRegistration {
       var loginid = response.user.LoginId;
       var userid = response.user.Id;
       var countrycode = response.user.CountryCode;
+      var twoFAType = response.user.TwoFAType;
+      var twoFAPassword = response.user.TwoFAPassword;
+      var googleAuthKey = response.user.GoogleAuthKey;
 
       var simpleUser = {
         name : name,
@@ -356,11 +440,14 @@ class UserRegistration {
         countrycode:countrycode,
         loginid:loginid,
         userid : userid,
-        logintoken:response.token
+        logintoken:response.token,
+        twoFAType:twoFAType,
+        twoFAPassword:twoFAPassword,
+        googleAuthKey:googleAuthKey
       }
       
       this.setToken(response.token);
-      this.setUserObject(userid,mobile,name,email,loginid);
+      this.setUserObject(userid,mobile,name,email,loginid,twoFAType,twoFAPassword,googleAuthKey);
       this.setIsLogin(true);
       this.setUserAccountExist(true);
 

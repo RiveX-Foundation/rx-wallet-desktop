@@ -16,6 +16,7 @@ import buttonimportwallet from 'static/image/icon/importwallet.png';
 import buttonbasicwallet from 'static/image/icon/basicwallet.png';
 import buttonsharedwallet from 'static/image/icon/sharedwallet.png';
 import buttonhardwarewallet from 'static/image/icon/hardwarewallet.png';
+import buttonwrdex from 'static/image/icon/wrdex_color_100.png';
 
 
 
@@ -101,6 +102,13 @@ class Sidebar extends Component {
     this.props.setCurrent('settings');
   }
 
+  selectdex = () => {
+    this.props.clearSelectedWallet();
+    this.props.setselectedwallettype("");
+    this.setState({selectedtab:"dex"});
+    this.props.setCurrent('dex');
+  }
+
   logout = () => {
     console.log("LOGOUT");
     this.props.logout();
@@ -116,6 +124,7 @@ class Sidebar extends Component {
     const sharedwalletstyle = (selectedtab == "wallet" && selectedwallettype == "sharedwallet") ? "ant-menu-item fontcolor_orange ant-menu-item-selected" : "ant-menu-item fontcolor_orange";
     const hardwarewalletstyle = (selectedtab == "wallet" && selectedwallettype == "hwwallet") ? "ant-menu-item fontcolor_green ant-menu-item-selected" : "ant-menu-item fontcolor_green";
     const importwalletstyle = (selectedtab == "wallet" && selectedwallettype == "importwallet") ? "ant-menu-item fontcolor_purple ant-menu-item-selected" : "ant-menu-item fontcolor_purple";
+    const dexstyle = (selectedtab == "dex") ? "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open ant-menu-submenu-selected" : "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open";
     const settingstyle = (selectedtab == "setting") ? "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open ant-menu-submenu-selected" : "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open";
 
 
@@ -153,7 +162,7 @@ class Sidebar extends Component {
           <ul className="ant-menu menuTreeNode ant-menu-dark ant-menu-root ant-menu-inline" role="menu">
             <li className="ant-menu-submenu ant-menu-submenu-inline" role="menuitem">
               <div className="ant-menu-submenu-title" aria-expanded="true" aria-haspopup="true" aria-owns="/$Menu">
-                <span><img src={buttonwallet} width="20px" /><span>{intl.get('menuConfig.wallet')}</span></span>
+                <span><img src={buttonwallet} width="20px" /><span className="sidebar_fontsize">{intl.get('menuConfig.wallet')}</span></span>
               </div>
               <ul id="/$Menu" className="ant-menu ant-menu-sub ant-menu-inline" role="menu">
                 <li className={basicwalletstyle} data-tabvalue="wallet" data-wallettype="basicwallet" onClick={this.selectwallettype} role="menuitem"><img src={buttonbasicwallet} width="25px" />{intl.get('menuConfig.basicwallet')}</li>
@@ -162,9 +171,14 @@ class Sidebar extends Component {
                 <li className={importwalletstyle} data-tabvalue="wallet" data-wallettype="importwallet" onClick={this.selectimportwallettype} role="menuitem"><img src={buttonimportwallet} width="25px" />{intl.get('menuConfig.importwallet')}</li>
               </ul>
             </li>
+            <li data-tabvalue="dex" className={dexstyle} onClick={this.selectdex} role="menuitem">
+              <div className="ant-menu-submenu-title" aria-expanded="true" aria-haspopup="true" aria-owns="/$Menu">
+                <span><img src={buttonwrdex} width="20px" /><span className="sidebar_fontsize sidebar_dexfontcolor">{intl.get('Dex.Dex')}</span></span>
+              </div>
+            </li>
             <li data-tabvalue="setting" className={settingstyle} onClick={this.selectsettings} role="menuitem">
               <div className="ant-menu-submenu-title" aria-expanded="true" aria-haspopup="true" aria-owns="/$Menu">
-                <span><img src={buttonsettings} width="20px" /><span>{intl.get('Settings.settings')}</span></span>
+                <span><img src={buttonsettings} width="20px" /><span className="sidebar_fontsize">{intl.get('Settings.settings')}</span></span>
               </div>
             </li>
             <li style={{display:'None'}} className="ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open" role="menuitem">

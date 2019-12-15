@@ -30,12 +30,13 @@ const Step = Steps.Step;
   setHasAcc : val => stores.session.setHasAcc(val),
   setUserAccountExist : val => stores.session.setUserAccountExist(val),
   wsMobileRegistration : () => stores.userRegistration.wsMobileRegistration(),
+  wsEmailRegistration : () => stores.userRegistration.wsEmailRegistration(),
   wsUserRegistration : () => stores.userRegistration.wsUserRegistration(),
   wsOTPVerification : type => stores.userRegistration.wsOTPVerification(type),
   setIsLogin: status => stores.userRegistration.setIsLogin(status),
   setUserAccountExist: status => stores.userRegistration.setUserAccountExist(status),
   setToken: token => stores.userRegistration.setToken(token),
-  setUserObject: (userid,mobile,name,email,loginid) => stores.userRegistration.setUserObject(userid,mobile,name,email,loginid)
+  setUserObject: (userid,mobile,name,email,loginid,twoFAType,twoFAPassword,googleAuthKey) => stores.userRegistration.setUserObject(userid,mobile,name,email,loginid,twoFAType,twoFAPassword,googleAuthKey)
 }))
 
 @observer
@@ -60,7 +61,7 @@ class Login extends Component {
     if(!isNullOrEmpty(userinfo)){
      console.log("userinfo", JSON.parse(userinfo));
      let simpleUser = JSON.parse(userinfo);
-     this.props.setUserObject(simpleUser.userid,simpleUser.mobile,simpleUser.name,simpleUser.email,simpleUser.loginid);
+     this.props.setUserObject(simpleUser.userid,simpleUser.mobile,simpleUser.name,simpleUser.email,simpleUser.loginid,simpleUser.twoFAType,simpleUser.twoFAPassword,simpleUser.googleAuthKey);
      this.props.setIsLogin(true);
      this.props.setUserAccountExist(true);
      this.props.setToken(simpleUser.logintoken);
@@ -73,7 +74,8 @@ class Login extends Component {
     const { mobile } = this.props;
     const { current} = this.props;
     if (current === 0) {
-      this.props.wsMobileRegistration();
+      //this.props.wsMobileRegistration();
+      this.props.wsEmailRegistration();
     } else if(current === 1){
       this.props.wsOTPVerification('registration');
     } else if(current === 2){
