@@ -28,18 +28,16 @@ class TokenReceive extends Component {
 
   inputEl1 = null;
 
+  onChange = () => {
+    
+  }
+
   componentDidMount(){
     // this.loadwallet();
   }
   
-  inputChanged = e => {
-    this.setState({ mobilevalue : e.target.value }, () => {
-      this.props.setMobile(this.state.mobilevalue);
-    });
-  }
-
   loadTransaction = () => {
-    this.props.LoadTransactionByAddress(this.props.selectedWallet.publicaddress);
+    this.props.LoadTransactionByAddress(this.props.selectedTokenAsset.PublicAddress);
   }
 
   loadwallet = () => {
@@ -75,7 +73,7 @@ class TokenReceive extends Component {
                 <img src={buttoncopy} onClick={this.copy} className="copyicon" />
               </div>
 
-              <input style={{marginTop:-99999,position:"absolute"}} ref={(input) => { this.inputEl1 = input; }} type="text" value={this.props.selectedTokenAsset.PublicAddress} id="hiddenphase" />
+              <input onChange={this.onChange} style={{marginTop:-99999,position:"absolute"}} ref={(input) => { this.inputEl1 = input; }} type="text" value={this.props.selectedTokenAsset.PublicAddress} id="hiddenphase" />
             </div>
           </center>
         </div>

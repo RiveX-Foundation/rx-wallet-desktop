@@ -3,15 +3,24 @@ import { inject } from 'mobx-react';
 import axios from 'axios';
 import { createNotification } from 'utils/helper';
 import intl from 'react-intl-universal';
-const { network } = require('../../../config/common/network');
+const { ethnetwork,wannetwork } = require('../../../config/common/network');
 
 class Network {
-  @observable networklist = [];
-  @observable selectednetwork = {};
+  @observable ethnetworklist = [];
+  @observable wannetworklist = [];
+  @observable selectedethnetwork = {};
+  @observable selectedwannetwork = {};
 
-  @action setNetwork(networkcode){
-    this.selectednetwork = this.networklist.find(x => x.shortcode == networkcode);
-    localStorage.setItem('network',JSON.stringify(this.selectednetwork));
+  @action setNetwork(networkcode,networktype){
+    if(networktype == "eth"){
+      this.selectedethnetwork = this.ethnetworklist.find(x => x.shortcode == networkcode);
+      localStorage.setItem("ethnetwork",JSON.stringify(this.selectedethnetwork));
+    }
+
+    if(networktype == "wan"){
+      this.selectedwannetwork = this.wannetworklist.find(x => x.shortcode == networkcode);
+      localStorage.setItem("wannetwork",JSON.stringify(this.selectedwannetwork));
+    }
   }
 
   getthisstore(){
@@ -19,39 +28,30 @@ class Network {
   }
 
   constructor(){
-    this.networklist = network;
-    this.networklist = this.networklist.filter(x => x.contractaddress != "");
-    this.loadNetworkConfig();
+    this.ethnetworklist = ethnetwork;
+    this.ethnetworklist = this.ethnetworklist.filter(x => x.active == true);
 
-    //this.readTextFile("../../static/network.json");
+    this.wannetworklist = wannetwork;
+    this.wannetworklist = this.wannetworklist.filter(x => x.active == true);
+
+    this.loadNetworkConfig();
   }
 
   @action loadNetworkConfig(){
-    var network = localStorage.getItem("network");
-    if(network == "" || network == null){
-      network = JSON.stringify(this.networklist[0]);
-      localStorage.setItem("network",network);
+    var ethnetwork = localStorage.getItem("ethnetwork");
+    if(ethnetwork == "" || ethnetwork == null){
+      ethnetwork = JSON.stringify(this.ethnetworklist[0]);
+      localStorage.setItem("ethnetwork",ethnetwork);
     }
-    this.selectednetwork = JSON.parse(network);
-  }
+    this.selectedethnetwork = JSON.parse(ethnetwork);
 
-  @action readTextFile = file => {
-    var that = this;
-    var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", file, false);
-    rawFile.onreadystatechange = () => {
-        if (rawFile.readyState === 4) {
-            if (rawFile.status === 200 || rawFile.status == 0) {
-                var allText = rawFile.responseText;
-                console.log(allText);
-                this.networklist = JSON.parse(allText);
-                this.networklist = this.networklist.filter(x => x.contractaddress != "");
-                this.loadNetworkConfig();
-            }
-        }
-    };
-    rawFile.send(null);
-  };
+    var wannetwork = localStorage.getItem("wannetwork");
+    if(wannetwork == "" || wannetwork == null){
+      wannetwork = JSON.stringify(this.wannetworklist[0]);
+      localStorage.setItem("wannetwork",wannetwork);
+    }
+    this.selectedwannetwork = JSON.parse(wannetwork);
+  }
 }
 
 const self = new Network();

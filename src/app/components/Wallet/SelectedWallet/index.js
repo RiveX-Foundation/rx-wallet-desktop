@@ -20,10 +20,11 @@ const WALLET_ID = 0x02;
 
 @inject(stores => ({
   selectedWallet : stores.walletStore.selectedwallet,
+  selectedTokenAsset : stores.walletStore.selectedTokenAsset,
   wallets : stores.walletStore.walletlist,
   gettrxlist : stores.walletStore.gettrxlist,
   LoadTransactionByAddress : addr => stores.walletStore.LoadTransactionByAddress(addr),
-  wsGetMultiSigTrx : walletpublicaddress => stores.walletStore.wsGetMultiSigTrx(walletpublicaddress),
+  wsGetMultiSigTrx : (walletpublicaddress,senderpublicaddress,assetcode) => stores.walletStore.wsGetMultiSigTrx(walletpublicaddress,senderpublicaddress,assetcode),
   loadWallet: () => stores.walletStore.loadWallet(),
   settrxdetail: (block,hash,from,to,value,action,gasprice,gasused,timestamp,nonce,confirmation,signers) =>stores.walletStore.settrxdetail(block,hash,from,to,value,action,gasprice,gasused,timestamp,nonce,confirmation,signers),
   setCurrent: current => stores.walletStore.setCurrent(current),
@@ -50,7 +51,6 @@ class SelectedWallet extends Component {
   }
 
   componentDidMount(){
-    // console.log("totalassetworth", this.props.totalassetworth)
     this.props.GetPrimaryTokenAssetByNetwork();
     this.props.GetAllTokenAssetByNetwork();
     this.props.getTokenSparkLineByAssetCode('rvx');
@@ -62,8 +62,9 @@ class SelectedWallet extends Component {
     });
   }
 
-  loadTransaction = () => {
-    this.props.LoadTransactionByAddress(this.props.selectedWallet.publicaddress);
+  loadTransaction = (tokenitem) => {
+    console.log("public addr", tokenitem.PublicAddress);
+    this.props.LoadTransactionByAddress(tokenitem.PublicAddress);
   }
 
   transferToken = (e,tokenitem) => {
@@ -79,9 +80,10 @@ class SelectedWallet extends Component {
   }
 
   openTokenDetail = (tokenitem) =>{
+    // console.log(toJS(this.props.selectedWallet))
     this.props.setselectedTokenAsset(tokenitem);
     this.props.setCurrent('walletdetail');
-    this.loadTransaction();
+    this.loadTransaction(tokenitem);
   }
 
   goToAssetTokenList = () =>{
@@ -165,7 +167,7 @@ class SelectedWallet extends Component {
                       <div className="tokenassetitemrow">
                         <div className="amountctn">
                           <div className="totalcoin">{item.TokenBalance ? `${item.TokenBalance % 1 != 0 ? toFixedNoRounding(item.TokenBalance,4) : toFixedNoRounding(item.TokenBalance,2)}` : `0.00`}<span>{item.AssetCode.toUpperCase()}</span></div>
-                          <div className="totalcurrency">${numberWithCommas(parseFloat(!isNaN(this.props.convertrate * item.TokenBalance) ? this.props.convertrate * item.TokenBalance : 0),true)} {this.props.currencycode}</div>
+                          <div className="totalcurrency">${numberWithCommas(parseFloat(!isNaN(item.TokenPrice * item.TokenBalance) ? item.TokenPrice * item.TokenBalance : 0),true)} {this.props.currencycode}</div>
                         </div>
                         <div className="chartctn">
                           <ResponsiveContainer width={'100%'} height={200}>
@@ -194,10 +196,14 @@ class SelectedWallet extends Component {
                   )
                 })
               }
-              <div className="addmorebtn" onClick={this.goToAssetTokenList}>
-                <img src={plusicon} />
-                <div>{intl.get("Wallet.AddMore").toUpperCase()}</div>
-              </div>
+
+              {
+                this.props.selectedWallet.seedphase != "" && 
+                <div className="addmorebtn" onClick={this.goToAssetTokenList}>
+                  <img src={plusicon} />
+                  <div>{intl.get("Wallet.AddMore").toUpperCase()}</div>
+                </div>
+              }
             </div>
           </div>
 

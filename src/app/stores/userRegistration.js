@@ -4,6 +4,7 @@ import axios from 'axios';
 import sessionstore from './session';
 import { createNotification } from 'utils/helper';
 import intl from 'react-intl-universal';
+const { API_Server } = require('../../../config/common/index');
 
 class UserRegistration {
   @observable userid = "";//"5d4bfba8c1241f1388a0c4be";
@@ -27,7 +28,6 @@ class UserRegistration {
   }
 
   @action setUserObject(userid,mobile,name,email,loginid){
-    console.log("setUserObject", userid,mobile,name,email,loginid)
     this.userid = userid;
     this.mobile = mobile;
     this.name = name;
@@ -123,8 +123,6 @@ class UserRegistration {
       createNotification('error',intl.get('Error.InvalidOTP'));
       return;
     }
-
-    console.log("TOKEN",this.tokenupdateprofile);
     
     var bodyFormData = new FormData();
     bodyFormData.set('name', name);
@@ -138,13 +136,12 @@ class UserRegistration {
     var that = this;
     axios({
       method: 'post',
-      url: 'http://rvxadmin.boxybanana.com/api/auth/UpdateCustomer',
+      url: API_Server + 'api/auth/UpdateCustomer',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
     .then(function (response) {
         //handle success
-        console.log(response);
         that.mobile = mobile;
         that.email = email;
         that.countrycode = countrycode;
@@ -160,7 +157,6 @@ class UserRegistration {
           logintoken:that.token
         }
         localStorage.setItem('user',JSON.stringify(simpleUser));
-        console.log(JSON.stringify(simpleUser))
         that.setotpupdateprofiletoken("");
         that.settokenupdateprofile("");
         //self.processUserRegistration(response.data);
@@ -213,13 +209,12 @@ class UserRegistration {
     
     axios({
       method: 'post',
-      url: 'http://rvxadmin.boxybanana.com/api/auth/UpdateCustomerRegistration',
+      url: API_Server + 'api/auth/UpdateCustomerRegistration',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
     .then(function (response) {
         //handle success
-        console.log(response);
         self.processUserRegistration(response.data);
     })
     .catch(function (response) {
@@ -243,14 +238,13 @@ class UserRegistration {
     
     axios({
       method: 'post',
-      url: 'http://rvxadmin.boxybanana.com/api/auth/RegisterMobileOTP',
+      url: API_Server + 'api/auth/RegisterMobileOTP',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
     .then(function (response) {
         //handle success
         self.processMobileRegistration(response.data);
-        console.log(response);
     })
     .catch(function (response) {
         //handle error
@@ -268,14 +262,13 @@ class UserRegistration {
     
     axios({
       method: 'post',
-      url: 'http://rvxadmin.boxybanana.com/api/auth/Login',
+      url: API_Server + 'api/auth/Login',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
     .then(function (response) {
         //handle success
         self.processMobileLogin(response.data);
-        console.log(response);
     })
     .catch(function (response) {
         //handle error
@@ -291,14 +284,13 @@ class UserRegistration {
     bodyFormData.set('token', this.token);
     axios({
       method: 'post',
-      url: 'http://rvxadmin.boxybanana.com/api/auth/VerifyMobileOTP',
+      url: API_Server + 'api/auth/VerifyMobileOTP',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
     .then(function (response) {
         //handle success
         self.processOTPVerification(response.data);
-        console.log(response);
     })
     .catch(function (response) {
         //handle error
@@ -325,7 +317,7 @@ class UserRegistration {
 
     axios({
       method: 'post',
-      url: 'http://rvxadmin.boxybanana.com/api/auth/RequestUpdateProfileTokenOTP',
+      url: API_Server + '/api/auth/RequestUpdateProfileTokenOTP',
       data: bodyFormData,
       config: { headers: {'Content-Type': 'multipart/form-data' }}
     })
@@ -366,7 +358,7 @@ class UserRegistration {
         userid : userid,
         logintoken:response.token
       }
-
+      
       this.setToken(response.token);
       this.setUserObject(userid,mobile,name,email,loginid);
       this.setIsLogin(true);
@@ -377,6 +369,7 @@ class UserRegistration {
       this.walletstore.setCurrent('selectedwallet');
 
       localStorage.setItem('user',JSON.stringify(simpleUser));
+
       //self.setCurrent(1);
     }else{
       console.log(intl.get('Error.'+response.msg));

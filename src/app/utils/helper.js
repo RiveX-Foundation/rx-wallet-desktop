@@ -5,38 +5,6 @@ import {NotificationContainer, NotificationManager} from 'react-notifications';
 
 let emitterHandlers = {};
 
-
-
-      //return new Promise((resolve, reject) => {
-      //});
-
-      /*
-    axios.post('http://rvxadmin.boxybanana.com/api/auth/RegisterMobileOTP', {
-      mobile: "131313"
-    })
-    .then(function (response) {
-      console.log(response);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-  */
-    /*
-    let thisVal
-    wand.request('address_balance', { addr: addrArr }, (err, val) => {
-      thisVal = Object.assign({}, val);
-      if (err) {
-        return reject('Get balance failed ', err)
-      } else {
-        Object.keys(thisVal).forEach(item => {
-          return thisVal[item] = fromWei(thisVal[item])
-        });
-        return resolve(thisVal);
-      }
-    })
-    */
-//};
-
 export const createNotification = (type,message) => {
   //console.log('TYPE',type);
   //console.log(message);

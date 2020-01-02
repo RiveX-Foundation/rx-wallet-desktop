@@ -30,7 +30,7 @@ const LEDGER = 'ledger';
   getuserStore: () => stores.userRegistration.getthisstore(),
   setWalletList: (walletlist) => stores.walletStore.setWalletList(walletlist),
   CreateHWWallet: (walletname,publicaddress,derivepath,tokentype,wallettype) => stores.walletStore.CreateHWWallet(walletname,publicaddress,derivepath,tokentype,wallettype),
-  InsertTokenAssetToCloudWallet: (tokenasset, cb) => stores.walletStore.InsertTokenAssetToCloudWallet(tokenasset,cb),
+  InsertTokenAssetToCloudWallet: (tokenasset,publicaddress,cb) => stores.walletStore.InsertTokenAssetToCloudWallet(tokenasset,publicaddress,cb),
   setHWWalletType: type => stores.walletStore.setHWWalletType(type),
 }))
 
@@ -177,7 +177,7 @@ class HWWalletDetail extends Component {
       createNotification('error',intl.get('Wallet.TokenAssetAlreadyExist'));
     }else{
       if(this.props.selectedWallet.isCloud){
-        this.props.InsertTokenAssetToCloudWallet(tokenasset,()=>{
+        this.props.InsertTokenAssetToCloudWallet([tokenasset],this.props.selectedWallet.publicaddress,()=>{
           this._UpdateWalletStorage(tokenasset);
         })
       }else{

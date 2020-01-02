@@ -5,6 +5,7 @@ import intl from 'react-intl-universal';
 import './index.less';
 import { toJS } from "mobx";
 import { getDatefromTimestamp, toFixedNoRounding, numberWithCommas, createNotification } from 'utils/helper';
+import iWanUtils from 'utils/iwanUtils';
 import logo from 'static/image/graphic/logo.png';
 import buttonreceive from 'static/image/icon/receive.png';
 import buttonsend from 'static/image/icon/send.png';
@@ -24,7 +25,8 @@ var Web3 = require('web3');
   wallets : stores.walletStore.walletlist,
   gettrxlist : stores.walletStore.gettrxlist,
   LoadTransactionByAddress : addr => stores.walletStore.LoadTransactionByAddress(addr),
-  wsGetMultiSigTrx : walletpublicaddress => stores.walletStore.wsGetMultiSigTrx(walletpublicaddress),
+  removeTokenAssetFromWallet : token => stores.walletStore.removeTokenAssetFromWallet(token),
+  wsGetMultiSigTrx : (walletpublicaddress,senderpublicaddress,assetcode) => stores.walletStore.wsGetMultiSigTrx(walletpublicaddress,senderpublicaddress,assetcode),
   loadWallet: () => stores.walletStore.loadWallet(),
   settrxdetail: (block,hash,from,to,value,action,gasprice,gasused,timestamp,nonce,confirmation,signers) =>stores.walletStore.settrxdetail(block,hash,from,to,value,action,gasprice,gasused,timestamp,nonce,confirmation,signers),
   setCurrent: current => stores.walletStore.setCurrent(current),
@@ -34,7 +36,8 @@ var Web3 = require('web3');
   selectedTokenAsset:stores.walletStore.selectedTokenAsset,
   convertrate:stores.walletStore.convertrate,
   currencycode:stores.setting.currencycode,
-  selectednetwork:stores.network.selectednetwork,
+  selectedethnetwork:stores.network.selectedethnetwork,
+  selectedwannetwork:stores.network.selectedwannetwork,
   setSelectedWallet : publicaddress => stores.walletStore.setSelectedWallet(publicaddress),
   RemoveTokenAssetInCloudWallet: (cb) => stores.walletStore.RemoveTokenAssetInCloudWallet(cb)
 }))
@@ -46,13 +49,15 @@ class WalletDetail extends Component {
   state = {
     trxlist : [],
     showhideremovetoken:false,
-    isPrimary:false
+    isPrimary:false,
+    selecteddataset: {}
   }
 
   componentDidMount(){
+    // console.log(JSON.stringify(this.props.selectedWallet))
     this.props.getTokenSparkLineByAssetCode('rvx');
     // console.log("selectedTokenAsset" , this.props.selectedTokenAsset)
-    var TokenInfo = this.props.selectedTokenAsset.TokenInfoList.find(x => x.Network == this.props.selectednetwork.shortcode);
+    var TokenInfo = this.props.selectedTokenAsset.TokenInfoList[0];//.find(x => x.Network == this.props.selectednetwork.shortcode);
     this.setState({
       isPrimary:TokenInfo.IsPrimary
     })
@@ -65,7 +70,6 @@ class WalletDetail extends Component {
   }
 
   loadTransaction = () => {
-    // this.props.LoadTransactionByAddress(this.props.selectedWallet.publicaddress);
     this.props.LoadTransactionByAddress(this.props.selectedTokenAsset.PublicAddress);
   }
 
@@ -83,21 +87,46 @@ class WalletDetail extends Component {
   }
 
   loadtrxdetail = event => {
-    this.props.settrxdetail(
-      event.currentTarget.dataset.block,
-      event.currentTarget.dataset.hash,
-      event.currentTarget.dataset.from,
-      event.currentTarget.dataset.to,
-      event.currentTarget.dataset.value,
-      event.currentTarget.dataset.action,
-      event.currentTarget.dataset.gasprice,
-      event.currentTarget.dataset.gasused,
-      event.currentTarget.dataset.timestamp,
-      event.currentTarget.dataset.nonce,
-      event.currentTarget.dataset.confirmation,
-      event.currentTarget.dataset.signers.split(',')
+    if(this.props.selectedWallet.wallettype == "sharedwallet" || this.props.selectedTokenAsset.TokenType == "eth" || this.props.selectedTokenAsset.TokenType == "erc20"){
+      this.props.settrxdetail(
+        event.currentTarget.dataset.block,
+        event.currentTarget.dataset.hash,
+        event.currentTarget.dataset.from,
+        event.currentTarget.dataset.to,
+        event.currentTarget.dataset.value,
+        event.currentTarget.dataset.action,
+        event.currentTarget.dataset.gasprice,
+        event.currentTarget.dataset.gasused,
+        event.currentTarget.dataset.timestamp,
+        event.currentTarget.dataset.nonce,
+        event.currentTarget.dataset.confirmation,
+        event.currentTarget.dataset.signers.split(',')
       );
       this.props.setCurrent("transactiondetail");
+    }else if(this.props.selectedTokenAsset.TokenType == "wan" || this.props.selectedTokenAsset.TokenType == "wrc20"){
+      var that = this;
+      this.setState({selecteddataset:event.currentTarget.dataset});
+      iWanUtils.getBlockByNumber("WAN",event.currentTarget.dataset.block).then(response => {
+        var dataset = this.state.selecteddataset;
+        that.props.settrxdetail(
+          dataset.block,
+          dataset.hash,
+          dataset.from,
+          dataset.to,
+          dataset.value,
+          dataset.action,
+          dataset.gasprice,
+          dataset.gasused,
+          response.timestamp,
+          dataset.nonce,
+          dataset.confirmation,
+          dataset.signers.split(',')
+        );
+        that.props.setCurrent("transactiondetail");
+      }).catch(err => {
+        console.log(err);
+      });
+    }
   }
 
   back = () => {
@@ -123,26 +152,28 @@ class WalletDetail extends Component {
   }
 
   confirmRemoveToken = () => {
-    console.log("come in liao 0")
     if(this.props.selectedWallet.isCloud){
       this.props.RemoveTokenAssetInCloudWallet(()=>{
-        this._UpdateWalletStorage();
+        this.props.removeTokenAssetFromWallet(this.props.selectedTokenAsset);
+        //this._UpdateWalletStorage();
       })
     }else{
+      this.props.removeTokenAssetFromWallet(this.props.selectedTokenAsset);
       this.showHideRemoveToken();
-      this._UpdateWalletStorage();
+      //this._UpdateWalletStorage();
     }
+    createNotification('success',intl.get('Wallet.RemovedTokenAsset',{code:this.props.selectedTokenAsset.AssetCode.toUpperCase()}));
+    this.props.setCurrent("selectedwallet");
   }
 
+  /*
   _UpdateWalletStorage = () =>{
-    console.log("come in liao 1")
     try {
       const value = localStorage.getItem('wallets')
       if(value !== null) {
         let walletlist = JSON.parse(value);
         if(walletlist.length > 0){
           walletlist.map((wallet,index)=>{
-            // console.log(wallet.publicaddress , this.props.selectedWallet.publicaddress)
             if(wallet.publicaddress == this.props.selectedTokenAsset.PublicAddress){
               console.log("come in liao 2")
               createNotification('success',intl.get('Wallet.RemovedTokenAsset',{code:this.props.selectedTokenAsset.AssetCode.toUpperCase()}));
@@ -159,6 +190,7 @@ class WalletDetail extends Component {
       // error reading value
     }
   }
+  */
 
   render() {
     const dataMax = Math.max(...this.props.TokenSparkLine.map(i => i.value));
@@ -217,7 +249,7 @@ class WalletDetail extends Component {
                         <td className="tdright header">{intl.get('Table.Amount')}</td>
                         <td className="tdcenter header">{intl.get('Table.From')}</td>
                         <td className="tdcenter header">{intl.get('Table.To')}</td>
-                        <td className="tdcenter header">{intl.get('Table.Time')}</td>
+                        { (this.props.selectedTokenAsset.TokenType != "wrc20" && this.props.selectedTokenAsset.TokenType != "wan") && <td className="tdcenter header">{intl.get('Table.Time')}</td> }
                       </tr>
                     </thead>
                     <tbody>
@@ -259,7 +291,7 @@ class WalletDetail extends Component {
                               <td className={valueClass}>{plusminusSign} {item.value} {this.props.selectedTokenAsset.AssetCode.toUpperCase()}</td>
                               <td className="tdcenter tdgrey"><span className="tdellipsis">{item.from}</span></td>
                               <td className="tdcenter tdgrey"><span className="tdellipsis">{item.to}</span></td>
-                              <td className="tdcenter tdgrey">{dateobj.getFullYear() + "-" + (dateobj.getMonth()+1).toString().padStart(2, '0') + "-" + dateobj.getDate().toString().padStart(2, '0') + " " + dateobj.getHours().toString().padStart(2, '0') + ":" + dateobj.getMinutes().toString().padStart(2, '0') + ":" + dateobj.getSeconds().toString().padStart(2, '0')}</td>
+                              { (this.props.selectedTokenAsset.TokenType != "wrc20" && this.props.selectedTokenAsset.TokenType != "wan") && <td className="tdcenter tdgrey">{dateobj.getFullYear() + "-" + (dateobj.getMonth()+1).toString().padStart(2, '0') + "-" + dateobj.getDate().toString().padStart(2, '0') + " " + dateobj.getHours().toString().padStart(2, '0') + ":" + dateobj.getMinutes().toString().padStart(2, '0') + ":" + dateobj.getSeconds().toString().padStart(2, '0')}</td> }
                             </tr>
                           )
                         }

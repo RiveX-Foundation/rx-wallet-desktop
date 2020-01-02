@@ -166,7 +166,6 @@ class ManageWallet extends Component {
                       <div>
                         <div className="panelleft walletname">{item.walletname}</div>
                         <div className="panelleft wallettype">{wallettype}</div>
-                        <div className="panelleft balance">{this.props.getTotalWorth(item)} {this.props.currencycode}</div>
                       </div>
                       <div className="panelright" data-walletname={item.walletname} data-publicaddress={item.publicaddress} onClick={ e => this.removewallet(e,item)}><img src={buttonclose} /></div>
                     </div>

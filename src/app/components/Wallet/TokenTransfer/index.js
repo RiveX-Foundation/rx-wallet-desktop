@@ -5,6 +5,7 @@ import intl from 'react-intl-universal';
 import { createNotification } from 'utils/helper';
 import buttonback from 'static/image/icon/back.png';
 import buttonpaste from 'static/image/icon/paste.png';
+const { API_EthGas } = require('../../../../../config/common/index');
 
 var Tx = require('ethereumjs-tx');
 var Web3 = require('web3');
@@ -56,12 +57,10 @@ class TokenTransfer extends Component {
 
   onChangeTokenValue = e => {
     this.setState({tokenval:e.target.value});
-    //this.props.setMnemonic(e.target.value.replace(/^\s+|\s+$/g, '').replace(/\s+/g, ' '));
   }
 
   onChangeReceiver = e => {
     this.setState({receiver:e.target.value});
-    //this.props.setMnemonic(e.target.value.replace(/^\s+|\s+$/g, '').replace(/\s+/g, ' '));
   }
 
   copy = () => {
@@ -69,7 +68,7 @@ class TokenTransfer extends Component {
   }
 
   getCurrentGasPrices = async () => {
-    let response = await Axios.get("https://ethgasstation.info/json/ethgasAPI.json");
+    let response = await Axios.get(API_EthGas);
 
     let prices = {
       low : response.data.safeLow,

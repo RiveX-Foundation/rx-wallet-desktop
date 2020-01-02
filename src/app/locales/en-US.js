@@ -11,6 +11,8 @@ const en_US = {
     'Settings.Profile': 'Profile',
     'Settings.Currency': 'Currency',
     'Settings.Network': 'Network',
+    'Settings.ETHNetwork': 'Ethereum Network',
+    'Settings.WANNetwork': 'Wanchain Network',
     'Settings.EditWalletName': 'Edit Wallet Name',
     'Settings.ManageWallets': 'Manage Wallets',
     'Settings.Language': 'Language',

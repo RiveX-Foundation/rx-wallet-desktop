@@ -3,39 +3,6 @@ import { BigNumber } from 'bignumber.js';
 
 let emitterHandlers = {};
 
-
-
-      //return new Promise((resolve, reject) => {
-      //});
-
-      /*
-    axios.post('http://rvxadmin.boxybanana.com/api/auth/RegisterMobileOTP', {
-      mobile: "131313"
-    })
-    .then(function (response) {
-      console.log(response);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-  */
-    /*
-    let thisVal
-    wand.request('address_balance', { addr: addrArr }, (err, val) => {
-      thisVal = Object.assign({}, val);
-      if (err) {
-        return reject('Get balance failed ', err)
-      } else {
-        Object.keys(thisVal).forEach(item => {
-          return thisVal[item] = fromWei(thisVal[item])
-        });
-        return resolve(thisVal);
-      }
-    })
-    */
-//};
-
-
 export const getNonce = function (addrArr, chainType) {
   return new Promise((resolve, reject) => {
     wand.request('address_getNonce', { addr: addrArr, chainType: chainType }, (err, val) => {

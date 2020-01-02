@@ -3,9 +3,14 @@ import { Input, Radio, Tooltip, Button } from 'antd';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
 import { createNotification } from 'utils/helper';
-const { tokenabi } = require('../../../../../config/common');
+import { toJS } from "mobx";
+import iWanUtils from '../../../utils/iwanUtils';
+
+const { tokenabi,API_EthGas } = require('../../../../../config/common');
 var Tx = require('ethereumjs-tx');
+var wanTx = require('wanchain-util').wanchainTx;
 var Web3 = require('web3');
+
 //var fs = require('fs');
 
 import './index.less';
@@ -15,7 +20,8 @@ import buttonback from 'static/image/icon/back.png';
 
 @inject(stores => ({
   selectedwallet : stores.walletStore.selectedwallet,
-  selectednetwork : stores.network.selectednetwork,
+  selectedethnetwork : stores.network.selectedethnetwork,
+  selectedwannetwork : stores.network.selectedwannetwork,
   CreateEthAddress : () => stores.walletStore.CreateEthAddress(),
   wsCreateTrx: (fromwalletpublicaddress,towalletpublicaddress,totaltoken) => stores.walletStore.wsCreateTrx(fromwalletpublicaddress,towalletpublicaddress,totaltoken),
   seedphase: stores.walletStore.seedphase,
@@ -43,8 +49,11 @@ class TokenTransferConfirmation extends Component {
   }
 
   componentDidMount(){
-    this.tokencontract = this.props.selectednetwork.contractaddr;
-    this.web3Provider = this.props.selectednetwork.infuraendpoint;
+    this.tokencontract = this.props.selectedTokenAsset.TokenInfoList[0].ContractAddress;
+    if(this.props.selectedTokenAsset.TokenType == "eth" || this.props.selectedTokenAsset.TokenType == "erc20"){
+      this.web3Provider = this.props.selectedethnetwork.infuraendpoint;
+    }
+
     this.props.setotptransfertoken("");
     this.get12SeedPhase();
   }
@@ -84,7 +93,7 @@ class TokenTransferConfirmation extends Component {
   }
 
   getCurrentGasPrices = async () => {
-    let response = await Axios.get("https://ethgasstation.info/json/ethgasAPI.json");
+    let response = await Axios.get(API_EthGas);
 
     let prices = {
       low : response.data.safeLow,
@@ -115,8 +124,8 @@ class TokenTransferConfirmation extends Component {
       return;
     }
 
-    console.log(this.web3Provider);
-    const web3 = new Web3(this.web3Provider);
+
+    //console.log(this.web3Provider);
 
     //wallettype
     if(this.props.selectedwallet.wallettype == "sharedwallet"){ //PROPOSE TO CLOUD
@@ -129,6 +138,8 @@ class TokenTransferConfirmation extends Component {
         var amountToSend = this.props.tokentransfertoken;
         let gasPrices = await this.getCurrentGasPrices();
         var nonce = 0;
+
+        const web3 = new Web3(this.web3Provider);
         web3.eth.getTransactionCount(from).then(txCount => {
           nonce = txCount++;
           let details = {
@@ -138,11 +149,11 @@ class TokenTransferConfirmation extends Component {
             "gas": 21000,
             "gasPrice": gasPrices.high * 1000000000, 
             "nonce": nonce,
-            "chainId": this.props.selectednetwork.chainid
+            "chainId": this.props.selectedethnetwork.chainid
           }
   
-          var transaction = this.props.selectednetwork.shortcode == "mainnet" ? new Tx(details) : new Tx(details, {chain:this.props.selectednetwork.shortcode, hardfork: 'petersburg'});
-          transaction.sign(Buffer.from(this.props.selectedwallet.privatekey, 'hex'))
+          var transaction = this.props.selectedethnetwork.shortcode == "mainnet" ? new Tx(details) : new Tx(details, {chain:this.props.selectedethnetwork.shortcode, hardfork: 'petersburg'});
+          transaction.sign(Buffer.from(this.props.selectedTokenAsset.PrivateAddress, 'hex'))
           const serializedTransaction = transaction.serialize()
           web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, hash) => {
             if (!err){ //SUCCESS
@@ -155,14 +166,117 @@ class TokenTransferConfirmation extends Component {
             }
           });
         });
-      }else{
-        // var abiArray = tokenabi.abiarray;//JSON.parse(fs.readFileSync(__dirname + '/containers/Config/tokenabi.json', 'utf-8'));
-        var count = await web3.eth.getTransactionCount(this.props.selectedTokenAsset.PublicAddress);
-        var gasPrices = await this.getCurrentGasPrices();
-        // console.log(gasPrices);
+      }else if(this.props.selectedTokenAsset.TokenType == "wan"){
+        const web3 = new Web3(this.web3Provider);
         var TokenInfo = this.props.selectedTokenAsset.TokenInfoList[0];
         var abiArray = JSON.parse(TokenInfo.AbiArray);
-        //var contractdata = new web3.eth.Contract(abiArray, tokencontract, {from: this.props.selectedwallet.publicaddress}); //).at(this.tokencontract);
+        var receiver = this.props.tokentransferreceiver;//"0x8859C2BE1a9D6Fbe37E1Ed58c103487eE7B8b90F";
+
+        iWanUtils.getNonce("WAN", this.props.selectedTokenAsset.PublicAddress).then(async (res) =>  {
+          if (res && Object.keys(res).length) {
+            var nonce = res;
+            try{
+              iWanUtils.getGasPrice("WAN").then(async (gas) =>  {
+                var gasprice = gas;
+                var rawTransaction = {
+                  "from": this.props.selectedTokenAsset.PublicAddress,
+                  "nonce": nonce,
+                  "gasPrice": 180000000000,//gasprice,// * 1000,//"0x737be7600",//gasPrices.high * 100000000,//"0x04e3b29200",
+                  "gas": '0x35B60',//"0x5208",//"0x7458",
+                  "gasLimit": '0x35B60',//web3.utils.toHex("519990"),//"0x7458",
+                  "Txtype": "0x01",
+                  "to": receiver,
+                  "value": web3.utils.toHex( web3.utils.toWei(this.props.tokentransfertoken, 'ether') ),
+                  "chainId": this.props.selectedwannetwork.chainid
+                };
+                console.log("trx raw", rawTransaction);
+                var privKey = new Buffer(this.props.selectedTokenAsset.PrivateAddress,'hex');//"35e0ec8f5d689f370cdc9c35a04d1664c9316aadbd2ac508cfa69f3de7aaa233", 'hex');
+                var tx = new wanTx(rawTransaction);
+                tx.sign(privKey);
+
+                var serializedTx = tx.serialize();
+                iWanUtils.sendRawTransaction("WAN", '0x' + serializedTx.toString('hex')).then(res => {
+                  that.props.setsuccessulhash(res);
+                  that.props.setCurrent("tokentransfersuccessful");              
+                }).catch(err => {
+                  createNotification('error',intl.get('Error.TransactionFailed'));
+                  console.log(err);
+                });
+              }).catch(err => {
+                console.log(err);
+              });
+            }catch(e){}
+          }
+        }).catch(err => {
+          console.log(err);
+        });
+      }else if(this.props.selectedTokenAsset.TokenType == "wrc20"){
+        const web3 = new Web3(this.web3Provider);
+        var TokenInfo = this.props.selectedTokenAsset.TokenInfoList[0];
+        var abiArray = JSON.parse(TokenInfo.AbiArray);
+        
+        var contractdata = new web3.eth.Contract(abiArray, TokenInfo.ContractAddress);
+        var receiver = this.props.tokentransferreceiver;//"0x8859C2BE1a9D6Fbe37E1Ed58c103487eE7B8b90F";
+
+        iWanUtils.getNonce("WAN", this.props.selectedTokenAsset.PublicAddress).then(async (res) =>  {
+          if (res && Object.keys(res).length) {
+            var nonce = res;
+            try{
+              iWanUtils.getGasPrice("WAN").then(async (gas) =>  {
+                var gasprice = gas;
+
+                var data = web3.eth.abi.encodeFunctionCall({
+                  name: 'transfer',
+                  type: 'function',
+                  inputs: [{
+                    name: "recipient",
+                    type: "address"
+                  }, {
+                    name: "amount",
+                    type: "uint256"
+                  }]
+                }, [receiver, web3.utils.toWei(this.props.tokentransfertoken, 'ether')]);
+
+                var rawTransaction = {
+                  "from": this.props.selectedTokenAsset.PublicAddress,
+                  "nonce": nonce,
+                  "gasPrice": 180000000000,//gasprice,// * 1000,//"0x737be7600",//gasPrices.high * 100000000,//"0x04e3b29200",
+                  "gas": '0x35B60',//"0x5208",//"0x7458",
+                  "gasLimit": '0x35B60',//web3.utils.toHex("519990"),//"0x7458",
+                  "Txtype": "0x01",
+                  "to": TokenInfo.ContractAddress,//this.tokencontract,
+                  "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+                  "data": data, //contractdata.methods.transfer(receiver,10).encodeABI(),//data, 
+                  "chainId": this.props.selectedwannetwork.chainid //"0x03" //1 mainnet
+                };
+                console.log("trx raw", rawTransaction);
+                var privKey = new Buffer(this.props.selectedTokenAsset.PrivateAddress,'hex');//"35e0ec8f5d689f370cdc9c35a04d1664c9316aadbd2ac508cfa69f3de7aaa233", 'hex');
+                var tx = new wanTx(rawTransaction);
+                tx.sign(privKey);
+
+                var serializedTx = tx.serialize();
+                iWanUtils.sendRawTransaction("WAN", '0x' + serializedTx.toString('hex')).then(res => {
+                  console.log(res);
+                  that.props.setsuccessulhash(res);
+                  that.props.setCurrent("tokentransfersuccessful");                  
+                }).catch(err => {
+                  createNotification('error',intl.get('Error.TransactionFailed'));
+                  console.log(err);
+                });
+              }).catch(err => {
+                console.log(err);
+              });
+            }catch(e){}
+          }
+        }).catch(err => {
+          console.log(err);
+        });
+      }else if(this.props.selectedTokenAsset.TokenType == "erc20"){
+        const web3 = new Web3(this.web3Provider);
+        var count = await web3.eth.getTransactionCount(this.props.selectedTokenAsset.PublicAddress);
+        var gasPrices = await this.getCurrentGasPrices();
+        var TokenInfo = this.props.selectedTokenAsset.TokenInfoList[0];
+        var abiArray = JSON.parse(TokenInfo.AbiArray);
         var contractdata = new web3.eth.Contract(abiArray, TokenInfo.ContractAddress);//, {from: this.props.selectedwallet.publicaddress}); //).at(this.tokencontract);
         var rawTransaction = {};
         try{
@@ -175,12 +289,12 @@ class TokenTransferConfirmation extends Component {
             "to": TokenInfo.ContractAddress,//this.tokencontract,
             "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
             "data": contractdata.methods.transfer(this.props.tokentransferreceiver,web3.utils.toWei(this.props.tokentransfertoken, 'ether')).encodeABI(),//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
-            "chainId": this.props.selectednetwork.chainid
+            "chainId": this.props.selectedethnetwork.chainid
           };
 
-          console.log(rawTransaction);
+          //console.log(rawTransaction);
 
-          var privKey = new Buffer(this.props.selectedwallet.privatekey, 'hex');
+          var privKey = new Buffer(this.props.selectedTokenAsset.PrivateAddress, 'hex');
 
           var tx = new Tx(rawTransaction);
           tx.sign(privKey);
@@ -202,15 +316,6 @@ class TokenTransferConfirmation extends Component {
         }
       }
     }
-
-  //console.log(this.props.selectedwallet);
-  //console.log(rawTransaction);
-  //console.log(privKey);
-    
-    /*
-    
-    
-    */
   }
 
   render() {

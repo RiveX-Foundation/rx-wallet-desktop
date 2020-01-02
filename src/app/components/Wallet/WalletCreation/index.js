@@ -29,6 +29,10 @@ class WalletCreation extends Component {
 
   inputEl1 = null;
   
+  onChange = e => {
+
+  }
+
   componentDidMount(){
     var seed = this.props.generate12SeedPhase();
     this.generateSeedPhaseList(seed);
@@ -62,13 +66,12 @@ class WalletCreation extends Component {
       )
     }
     );    
-    this.setState({ seedphaseel : seedel },()=>{console.log(this.state.seedphaseel)}); 
+    this.setState({ seedphaseel : seedel }); 
   }
 
   copy = () => {
     this.inputEl1.select();
     document.execCommand('copy');
-    console.log("COPY DONE");
     // This is just personal preference.
     // I prefer to not show the the whole text area selected.
     //e.target.focus();
@@ -85,7 +88,6 @@ class WalletCreation extends Component {
 
   render() {
     const { seedphaseel } = this.state;
-    console.log(this.state.seedphaseel);
     return (
       <div className="walletcreationpanel fadeInAnim">
         <div className="title" ><span><img onClick={this.back} width="20px" src={buttonback} /></span><span style={{marginLeft:"20px"}}>{intl.get('Wallet.RecoveryPhrase')}</span></div>
@@ -98,7 +100,7 @@ class WalletCreation extends Component {
               <div className="hint2" style={{marginTop:"40px"}}>{intl.get('Wallet.NeverShareRecovery')}</div>
               <div><Button className="curvebutton"  onClick={this.next} >{intl.get('Wallet.IHaveBackupMySeed')}</Button></div>
 
-              <input style={{marginTop:-99999,position:"absolute"}} ref={(input) => { this.inputEl1 = input; }} type="text" value={this.state.mnemonic} id="hiddenphase" />
+              <input onChange={this.onChange} style={{marginTop:-99999,position:"absolute"}} ref={(input) => { this.inputEl1 = input; }} type="text" value={this.state.mnemonic} id="hiddenphase" />
             </div>
           </center>
         </div>

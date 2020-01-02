@@ -13,6 +13,7 @@ var QRCode = require('qrcode.react');
 @inject(stores => ({
   selectedwalletaddress: stores.setting.selectedwalletaddress,
   wallets : stores.walletStore.walletlist,
+  selectedTokenAsset : stores.walletStore.selectedTokenAsset,
   LoadTransactionByAddress : addr => stores.walletStore.LoadTransactionByAddress(addr),
   setCurrent: current => stores.setting.setCurrent(current),
   language: stores.languageIntl.language
@@ -36,7 +37,7 @@ class ExportPrivateKey extends Component {
   }
 
   loadTransaction = () => {
-    this.props.LoadTransactionByAddress(this.props.selectedWallet.publicaddress);
+    this.props.LoadTransactionByAddress(this.props.selectedTokenAsset.PublicAddress);
   }
 
   back = () => {

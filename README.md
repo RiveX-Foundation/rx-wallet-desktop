@@ -1,15 +1,14 @@
-# RVX Wallet
+# RVX Desktop Wallet
 [![GitHub License][license]][license-url]
 
-This is a desktop wallet
+RVX Desktop Wallet using Eletron
 
 ## Features
 
-* BIP39/BIP44 support
-* WAN coin transaction support
-* Ledger support
-* Galaxy PoS delegation support
-* English/Chinese support
+* ERC20 , Eth , WAN , WRC20
+* BIP39/BIP44
+* Ledger
+* English/Chinese
 
 ## Development
 
@@ -57,11 +56,11 @@ MAC OS :
 ### Download
 Download source code from github
 
-    git clone https://github.com/wanchain/wan-wallet-desktop.git
-    cd wan-wallet-desktop
+    git clone https://github.com/RiveX-Foundation/rvx-desktop-wallet.git
+    cd rvx-desktop-wallet
 
 ### Environment File
-Firstly, you need to access [iWan website](https://iwan.wanchain.org/), and apply for you personal API_KEY and SECRET_KEY.
+iWan SDK is needed to Integrate with Wanchain, therefore to get started please access [iWan website](https://iwan.wanchain.org/), and apply for you personal API_KEY and SECRET_KEY.
 
 Then, create a file named ".env" in the root directory of the project and add your personal API_KEY and SECRET_KEY into it:
 .env:
@@ -104,4 +103,4 @@ Then, create a file named ".env" in the root directory of the project and add yo
 RVX Wallet is open source software licensed as GPL-3.0
 
 [license]: https://img.shields.io/badge/license-GNUGPL3-blue.svg
-[license-url]:https://github.com/wanchain/wan-wallet-desktop/blob/master/LICENSE
+[license-url]:https://github.com/RiveX-Foundation/rvx-desktop-wallet/blob/master/LICENSE

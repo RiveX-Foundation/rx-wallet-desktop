@@ -111,22 +111,26 @@ class TransactionDetail extends Component {
             <div className="panellabel">{intl.get('Transaction.CreatedOn')}</div>
             <div className="panelvalue">{dateobj.getFullYear() + "-" + (dateobj.getMonth()+1).toString().padStart(2, '0') + "-" + dateobj.getDate().toString().padStart(2, '0') + " " + dateobj.getHours().toString().padStart(2, '0') + ":" + dateobj.getMinutes().toString().padStart(2, '0') + ":" + dateobj.getSeconds().toString().padStart(2, '0')}</div>
           </div>
-          <div className="spacebetween" style={{width:"600px"}}>
+
+          <div className="spacebetween" style={{width:"700px"}}>
             <div className="panelwrapper borderradiusfull spacebetween signerspanelcolor" style={{marginBottom:"10px",padding:"10px 10px",width:"500px"}}>
               <div className="panellabel">{intl.get('Transaction.TotalSigners')}</div>
               <div className="panelvalue">{this.props.trxdetail.signers.length} / {this.props.selectedwallet.totalsignatures}</div>
             </div>
-            {
-              this.props.trxdetail.action == "approve" && 
-                <Button type="primary" className="approvebutton" onClick={this.approve} data-trxid={this.props.trxdetail.hash} >{intl.get('Transaction.Approve')}</Button>
-            }
 
-            {
-              this.props.trxdetail.action != "approve" && 
-                <div className="actionlabel">{intl.get('STATUS.' + this.props.trxdetail.action)}</div>
-            }
+            <div>
+              {
+                this.props.trxdetail.action == "approve" && 
+                  <Button type="primary" className="approvebutton" onClick={this.approve} data-trxid={this.props.trxdetail.hash} >{intl.get('Transaction.Approve')}</Button>
+              }
 
+              {
+                this.props.trxdetail.action != "approve" && 
+                  <div className="actionlabel">{intl.get('STATUS.' + this.props.trxdetail.action)}</div>
+              }
+            </div>
           </div>
+
         </div>
       );
     }
@@ -161,7 +165,7 @@ class TransactionDetail extends Component {
           <center>
             <div>{this.state.layout}</div>
             { this.props.selectedwallet.wallettype == "sharedwallet" &&
-              <div className="spacebetween">
+              <div className="spacebetween" style={{width:"700px"}}>
                 <div className="panelwrapper borderradiusfull signerspanelcolor" style={{marginBottom:"10px",padding:"10px",width:"700px"}}>
                 {
                   

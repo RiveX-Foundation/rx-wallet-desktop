@@ -9,6 +9,8 @@ const zh_CN = {
     'Settings.Profile': '用户资料',
     'Settings.Currency': '货币',
     'Settings.Network': '网络',
+    'Settings.ETHNetwork': 'Ethereum 网络',
+    'Settings.WANNetwork': 'Wanchain 网络',
     'Settings.EditWalletName': '编辑钱包名称',
     'Settings.ManageWallets': '管理钱包',
     'Settings.Language': '语言',

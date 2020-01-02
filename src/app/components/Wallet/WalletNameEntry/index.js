@@ -73,7 +73,6 @@ class WalletNameEntry extends Component {
 
   render() {
     const { seedphaseel } = this.state;
-    console.log(this.state.seedphaseel);
     return (
       <div className="walletnameentrypanel fadeInAnim">
         <div className="title" ><span><img onClick={this.back} width="20px" src={buttonback} /></span><span style={{marginLeft:"20px"}}>{intl.get('Wallet.KeyInWalletName')}</span></div>

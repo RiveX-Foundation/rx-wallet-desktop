@@ -52,7 +52,7 @@ class Login extends Component {
   }
 
   componentDidMount(){
-    this.checkUserExist();
+    //this.checkUserExist();
   }
 
   checkUserExist = () =>{

@@ -114,11 +114,6 @@ class ManageWalletDetail extends Component {
               <div className="panellabel">{wallet.walletname}</div>
               <div className="panelvalue"><img onClick={this.editwalletname} style={{cursor:"pointer"}} width="20px" src={buttonedit} /></div>
             </div>
-            <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"10px"}}>
-              {/* <div className="panellabel">{wallet.rvx_balance} RVX</div> */}
-              <div className="panellabel">{this.props.getTotalWorth(wallet)} {this.props.currencycode}</div>
-              <div className="panelvalue"></div>
-            </div>
 
             {
               wallet.holders != null &&

@@ -9,6 +9,7 @@ out
 # electron package dir
 /dist
 /build
+/nm_replace
 
 # Runtime data
 pids

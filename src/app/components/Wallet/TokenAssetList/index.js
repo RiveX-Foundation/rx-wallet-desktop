@@ -12,41 +12,54 @@ import { createNotification } from 'utils/helper';
 var Web3 = require('web3');
 
 @inject(stores => ({
-  selectednetwork: stores.network.selectednetwork,
+  selectedethnetwork: stores.network.selectedethnetwork,
+  selectedwannetwork: stores.network.selectedwannetwork,
+  selectedTokenAsset: stores.walletStore.selectedTokenAsset,
   allTokenAsset:stores.walletStore.allTokenAsset,
   setCurrent: current => stores.walletStore.setCurrent(current),
+  addTokenAssetToWallet : token => stores.walletStore.addTokenAssetToWallet(token),
+  GenerateBIP39Address : async (derivepath, seed) => stores.walletStore.GenerateBIP39Address(derivepath,seed),
   selectedWallet : stores.walletStore.selectedwallet,
   setSelectedWallet : publicaddress => stores.walletStore.setSelectedWallet(publicaddress),
   loadWallet: () => stores.walletStore.loadWallet(),
-  InsertTokenAssetToCloudWallet: (tokenasset, cb) => stores.walletStore.InsertTokenAssetToCloudWallet(tokenasset,cb)
+  InsertTokenAssetToCloudWallet: (tokenasset,publicaddress,cb) => stores.walletStore.InsertTokenAssetToCloudWallet(tokenasset,publicaddress,cb)
 }))
 
 @observer
 class TokenAssetList extends Component {
 
   state = {
+    color : (this.props.selectedTokenAsset.TokenType == "wrc20" || this.props.selectedTokenAsset.TokenType == "wan") ? this.props.selectedwannetwork.color : this.props.selectedethnetwork.color,
+    name : (this.props.selectedTokenAsset.TokenType == "wrc20" || this.props.selectedTokenAsset.TokenType == "wan") ? this.props.selectedwannetwork.name : this.props.selectedethnetwork.name
   }
 
   back = () =>{
     this.props.setCurrent("selectedwallet");
   }
 
-  addTokenToWallet = (tokenasset) =>{
-    tokenasset.PublicAddress = this.props.selectedWallet.publicaddress;
+  addTokenToWallet = async (tokenasset) =>{
+    //tokenasset.PublicAddress = this.props.selectedWallet.publicaddress;
+    //tokenasset.PrivateAddress = this.props.selectedWallet.privateaddress;
     if(this.props.selectedWallet.tokenassetlist.some(x => x.AssetCode == tokenasset.AssetCode)){
-      console.log("already have")
       createNotification('error',intl.get('Wallet.TokenAssetAlreadyExist'));
     }else{
+      var derivepath = this.props.selectedWallet.derivepath;
+      var seed = this.props.selectedWallet.seedphase;
+      var walletkey = await this.props.GenerateBIP39Address(derivepath + "0", seed);
+      tokenasset.PrivateAddress = walletkey.privateaddress;
+      tokenasset.PublicAddress = walletkey.publicaddress;
       if(this.props.selectedWallet.isCloud){
-        this.props.InsertTokenAssetToCloudWallet(tokenasset,()=>{
-          this._UpdateWalletStorage(tokenasset);
+        this.props.InsertTokenAssetToCloudWallet([tokenasset],this.props.selectedWallet.publicaddress,()=>{
+          this.props.addTokenAssetToWallet(tokenasset);
         })
       }else{
-        this._UpdateWalletStorage(tokenasset);
+        this.props.addTokenAssetToWallet(tokenasset);
       }
+      this.props.setCurrent("selectedwallet");
     }
   }
 
+  /*
   _UpdateWalletStorage = (tokenasset) =>{
     try {
       const value = localStorage.getItem('wallets');
@@ -70,6 +83,7 @@ class TokenAssetList extends Component {
       // error reading value
     }
   }
+  */
 
   render() {
     return (
@@ -77,7 +91,7 @@ class TokenAssetList extends Component {
         <div>
           <div className="walletname" onClick={this.back} style={{cursor:"pointer"}}>
             <span><img width="20px" src={buttonback} /></span>
-            <span style={{marginLeft:"20px"}}>{intl.get('Wallet.AddNewTokenAsset').toUpperCase()} - <span style={{color:this.props.selectednetwork.color}}>{this.props.selectednetwork.name}</span></span>
+            <span style={{marginLeft:"20px"}}>{intl.get('Wallet.AddNewTokenAsset').toUpperCase()}</span>
           </div>
           <div className="tokenassetwrapper" style={{margin:"20px"}}>
             {

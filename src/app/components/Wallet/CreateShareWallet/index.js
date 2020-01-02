@@ -18,7 +18,7 @@ import { setDefaultWordlist } from 'bip39';
   generate12SeedPhase : () => stores.walletStore.generate12SeedPhase(),
   setSeedPhase: seedphase => stores.walletStore.setSeedPhase(seedphase),
   setSeedPhaseInString: seedphase => stores.walletStore.setSeedPhaseInString(seedphase),
-  wsCreateWallet: () => stores.walletStore.wsCreateWallet(),
+  wsCreateSharedWallet: () => stores.walletStore.wsCreateSharedWallet(),
   seedphase: stores.walletStore.seedphase,
   ethaddress: stores.walletStore.ethaddress,
   language: stores.languageIntl.language,
@@ -91,8 +91,8 @@ class CreateShareWallet extends Component {
     this.props.setSeedPhaseInString(seed);
     this.props.setTotalSignatures(this.state.totalsignatures);
     this.props.setTotalOwners(this.state.totalowners);
-    await this.props.CreateEthAddress();
-    await this.props.wsCreateWallet();
+    //await this.props.CreateEthAddress();
+    await this.props.wsCreateSharedWallet();
     this.props.setCurrent("walletcreated");
   }
 
