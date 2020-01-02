@@ -48,6 +48,11 @@ class TokenAssetList extends Component {
       var walletkey = await this.props.GenerateBIP39Address(derivepath + "0", seed);
       tokenasset.PrivateAddress = walletkey.privateaddress;
       tokenasset.PublicAddress = walletkey.publicaddress;
+
+      if(tokenasset.TokenType == "wan" || tokenasset.TokenType == "wrc20"){ //IF WANCHAIN . CONVERT ALL ADDRESS TO LOWERCASE
+        tokenasset.PublicAddress = tokenasset.PublicAddress.toLowerCase();
+      }
+
       if(this.props.selectedWallet.isCloud){
         this.props.InsertTokenAssetToCloudWallet([tokenasset],this.props.selectedWallet.publicaddress,()=>{
           this.props.addTokenAssetToWallet(tokenasset);

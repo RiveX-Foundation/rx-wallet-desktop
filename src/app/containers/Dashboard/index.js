@@ -32,6 +32,7 @@ import HWWalletSelection from 'components/Wallet/HWWalletSelection';
 import HWWalletDetail from 'components/Wallet/HWWalletDetail';
 import BasicWalletTypeSelection from 'components/Wallet/BasicWalletTypeSelection';
 import Settings from 'components/Settings';
+import Dex from 'components/Dex';
 import {NotificationContainer, NotificationManager} from 'react-notifications';
 import {
   HashRouter,
@@ -138,6 +139,9 @@ class Dashboard extends Component {
     },{
       content: <Settings />,
       key:'settings'
+    },{
+      content: <Dex />,
+      key:'dex'
     }]
   }
 

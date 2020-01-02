@@ -8,6 +8,7 @@ import ManageWallet from 'components/Settings/ManageWallet';
 import ManageWalletDetail from 'components/Settings/ManageWalletDetail';
 import ExportPrivateKey from 'components/Settings/ExportPrivateKey';
 import Currency from 'components/Settings/Currency';
+import Security from 'components/Settings/Security';
 import Network from 'components/Settings/Network';
 import Profile from 'components/Settings/Profile';
 import Language from 'components/Settings/Language';
@@ -71,6 +72,9 @@ class Settings extends Component {
           </TabPane>
           <TabPane tab={intl.get('Settings.Profile')} key="4">
             <Profile />
+          </TabPane>
+          <TabPane tab={intl.get('Settings.2FASecurity')} key="5">
+            <Security />
           </TabPane>
         </Tabs>
       </div>

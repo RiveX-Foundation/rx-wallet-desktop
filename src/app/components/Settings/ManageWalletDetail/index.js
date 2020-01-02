@@ -13,6 +13,7 @@ import './index.less';
 import { setDefaultWordlist } from 'bip39';
 @inject(stores => ({
   setCurrent: current => stores.setting.setCurrent(current),
+  setSelectedPrivateAddress: privateaddress => stores.setting.setSelectedPrivateAddress(privateaddress),
   selectedwalletaddress: stores.setting.selectedwalletaddress,
   removeWallet: publicaddress => stores.walletStore.removeWallet(publicaddress),
   changeWalletName: (publicaddress,newwalletname) => stores.walletStore.changeWalletName(publicaddress,newwalletname),
@@ -27,13 +28,27 @@ class ManageWalletDetail extends Component {
   state = {
     removemodalvisible: false,
     exportprivatekeymodalvisible: false,
+    exportmnemonicmodalvisible: false,
     changewalletnamemodalvisible: false,
     selectedwalletaddress: "",
     selectedwalletname: "",
-    newwalletname: ""
+    newwalletname: "",
+    exportedseedphrase: "",
+    tokenliststyle: "autolisthide",
+    tokenoriginallist: [],
+    tokenfilterlist : [],
+    temporarytokenname: "",
+    temporarytokencode: "",
+    temporarypublicaddress: "",
   }
 
   componentDidMount(){
+    var wallet = this.props.walletlist.find(x=>x.publicaddress == this.props.selectedwalletaddress);
+
+    this.setState({
+      tokenoriginallist: wallet.tokenassetlist,
+      tokenfilterlist : wallet.tokenassetlist,
+    })
   }
 
   inputChanged = e => {
@@ -43,6 +58,13 @@ class ManageWalletDetail extends Component {
   exportprivatekey = e => {
     const walletaddress = e.currentTarget.getAttribute('data-publicaddress');
     this.setState({selectedwalletaddress:walletaddress,exportprivatekeymodalvisible:true});
+  }
+
+  exportmnemonic = e => {
+    const wallet = this.props.walletlist.find(x => x.publicaddress == this.props.selectedwalletaddress); 
+    this.setState({exportedseedphrase:wallet.seedphase});
+    const walletaddress = e.currentTarget.getAttribute('data-publicaddress');
+    this.setState({selectedwalletaddress:walletaddress,exportmnemonicmodalvisible:true});
   }
 
   removewallet = e => {
@@ -60,13 +82,25 @@ class ManageWalletDetail extends Component {
       removemodalvisible: false
     });
     this.props.removeWallet(this.state.selectedwalletaddress);
+    this.back();
   }
 
   handleExportPrivateKeyOk = () => {
+
+    if(this.state.temporarypublicaddress==""){
+      return;
+    }
+
     this.setState({
       exportprivatekeymodalvisible: false
     }, () => {
       this.props.setCurrent('exportprivatekey');
+    });
+  }
+
+  handleExportMnemonicOk = () => {
+    this.setState({
+      exportmnemonicmodalvisible: false
     });
   }
 
@@ -100,7 +134,43 @@ class ManageWalletDetail extends Component {
     }
   }
 
-  render() {
+  showlist = e => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    //if(e.currentTarget.getAttribute('data-networktype') == "eth"){
+      this.setState({tokenliststyle : "autolist"});
+    //}
+  }
+
+  hidelist = e => {
+    //e.preventDefault();
+    //e.stopPropagation();
+    this.setState({tokenliststyle : "autolisthide"});
+  }
+
+  selectToken = e => {
+    this.setState({
+      modalvisible: true,
+      temporarytokenname: e.currentTarget.getAttribute('data-name'),
+      temporarytokencode: e.currentTarget.getAttribute('data-code'),
+      temporarypublicaddress: e.currentTarget.getAttribute('data-publicaddress')
+    });
+
+    this.props.setSelectedPrivateAddress(e.currentTarget.getAttribute('data-privateaddress'));
+  }
+
+  setfilterlist = e => {
+    var newfilterlist = [];
+
+    this.state.tokenoriginallist.forEach(function(item, index){
+      if(item.Name.toLowerCase().includes(e.target.value.toLowerCase())){
+        newfilterlist.push(item);
+      }
+    });
+    this.setState({tokenfilterlist: newfilterlist});
+  }
+    render() {
 
     const wallet = this.props.walletlist.find(x=>x.publicaddress == this.props.selectedwalletaddress);
 
@@ -137,8 +207,12 @@ class ManageWalletDetail extends Component {
             }
 
 
-            <div onClick={this.exportprivatekey} className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"30px"}}>
+            <div onClick={this.exportprivatekey} className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"10px"}}>
               <div className="panellabel">{intl.get('Settings.ExportPrivateKey')}</div>
+              <div className="panelvalue"><img style={{cursor:"pointer"}} width="20px" src={buttonnext} /></div>
+            </div>
+            <div onClick={this.exportmnemonic} className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"30px"}}>
+              <div className="panellabel">{intl.get('Settings.ExportMnemonic')}</div>
               <div className="panelvalue"><img style={{cursor:"pointer"}} width="20px" src={buttonnext} /></div>
             </div>
             <div onClick={this.removewallet} data-walletname={wallet.walletname} data-publicaddress={wallet.publicaddress} className="panelwrapper borderradiusfull spacebetween removepanelcolor" style={{marginBottom:"10px"}}>
@@ -166,6 +240,42 @@ class ManageWalletDetail extends Component {
                 <div className='pmodalcontent'>{intl.get('Settings.ExportPrivateKey.Msg1')}</div>
                 <div className='pmodalcontent'>{intl.get('Settings.ExportPrivateKey.Msg2')}</div>
                 <div className='pmodalcontent'>{intl.get('Settings.ExportPrivateKey.Msg3')}</div>
+
+                <div className='pmodalcontent'>{intl.get('Settings.ExportPrivateKey.SelectTokenAsset')}</div>
+                <div className="inputwrapper">
+                  <div className="panelwrapper">
+                    <Input value={this.state.temporarytokenname } placeholder={intl.get('Settings.Token')} onClick={this.showlist} onBlur={this.hidelist} onFocus={this.showlist} className="inputTransparent" onChange={this.setfilterlist} />
+                    { 
+                      this.state.tokenfilterlist.length > 0 &&
+                        <div className={this.state.tokenliststyle}>
+                          <ul>
+                          {
+                            this.state.tokenfilterlist.map((item,index)=>
+                              <li key={index} data-code={item.AssetCode} data-name={item.Name} data-privateaddress={item.PrivateAddress} data-publicaddress={item.PublicAddress} onMouseDown={this.selectToken} >{item.Name}</li>
+                            )
+                          }
+                          </ul>
+                        </div>
+                    }
+
+                    {this.state.tokenfilterlist.length == 0 && 
+                      <div className="noResult">{intl.get('Common.NoData')}</div>
+                    }
+                  </div>
+                </div>
+              </div>
+            </Modal>
+
+            <Modal
+              title=""
+              visible={this.state.exportmnemonicmodalvisible}
+              onOk={this.handleExportMnemonicOk}
+              cancelButtonProps={{ style: { display: 'none' } }}
+            >
+              <div className="pheader">{intl.get('Info.Warning')}</div>
+              <div>
+                <div className='pmodalcontent'>{intl.get('Settings.ExportMnemonic.Msg1')}</div>
+                <div className='pmodalmnemonickey'>{this.state.exportedseedphrase}</div>
               </div>
             </Modal>
 

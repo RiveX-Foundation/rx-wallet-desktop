@@ -11,6 +11,7 @@ import './index.less';
   countrycode: stores.userRegistration.countrycode,
   setRequestSignIn : val => stores.session.setRequestSignIn(val),
   setMobile: mobile => stores.userRegistration.setMobile(mobile),
+  setEmail: email => stores.userRegistration.setEmail(email),
   setPassword: password => stores.userRegistration.setPassword(password),
   setCountryCode: countrycode => stores.userRegistration.setCountryCode(countrycode),
   wsLogin : () => stores.userRegistration.wsLogin(),
@@ -29,6 +30,9 @@ class LoginMobile extends Component {
 
   inputChanged = e => {
     switch(e.target.id){
+      case "loginemail":
+        this.props.setEmail(e.target.value);
+        break;
       case "loginmobile":
         this.props.setMobile(e.target.value);
         break;
@@ -133,7 +137,7 @@ class LoginMobile extends Component {
       <div className="fadeInAnim loginbg">
         <div className="leftpanel" onClick={this.panelClick}>
 
-          <img width="130px" src={logo} />
+          <img width="350px" src={logo} />
           <div className="subtitle">{intl.get('Register.Login')}</div>
           {
             /*
@@ -158,7 +162,7 @@ class LoginMobile extends Component {
           }
           <center>
             <div className="panelwrapper borderradiusfull loginpanel">
-              <Input id="loginmobile" placeholder={intl.get('Register.LoginId')} className="inputTransparent" onChange={this.inputChanged} />
+              <Input id="loginemail" placeholder={intl.get('Register.LoginId')} className="inputTransparent" onChange={this.inputChanged} />
             </div>
 
             <div className="panelwrapper borderradiusfull loginpanel">

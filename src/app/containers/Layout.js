@@ -25,6 +25,7 @@ import { getBalance } from 'utils/helper';
   getnetworkStore: () => stores.network.getthisstore(),
   getwalletStore: () => stores.walletStore.getthisstore(),
   setuserstore: thestore => stores.walletStore.setuserstore(thestore),
+  setsettinguserstore: thestore => stores.setting.setuserstore(thestore),
   setnetworkstore: thestore => stores.walletStore.setnetworkstore(thestore),
   setwalletstore: thestore => stores.userRegistration.setwalletstore(thestore)
   //updateWANBalance: newBalanceArr => stores.wanAddress.updateWANBalance(newBalanceArr),
@@ -58,6 +59,7 @@ export default class Layout extends Component {
 
   componentDidMount() {
     this.props.setuserstore(this.props.getuserStore());
+    this.props.setsettinguserstore(this.props.getuserStore());
     this.props.setnetworkstore(this.props.getnetworkStore());
     this.props.setwalletstore(this.props.getwalletStore());
     //this.wanTimer = setInterval(() => this.updateWANBalanceForInter(), 5000);

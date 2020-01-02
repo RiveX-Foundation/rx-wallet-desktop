@@ -12,6 +12,7 @@ var QRCode = require('qrcode.react');
 
 @inject(stores => ({
   selectedwalletaddress: stores.setting.selectedwalletaddress,
+  selectedprivateaddress: stores.setting.selectedprivateaddress,
   wallets : stores.walletStore.walletlist,
   selectedTokenAsset : stores.walletStore.selectedTokenAsset,
   LoadTransactionByAddress : addr => stores.walletStore.LoadTransactionByAddress(addr),
@@ -62,17 +63,19 @@ class ExportPrivateKey extends Component {
           <center>
             <div className="inputwrapper">
               <div style={{marginBottom:"10px"}} className="subtitle" >{wallet.walletname}</div>
-              <div className="qrcodectn">
-                <div className="inner">
-                  <QRCode fgColor="#4954AE" size={180} value={wallet.privatekey} />
+              <center>
+                <div className="qrcodectn">
+                  <div className="inner">
+                    <QRCode fgColor="#4954AE" size={180} value={this.props.selectedprivateaddress} />
+                  </div>
                 </div>
-              </div>
+              </center>
               <div className="panelwrapper borderradiusfull" style={{width:"650px"}}>
-                {wallet.privatekey}
+                {this.props.selectedprivateaddress}
                 <div className="copyicon"><img src={buttoncopy} onClick={this.copy} /></div>
               </div>
 
-              <input style={{marginTop:-99999,position:"absolute"}} ref={(input) => { this.inputEl1 = input; }} type="text" value={wallet.privatekey} id="hiddenphase" />
+              <input style={{marginTop:-99999,position:"absolute"}} ref={(input) => { this.inputEl1 = input; }} type="text" value={this.props.selectedprivateaddress} id="hiddenphase" />
             </div>
           </center>
         </div>

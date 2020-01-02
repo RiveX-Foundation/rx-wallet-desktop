@@ -3,6 +3,7 @@ import { Input, InputNumber, Tooltip, Button } from 'antd';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
 import { createNotification } from 'utils/helper';
+var QRCode = require('qrcode.react');
 const { countrymobile } = require('../../../../../config/common/countrymobile');
 
 const { TextArea } = Input;
@@ -14,6 +15,9 @@ import './index.less';
   mobile: stores.userRegistration.mobile,
   loginid: stores.userRegistration.loginid,
   countrycode: stores.userRegistration.countrycode,
+  twoFAType: stores.userRegistration.twoFAType,
+  twoFAPassword: stores.userRegistration.twoFAPassword,
+  googleAuthKey: stores.userRegistration.googleAuthKey,
   wsRequestUpdateProfileTokenOTP : () => stores.userRegistration.wsRequestUpdateProfileTokenOTP(),
   wsUpdateProfile : (name,email,mobile,countrycode,password,otp,loginid) => stores.userRegistration.wsUpdateProfile(name,email,mobile,countrycode,password,otp,loginid),
   language: stores.languageIntl.language,
@@ -163,13 +167,25 @@ class Profile extends Component {
       return;
     }
 
+    /*
     if(this.state.mobile == "") {
       createNotification('error',intl.get('Error.Mobileisempty'));
       return;
     }
+    */
 
-    if(this.state.otp == "") {
+    if(this.props.twoFAType == "sms" && this.state.otp == "") {
       createNotification('error',intl.get('Error.InvalidOTP'));
+      return;
+    }
+
+    if(this.props.twoFAType == "totp" && this.state.otp == "") {
+      createNotification('error',intl.get('Error.Invalid2FAPassword'));
+      return;
+    }
+
+    if(this.props.twoFAType == "password" && this.state.otp == "") {
+      createNotification('error',intl.get('Error.Passwordisempty'));
       return;
     }
 
@@ -184,6 +200,7 @@ class Profile extends Component {
 
   render() {
     const {filterlist,autoliststyle} = this.state;
+    var totpurl = "otpauth://totp/RVXWallet?secret=" + this.props.googleAuthKey;
     return (
       <div className="profilepanel fadeInAnim">
         <div className="title" ><span>{intl.get('Settings.Profile')}</span></div>
@@ -233,10 +250,35 @@ class Profile extends Component {
               <Input id="confirmpassword" type="password" placeholder={intl.get('Register.ConfirmPassword')} className="inputTransparent" onChange={this.inputChanged} />
             </div>
 
-            <div className="panelwrapper borderradiusfull spacebetween">
-              <div className="panellabel" style={{paddingLeft:"0px",marginTop:"5px"}}><Input id="otp" className="inputTransparent otpinputclass" value={this.state.otp} onChange={this.inputChanged} placeholder={intl.get('Auth.EnterOTP')} /></div>
-              <div className="panelvalue" style={{paddingRight:"0px"}}><Button className="radiusbutton" onClick={this.requestotp} >{intl.get('Auth.RequestOTP')}</Button></div>
-            </div>
+            {
+              this.props.twoFAType == "sms" &&
+              <div className="panelwrapper borderradiusfull spacebetween">
+                <div className="panellabel" style={{paddingLeft:"0px",marginTop:"5px"}}><Input id="otp" className="inputTransparent otpinputclass" value={this.state.otp} onChange={this.inputChanged} placeholder={intl.get('Auth.EnterOTP')} /></div>
+                <div className="panelvalue" style={{paddingRight:"0px"}}><Button className="radiusbutton" onClick={this.requestotp} >{intl.get('Auth.RequestOTP')}</Button></div>
+              </div>
+            }
+
+            {
+              this.props.twoFAType == "password" &&
+              <div className="panelwrapper borderradiusfull">
+                <Input id="otp" type="password" className="inputTransparent" value={this.state.otp} onChange={this.inputChanged} placeholder={intl.get('Settings.2FASecurity.SecurityCode')} />
+              </div>
+            }
+
+            {
+              this.props.twoFAType == "totp" &&
+              <React.Fragment>
+                <div style={{marginTop:"50px"}} className="qrcodectn">
+                  <div className="inner">
+                    <QRCode fgColor="#4954AE" size={130} value={totpurl} />
+                  </div>
+                </div>
+
+                <div style={{width:"160px"}} className="panelwrapper borderradiusfull">
+                  <Input id="otp" type="password" className="inputTransparent" value={this.state.otp} onChange={this.inputChanged} placeholder={intl.get('Settings.2FASecurity.SecurityCode')} />
+                </div>
+              </React.Fragment>                
+            }
 
             <div><Button className="curvebutton" onClick={this.save} >{intl.get('Common.Save')}</Button></div>
 

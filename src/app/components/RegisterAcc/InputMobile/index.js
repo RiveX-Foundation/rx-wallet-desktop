@@ -11,11 +11,13 @@ import buttonnext from 'static/image/icon/buttonnextarrow.png';
 import './index.less';
 @inject(stores => ({
   setMobile: mobile => stores.userRegistration.setMobile(mobile),
+  setEmail: email => stores.userRegistration.setEmail(email),
   setCountryCode: val => stores.userRegistration.setCountryCode(val),
   UserAccountExist : stores.session.UserAccountExist,
   setRequestSignIn : val => stores.session.setRequestSignIn(val),
   wsOTPVerification : type => stores.userRegistration.wsOTPVerification(type),
   wsMobileRegistration : () => stores.userRegistration.wsMobileRegistration(),
+  wsEmailRegistration : () => stores.userRegistration.wsEmailRegistration(),
   language: stores.languageIntl.language
 }))
 
@@ -23,6 +25,7 @@ import './index.less';
 class InputMobile extends Component {
   state = {
     mobilevalue : "",
+    emailvalue : "",
     autoliststyle : "autolisthide",
     countrycode : "+60",
     originallist : [],
@@ -78,8 +81,9 @@ class InputMobile extends Component {
   }
 
   inputChanged = e => {
-    this.setState({ mobilevalue : e.target.value }, () => {
-      this.props.setMobile(this.state.mobilevalue);
+    this.setState({ emailvalue : e.target.value }, () => {
+      //this.props.setMobile(this.state.mobilevalue);
+      this.props.setEmail(this.state.emailvalue);
     });
   }
 
@@ -102,7 +106,8 @@ class InputMobile extends Component {
   }
 
   next = () => {
-    this.props.wsMobileRegistration();
+    //this.props.wsMobileRegistration();
+    this.props.wsEmailRegistration();
     //this.props.wsOTPVerification('registration');
   }
 
@@ -117,6 +122,7 @@ class InputMobile extends Component {
     return (
       <div className="fadeInAnim loginbg">
         <div className="leftpanel" onClick={this.panelClick}>
+          <img width="350px" src={logo} />
           <div className="steppanel">
             <div className="circlewrapper"><div className="outterCircle"><div className="innerCircle"></div></div></div>
             <div className="line"></div>
@@ -125,9 +131,10 @@ class InputMobile extends Component {
             <div className="circlewrapper"><div className="innerCircle"></div></div>
           </div>
 
-          <img width="130px" src={logo} />
           <div className="subtitle">{intl.get('Register.CreateAccount')}</div>
           <div className="inputwrapper">
+            {
+                /*
             <div className="panelwrapper borderradiusleft countrycodewrapper">
               <Input id="countrycode" value={this.state.countrycode} placeholder={intl.get('Register.CountryCode')} onClick={this.showlist} onBlur={this.hidelist} onFocus={this.showlist} className="inputTransparent" onChange={this.setfilterlist} />
               <div className={autoliststyle}>
@@ -146,17 +153,16 @@ class InputMobile extends Component {
             <div className="panelwrapper borderradiusright phonewrapper">
               <Input id="mobile" placeholder={intl.get('Register.PhoneNumber')} className="inputTransparent" onChange={this.inputChanged} />
             </div>
+                */
+              }
+            <center>
+              <div className="panelwrapper borderradiusfull loginpanel">
+                <Input id="email" placeholder={intl.get('Register.Email')} className="inputTransparent" onChange={this.inputChanged} />
+              </div>
+            </center>
           </div>
           <div className="buttonpanel">
             <div className="loginbutton" onClick={this.login}>{intl.get('Register.BackToLogin')}</div>
-            { this.props.UserAccountExist && 
-              <div className="loginbutton" onClick={this.login}>{intl.get('Register.BackToLogin')}</div>
-            }
-
-            { !this.props.UserAccountExist && 
-              <div></div>
-            }
-
             <Button className="nextbutton" onClick={this.next}><img src={buttonnext} /></Button>
           </div>
         </div>

@@ -25,13 +25,12 @@
   position: relative;
 }
 
-.exportprivatekeypanel{
-  height:calc(~"100vh - 120px");
+.currencypanel{
+  height:calc(100vh);
 
   .title{
     font-size:1.5em;
     padding: 20px;
-    position: absolute;
 
     img{
       cursor: pointer;
@@ -40,11 +39,12 @@
   }
 
   .centerpanel{
-    text-align: center;
+    //text-align: center;
     width:calc(100vw);
-    height:calc(~"100vh - 120px");
-    display: table-cell;
-    vertical-align: middle;
+    padding:10px;
+    //height:calc(100vh);
+    //display: table-cell;
+    //vertical-align: middle;
   }
 
   .inputTransparent{
@@ -62,34 +62,25 @@
   }    
 
   .subtitle{
-    font-size:1.5em;
+    font-size:1em;
+    margin-left:10px;
     margin-bottom:10px;
-    text-align: center;
+    text-align: left;
   }
 
   .inputwrapper{
     width:600px;
     position: relative;
-  }
-
-  .copyicon{
-    position: absolute;
-    margin-top:-25px;
-    right:0;
-    margin-right:20px;
-    cursor: pointer;
-
-    img{
-      width:25px;
-    }
+    text-align: left;
   }
 
   .panelwrapper{
     background-color:#24284a;
-    width:600px;
-    font-size:1em;
+    padding:5px;
+    width:200px;
     position: relative;
     margin-bottom:20px;
+    border-radius:10px;
   }    
 
   .panelleft{
@@ -114,7 +105,6 @@
 
   .borderradiusfull{
     border-radius: 10px;
-    padding:15px 35px 15px 35px;
     /*padding:5px;*/
   }
 
@@ -160,22 +150,50 @@
     background-color:#0b088c;
   }   
 
-  .qrcodectn{
-    margin-bottom: 20px;
-    width: 225px;
-    height: 225px;
-    background-image: linear-gradient(to bottom, #4954ae, #4952ad, #494fac, #4a4dab, #4a4aaa, #4848a5, #4746a0, #45449b, #424291, #3e4087, #3c3d7d, #393b73);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    .inner{
-      width: 200px;
-      height: 200px;
-      background-color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+  .autolisthide{
+    display:none;
+  }
+
+  .autolist{
+    position:absolute;
+    z-index:10;
+    margin-top:10px;
+    text-align: left;
+    width:230px;
+    background-color:#24284a;
+    border-radius:10px;
+    border:2px solid #24284a;
+    max-height:250px;
+    overflow-y: auto;
+    margin-left: -5px;
+
+    /*display:none;*/
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+
+    .noResult{
+      text-align: center;
+      padding:10px;
+      color:#6e6eba;
+    }
+
+    ul{
+      padding-inline-start: 0;
+      margin:0;
+      padding:0;
+    }
+
+    li{
+      list-style: none;
+      padding:8px 15px;
+      cursor: pointer;
+    }
+
+    li:hover{
+      background-color:#515173;
+    }
+
+    .show{
+      display:block
     }
   }
 }  

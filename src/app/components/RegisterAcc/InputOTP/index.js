@@ -80,6 +80,7 @@ class InputOTP extends Component {
     return (
       <div className="fadeInAnim loginbg">
         <div className="otpinputleftpanel" onClick={this.panelClick}>
+          <img width="350px" src={logo} />
           <div className="steppanel">
             <div className="backbutton"><img onClick={this.back} width="20px" src={buttonback} /></div>
             <div className="circlewrapper"><div className="innerCircle"></div></div>
@@ -89,9 +90,8 @@ class InputOTP extends Component {
             <div className="circlewrapper"><div className="innerCircle"></div></div>
           </div>
 
-          <img width="130px" src={logo} />
           <div className="title">{intl.get('Register.CreateAccount')}</div>
-          <div className="subtitle">{intl.get('Register.KeyInOTP')}</div>
+          <div className="subtitle">{intl.get('Register.KeyInEmailOTP')}</div>
           <div className="inputwrapper">
             <Input ref={(input) => { this.inputEl1 = input; }} className="inputOTP" id="otpvalue1" onChange={this.inputChanged} />
             <Input ref={(input) => { this.inputEl2 = input; }} className="inputOTP" id="otpvalue2" onChange={this.inputChanged} />
