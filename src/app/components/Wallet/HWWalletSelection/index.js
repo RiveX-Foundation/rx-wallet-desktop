@@ -134,7 +134,7 @@ class HWWalletSelection extends Component {
               <div className="panelleft"><img src={buttonledger} /><span>{intl.get('HWWallet.Ledger')}</span></div>
               <div className="panelright"><img src={buttonnext} /></div>
             </div>
-            <div className="panelwrapper borderradiusfull spacebetween" onClick={this.selecttrezor} style={{marginBottom:"10px"}}>
+            <div className="panelwrapper borderradiusfull spacebetween" onClick={this.selecttrezor} style={{marginBottom:"10px",display:"none"}}>
               <div className="panelleft"><img src={buttontrezor} /><span>{intl.get('HWWallet.Trezor')}</span></div>
               <div className="panelright"><img src={buttonnext} /></div>
             </div>

@@ -30,7 +30,7 @@ class Dex extends Component {
   render() {
     return (
       <div className="splashcreatebasicwalletpanel fadeInAnim">
-        <iframe frameBorder="0" width="100%" height="100%" src="http://167.99.77.158:3000/" ></iframe>
+        <iframe frameBorder="0" width="100%" height="100%" src="https://wrdex.io/main" ></iframe>
       </div>
     );
   }

@@ -8,6 +8,7 @@ class Session {
   @observable hasUseAcc = false;
   @observable UserAccountExist = false;
   @observable RequestSignIn = false;
+  @observable RequestForgotPassword = false;
   @observable IsShowWalletListing = true;
   
 
@@ -31,6 +32,10 @@ class Session {
 
   @action setRequestSignIn(val){
     this.RequestSignIn = val;
+  }
+
+  @action setRequestForgotPassword(val){
+    this.RequestForgotPassword = val;
   }
 
   @action setUserAccountExist(val){

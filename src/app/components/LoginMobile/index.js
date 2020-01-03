@@ -10,6 +10,7 @@ import './index.less';
 @inject(stores => ({
   countrycode: stores.userRegistration.countrycode,
   setRequestSignIn : val => stores.session.setRequestSignIn(val),
+  setRequestForgotPassword : val => stores.session.setRequestForgotPassword(val),
   setMobile: mobile => stores.userRegistration.setMobile(mobile),
   setEmail: email => stores.userRegistration.setEmail(email),
   setPassword: password => stores.userRegistration.setPassword(password),
@@ -111,6 +112,10 @@ class LoginMobile extends Component {
     this.props.setRequestSignIn(true);
   }
 
+  forgotpassword = () => {
+    this.props.setRequestForgotPassword(true);
+  }
+
   panelClick = e => {
     //e.preventDefault();
     //e.stopPropagation();
@@ -169,9 +174,14 @@ class LoginMobile extends Component {
               <Input id="loginpassword" type="password" placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
             </div>
           </center>
-          <div className="buttonpanel">
+          <div className="buttonpanel" style={{marginTop:"0px"}}>
             <div className="loginbutton" onClick={this.signin}>{intl.get('Register.CreateNewAccount')}</div>
             <Button className="nextbutton" onClick={this.login}><img src={buttonnext} /></Button>
+          </div>
+          <div style={{display:"block"}}></div>
+          <div className="buttonpanel">
+            <div></div>
+            <div className="forgotpassword" onClick={this.forgotpassword}>{intl.get('Register.ForgotPassword')}</div>
           </div>
         </div>
       </div>

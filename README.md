@@ -1,7 +1,7 @@
-# RVX Desktop Wallet
+# RX Desktop Wallet
 [![GitHub License][license]][license-url]
 
-RVX Desktop Wallet using Eletron
+RX Desktop Wallet using Eletron
 
 ## Features
 
@@ -14,7 +14,7 @@ RVX Desktop Wallet using Eletron
 
 ### Initialization
 
-Before install RVX Wallet's dependencies, you need to pre-install following tools:
+Before install RX Wallet's dependencies, you need to pre-install following tools:
 
 Windows :
 * Node.js
@@ -100,7 +100,7 @@ Then, create a file named ".env" in the root directory of the project and add yo
 
 ## License
 
-RVX Wallet is open source software licensed as GPL-3.0
+RX Wallet is open source software licensed as GPL-3.0
 
 [license]: https://img.shields.io/badge/license-GNUGPL3-blue.svg
 [license-url]:https://github.com/RiveX-Foundation/rvx-desktop-wallet/blob/master/LICENSE

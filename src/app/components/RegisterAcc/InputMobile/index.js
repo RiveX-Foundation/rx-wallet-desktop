@@ -15,6 +15,7 @@ import './index.less';
   setCountryCode: val => stores.userRegistration.setCountryCode(val),
   UserAccountExist : stores.session.UserAccountExist,
   setRequestSignIn : val => stores.session.setRequestSignIn(val),
+  setRequestForgotPassword : val => stores.session.setRequestForgotPassword(val),
   wsOTPVerification : type => stores.userRegistration.wsOTPVerification(type),
   wsMobileRegistration : () => stores.userRegistration.wsMobileRegistration(),
   wsEmailRegistration : () => stores.userRegistration.wsEmailRegistration(),
@@ -113,6 +114,7 @@ class InputMobile extends Component {
 
   login = () => {
     this.props.setRequestSignIn(false);
+    this.props.setRequestForgotPassword(false);
   }
 
   render() {

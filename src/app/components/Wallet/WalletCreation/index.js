@@ -46,11 +46,11 @@ class WalletCreation extends Component {
 
   generateSeedPhaseList = seed => {
     let mnemonic = "";
-    if(this.props.seedphaseinstring!=""){
-      mnemonic = this.props.seedphaseinstring;
-    }else{
+    //if(this.props.seedphaseinstring!=""){
+    //  mnemonic = this.props.seedphaseinstring;
+    //}else{
       mnemonic = seed;
-    }
+    //}
     this.setState({mnemonic : mnemonic});
     this.setState({seedphase : mnemonic.split(" ") });
 
@@ -88,6 +88,7 @@ class WalletCreation extends Component {
 
   render() {
     const { seedphaseel } = this.state;
+
     return (
       <div className="walletcreationpanel fadeInAnim">
         <div className="title" ><span><img onClick={this.back} width="20px" src={buttonback} /></span><span style={{marginLeft:"20px"}}>{intl.get('Wallet.RecoveryPhrase')}</span></div>

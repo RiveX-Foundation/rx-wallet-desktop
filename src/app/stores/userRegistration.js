@@ -109,6 +109,7 @@ class UserRegistration {
     sessionstore.setUserAccountExist(true);
     sessionstore.setIsLogin(false);
     sessionstore.setRequestSignIn(false);
+    sessionstore.setRequestForgotPassword(false);
     this.setCurrent('inputmobile');
   }
 
@@ -291,6 +292,64 @@ class UserRegistration {
         //handle error
         createNotification('error',response);
         console.log(response);
+    });
+  }
+
+  wsForgotEmail(){
+    var bodyFormData = new FormData();
+    if(this.email == "" || this.email == null){
+      createNotification('error',intl.get('Error.Emailisempty'));
+      return;
+    }
+
+    bodyFormData.set('email', this.email);
+    
+    axios({
+      method: 'post',
+      url: API_Server + 'api/auth/RequestForgotPasswordByEmail',
+      data: bodyFormData,
+      config: { headers: {'Content-Type': 'multipart/form-data' }}
+    })
+    .then(function (response) {
+        //handle success
+        console.log("SUCCESS", response);
+        self.processEmailRegistration(response.data);
+    })
+    .catch(function (response) {
+        //handle error
+        console.log(response);
+        createNotification('error',response);
+    });
+  }
+
+  wsChangePassword(){
+
+    var that = this;
+
+    var bodyFormData = new FormData();
+    if(this.password == "" || this.password == null){
+      createNotification('error',intl.get('Error.Passwordisempty'));
+      return;
+    }
+
+    bodyFormData.set('newpassword', this.password);
+    bodyFormData.set('token', this.token);
+
+    axios({
+      method: 'post',
+      url: API_Server + 'api/auth/ChangePassword',
+      data: bodyFormData,
+      config: { headers: {'Content-Type': 'multipart/form-data' }}
+    })
+    .then(function (response) {
+        //handle success
+        that.RedirectToLoginScreen();
+        //self.processEmailRegistration(response.data);
+    })
+    .catch(function (response) {
+        //handle error
+        console.log(response);
+        createNotification('error',response);
     });
   }
 

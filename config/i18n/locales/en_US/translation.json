@@ -4,7 +4,7 @@
             "app": {
                 "label": "{{app}}",
                 "about": "About {{app}}",
-                "version": "RVX Wallet Version {{version}}",
+                "version": "RX Wallet Version {{version}}",
                 "developer": {
                     "label": "Developer",
                     "assets": {

@@ -5,6 +5,7 @@ import { isSdkReady } from 'utils/helper';
 
 import './Layout.less';
 import RegisterMobile from './RegisterMobile';
+import ForgotPassword from './ForgotPassword';
 import Dashboard from './Dashboard';
 
 
@@ -18,6 +19,7 @@ import { getBalance } from 'utils/helper';
   //addrInfo: stores.wanAddress.addrInfo,
   IsLogin : stores.session.IsLogin,
   RequestSignIn: stores.session.RequestSignIn,
+  RequestForgotPassword: stores.session.RequestForgotPassword,
   UserAccountExist: stores.session.UserAccountExist,
   hasMnemonicOrNot: stores.session.hasMnemonicOrNot,
   getMnemonic: () => stores.session.getMnemonic(),
@@ -84,7 +86,7 @@ export default class Layout extends Component {
   }
 
   render() {
-    const { UserAccountExist , RequestSignIn , IsLogin } = this.props;//, auth, location } = this.props;
+    const { UserAccountExist , RequestSignIn , RequestForgotPassword, IsLogin } = this.props;//, auth, location } = this.props;
     //if (this.state.loading) {
     //  return <Loading />
     //} else {
@@ -93,6 +95,8 @@ export default class Layout extends Component {
 
       if (RequestSignIn) {
         return <RegisterMobile />
+      }else if (RequestForgotPassword) {
+        return <ForgotPassword />
       } else if (!IsLogin) {
         return <Login />
       } else {

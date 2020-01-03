@@ -5,7 +5,7 @@ export const isDev = process.env.NODE_ENV === 'development'
 export const STATIC_PATH = '/static'
 
 export const APP_ROOT = 'root'
-export const APP_NAME = 'RVX Wallet'
+export const APP_NAME = 'RX Wallet'
 
 export const LANGUAGES = ['en_US', 'zh_CN']
 export const FALLBACK_LANG = 'en_US'

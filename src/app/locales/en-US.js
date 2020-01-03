@@ -20,10 +20,10 @@ const en_US = {
     'Settings.Language': 'Language',
     'Settings.ExportPrivateKey': 'Export Private Key',
     'Settings.Token': 'Token',
-    'Settings.2FASecurity': '2FA Security',
+    'Settings.2FASecurity': 'SECURITY',
     'Settings.2FASecurity.SMS': 'SMS Authentication',
-    'Settings.2FASecurity.SecurityCode': '2FA Password',
-    'Settings.2FASecurity.TOTPCode': 'TOTP',
+    'Settings.2FASecurity.SecurityCode': 'Secondary Password',
+    'Settings.2FASecurity.TOTPCode': 'Two-Factor Authentication',
     'Settings.ExportMnemonic': 'Export Mnemonic Word',
     'Settings.ExportMnemonic.Msg1': 'It is essential to understand that the Mnemonic Word is the most important and sensitive part of your account information. Whoever has knowledge of a Mnemonic Word has full control over the associated funds and assets. It is important for restoring your account so you should never lose it, but also keep it top secret. ',
     'Settings.ExportPrivateKeyDesc': 'It is essential to understand that the Private Key is the most important and sensitive part of your account information. Whoever has knowledge of a Private Key has full control over the associated funds and assets. It is important for restoring your account so you should never lose it, but also keep it top secret. ',
@@ -89,6 +89,8 @@ const en_US = {
     "Wallet.Add":"Add",
     "Wallet.NotEnoughBalance":"Not Enough Balance",
 
+    'ForgotPassword.EnterEmail': "ENTER EMAIL",
+
     'HWWallet.ConnectHWWallet': 'Connect a Hardware Wallet',
     'HWWallet.Ledger': 'Ledger',
     'HWWallet.Trezor': 'Trezor',
@@ -128,6 +130,8 @@ const en_US = {
     'Common.Save': 'Save',
 
     'Register.CreateAccount': 'CREATE ACCOUNT',
+    'Register.NewPassword': 'NEW PASSWORD',
+    'Register.ForgotPassword': 'FORGOT PASSWORD?',
     'Register.PhoneNumber': 'Phone Number',
     'Register.CountryCode': 'Country',
     'Register.KeyInOTP' : 'PLEASE INSERT 6 DIGIT OTP NUMBER VIA SMS',
