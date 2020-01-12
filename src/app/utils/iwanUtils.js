@@ -49,6 +49,8 @@ class iWanUtils{//extends WsInstance {
     this.iWanKey = selectedwannetwork.iwankey;
     this.iWanSecret = selectedwannetwork.iwansecret;
 
+    //console.log(selectedwannetwork);
+
     this.intervalObj = null;
     this.apiKey = this.iWanKey;
     this.secretKey = this.iWanSecret;
@@ -818,8 +820,6 @@ class iWanUtils{//extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    //console.log("RVX CONTRACT", contractaddr);
-    //console.log("TARGET",address);
     let method = 'getTokenBalance';
     let params = { chainType: chainType, address: address, tokenScAddr:contractaddr };
 

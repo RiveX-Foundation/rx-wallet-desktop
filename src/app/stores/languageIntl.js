@@ -9,22 +9,28 @@ class LanguageIntl {
     this.loadLanguageCode();
   }
 
-  loadLanguageCode(){
+  @action loadLanguageCode(){
     if(localStorage.getItem('language') == "" || localStorage.getItem('language') == null){
       this.language = "en_US";
       localStorage.setItem('language',"en_US");
     }else{
       //this.setIsLogin(true);
       this.language = localStorage.getItem('language');
+      if(this.language == "en") {
+        localStorage.setItem('language','en_US');
+        this.language = "en_US";
+      }
     }
   }
   
   @action setLanguage(language) {
+    if(language == "en") language = "en_US";
     self.language = language;
     localStorage.setItem('language',language);
   }
 
   @action getLanguage() {
+    if(self.language == "en") self.language = "en_US";
     return self.language;
   }
 

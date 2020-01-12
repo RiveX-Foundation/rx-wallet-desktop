@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
-import { Input, Radio, Icon, Tooltip } from 'antd';
+import { Input, Button, Radio, Icon, Tooltip } from 'antd';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
+import {NotificationContainer, NotificationManager} from 'react-notifications';
+import buttonnext from 'static/image/icon/buttonnextarrow.png';
+import buttonback from 'static/image/icon/back.png';
+import logo from 'static/image/graphic/logo.png';
 
 import './index.less';
 @inject(stores => ({
   language: stores.languageIntl.language,
+  setCurrent: current => stores.userRegistration.setCurrent(current),
+  wsOTPVerification : type => stores.userRegistration.wsOTPVerification(type),
   setOTP: otp => stores.userRegistration.setOTP(otp)
 }))
 
@@ -59,8 +65,12 @@ class InputOTP extends Component {
     this.props.setOTP(this.state.otpvalue1 + this.state.otpvalue2 + this.state.otpvalue3 + this.state.otpvalue4 + this.state.otpvalue5 + this.state.otpvalue6);
   }
 
-  inputConfirm = e => {
-    this.props.setconfirmPwd(e.target.value);
+  next = () => {
+    this.props.wsOTPVerification('forgotpassword');
+  }
+
+  back = () => {
+    this.props.setCurrent('inputmobile');
   }
 
   onChange = e => {
@@ -68,15 +78,29 @@ class InputOTP extends Component {
 
   render() {
     return (
-      <div className="textc fadeInAnim">
-        <h1 className="mneCom-h1">{intl.get('Mnemonic.InputPwd.createAWANWallet')}</h1>
-        <div className="mne-input">
-          <Input ref={(input) => { this.inputEl1 = input; }} className="inputOTP" id="otpvalue1" onChange={this.inputChanged} />
-          <Input ref={(input) => { this.inputEl2 = input; }} className="inputOTP" id="otpvalue2" onChange={this.inputChanged} />
-          <Input ref={(input) => { this.inputEl3 = input; }} className="inputOTP" id="otpvalue3" onChange={this.inputChanged} />
-          <Input ref={(input) => { this.inputEl4 = input; }} className="inputOTP" id="otpvalue4" onChange={this.inputChanged} />
-          <Input ref={(input) => { this.inputEl5 = input; }} className="inputOTP" id="otpvalue5" onChange={this.inputChanged} />
-          <Input ref={(input) => { this.inputEl6 = input; }} className="inputOTP" id="otpvalue6" onChange={this.inputChanged} />
+      <div className="fadeInAnim loginbg">
+        <div className="otpinputleftpanel" onClick={this.panelClick}>
+          <img width="350px" src={logo} />
+          <div className="steppanel">
+            <div className="backbutton"><img onClick={this.back} width="20px" src={buttonback} /></div>
+            <div className="circlewrapper"><div className="innerCircle"></div></div>
+            <div className="line"></div>
+            <div className="circlewrapper"><div className="outterCircle"><div className="innerCircle"></div></div></div>
+            <div className="line"></div>
+            <div className="circlewrapper"><div className="innerCircle"></div></div>
+          </div>
+
+          <div className="title">{intl.get('Register.ForgotPassword')}</div>
+          <div className="subtitle">{intl.get('Register.KeyInEmailOTP')}</div>
+          <div className="inputwrapper">
+            <Input ref={(input) => { this.inputEl1 = input; }} className="inputOTP" id="otpvalue1" onChange={this.inputChanged} />
+            <Input ref={(input) => { this.inputEl2 = input; }} className="inputOTP" id="otpvalue2" onChange={this.inputChanged} />
+            <Input ref={(input) => { this.inputEl3 = input; }} className="inputOTP" id="otpvalue3" onChange={this.inputChanged} />
+            <Input ref={(input) => { this.inputEl4 = input; }} className="inputOTP" id="otpvalue4" onChange={this.inputChanged} />
+            <Input ref={(input) => { this.inputEl5 = input; }} className="inputOTP" id="otpvalue5" onChange={this.inputChanged} />
+            <Input ref={(input) => { this.inputEl6 = input; }} className="inputOTP" id="otpvalue6" onChange={this.inputChanged} />
+          </div>
+          <div className="buttonpanel"><Button className="nextbutton" onClick={this.next}><img src={buttonnext} /></Button></div>
         </div>
       </div>
     );

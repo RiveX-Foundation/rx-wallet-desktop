@@ -280,7 +280,7 @@
 	/* Static members */
 	I18N.defaults = {
 		locale: getDefaultLocale(),
-		fallbackLocale: 'en',
+		fallbackLocale: 'en_US',
 		parser: $.i18n.parser,
 		messageStore: $.i18n.messageStore
 	};

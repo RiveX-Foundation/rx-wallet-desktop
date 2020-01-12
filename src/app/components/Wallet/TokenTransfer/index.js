@@ -5,6 +5,7 @@ import intl from 'react-intl-universal';
 import { createNotification } from 'utils/helper';
 import buttonback from 'static/image/icon/back.png';
 import buttonpaste from 'static/image/icon/paste.png';
+import iWanUtils from '../../../utils/iwanUtils';
 const { API_EthGas } = require('../../../../../config/common/index');
 
 var Tx = require('ethereumjs-tx');
@@ -91,7 +92,19 @@ class TokenTransfer extends Component {
   transfer = async () => {
     var isvalidaddr=true;
 
-    if(!Web3.utils.isAddress(this.state.receiver)){
+    var checksumaddr = "";
+    
+    console.log("Transfer");
+
+    try{
+      checksumaddr = Web3.utils.toChecksumAddress(this.state.receiver)
+      console.log("Checksum Addr", checksumaddr);
+    }catch(e){
+      createNotification('error',intl.get('Error.InvalidAddress'));
+      return;
+    }
+
+    if(!Web3.utils.isAddress(checksumaddr)){ //if(iWanUtils.checkHash(this.state.receiver))
       createNotification('error',intl.get('Error.InvalidAddress'));
       return;
     }

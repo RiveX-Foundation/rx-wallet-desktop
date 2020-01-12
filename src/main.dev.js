@@ -15,6 +15,7 @@ import { Windows, walletBackend, updater } from '~/src/modules'
 require('electron-reload')(__dirname);
 env.config()
 
+app.commandLine.appendSwitch ("disable-http-cache");
 const logger = Logger.getLogger('main')
 
 // register i18n event handlers

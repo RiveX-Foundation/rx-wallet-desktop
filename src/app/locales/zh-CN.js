@@ -83,6 +83,8 @@ const zh_CN = {
     "Wallet.StoreOnCloud":"储存在云端",
     "Wallet.Add":"添加",
     "Wallet.NotEnoughBalance":"余额不足",
+    
+    'ForgotPassword.EnterEmail': "输入电子邮件",
 
     'HWWallet.ConnectHWWallet': '连接硬件钱包',
     'HWWallet.Ledger': 'Ledger',
@@ -123,6 +125,8 @@ const zh_CN = {
     'Common.Save': '保存',
 
     'Register.CreateAccount': '创建帐号',
+    'Register.NewPassword': '新密码',
+    'Register.ForgotPassword': '忘记密码?',
     'Register.PhoneNumber': '电话号码',
     'Register.CountryCode': '国家',
     'Register.KeyInOTP' : '请通过短信填写6个OTP号码',

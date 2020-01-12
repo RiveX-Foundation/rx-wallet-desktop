@@ -19,7 +19,7 @@ const defaultConfig = {
     /** TODO */
     // network: 'main',
     network: 'testnet',
-    lang: 'en',
+    lang: 'en_US',
     settings: {
       reinput_pwd: false,
       staking_advance: false,
@@ -63,7 +63,7 @@ class Settings {
     }
 
     get appName() {
-        return 'RVX Wallet'
+        return 'RX Wallet'
     }
 
     get cscContractAddr() {
