@@ -171,17 +171,16 @@ class LoginMobile extends Component {
             </div>
 
             <div className="panelwrapper borderradiusfull loginpanel">
-              <Input id="loginpassword" type="password" placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
+              <Input.Password style={{marginLeft:"-20px"}} id="loginpassword" placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
             </div>
           </center>
           <div className="buttonpanel" style={{marginTop:"0px"}}>
-            <div className="loginbutton" onClick={this.signin}>{intl.get('Register.CreateNewAccount')}</div>
+            <div className="forgotpassword" style={{marginTop:"10px"}} onClick={this.forgotpassword}>{intl.get('Register.ForgotPassword')}</div>
             <Button className="nextbutton" onClick={this.login}><img src={buttonnext} /></Button>
           </div>
           <div style={{display:"block"}}></div>
-          <div className="buttonpanel">
-            <div></div>
-            <div className="forgotpassword" onClick={this.forgotpassword}>{intl.get('Register.ForgotPassword')}</div>
+          <div className="buttonpanel" style={{marginTop:"30px"}}>
+            <div className="loginbutton" onClick={this.signin}>{intl.get('Register.CreateNewAccount')}</div>
           </div>
         </div>
       </div>

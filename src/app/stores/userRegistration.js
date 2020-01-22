@@ -332,6 +332,11 @@ class UserRegistration {
       return;
     }
 
+    if(this.password != this.confirmpassword) {
+      createNotification('error',intl.get('Error.Passwordnotmatch'));
+      return;
+    }
+    
     bodyFormData.set('newpassword', this.password);
     bodyFormData.set('token', this.token);
 

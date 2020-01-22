@@ -48,11 +48,11 @@
   }
 
   .inputTransparent{
-    border: none;
-    color:#fff;
+    border: none !important;
+    color:#fff !important;
     width:90%;
     padding:10px;
-    background-color: transparent;
+    background-color: transparent !important;
   }
 
   .inputTransparent:focus {
@@ -197,3 +197,20 @@
     }
   }
 }  
+
+input[type="password"]
+{
+  background-color: transparent !important;
+  border:none !important;
+}
+
+input[type="password"]:hover
+{
+  background-color: transparent !important;
+  border:none !important;
+}
+
+.anticon svg {
+  display: inline-block;
+  color: #fff;
+}

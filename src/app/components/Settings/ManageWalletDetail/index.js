@@ -207,14 +207,22 @@ class ManageWalletDetail extends Component {
             }
 
 
-            <div onClick={this.exportprivatekey} className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"10px"}}>
-              <div className="panellabel">{intl.get('Settings.ExportPrivateKey')}</div>
-              <div className="panelvalue"><img style={{cursor:"pointer"}} width="20px" src={buttonnext} /></div>
-            </div>
-            <div onClick={this.exportmnemonic} className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"30px"}}>
-              <div className="panellabel">{intl.get('Settings.ExportMnemonic')}</div>
-              <div className="panelvalue"><img style={{cursor:"pointer"}} width="20px" src={buttonnext} /></div>
-            </div>
+            {
+              wallet.holders != null &&
+                wallet.wallettype != "sharedwallet" &&
+                <React.Fragment>
+                  <div onClick={this.exportprivatekey} className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"10px"}}>
+                    <div className="panellabel">{intl.get('Settings.ExportPrivateKey')}</div>
+                    <div className="panelvalue"><img style={{cursor:"pointer"}} width="20px" src={buttonnext} /></div>
+                  </div>
+                  <div onClick={this.exportmnemonic} className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"30px"}}>
+                    <div className="panellabel">{intl.get('Settings.ExportMnemonic')}</div>
+                    <div className="panelvalue"><img style={{cursor:"pointer"}} width="20px" src={buttonnext} /></div>
+                  </div>
+                </React.Fragment>
+            }
+
+
             <div onClick={this.removewallet} data-walletname={wallet.walletname} data-publicaddress={wallet.publicaddress} className="panelwrapper borderradiusfull spacebetween removepanelcolor" style={{marginBottom:"10px"}}>
               <div className="panellabel">{intl.get('Modal.RemoveWallet')}</div>
               <div className="panelvalue"></div>

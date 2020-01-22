@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Input, InputNumber, Tooltip, Button, Radio } from 'antd';
+import { Input, InputNumber, Tooltip, Button, Radio, Icon } from 'antd';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
 import { createNotification } from 'utils/helper';
@@ -74,7 +74,12 @@ class Security extends Component {
                 </Radio>
                 <br/><br/>
                 <div className="panelwrapper borderradiusfull">
-                  <Input id="name" value={this.state.password} placeholder={this.state.password} className="inputTransparent" onChange={this.passwordChanged} />
+                  <Input.Password
+                    id="name" 
+                    value={this.state.password} 
+                    placeholder={this.state.password} 
+                    className="inputTransparent" 
+                    onChange={this.passwordChanged} />
                 </div>    
                 <br/>          
               </div>

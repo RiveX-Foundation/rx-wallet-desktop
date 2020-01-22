@@ -94,26 +94,22 @@ class ManageWallet extends Component {
       removemodalvisible: false
     },()=>{
       if(this.state.selectedremovewallet.isCloud && this.state.selectedremovewallet.wallettype == "basicwallet"){
-        console.log("remove condition 1")
         this.props.RemoveMultiSigWallet(this.state.selectedwalletaddress,()=>{
           this.props.removeWallet(this.state.selectedwalletaddress);
           createNotification('success',intl.get('Settings.SuccessfullyRemoved'));
         })
       }
       if(!this.state.selectedremovewallet.isCloud && this.state.selectedremovewallet.wallettype == "basicwallet" || this.state.selectedremovewallet.wallettype == "hwwallet"){
-        console.log("remove condition 2")
         this.props.removeWallet(this.state.selectedwalletaddress);
         createNotification('success',intl.get('Settings.SuccessfullyRemoved'));
       }
       if(this.state.selectedremovewallet.isOwner && this.state.selectedremovewallet.wallettype == "sharedwallet"){
-        console.log("remove condition 3")
         this.props.RemoveMultiSigWallet(this.state.selectedwalletaddress,()=>{
           this.props.removeWallet(this.state.selectedwalletaddress);
           createNotification('success',intl.get('Settings.SuccessfullyRemoved'));
         })
       }
       if(!this.state.selectedremovewallet.isOwner && this.state.selectedremovewallet.wallettype == "sharedwallet"){
-        console.log("remove condition 4")
         this.props.ExitMultiSigWallet(this.state.selectedwalletaddress,()=>{
           this.props.removeWallet(this.state.selectedwalletaddress);
           createNotification('success',intl.get('Settings.SuccessfullyRemoved'));

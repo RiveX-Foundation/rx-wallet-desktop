@@ -48,6 +48,12 @@ class InputNewPassword extends Component {
     this.props.wsChangePassword();
   }
 
+  onKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      this.next();
+    }
+  }
+  
   render() {
     return (
       <div className="fadeInAnim loginbg">
@@ -66,11 +72,11 @@ class InputNewPassword extends Component {
           <div className="inputpanel">
             <center>
               <div className="panelwrapper borderradiusfull">
-                <Input id="password" style={{marginLeft:"-10px",paddingLeft:"0px"}} type="password" placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} />
+                <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px"}} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
               </div>
 
               <div className="panelwrapper borderradiusfull">
-                <Input id="confirmpassword" style={{marginLeft:"-10px",paddingLeft:"0px"}} type="password" placeholder={intl.get('Register.ConfirmPassword')} className="inputTransparent" onChange={this.inputChanged} />
+                <Input.Password id="confirmpassword" style={{marginLeft:"-40px",paddingLeft:"0px"}} placeholder={intl.get('Register.ConfirmPassword')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
               </div>
             </center>
           </div>

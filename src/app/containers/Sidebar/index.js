@@ -166,8 +166,8 @@ class Sidebar extends Component {
               </div>
               <ul id="/$Menu" className="ant-menu ant-menu-sub ant-menu-inline" role="menu">
                 <li className={basicwalletstyle} data-tabvalue="wallet" data-wallettype="basicwallet" onClick={this.selectwallettype} role="menuitem"><img src={buttonbasicwallet} width="25px" />{intl.get('menuConfig.basicwallet')}</li>
-                <li className={sharedwalletstyle} data-tabvalue="wallet" data-wallettype="sharedwallet" onClick={this.selectwallettype} role="menuitem"><img src={buttonsharedwallet} width="25px" />{intl.get('menuConfig.sharedwallet')}</li>
-                <li className={hardwarewalletstyle} data-tabvalue="wallet" data-wallettype="hardwarewallet" onClick={this.selecthwwallettype} role="menuitem"><img src={buttonhardwarewallet} width="25px" />{intl.get('menuConfig.hardwarewallet')}</li>
+                {/*<li className={sharedwalletstyle} data-tabvalue="wallet" data-wallettype="sharedwallet" onClick={this.selectwallettype} role="menuitem"><img src={buttonsharedwallet} width="25px" />{intl.get('menuConfig.sharedwallet')}</li>*/}
+                {/*<li className={hardwarewalletstyle} data-tabvalue="wallet" data-wallettype="hardwarewallet" onClick={this.selecthwwallettype} role="menuitem"><img src={buttonhardwarewallet} width="25px" />{intl.get('menuConfig.hardwarewallet')}</li>*/}
                 <li className={importwalletstyle} data-tabvalue="wallet" data-wallettype="importwallet" onClick={this.selectimportwallettype} role="menuitem"><img src={buttonimportwallet} width="25px" />{intl.get('menuConfig.importwallet')}</li>
               </ul>
             </li>

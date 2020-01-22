@@ -3,7 +3,7 @@ const zh_CN = {
     'Footer.Company': 'PixieLab Sdn Bhd',
 
     'Dashboard.Title': '主页',
-
+    'Settings.Key' : '私钥',
     'Settings.settings': '设置',
     'Settings.Restore': '恢复',
     'Settings.Profile': '用户资料',
@@ -197,6 +197,7 @@ const zh_CN = {
     'Error.Mobileisempty': '电话为空',
     'Error.Nameisempty': '名称为空',
     'Error.Emailisempty': '电子邮件为空',
+    'Error.Emailnotfound' : '电子邮件不存在',
     'Error.Passwordisempty': '密码为空',
     'Error.Passwordnotmatch': '密码不匹配',
     'Error.Walletnameisempty': '钱包名称为空',
@@ -206,6 +207,7 @@ const zh_CN = {
     'Error.Tokenvalueisempty': '代币价格为空',
     'Error.InvalidOTP': 'OTP无效',
     'Error.Invalid2FAPassword': '雙重認證密码无效',
+    'Error.2FAPasswordIsEmpty': '雙重認證密码为空',
     'Error.TransactionFailed': '交易失败',
     'Error.InvalidTotalSignature': '总签名无效',
     'Error.InvalidTotalCoPlayer': '参与者总数无效',
