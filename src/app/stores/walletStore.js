@@ -64,6 +64,7 @@ class walletStore {
   @observable basicwallettype = "";
   @observable ledgerresult = {};
   @observable HWWalletType = "";
+  @observable currentGasPrice = 100;
 
   userstore = null;
   networkstore = null;
@@ -154,6 +155,11 @@ class walletStore {
 
   @action setHWWalletType(type){
     this.HWWalletType = type;
+  }
+
+  @action setTrxGasPrice = (price) =>{
+    // console.log("setTrxGasPrice", price);
+    this.currentGasPrice = price;
   }
 
   @computed get gettrxlist(){

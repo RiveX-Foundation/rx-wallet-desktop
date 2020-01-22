@@ -55,7 +55,6 @@ class WalletDetail extends Component {
 
   componentDidMount(){
     // console.log(JSON.stringify(this.props.selectedWallet))
-    this.props.getTokenSparkLineByAssetCode('rvx');
     // console.log("selectedTokenAsset" , this.props.selectedTokenAsset)
     var TokenInfo = this.props.selectedTokenAsset.TokenInfoList[0];//.find(x => x.Network == this.props.selectednetwork.shortcode);
     this.setState({
