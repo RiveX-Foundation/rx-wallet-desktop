@@ -14,6 +14,7 @@ import './index.less';
   setEmail: email => stores.userRegistration.setEmail(email),
   setCountryCode: val => stores.userRegistration.setCountryCode(val),
   UserAccountExist : stores.session.UserAccountExist,
+  email : stores.userRegistration.email,
   setRequestSignIn : val => stores.session.setRequestSignIn(val),
   setRequestForgotPassword : val => stores.session.setRequestForgotPassword(val),
   wsOTPVerification : type => stores.userRegistration.wsOTPVerification(type),
@@ -31,6 +32,12 @@ class InputMobile extends Component {
     countrycode : "+60",
     originallist : [],
     filterlist : []
+  }
+
+  onKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      this.next();
+    }
   }
 
   componentDidMount(){
@@ -159,11 +166,11 @@ class InputMobile extends Component {
               }
             <center>
               <div className="panelwrapper borderradiusfull loginpanel">
-                <Input id="email" placeholder={intl.get('Register.Email')} className="inputTransparent" onChange={this.inputChanged} />
+                <Input value={this.props.email} id="email" placeholder={intl.get('Register.Email')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
               </div>
             </center>
           </div>
-          <div className="buttonpanel">
+          <div className="buttonpanel" style={{marginTop:"0px"}}>
             <div className="loginbutton" onClick={this.login}>{intl.get('Register.BackToLogin')}</div>
             <Button className="nextbutton" onClick={this.next}><img src={buttonnext} /></Button>
           </div>

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Input, Radio, Icon, Tooltip, Button } from 'antd';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
+import { toJS } from "mobx";
 import './index.less';
 import { createNotification } from 'utils/helper';
 import buttonback from 'static/image/icon/back.png';
@@ -35,17 +36,14 @@ class TokenReceive extends Component {
   componentDidMount(){
     // this.loadwallet();
   }
-  
-  loadTransaction = () => {
-    this.props.LoadTransactionByAddress(this.props.selectedTokenAsset.PublicAddress);
-  }
 
   loadwallet = () => {
     this.props.loadWallet();
   }
 
   back = () => {
-    this.props.setCurrent('walletdetail');
+    var backval = (this.props.selectedTokenAsset.PublicAddress != null) ? 'walletdetail' : 'selectedwallet';
+    this.props.setCurrent(backval);
   }
 
   copy = () => {
@@ -56,6 +54,11 @@ class TokenReceive extends Component {
   }
 
   render() {
+
+    var publicaddr = (this.props.selectedTokenAsset.PublicAddress != null) ? this.props.selectedTokenAsset.PublicAddress : this.props.selectedWallet.publicaddress;
+    console.log(publicaddr);
+
+
     return (
       <div className="tokenreceivepanel fadeInAnim">
         <div className="title" ><span><img onClick={this.back} width="20px" src={buttonback} /></span><span style={{marginLeft:"20px"}}>{intl.get('Token.ReceiveToken')}</span></div>
@@ -66,16 +69,16 @@ class TokenReceive extends Component {
               <center>
                 <div className="qrcodectn">
                   <div className="inner">
-                    <QRCode fgColor="#4954AE" size={180} value={this.props.selectedTokenAsset.PublicAddress} />
+                    <QRCode fgColor="#4954AE" size={180} value={publicaddr} />
                   </div>
                 </div>
               </center>
               <div className="panelwrapper borderradiusfull">
-                <div>{this.props.selectedTokenAsset.PublicAddress}</div>
+                <div>{publicaddr}</div>
                 <img src={buttoncopy} onClick={this.copy} className="copyicon" />
               </div>
 
-              <input onChange={this.onChange} style={{marginTop:-99999,position:"absolute"}} ref={(input) => { this.inputEl1 = input; }} type="text" value={this.props.selectedTokenAsset.PublicAddress} id="hiddenphase" />
+              <input onChange={this.onChange} style={{marginTop:-99999,position:"absolute"}} ref={(input) => { this.inputEl1 = input; }} type="text" value={publicaddr} id="hiddenphase" />
             </div>
           </center>
         </div>

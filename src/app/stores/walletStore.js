@@ -1221,8 +1221,9 @@ class walletStore {
         if(response.data.status == 200){
           // console.log("SUCCESS", response.data);
           let newsparkline = [];
-          let sparklinelist = response.data.sparkline.sparkline;
+          let sparklinelist = response.data.sparkline//.sparkline;
           self.TokenSparkLine = sparklinelist;
+
           // if(sparklinelist.length > 0){
           //   sparklinelist.map((item,index)=>{
           //     newsparkline.push(item.value);
@@ -1306,7 +1307,9 @@ class walletStore {
   loadTokenAssetList = () =>{
     self.selectedassettokenlist = [];
     self.totalassetworth = 0;
+    var tokenassetcodelist = "";
     this.selectedwallet.tokenassetlist.map(async(tokenitem,index) =>{
+      tokenassetcodelist += tokenitem.AssetCode + ",";
       if(tokenitem.TokenType == "eth"){
         var web3 = new Web3(this.networkstore.selectedethnetwork.infuraendpoint);
         web3.eth.getBalance(tokenitem.PublicAddress).then(balance => { 
@@ -1366,6 +1369,10 @@ class walletStore {
         });
       }
     });
+
+    //LOAD TOKEN SPARKLINE
+    this.getTokenSparkLineByAssetCode(tokenassetcodelist);
+    console.log("ASSET CODE", tokenassetcodelist);
   }
 
   InsertTokenAssetToCloudWallet(tokenassetlist,publicaddress,cb){

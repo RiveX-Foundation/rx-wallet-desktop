@@ -31,7 +31,7 @@ var Web3 = require('web3');
   settrxdetail: (block,hash,from,to,value,action,gasprice,gasused,timestamp,nonce,confirmation,signers) =>stores.walletStore.settrxdetail(block,hash,from,to,value,action,gasprice,gasused,timestamp,nonce,confirmation,signers),
   setCurrent: current => stores.walletStore.setCurrent(current),
   language: stores.languageIntl.language,
-  getTokenSparkLineByAssetCode: crypto => stores.walletStore.getTokenSparkLineByAssetCode(crypto),
+  //getTokenSparkLineByAssetCode: crypto => stores.walletStore.getTokenSparkLineByAssetCode(crypto),
   TokenSparkLine:stores.walletStore.TokenSparkLine,
   selectedTokenAsset:stores.walletStore.selectedTokenAsset,
   convertrate:stores.walletStore.convertrate,
@@ -54,7 +54,7 @@ class WalletDetail extends Component {
   }
 
   componentDidMount(){
-    this.props.getTokenSparkLineByAssetCode('rvx');
+    //this.props.getTokenSparkLineByAssetCode(this.props.selectedTokenAsset.SparklineAssetCode);
     // console.log("selectedTokenAsset" , this.props.selectedTokenAsset)
     var TokenInfo = this.props.selectedTokenAsset.TokenInfoList[0];//.find(x => x.Network == this.props.selectednetwork.shortcode);
     this.setState({
@@ -192,8 +192,10 @@ class WalletDetail extends Component {
   */
 
   render() {
-    const dataMax = Math.max(...this.props.TokenSparkLine.map(i => i.value));
-    const dataMin = Math.min(...this.props.TokenSparkLine.map(i => i.value));
+    var sparkline = this.props.TokenSparkLine.find(x => x.AssetCode == this.props.selectedTokenAsset.AssetCode);
+    if(sparkline!=null) sparkline = sparkline.sparkline;
+    const dataMax = (sparkline!=null) ? Math.max(...sparkline.map(i => i.value)) : 0;
+    const dataMin = (sparkline!=null) ? Math.min(...sparkline.map(i => i.value)) : 0;
     return (
       <div className="walletdetailpanel fadeInAnim">
         {this.props.selectedWallet.walletname != null &&
@@ -215,7 +217,7 @@ class WalletDetail extends Component {
               <div className="usdbalance">${numberWithCommas(parseFloat(!isNaN(this.props.convertrate * this.props.selectedTokenAsset.TokenBalance) ? this.props.convertrate * this.props.selectedTokenAsset.TokenBalance : 0),true)} {this.props.currencycode}</div>
               <div style={{height:'100px',position:'relative'}}>
                 <ResponsiveContainer width={'100%'} height={500}>
-                  <AreaChart data={this.props.TokenSparkLine} baseValue={dataMin}>
+                  <AreaChart data={sparkline} baseValue={dataMin}>
                     <defs>
                       <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="rgb(100, 244, 244)" stopOpacity={0.7}/>

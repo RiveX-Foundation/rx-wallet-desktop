@@ -185,7 +185,7 @@ class Profile extends Component {
     }
 
     if(this.props.twoFAType == "password" && this.state.otp == "") {
-      createNotification('error',intl.get('Error.Passwordisempty'));
+      createNotification('error',intl.get('Error.2FAPasswordIsEmpty'));
       return;
     }
 
@@ -209,22 +209,22 @@ class Profile extends Component {
           <div className="inputpanel">
             <div className="panelwrapper borderradiusfull">
               {/* <Input id="name" value={this.state.name} placeholder={intl.get('Register.Name')} className="inputTransparent" onChange={this.inputChanged} /> */}
-              <Input id="name" value={this.state.name} placeholder={this.state.name} className="inputTransparent" onChange={this.inputChanged} />
+              <Input id="name" value={this.state.name} placeholder={intl.get('Register.Name')} className="inputTransparent" onChange={this.inputChanged} />
             </div>
 
             <div className="panelwrapper borderradiusfull">
               {/* <Input id="email" value={this.state.email} placeholder={intl.get('Register.Email')} className="inputTransparent" onChange={this.inputChanged} /> */}
-              <Input id="email" value={this.state.email} placeholder={this.state.email} className="inputTransparent" onChange={this.inputChanged} />
+              <Input id="email" value={this.state.email} placeholder={intl.get('Register.Email')} className="inputTransparent" onChange={this.inputChanged} />
             </div>
 
             <div className="panelwrapper borderradiusfull">
               {/* <Input id="loginid" value={this.state.loginid} placeholder={intl.get('Register.LoginId')} className="inputTransparent" onChange={this.inputChanged} /> */}
-              <Input id="loginid" value={this.state.loginid} placeholder={this.state.loginid} className="inputTransparent" onChange={this.inputChanged} />
+              <Input id="loginid" value={this.state.loginid} placeholder={intl.get('Register.LoginId')} className="inputTransparent" onChange={this.inputChanged} />
             </div>
 
             <div className="panelwrapper borderradiusleft countrycodewrapper">
               {/* <Input id="countrycode" value={this.state.countrycode} placeholder={intl.get('Register.CountryCode')} onClick={this.showlist} onBlur={this.hidelist} onFocus={this.showlist} className="inputTransparent" onChange={this.setfilterlist} /> */}
-              <Input id="countrycode" value={this.state.countrycode} placeholder={this.state.countrycode} onClick={this.showlist} onBlur={this.hidelist} onFocus={this.showlist} className="inputTransparent" onChange={this.setfilterlist} />
+              <Input id="countrycode" value={this.state.countrycode} placeholder={intl.get('Register.CountryCode')} onClick={this.showlist} onBlur={this.hidelist} onFocus={this.showlist} className="inputTransparent" onChange={this.setfilterlist} />
               <div className={autoliststyle}>
                 {filterlist.length > 0 && 
                   <ul>
@@ -243,11 +243,11 @@ class Profile extends Component {
             </div>
 
             <div className="panelwrapper borderradiusfull">
-              <Input id="password" type="password" placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} />
+              <Input.Password id="password" placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} />
             </div>
 
             <div className="panelwrapper borderradiusfull">
-              <Input id="confirmpassword" type="password" placeholder={intl.get('Register.ConfirmPassword')} className="inputTransparent" onChange={this.inputChanged} />
+              <Input.Password id="confirmpassword" placeholder={intl.get('Register.ConfirmPassword')} className="inputTransparent" onChange={this.inputChanged} />
             </div>
 
             {
@@ -268,14 +268,15 @@ class Profile extends Component {
             {
               this.props.twoFAType == "totp" &&
               <React.Fragment>
-                <div style={{marginTop:"50px"}} className="qrcodectn">
+                <div className="panellabel" style={{marginTop:"30px",paddingLeft:"0px"}}>{intl.get('Settings.Key') + " : " + this.props.googleAuthKey}</div>
+                <div style={{marginTop:"10px"}} className="qrcodectn">
                   <div className="inner">
                     <QRCode fgColor="#4954AE" size={130} value={totpurl} />
                   </div>
                 </div>
 
                 <div style={{width:"160px"}} className="panelwrapper borderradiusfull">
-                  <Input id="otp" type="password" className="inputTransparent" value={this.state.otp} onChange={this.inputChanged} placeholder={intl.get('Settings.2FASecurity.SecurityCode')} />
+                  <Input.Password id="otp" className="inputTransparent" value={this.state.otp} onChange={this.inputChanged} placeholder={intl.get('Settings.2FASecurity.SecurityCode')} />
                 </div>
               </React.Fragment>                
             }

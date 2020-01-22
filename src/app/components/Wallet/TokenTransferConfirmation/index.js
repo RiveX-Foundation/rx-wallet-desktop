@@ -394,17 +394,17 @@ class TokenTransferConfirmation extends Component {
               {
                 this.props.twoFAType == "totp" &&
                 <React.Fragment>
-                  <div>
-                    <div className="panellabel" style={{marginTop:"20px"}}>{intl.get('Settings.2FASecurity.SecurityCode')}</div>
-                    <div className="qrcodectn">
-                      <div className="inner">
-                        <QRCode fgColor="#4954AE" size={130} value={totpurl} />
-                      </div>
+                  <div style={{marginTop:"40px"}} className="qrcodectn">
+                    <div className="inner">
+                      <QRCode fgColor="#4954AE" size={130} value={totpurl} />
                     </div>
-                  </div>          
+                  </div>
 
-                  <div style={{marginLeft:"20px",marginTop:"45px",height:"60px"}} className="panelwrapper borderradiusfull">
-                    <Input id="otp" type="password" className="inputTransparent" onChange={this.OTPChange} placeholder={intl.get('Settings.2FASecurity.SecurityCode')} />
+                  <div style={{marginTop:"40px"}}>
+                    <div style={{width:"400px"}}>{intl.get('Settings.Key') + " : " + this.props.googleAuthKey}</div>
+                    <div style={{marginTop:"20px",paddingLeft:"20px",width:"400px"}} className="panelwrapper borderradiusfull">
+                      <Input id="otp" type="password" className="inputTransparent" onChange={this.OTPChange} placeholder={intl.get('Settings.2FASecurity.SecurityCode')} />
+                    </div>
                   </div>
                 </React.Fragment>      
               }

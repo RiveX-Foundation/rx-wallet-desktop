@@ -76,6 +76,12 @@ class InputOTP extends Component {
   onChange = e => {
   }
 
+  onKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      this.next();
+    }
+  }
+
   render() {
     return (
       <div className="fadeInAnim loginbg">
@@ -93,12 +99,12 @@ class InputOTP extends Component {
           <div className="title">{intl.get('Register.ForgotPassword')}</div>
           <div className="subtitle">{intl.get('Register.KeyInEmailOTP')}</div>
           <div className="inputwrapper">
-            <Input ref={(input) => { this.inputEl1 = input; }} className="inputOTP" id="otpvalue1" onChange={this.inputChanged} />
-            <Input ref={(input) => { this.inputEl2 = input; }} className="inputOTP" id="otpvalue2" onChange={this.inputChanged} />
-            <Input ref={(input) => { this.inputEl3 = input; }} className="inputOTP" id="otpvalue3" onChange={this.inputChanged} />
-            <Input ref={(input) => { this.inputEl4 = input; }} className="inputOTP" id="otpvalue4" onChange={this.inputChanged} />
-            <Input ref={(input) => { this.inputEl5 = input; }} className="inputOTP" id="otpvalue5" onChange={this.inputChanged} />
-            <Input ref={(input) => { this.inputEl6 = input; }} className="inputOTP" id="otpvalue6" onChange={this.inputChanged} />
+            <Input ref={(input) => { this.inputEl1 = input; }} className="inputOTP" id="otpvalue1" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
+            <Input ref={(input) => { this.inputEl2 = input; }} className="inputOTP" id="otpvalue2" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
+            <Input ref={(input) => { this.inputEl3 = input; }} className="inputOTP" id="otpvalue3" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
+            <Input ref={(input) => { this.inputEl4 = input; }} className="inputOTP" id="otpvalue4" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
+            <Input ref={(input) => { this.inputEl5 = input; }} className="inputOTP" id="otpvalue5" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
+            <Input ref={(input) => { this.inputEl6 = input; }} className="inputOTP" id="otpvalue6" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
           </div>
           <div className="buttonpanel"><Button className="nextbutton" onClick={this.next}><img src={buttonnext} /></Button></div>
         </div>

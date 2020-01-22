@@ -29,7 +29,7 @@ const WALLET_ID = 0x02;
   settrxdetail: (block,hash,from,to,value,action,gasprice,gasused,timestamp,nonce,confirmation,signers) =>stores.walletStore.settrxdetail(block,hash,from,to,value,action,gasprice,gasused,timestamp,nonce,confirmation,signers),
   setCurrent: current => stores.walletStore.setCurrent(current),
   language: stores.languageIntl.language,
-  getTokenSparkLineByAssetCode: crypto => stores.walletStore.getTokenSparkLineByAssetCode(crypto),
+  //getTokenSparkLineByAssetCode: crypto => stores.walletStore.getTokenSparkLineByAssetCode(crypto),
   TokenSparkLine:stores.walletStore.TokenSparkLine,
   convertrate:stores.walletStore.convertrate,
   totalassetworth:stores.walletStore.totalassetworth,
@@ -53,7 +53,7 @@ class SelectedWallet extends Component {
   componentDidMount(){
     this.props.GetPrimaryTokenAssetByNetwork();
     this.props.GetAllTokenAssetByNetwork();
-    this.props.getTokenSparkLineByAssetCode('rvx');
+    //this.props.getTokenSparkLineByAssetCode(this.props.selectedTokenAsset.SparklineAssetCode);
   }
   
   inputChanged = e => {
@@ -132,7 +132,14 @@ class SelectedWallet extends Component {
     }
   }
 
+  receiveToken = () => {
+    this.props.setCurrent("tokenreceive");
+  }
+
   render() {
+
+    var w = this.props.selectedWallet;
+
     return (
       <div id="selectwalletmainctn" className="selectedwalletpanel fadeInAnim">
         {this.props.selectedWallet.walletname != null &&
@@ -144,11 +151,21 @@ class SelectedWallet extends Component {
                 <div className="currency">{this.props.currencycode}</div>
               </div>
             </div>
+
+            {
+              w.wallettype == "sharedwallet" &&
+              <center>
+                <div onClick={this.receiveToken} className="sharedwalletpanel">{w.totalsignatures} / {w.totalowners}</div>
+              </center>
+            }
+
             <div className="tokenwrapper">              
               {
                 this.props.selectedWallet.tokenassetlist.map((item,index)=>{
-                  const dataMax = Math.max(...this.props.TokenSparkLine.map(i => i.value));
-                  const dataMin = Math.min(...this.props.TokenSparkLine.map(i => i.value));
+                  var sparkline = this.props.TokenSparkLine.find(x => x.AssetCode == item.AssetCode);
+                  if(sparkline!=null) sparkline = sparkline.sparkline;
+                  const dataMax = (sparkline!=null) ? Math.max(...sparkline.map(i => i.value)) : 0;
+                  const dataMin = (sparkline!=null) ? Math.min(...sparkline.map(i => i.value)) : 0;
                   return(
                     <div key={index} className="tokenassetitem" onClick={() => this.openTokenDetail(item)}>
                       <div className="tokenassetitemrow">
@@ -170,7 +187,7 @@ class SelectedWallet extends Component {
                         </div>
                         <div className="chartctn">
                           <ResponsiveContainer width={'100%'} height={200}>
-                            <AreaChart data={this.props.TokenSparkLine}  baseValue={dataMin}>
+                            <AreaChart data={sparkline}  baseValue={dataMin}>
                               <defs>
                                 <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
                                   <stop offset="5%" stopColor="rgb(100, 244, 244)" stopOpacity={0.7}/>

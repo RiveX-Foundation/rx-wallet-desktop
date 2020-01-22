@@ -42,6 +42,12 @@ class InputMobile extends Component {
     //this.readTextFile("../../static/countrymobile.json");
   }
 
+  onKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      this.next();
+    }
+  }
+
   readTextFile = file => {
     var rawFile = new XMLHttpRequest();
     rawFile.open("GET", file, false);
@@ -160,11 +166,11 @@ class InputMobile extends Component {
               }
             <center>
               <div className="panelwrapper borderradiusfull loginpanel">
-                <Input id="email" placeholder={intl.get('Register.Email')} className="inputTransparent" onChange={this.inputChanged} />
+                <Input id="email" placeholder={intl.get('Register.Email')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
               </div>
             </center>
           </div>
-          <div className="buttonpanel">
+          <div className="buttonpanel" style={{marginTop:"10px"}}>
             <div className="loginbutton" onClick={this.login}>{intl.get('Register.BackToLogin')}</div>
             <Button className="nextbutton" onClick={this.next}><img src={buttonnext} /></Button>
           </div>

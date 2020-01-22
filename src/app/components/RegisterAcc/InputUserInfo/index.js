@@ -57,6 +57,12 @@ class InputUserInfo extends Component {
     this.props.wsUserRegistration();
   }
 
+  onKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      this.next();
+    }
+  }
+
   render() {
     return (
       <div className="fadeInAnim loginbg">
@@ -75,7 +81,7 @@ class InputUserInfo extends Component {
           <div className="inputpanel">
             <center>
               <div className="panelwrapper borderradiusfull">
-                <Input id="name" placeholder={intl.get('Register.Name')} className="inputTransparent" onChange={this.inputChanged} />
+                <Input id="name" placeholder={intl.get('Register.Name')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
               </div>
 
               {
@@ -87,15 +93,15 @@ class InputUserInfo extends Component {
               }
 
               <div className="panelwrapper borderradiusfull">
-                <Input id="loginid" placeholder={intl.get('Register.LoginId')} className="inputTransparent" onChange={this.inputChanged} />
+                <Input id="loginid" placeholder={intl.get('Register.LoginId')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
               </div>
 
               <div className="panelwrapper borderradiusfull">
-                <Input id="password" style={{marginLeft:"-10px",paddingLeft:"0px"}} type="password" placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} />
+                <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px"}} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
               </div>
 
               <div className="panelwrapper borderradiusfull">
-                <Input id="confirmpassword" style={{marginLeft:"-10px",paddingLeft:"0px"}} type="password" placeholder={intl.get('Register.ConfirmPassword')} className="inputTransparent" onChange={this.inputChanged} />
+                <Input.Password id="confirmpassword" style={{marginLeft:"-40px",paddingLeft:"0px"}} placeholder={intl.get('Register.ConfirmPassword')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
               </div>
             </center>
           </div>

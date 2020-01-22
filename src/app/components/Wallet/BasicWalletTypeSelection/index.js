@@ -55,10 +55,14 @@ class BasicWalletTypeSelection extends Component {
               <div className="panelleft"><img src={localicon} /><span>{intl.get('Wallet.StoreOnLocal')}</span></div>
               <div className="panelright"><img src={buttonnext} /></div>
             </div>
-            <div className="panelwrapper borderradiusfull spacebetween" onClick={() => this.setBasicWalletType('cloud')} style={{marginBottom:"10px"}}>
-              <div className="panelleft"><img src={cloudicon} /><span>{intl.get('Wallet.StoreOnCloud')}</span></div>
-              <div className="panelright"><img src={buttonnext} /></div>
-            </div>
+            {
+              /*
+              <div className="panelwrapper borderradiusfull spacebetween" onClick={() => this.setBasicWalletType('cloud')} style={{marginBottom:"10px"}}>
+                <div className="panelleft"><img src={cloudicon} /><span>{intl.get('Wallet.StoreOnCloud')}</span></div>
+                <div className="panelright"><img src={buttonnext} /></div>
+              </div>
+            */
+            }
           </center>
         </div>
       </div>
