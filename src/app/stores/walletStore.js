@@ -65,6 +65,7 @@ class walletStore {
   @observable ledgerresult = {};
   @observable HWWalletType = "";
   @observable currentGasPrice = 100;
+  @observable infuraprojectid = "/v3/5bc9db68fd43445fbc2e6a5b5f269687";
 
   userstore = null;
   networkstore = null;
@@ -836,7 +837,7 @@ class walletStore {
       createNotification('info',intl.get('Info.Waiting'));
 
       if(this.selectedTokenAsset.TokenType == "erc20"){
-        var web3Provider = this.networkstore.selectedethnetwork.infuraendpoint;
+        var web3Provider = this.networkstore.selectedethnetwork.infuraendpoint + this.infuraprojectid;
         var web3 = new Web3(web3Provider);
 
         var count = await web3.eth.getTransactionCount(this.selectedTokenAsset.PublicAddress);
@@ -882,7 +883,7 @@ class walletStore {
           console.log("ERR",e);
         }
       }else if(this.selectedTokenAsset.TokenType == "wan") {
-        var web3Provider = this.networkstore.selectedethnetwork.infuraendpoint;
+        var web3Provider = this.networkstore.selectedethnetwork.infuraendpoint  + this.infuraprojectid;
         var web3 = new Web3(web3Provider);
 
         var TokenInfo = this.selectedTokenAsset.TokenInfoList[0];
@@ -929,7 +930,7 @@ class walletStore {
           console.log(err);
         });
       }else if(this.selectedTokenAsset.TokenType == "eth") {
-        var web3Provider = this.networkstore.selectedethnetwork.infuraendpoint;
+        var web3Provider = this.networkstore.selectedethnetwork.infuraendpoint  + this.infuraprojectid;
         var web3 = new Web3(web3Provider);
         
         var from = this.selectedTokenAsset.PublicAddress;
@@ -966,7 +967,7 @@ class walletStore {
           });
         });
       }else if(this.selectedTokenAsset.TokenType == "wrc20") {
-        var web3Provider = this.networkstore.selectedethnetwork.infuraendpoint;
+        var web3Provider = this.networkstore.selectedethnetwork.infuraendpoint  + this.infuraprojectid;
         var web3 = new Web3(web3Provider);
 
         var TokenInfo = this.selectedTokenAsset.TokenInfoList[0];
@@ -1317,7 +1318,7 @@ class walletStore {
     this.selectedwallet.tokenassetlist.map(async(tokenitem,index) =>{
       tokenassetcodelist += tokenitem.AssetCode + ",";
       if(tokenitem.TokenType == "eth"){
-        var web3 = new Web3(this.networkstore.selectedethnetwork.infuraendpoint);
+        var web3 = new Web3(this.networkstore.selectedethnetwork.infuraendpoint  + this.infuraprojectid);
         web3.eth.getBalance(tokenitem.PublicAddress).then(balance => { 
           balance = parseFloat(balance) / (10**18);
           tokenitem.TokenBalance = balance;
@@ -1325,7 +1326,7 @@ class walletStore {
           self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
         })
       }else if(tokenitem.TokenType == "erc20"){
-        var web3 = new Web3(this.networkstore.selectedethnetwork.infuraendpoint);
+        var web3 = new Web3(this.networkstore.selectedethnetwork.infuraendpoint  + this.infuraprojectid);
         var TokenInfo = tokenitem.TokenInfoList.find(x => x.Network == this.networkstore.selectedethnetwork.shortcode);
         TokenInfo = toJS(TokenInfo);
         var tokenAbiArray = JSON.parse(TokenInfo.AbiArray);
@@ -1342,9 +1343,15 @@ class walletStore {
         });
         self.selectedassettokenlist.push(tokenitem);
       }else if(tokenitem.TokenType == "wrc20"){
-        var TokenInfo = tokenitem.TokenInfoList.find(x => x.Network == this.networkstore.selectedwannetwork.shortcode);
+        // var TokenInfo = tokenitem.TokenInfoList.find(x => x.Network == this.networkstore.selectedwannetwork.shortcode);
+        // TokenInfo = toJS(TokenInfo);
+        var CurrentNetworkAllTokenInfo = toJS(this.allTokenAsset).find(x => x.AssetCode == tokenitem.AssetCode);
+        var TokenInfo = CurrentNetworkAllTokenInfo.TokenInfoList[0];
+        console.log("toJS(this.allTokenAsset)", toJS(this.allTokenAsset));
+        console.log("CurrentNetworkAllTokenInfo", CurrentNetworkAllTokenInfo);
+        console.log("TokenInfo", TokenInfo);
         TokenInfo = toJS(TokenInfo);
-        iWanUtils.getWrc20Balance("WAN",tokenitem.PublicAddress,tokenitem.TokenInfoList[0].ContractAddress).then(res => {
+        iWanUtils.getWrc20Balance("WAN",tokenitem.PublicAddress, TokenInfo.ContractAddress).then(res => {
           if (res && Object.keys(res).length) {
             try{
               var balance = res;

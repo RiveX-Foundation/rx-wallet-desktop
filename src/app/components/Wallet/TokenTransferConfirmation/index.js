@@ -42,7 +42,8 @@ import buttonback from 'static/image/icon/back.png';
   tokentransfertoken: stores.walletStore.tokentransfertoken,
   language: stores.languageIntl.language,
   selectedTokenAsset: stores.walletStore.selectedTokenAsset,
-  setTrxGasPrice:(price) => stores.walletStore.setTrxGasPrice(price)
+  setTrxGasPrice: (price) => stores.walletStore.setTrxGasPrice(price),
+  allTokenAsset:stores.walletStore.allTokenAsset,
 }))
 
 @observer
@@ -56,13 +57,13 @@ class TokenTransferConfirmation extends Component {
     otp: "notvalid",
     gaspricevalue: 100,
     mingaspricevalue: 50,
-    maxgaspricevalue:150
+    maxgaspricevalue: 150
   }
 
   componentDidMount() {
     this.tokencontract = this.props.selectedTokenAsset.TokenInfoList[0].ContractAddress;
     if (this.props.selectedTokenAsset.TokenType == "eth" || this.props.selectedTokenAsset.TokenType == "erc20") {
-      this.web3Provider = this.props.selectedethnetwork.infuraendpoint;
+      this.web3Provider = this.props.selectedethnetwork.infuraendpoint + "/v3/5bc9db68fd43445fbc2e6a5b5f269687";
     }
 
     this.props.setotptransfertoken("");
@@ -260,7 +261,10 @@ class TokenTransferConfirmation extends Component {
         });
       } else if (this.props.selectedTokenAsset.TokenType == "wrc20") {
         const web3 = new Web3(this.web3Provider);
-        var TokenInfo = this.props.selectedTokenAsset.TokenInfoList[0];
+        // var TokenInfo = this.props.selectedTokenAsset.TokenInfoList[0];
+        var CurrentNetworkAllTokenInfo = toJS(this.props.allTokenAsset).find(x => x.AssetCode == this.props.selectedTokenAsset.AssetCode);
+        var TokenInfo = CurrentNetworkAllTokenInfo.TokenInfoList[0];
+        TokenInfo = toJS(TokenInfo);
         var abiArray = JSON.parse(TokenInfo.AbiArray);
 
         var contractdata = new web3.eth.Contract(abiArray, TokenInfo.ContractAddress);
@@ -368,19 +372,19 @@ class TokenTransferConfirmation extends Component {
     }
   }
 
-  _setCurrentGasPrice = (price) =>{
+  _setCurrentGasPrice = (price) => {
     // console.log(price);
     this.setState({
       gaspricevalue: price
-    },()=>{
+    }, () => {
       this.props.setTrxGasPrice(price);
     })
   }
 
-  _formatWeiWin = (tokentype) =>{
-    if(tokentype == "eth" || tokentype == "erc20"){
+  _formatWeiWin = (tokentype) => {
+    if (tokentype == "eth" || tokentype == "erc20") {
       return "gwei";
-    }else if(tokentype == "wan" || tokentype == "wrc20"){
+    } else if (tokentype == "wan" || tokentype == "wrc20") {
       return "gwin";
     }
   }
@@ -410,7 +414,7 @@ class TokenTransferConfirmation extends Component {
                 <div className="panellabel">{intl.get('Transaction.GasPrice')}</div>
                 <div className="panelvalue">{this.state.gaspricevalue} {this._formatWeiWin(this.props.selectedTokenAsset.TokenType)}</div>
               </div>
-              <div className="spacebetween" style={{ marginTop: "20px", marginRight:"20px", marginLeft:"20px" }}>
+              <div className="spacebetween" style={{ marginTop: "20px", marginRight: "20px", marginLeft: "20px" }}>
                 <Slider
                   axis="x"
                   xstep={10}
@@ -421,17 +425,17 @@ class TokenTransferConfirmation extends Component {
                   styles={{
                     track: {
                       backgroundColor: '#000000',
-                      height:5,
-                      width:"100%",
+                      height: 5,
+                      width: "100%",
                     },
                     active: {
                       backgroundColor: '#5f5cdf',
-                      height:5
+                      height: 5
                     },
                     thumb: {
                       width: 15,
                       height: 15,
-                      backgroundColor:'#64F4F4'
+                      backgroundColor: '#64F4F4'
                     },
                   }}
                 />
