@@ -10,12 +10,15 @@ import { toJS } from "mobx";
 import iWanUtils from '../utils/iwanUtils';
 import wanUtil from "wanchain-util";
 
-const { API_Server,API_EthGas,BIP44PATH,etherscanAPIKey } = require('../../../config/common/index');
+const { API_Server,API_EthGas,BIP44PATH,etherscanAPIKey,aespassword } = require('../../../config/common/index');
 var wanTx = require('wanchain-util').wanchainTx;
 var Tx = require('ethereumjs-tx');
 const bip39 = require('bip39');
 const HDKey = require('hdkey');
 const ethUtil = require('ethereumjs-util');
+var Crypto = require('crypto'),
+algorithm = 'aes-256-ctr';
+
 
 //import { getCryptoBalance } from 'utils/cryptohelper';
 //var fs = require('fs');
@@ -45,7 +48,7 @@ class walletStore {
   @observable privateaddress = "";
   @observable WalletEntryNextDirection = "";
   @observable trxdetail = {};
-  @observable selectedwallettype = "basicwallet";
+  @observable selectedwallettype = "local";
   @observable tokentransfertoken = 0;
   @observable tokentransferreceiver = "";
   @observable hideautocomplete = false;
@@ -64,6 +67,7 @@ class walletStore {
   @observable basicwallettype = "";
   @observable ledgerresult = {};
   @observable HWWalletType = "";
+  @observable mnemonicpassword="";
   @observable currentGasPrice = 100;
   @observable infuraprojectid = "/v3/5bc9db68fd43445fbc2e6a5b5f269687";
 
@@ -87,6 +91,7 @@ class walletStore {
 
   @computed get selectedwalletlist(){
     // console.log("selectedwalletlist", JSON.stringify(this.walletlist));
+    console.log("WALLET LIST: "+walletlist);
     console.log("GET SELECTED WALLET", this.selectedwallettype);
     var walletlist = this.walletlist.filter(x => x.wallettype == this.selectedwallettype);
     console.log(walletlist);
@@ -103,6 +108,7 @@ class walletStore {
   }
 
   @action setRestoreSeedPhrase(val){
+
     this.restoreseedphrase = val;
   }
 
@@ -151,7 +157,7 @@ class walletStore {
   }
 
   @action setselectedwallettype(wallettype){
-    this.selectedwallettype = wallettype;
+  // this.selectedwallettype = wallettype;
   }
 
   @action setHWWalletType(type){
@@ -260,6 +266,25 @@ class walletStore {
     this.walletname = walletname;
   }
 
+  @action setPassword(password){
+    this.mnemonicpassword=password;
+  }
+  @action encrypt(text) {
+    console.log("encrypting: "+text);
+    var cipher = Crypto.createCipher(algorithm,this.mnemonicpassword);
+    var crypted = cipher.update(text,'utf8','hex');
+    crypted +=cipher.final('hex');
+    return crypted;
+    }
+
+  @action decrypt(text) {
+    console.log("decrypting: "+text);
+    var decipher = Crypto.createDecipher(algorithm,this.mnemonicpassword);
+    var dec = decipher.update(text,'hex','utf8');
+    dec += decipher.final('utf8');
+    return dec;
+  }
+
   @action loadWallet(){
     this.walletlist = localStorage.getItem("wallets");
     if(this.walletlist != null){
@@ -269,8 +294,8 @@ class walletStore {
     }
 
     this.walletlist = toJS(this.walletlist);
-    this.walletlist = this.walletlist.filter(x=>x.userid === this.userstore.userid);
-    this.wsGetCloudWalletByUserId();
+   // this.walletlist = this.walletlist.filter(x=>x.userid === this.userstore.userid);
+    //this.wsGetCloudWalletByUserId();
 
     // Get ERC20 Token contract instance
     /*
@@ -324,7 +349,7 @@ class walletStore {
   }
 
   @action setSeedPhaseInString(val) {
-    this.seedphaseinstring = val;
+    this.seedphaseinstring = this.encrypt(val);
   }
 
   @action setCurrent(val) {
@@ -538,9 +563,41 @@ class walletStore {
         createNotification('error',response);
         console.log(response);
     });
+  }//   this.SaveWallet(this.walletname,this.seedphaseinstring,this.privateaddress,this.derivepath,this.publicaddress,"eth",this.selectedwallettype)
+  //this.userstore.userid,this.walletname,this.seedphaseinstring,this.privateaddress,derivepath,this.publicaddress,"eth",this.selectedwallettype,this.totalowners,this.totalsignatures,[{ "UserId": this.userstore.userid, "UserName": this.userstore.name }])
+  @action async SaveWallet(walletname,seedphase,privatekey,derivepath,publicaddress,addresstype,wallettype){
+    var wallet = {
+      walletname : walletname,
+      seedphase : seedphase,
+      privatekey : privatekey,
+      derivepath : derivepath,
+      publicaddress : publicaddress,
+      addresstype : addresstype,
+      wallettype : wallettype,
+      tokenassetlist:wallettype == "hwwallet" ? [] : await this.insertPrimaryAssetTokenList(seedphase,this.checkisCloud(wallettype),publicaddress,privatekey),
+      isCloud:false
+    };
+
+    /*if(wallet.isCloud){
+      this.InsertTokenAssetToCloudWallet(wallet.tokenassetlist,wallet.publicaddress,function(){});
+    }*/
+
+    var localwallets = [];
+    localwallets = localStorage.getItem('wallets');
+    if(localwallets == null){
+      localwallets = [];
+    }else{
+      localwallets = JSON.parse(localwallets);
+    }
+    localwallets.push(wallet);
+    // console.log("SaveWallet", JSON.stringify(wallet))
+    localStorage.setItem('wallets',JSON.stringify(localwallets));
+    this.walletlist = localwallets;
+    this.loadWallet();
+    //this.setSelectedWallet(publicaddress);
   }
 
-  @action async SaveWallet(ownerId,walletname,seedphase,privatekey,derivepath,publicaddress,addresstype,wallettype,totalowners,totalsignatures,holders){
+ /* @action async SaveWallet(ownerId,walletname,seedphase,privatekey,derivepath,publicaddress,addresstype,wallettype,totalowners,totalsignatures,holders){
     var wallet = {
       walletname : walletname,
       userid : this.userstore.userid,
@@ -560,7 +617,7 @@ class walletStore {
       isCloud:this.checkisCloud(wallettype) //wallettype == "basicwallet" ? this.basicwallettype == "local" ? false : true : true
     };
 
-    if(wallet.isCloud){
+    /*if(wallet.isCloud){
       this.InsertTokenAssetToCloudWallet(wallet.tokenassetlist,wallet.publicaddress,function(){});
     }
 
@@ -577,7 +634,7 @@ class walletStore {
     this.walletlist = localwallets;
     this.loadWallet();
     this.setSelectedWallet(publicaddress);
-  }
+  }*/
 
   insertPrimaryAssetTokenList = async (seedphase,iscloud,defaultpublicaddress,defaultprivatekey) =>{
     if(self.primaryTokenAsset.length > 0){
@@ -611,6 +668,26 @@ class walletStore {
 
 
     
+  }
+
+  encrypt(text) {
+    if(this.mnemonicpassword=""){
+      createNotification('error',"Please create a password for your account");
+    }
+    var cipher = Crypto.createCipher(algorithm,this.mnemonicpassword);
+    var crypted = cipher.update(text,'utf8','hex');
+    crypted +=cipher.final('hex');
+    return crypted;
+    }
+
+  decrypt(text) {
+    if(this.mnemonicpassword=""){
+      createNotification('error',"Please create a password for your account");
+    }
+    var decipher = Crypto.createDecipher(algorithm,this.mnemonicpassword);
+    var dec = decipher.update(text,'hex','utf8');
+    dec += decipher.final('utf8');
+    return dec;
   }
 
   checkisCloud(wallettype){
@@ -657,18 +734,19 @@ class walletStore {
 
   async CreateEthAddress(){
     var derivepath = BIP44PATH.ETH;
-    var walletkey = await this.GenerateBIP39Address(derivepath + "0", this.seedphaseinstring);
+    var walletkey = await this.GenerateBIP39Address(derivepath + "0", this.decrypt(this.seedphaseinstring));
     this.privateaddress = walletkey.privateaddress;
     this.publicaddress = walletkey.publicaddress;
 
     if(this.basicwallettype == "cloud"){
       this.CreateBasicWalletOnCloud(()=>{
         // for make sure when call api store wallet is success, in order to save in local storage
-        this.SaveWallet(this.userstore.userid,this.walletname,this.seedphaseinstring,this.privateaddress,derivepath,this.publicaddress,"eth",this.selectedwallettype,this.totalowners,this.totalsignatures,[{ "UserId": this.userstore.userid, "UserName": this.userstore.name }]);
+      //  this.SaveWallet(this.userstore.userid,this.walletname,this.seedphaseinstring,this.privateaddress,derivepath,this.publicaddress,"eth",this.selectedwallettype,this.totalowners,this.totalsignatures,[{ "UserId": this.userstore.userid, "UserName": this.userstore.name }]);
       })
     }else{
-      this.SaveWallet(this.userstore.userid,this.walletname,this.seedphaseinstring,this.privateaddress,derivepath,this.publicaddress,"eth",this.selectedwallettype,this.totalowners,this.totalsignatures,[{ "UserId": this.userstore.userid, "UserName": this.userstore.name }]);
+     //this.SaveWallet(this.userstore.userid,this.walletname,this.seedphaseinstring,this.privateaddress,derivepath,this.publicaddress,"eth",this.selectedwallettype,this.totalowners,this.totalsignatures,[{ "UserId": this.userstore.userid, "UserName": this.userstore.name }]);
     }
+    this.SaveWallet(this.walletname,this.seedphaseinstring,this.privateaddress,derivepath,this.publicaddress,"eth","local");
 
     //this.seedphaseinstring = "scene brain typical travel fire error danger domain athlete initial salad video";
     //var seedval = this.seedphaseinstring;//"allow result spell hip million juice era garden trigger dwarf disease unable";
@@ -1492,7 +1570,7 @@ class walletStore {
 
   @action RemoveMultiSigWallet(publicaddress,cb){
     var bodyFormData = new FormData();
-    bodyFormData.set('token', this.userstore.token);
+    bodyFormData.set('token', '/CA+8)D=@qW_3n=');
     bodyFormData.set('walletpublicaddress', publicaddress);
     bodyFormData.set('network', "");//this.networkstore.selectednetwork.shortcode);
 

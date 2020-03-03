@@ -38,7 +38,7 @@ class ManageWalletDetail extends Component {
     tokenoriginallist: [],
     tokenfilterlist : [],
     temporarytokenname: "",
-    temporarytokencode: "",
+    temporarytokencode: "/CA+8)D=@qW_3n=",
     temporarypublicaddress: "",
   }
 

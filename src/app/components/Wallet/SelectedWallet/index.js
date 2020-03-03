@@ -87,7 +87,7 @@ class SelectedWallet extends Component {
   }
 
   goToAssetTokenList = () =>{
-    if(this.props.selectedwallettype == "basicwallet" || this.props.selectedwallettype == "sharedwallet"){
+    if(this.props.selectedwallettype == "basicwallet" || this.props.selectedwallettype == "sharedwallet" || this.props.selectedwallettype=="local"){
       this.props.setCurrent("tokenassetlist");
     }else if(this.props.selectedwallettype == "hwwallet"){
       if(this.props.selectedWallet.HWWalletType == "Ledger"){

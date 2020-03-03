@@ -12,7 +12,7 @@ class UserRegistration {
   @observable userid = "";//"5d4bfba8c1241f1388a0c4be";
   @observable mobile = "";
   @observable otp = "";
-  @observable token = "";//"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmZDM3YWY1My1iODJjLTQwZTYtODQ5ZC1jZDRkNzBmMWY3YzgiLCJhY2NpZCI6IjVkNGJmYmE4YzEyNDFmMTM4OGEwYzRiZSIsIm5hbWUiOiI5OTk5IiwiY3JlYXRlZGRhdGV0aW1lIjoiOC84LzIwMTkgMTA6Mzk6NTMgQU0iLCJleHAiOjE1NjUzNDcxOTN9.AFShy2OOdTOvwPqw5wi5LPsFTuMrwjLAJRyUXIXCS3Y";
+  @observable token = "/CA+8)D=@qW_3n=";//"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmZDM3YWY1My1iODJjLTQwZTYtODQ5ZC1jZDRkNzBmMWY3YzgiLCJhY2NpZCI6IjVkNGJmYmE4YzEyNDFmMTM4OGEwYzRiZSIsIm5hbWUiOiI5OTk5IiwiY3JlYXRlZGRhdGV0aW1lIjoiOC84LzIwMTkgMTA6Mzk6NTMgQU0iLCJleHAiOjE1NjUzNDcxOTN9.AFShy2OOdTOvwPqw5wi5LPsFTuMrwjLAJRyUXIXCS3Y";
   @observable current = 'inputmobile';
   @observable name = "";
   @observable email = "";
@@ -387,16 +387,23 @@ class UserRegistration {
 
   wsLogin(){
     // console.log("wsLogin");
-    var bodyFormData = new FormData();
+    /*var bodyFormData = new FormData();
     //bodyFormData.set('mobile', this.mobile);
     //bodyFormData.set('countrycode', this.countrycode);
     bodyFormData.set('email', this.email);
     bodyFormData.set('password', this.password);
     
     console.log(this.email);
-    console.log(this.password);
+    console.log(this.password);*/
 
-    axios({
+    this.setIsLogin(true);
+    this.setUserAccountExist(true);
+
+    this.walletstore.clearSelectedWallet();
+    this.walletstore.setselectedwallettype('basicwallet');
+    this.walletstore.setCurrent('selectedwallet');
+
+    /*axios({
       method: 'post',
       url: API_Server + 'api/auth/Login',
       data: bodyFormData,
@@ -411,7 +418,7 @@ class UserRegistration {
         //handle error
         createNotification('error',response);
         console.log(response);
-    });
+    });*/
   }
 
   wsOTPVerification(type){
@@ -485,7 +492,7 @@ class UserRegistration {
   }
 
   processMobileLogin(response){
-    if(response.status == 200){
+   /* if(response.status == 200){
       //if(response.user.GenericAttributes.find(x => x.Key == "FirstName") == null) { name ="" }else{ name = response.user.GenericAttributes.find(x => x.Key == "FirstName").Value };
       var name = response.user.Name;
       var email = response.user.Email;
@@ -526,7 +533,9 @@ class UserRegistration {
       console.log(intl.get('Error.'+response.msg));
       createNotification('error',intl.get('Error.'+response.msg));
       //createNotification
-    }
+    }*/
+    this.setIsLogin(true);
+    this.setUserAccountExist(true);
   }
 
   processUserRegistration(response){

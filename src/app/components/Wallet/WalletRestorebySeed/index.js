@@ -14,16 +14,19 @@ import { setDefaultWordlist } from 'bip39';
   setCurrent: current => stores.walletStore.setCurrent(current),
   setWalletName: walletname => stores.walletStore.setWalletName(walletname),
   setSeedPhaseInString: val => stores.walletStore.setSeedPhaseInString(val),
+  setPassword: password => stores.walletStore.setPassword(password),
   seedphase: stores.walletStore.seedphase,
   ethaddress: stores.walletStore.ethaddress,
-  language: stores.languageIntl.language
+  language: stores.languageIntl.language,
+  wsLogin : () => stores.userRegistration.wsLogin(),
 }))
 
 @observer
 class WalletRestorebySeed extends Component {
   state = {
     seedphase : "",
-    walletname : ""
+    walletname : "",
+    password :""
   }
 
   componentDidMount(){
@@ -40,6 +43,13 @@ class WalletRestorebySeed extends Component {
   WalletNameOnChange = e => {
     this.setState({walletname:e.target.value}, () => {
       this.props.setWalletName(this.state.walletname);
+    })
+    
+  }
+
+  PasswordOnChange = e => {
+    this.setState({password:e.target.value}, () => {
+      this.props.setPassword(this.state.password);
     })
     
   }
@@ -64,10 +74,11 @@ class WalletRestorebySeed extends Component {
       createNotification('error',intl.get('Error.InvalidMnemonicphrase'));
       return;
     }
-
+    
     this.props.setSeedPhaseInString(this.state.seedphase);
     this.props.CreateEthAddress();
     this.props.setCurrent("walletcreated");
+    this.props.wsLogin();
   }
 
   back = () => {
@@ -89,6 +100,11 @@ class WalletRestorebySeed extends Component {
               <div className="subtitle">{intl.get('Wallet.Mnemonicphrase')}</div>
               <div className="panelwrapper borderradiusfull" style={{width:"600px"}}>
                 <input className="inputTransparent" onChange={this.onChange} />
+              </div>
+
+              <div className="subtitle">{intl.get('Wallet.InputPassword')}</div>
+              <div className="panelwrapper borderradiusfull" style={{width:"150px"}}>
+              <Input id="password" type="password" className="inputTransparent" value={this.state.password} onChange={this.PasswordOnChange} />
               </div>
 
               <Button className="curvebutton" onClick={this.next} >{intl.get('Settings.Restore')}</Button>

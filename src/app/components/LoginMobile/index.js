@@ -5,11 +5,17 @@ import intl from 'react-intl-universal';
 const { countrymobile } = require('../../../../config/common/countrymobile');
 import logo from 'static/image/graphic/logo.png';
 import buttonnext from 'static/image/icon/buttonnextarrow.png';
+import WalletRestoreByseed from '../Wallet/WalletRestorebySeed';
 
 import './index.less';
 @inject(stores => ({
   countrycode: stores.userRegistration.countrycode,
-  setRequestSignIn : val => stores.session.setRequestSignIn(val),
+  CreateEthAddress : () => stores.walletStore.CreateEthAddress(),
+  setCurrent: current => stores.walletStore.setCurrent(current),
+  setWalletName: walletname => stores.walletStore.setWalletName(walletname),
+  setSeedPhaseInString: val => stores.walletStore.setSeedPhaseInString(val),
+  seedphase: stores.walletStore.seedphase,
+  setCurrent: current => stores.walletStore.setCurrent(current),
   setRequestForgotPassword : val => stores.session.setRequestForgotPassword(val),
   setMobile: mobile => stores.userRegistration.setMobile(mobile),
   setEmail: email => stores.userRegistration.setEmail(email),
@@ -143,45 +149,8 @@ class LoginMobile extends Component {
         <div className="leftpanel" onClick={this.panelClick}>
 
           <img width="350px" src={logo} />
-          <div className="subtitle">{intl.get('Register.Login')}</div>
-          {
-            /*
-            <div className="inputwrapper">
-            <div className="panelwrapper borderradiusleft countrycodewrapper">
-              <Input id="countrycode" value={this.state.countrycode} placeholder={intl.get('Register.CountryCode')} onClick={this.showlist} onBlur={this.hidelist} onFocus={this.showlist} className="inputTransparent" onChange={this.setfilterlist} />
-              <div className={autoliststyle}>
-                {filterlist.length > 0 && 
-                  <ul>
-                    {filterlist.map((item, index) => <li key={index} data-code={item.dial_code} onMouseDown={this.selectcountry}>{item.dial_code} {item.name}</li>)}
-                  </ul>
-                }
-
-                {filterlist.length == 0 && 
-                  <div className="noResult">{intl.get('Common.NoData')}</div>
-                }
-              </div>
-            </div>
-
-          </div>
-            */
-          }
-          <center>
-            <div className="panelwrapper borderradiusfull loginpanel">
-              <Input id="loginemail" placeholder={intl.get('Register.LoginId')} className="inputTransparent" onChange={this.inputChanged} />
-            </div>
-
-            <div className="panelwrapper borderradiusfull loginpanel">
-              <Input.Password style={{marginLeft:"-20px"}} id="loginpassword" placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
-            </div>
-          </center>
-          <div className="buttonpanel" style={{marginTop:"0px"}}>
-            <div className="forgotpassword" style={{marginTop:"10px"}} onClick={this.forgotpassword}>{intl.get('Register.ForgotPassword')}</div>
-            <Button className="nextbutton" onClick={this.login}><img src={buttonnext} /></Button>
-          </div>
-          <div style={{display:"block"}}></div>
-          <div className="buttonpanel" style={{marginTop:"30px"}}>
-            <div className="loginbutton" onClick={this.signin}>{intl.get('Register.CreateNewAccount')}</div>
-          </div>
+          <div className="subtitle">{intl.get('Register.Welcome')}</div>
+          <center><WalletRestoreByseed></WalletRestoreByseed></center>
         </div>
       </div>
     );

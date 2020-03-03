@@ -89,6 +89,7 @@ const en_US = {
     "Wallet.StoreOnCloud":"STORE ON CLOUD",
     "Wallet.Add":"Add",
     "Wallet.NotEnoughBalance":"Not Enough Balance",
+    "Wallet.InputPassword":"Wallet password",
 
     'ForgotPassword.EnterEmail': "ENTER EMAIL",
 
@@ -143,7 +144,7 @@ const en_US = {
     'Register.Mobile' : 'Mobile',
     'Register.ConfirmPassword' : 'Confirm Password',
     'Register.BackToLogin' : 'Back to login',
-    'Register.Login' : 'LOGIN',
+    'Register.Welcome' : 'Welcome',
     'Register.CreateNewAccount' : 'CREATE NEW ACCOUNT',
     'Register.LoginId' : 'Login ID',
 
