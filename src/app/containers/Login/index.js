@@ -7,6 +7,11 @@ import {NotificationContainer, NotificationManager} from 'react-notifications';
 import './index.less';
 import LoginMobile from 'components/LoginMobile';
 import { isNullOrEmpty } from '../../utils/helper';
+import BackupWalletTutorial from '../../components/Wallet/BackupWalletTutorial';
+import WalletCreation from '../../components/Wallet/WalletCreation';
+import WalletKeyInSeed from '../../components/Wallet/WalletKeyInSeed';
+import WalletCreated from '../../components/Wallet/WalletCreated';
+import WalletNameEntry from '../../components/Wallet/WalletNameEntry';
 
 //import { checkCryptographic, checkPhrase } from 'utils/support';
 
@@ -45,6 +50,23 @@ class Login extends Component {
     steps: [{
       content: <LoginMobile />,
       key: 'inputmobile'
+    },{
+      content: <BackupWalletTutorial />,
+      key:'createwalletlogin'
+    }
+    ,{
+      content: <WalletNameEntry />,
+      key:'walletnameentry'
+    }
+    ,{
+      content: <WalletCreation />,
+      key:'walletcreation'
+    },{
+      content: <WalletKeyInSeed />,
+      key:'walletkeyinseed'
+    },{
+      content: <WalletCreated />,
+      key:'walletcreated'
     }]
   }
 
@@ -171,7 +193,7 @@ class Login extends Component {
     const { current } = this.props;
     console.log(current);
     return (
-      <div className="steps-content">{steps.find(x=>x.key===current).content}<NotificationContainer/></div>
+      <div className="steps-content" style={{backgroundColor:'#1A1B2C'}}>{steps.find(x=>x.key===current).content}<NotificationContainer/></div>
     );
   }
 }

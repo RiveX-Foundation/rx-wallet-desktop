@@ -400,7 +400,7 @@ class UserRegistration {
     this.setUserAccountExist(true);
 
     this.walletstore.clearSelectedWallet();
-    this.walletstore.setselectedwallettype('basicwallet');
+    this.walletstore.setselectedwallettype('local');
     this.walletstore.setCurrent('selectedwallet');
 
     /*axios({

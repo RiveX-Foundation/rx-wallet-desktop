@@ -8,6 +8,7 @@ import buttonartboard3 from 'static/image/graphic/artboard3.png';
 import './index.less';
 @inject(stores => ({
   setCurrent: current => stores.walletStore.setCurrent(current),
+  setcurrentReg: current => stores.userRegistration.setCurrent(current),
   setWalletEntryNextDirection: val => stores.walletStore.setWalletEntryNextDirection(val),
   language: stores.languageIntl.language
 }))
@@ -20,10 +21,12 @@ class BackupWalletTutorial extends Component {
 
   back = () => {
     this.props.setCurrent("walletnameentry");
+    this.props.setcurrentReg("walletnameentry");
   }
 
   create = () => {
     this.props.setWalletEntryNextDirection("basicwallet");
+    this.props.setcurrentReg("walletcreation");
     this.props.setCurrent("walletcreation");
   }
 

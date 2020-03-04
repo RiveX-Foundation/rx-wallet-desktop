@@ -7,6 +7,7 @@ import {NotificationContainer, NotificationManager} from 'react-notifications';
 const { countrymobile } = require('../../../../../config/common/countrymobile');
 import logo from 'static/image/graphic/logo.png';
 import buttonnext from 'static/image/icon/buttonnextarrow.png';
+import WalletRestoreByseedLogin from '../../Wallet/WalletRestorebySeedLogin';
 
 import './index.less';
 @inject(stores => ({
@@ -131,6 +132,10 @@ class InputMobile extends Component {
     return (
       <div className="fadeInAnim loginbg">
         <div className="leftpanel" onClick={this.panelClick}>
+          <WalletRestoreByseedLogin></WalletRestoreByseedLogin>
+          <div className="buttonpanel" style={{marginTop:"0px"}}>
+            <div className="loginbutton" onClick={this.login}>{intl.get('Register.BackToLogin')}</div>
+          </div>
           <img width="350px" src={logo} />
           <div className="steppanel">
             <div className="circlewrapper"><div className="outterCircle"><div className="innerCircle"></div></div></div>

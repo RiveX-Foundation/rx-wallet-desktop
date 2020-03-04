@@ -68,8 +68,10 @@ class walletStore {
   @observable ledgerresult = {};
   @observable HWWalletType = "";
   @observable mnemonicpassword="";
+  @observable mnemonicpasswordconfirm="";
   @observable currentGasPrice = 100;
   @observable infuraprojectid = "/v3/5bc9db68fd43445fbc2e6a5b5f269687";
+  @observable pendingpassword="";
 
   userstore = null;
   networkstore = null;
@@ -105,6 +107,12 @@ class walletStore {
 
   @action sethideautocomplete(val){
     this.hideautocomplete = val;
+  }
+  @action setPendingPassword(val){
+    this.pendingpassword=val;
+  }
+  @action clearPendingPassword(){
+    this.pendingpassword="";
   }
 
   @action setRestoreSeedPhrase(val){
@@ -167,6 +175,10 @@ class walletStore {
   @action setTrxGasPrice = (price) =>{
     // console.log("setTrxGasPrice", price);
     this.currentGasPrice = price;
+  }
+
+  @computed get mnemonicPassword(){
+    return this.mnemonicpassword;
   }
 
   @computed get gettrxlist(){
@@ -267,7 +279,11 @@ class walletStore {
   }
 
   @action setPassword(password){
+    localStorage.setItem('password',password);
     this.mnemonicpassword=password;
+  }
+  @action setPasswordConfirm(password){
+    this.mnemonicpasswordconfirm=password;
   }
   @action encrypt(text) {
     console.log("encrypting: "+text);
@@ -457,6 +473,13 @@ class walletStore {
     //this.loadWallet();
   }
 
+  confirmPasswords(){
+    if(this.mnemonicpassword != this.mnemonicpasswordconfirm) {
+      createNotification('error',intl.get('Error.Passwordnotmatch'));
+      return;
+    }
+  }
+
   ParseTrxStatus(status){
     if(status == "0"){
       return "Failed";
@@ -574,7 +597,7 @@ class walletStore {
       publicaddress : publicaddress,
       addresstype : addresstype,
       wallettype : wallettype,
-      tokenassetlist:wallettype == "hwwallet" ? [] : await this.insertPrimaryAssetTokenList(seedphase,this.checkisCloud(wallettype),publicaddress,privatekey),
+      tokenassetlist:await this.insertPrimaryAssetTokenList(seedphase,this.checkisCloud(wallettype),publicaddress,privatekey),
       isCloud:false
     };
 
@@ -637,6 +660,7 @@ class walletStore {
   }*/
 
   insertPrimaryAssetTokenList = async (seedphase,iscloud,defaultpublicaddress,defaultprivatekey) =>{
+    console.log("instering primary assets");
     if(self.primaryTokenAsset.length > 0){
       var promises = self.primaryTokenAsset.map(async (tokenitem,index)=>{
         var derivepath = BIP44PATH.ETH;
@@ -671,23 +695,37 @@ class walletStore {
   }
 
   encrypt(text) {
+    console.log("encrypting:"+text);
+    console.log("menmonic: "+this.mnemonicpassword);
+    console.log("menmonicConfirm: "+this.mnemonicpasswordconfirm);
+   // this.confirmPasswords();
     if(this.mnemonicpassword=""){
       createNotification('error',"Please create a password for your account");
+      return;
+    } else{
+      var cipher = Crypto.createCipher(algorithm,this.mnemonicpassword);
+      var crypted = cipher.update(text,'utf8','hex');
+      crypted +=cipher.final('hex');
+      console.log("encrypted:"+crypted);
+      return crypted;
     }
-    var cipher = Crypto.createCipher(algorithm,this.mnemonicpassword);
-    var crypted = cipher.update(text,'utf8','hex');
-    crypted +=cipher.final('hex');
-    return crypted;
+    
     }
 
   decrypt(text) {
+    //this.confirmPasswords();
+    console.log("decrypting: "+text);
     if(this.mnemonicpassword=""){
       createNotification('error',"Please create a password for your account");
+      return;
+    } else{
+      var decipher = Crypto.createDecipher(algorithm,this.mnemonicpassword);
+      var dec = decipher.update(text,'hex','utf8');
+      dec += decipher.final('utf8');
+      console.log("decrypted: "+dec);
+      return dec;
     }
-    var decipher = Crypto.createDecipher(algorithm,this.mnemonicpassword);
-    var dec = decipher.update(text,'hex','utf8');
-    dec += decipher.final('utf8');
-    return dec;
+    
   }
 
   checkisCloud(wallettype){
@@ -733,11 +771,11 @@ class walletStore {
   }
 
   async CreateEthAddress(){
+    console.log("seed phrase in string "+this.seedphaseinstring);
     var derivepath = BIP44PATH.ETH;
     var walletkey = await this.GenerateBIP39Address(derivepath + "0", this.decrypt(this.seedphaseinstring));
     this.privateaddress = walletkey.privateaddress;
     this.publicaddress = walletkey.publicaddress;
-
     if(this.basicwallettype == "cloud"){
       this.CreateBasicWalletOnCloud(()=>{
         // for make sure when call api store wallet is success, in order to save in local storage
@@ -746,7 +784,10 @@ class walletStore {
     }else{
      //this.SaveWallet(this.userstore.userid,this.walletname,this.seedphaseinstring,this.privateaddress,derivepath,this.publicaddress,"eth",this.selectedwallettype,this.totalowners,this.totalsignatures,[{ "UserId": this.userstore.userid, "UserName": this.userstore.name }]);
     }
-    this.SaveWallet(this.walletname,this.seedphaseinstring,this.privateaddress,derivepath,this.publicaddress,"eth","local");
+    await this.SaveWallet(this.walletname,this.seedphaseinstring,this.privateaddress,derivepath,this.publicaddress,"eth","local");
+    console.log("awaited save wallet");
+    this.loadTokenAssetList();
+    this.setCurrent("walletcreated");
 
     //this.seedphaseinstring = "scene brain typical travel fire error danger domain athlete initial salad video";
     //var seedval = this.seedphaseinstring;//"allow result spell hip million juice era garden trigger dwarf disease unable";
@@ -1393,6 +1434,7 @@ class walletStore {
     self.selectedassettokenlist = [];
     self.totalassetworth = 0;
     var tokenassetcodelist = "";
+    console.log("THIS SELECTED WALLET: "+this.selectedwallet.tokenassetlist);
     this.selectedwallet.tokenassetlist.map(async(tokenitem,index) =>{
       tokenassetcodelist += tokenitem.AssetCode + ",";
       if(tokenitem.TokenType == "eth"){

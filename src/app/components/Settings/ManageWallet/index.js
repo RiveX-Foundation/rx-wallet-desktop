@@ -99,7 +99,7 @@ class ManageWallet extends Component {
           createNotification('success',intl.get('Settings.SuccessfullyRemoved'));
         })
       }
-      if(!this.state.selectedremovewallet.isCloud && this.state.selectedremovewallet.wallettype == "basicwallet" || this.state.selectedremovewallet.wallettype == "hwwallet"){
+      if(!this.state.selectedremovewallet.isCloud && this.state.selectedremovewallet.wallettype == "basicwallet" || this.state.selectedremovewallet.wallettype == "hwwallet" ||this.state.selectedremovewallet.wallettype=="local"){
         this.props.removeWallet(this.state.selectedwalletaddress);
         createNotification('success',intl.get('Settings.SuccessfullyRemoved'));
       }

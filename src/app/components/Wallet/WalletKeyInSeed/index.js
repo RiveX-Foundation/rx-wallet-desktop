@@ -12,9 +12,15 @@ import { setDefaultWordlist } from 'bip39';
 @inject(stores => ({
   CreateEthAddress : () => stores.walletStore.CreateEthAddress(),
   setCurrent: current => stores.walletStore.setCurrent(current),
+  setcurrentReg: current => stores.userRegistration.setCurrent(current),
   seedphase: stores.walletStore.seedphase,
   ethaddress: stores.walletStore.ethaddress,
-  language: stores.languageIntl.language
+  language: stores.languageIntl.language,
+  pendingpassword: stores.walletStore.pendingpassword,
+  wsLogin : () => stores.userRegistration.wsLogin(),
+  setRequestSignIn : val => stores.session.setRequestSignIn(val),
+  setPassword: password => stores.walletStore.setPassword(password),
+  clearPendingPassword : () => stores.walletStore.clearPendingPassword()
 }))
 
 @observer
@@ -23,7 +29,8 @@ class WalletKeyInSeed extends Component {
     seedphaseel : null,
     selectedseedphase : [],
     originalseedphase : [],
-    nextbuttonstyle : {display:"none"}
+    nextbuttonstyle : {display:"none"},
+    pendingpassword: ""
   }
 
   constructor(props){
@@ -33,6 +40,7 @@ class WalletKeyInSeed extends Component {
   componentDidMount(){
     // console.log("TESTING")
     this.get12SeedPhase();
+    this.state.pendingpassword=this.props.pendingpassword;
   }
 
   inputChanged = e => {
@@ -89,10 +97,15 @@ class WalletKeyInSeed extends Component {
     console.log("COPY");
   }
 
-  next = async () => {
+  next = () => {
     //this.validateseedphase();
-    await this.props.CreateEthAddress();
+    this.props.setPassword(this.state.pendingpassword);
+    this.props.CreateEthAddress();
     this.props.setCurrent("walletcreated");
+    this.props.wsLogin();
+    this.props.setRequestSignIn(false);
+    this.props.setcurrentReg("inputmobile");
+    this.props.clearPendingPassword();
   }
 
   validateseedphase = () => {
@@ -107,6 +120,13 @@ class WalletKeyInSeed extends Component {
 
   back = () => {
     this.props.setCurrent("walletcreation");
+    this.props.setcurrentReg("walletcreation");
+  }
+
+  onKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      this.next();
+    }
   }
 
   shuffle = (arr) =>{
@@ -139,6 +159,7 @@ class WalletKeyInSeed extends Component {
             }
           </div>
           <div className="buttonpanel"><Button className="curvebutton" style={nextbuttonstyle} onClick={this.next} >{intl.get('Wallet.Confirm')}</Button></div>
+         
           <div className="originalseedpanel" style={{height:"200px",width:"600px",display:"inline-block",marginTop:"30px"}}>
             {
               originalseedphase.map(function(item, i){

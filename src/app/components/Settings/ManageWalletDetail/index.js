@@ -11,6 +11,7 @@ const bip39 = require('bip39');
 
 import './index.less';
 import { setDefaultWordlist } from 'bip39';
+import { createNotification } from '../../../utils/helper';
 @inject(stores => ({
   setCurrent: current => stores.setting.setCurrent(current),
   setSelectedPrivateAddress: privateaddress => stores.setting.setSelectedPrivateAddress(privateaddress),
@@ -21,6 +22,7 @@ import { setDefaultWordlist } from 'bip39';
   language: stores.languageIntl.language,
   getTotalWorth: wallet => stores.walletStore.getTotalWorth(wallet),
   currencycode:stores.setting.currencycode,
+  mnemonicpassword: stores.walletStore.mnemonicPassword
 }))
 
 @observer
@@ -40,6 +42,9 @@ class ManageWalletDetail extends Component {
     temporarytokenname: "",
     temporarytokencode: "/CA+8)D=@qW_3n=",
     temporarypublicaddress: "",
+    mnemonicvisibility: {display:"none"},
+    pkeyvisibility: {display:"none"},
+    password:""
   }
 
   componentDidMount(){
@@ -51,8 +56,79 @@ class ManageWalletDetail extends Component {
     })
   }
 
+  inputPasswordChanged = e => {
+        this.setState({ password: e.target.value });
+  }
+
   inputChanged = e => {
     this.setState({ newwalletname : e.target.value });
+  }
+
+  validatePasswords = () =>{
+    console.log("validating passwords");
+    console.log("mnemonic password: "+this.props.mnemonicpassword);
+    if(this.state.password == this.props.mnemonicpassword || this.state.password === this.props.mnemonicpassword){
+      console.log("passwords match");
+      createNotification('success','Valid password');
+      this.setState({mnemonicvisibility:{display:"block"}});
+      this.setState({pkeyvisibility:{display:"block"}});
+      this.setState({password:""});
+      
+    } else{
+      console.log("passwords don't match");
+      createNotification('error','Wrong password');
+      this.setState({mnemonicvisibility:{display:"none"}});
+      this.setState({pkeyvisibility:{display:"none"}});
+      this.setState({password:""});
+      
+    }
+  }
+
+  
+  validatePasswordsPkey = () =>{
+    console.log("validating passwords");
+    console.log("mnemonic password: "+this.props.mnemonicpassword);
+    if(this.state.password == this.props.mnemonicpassword || this.state.password === this.props.mnemonicpassword){
+      console.log("passwords match");
+      createNotification('success','Valid password');
+      this.setState({pkeyvisibility:{display:"block"}});
+      if(this.state.temporarypublicaddress==""){
+        return;
+      }
+  
+      this.setState({
+        exportprivatekeymodalvisible: false
+      }, () => {
+        this.props.setCurrent('exportprivatekey');
+      });
+      this.setState({password:""});
+    } else{
+      console.log("passwords don't match");
+      createNotification('error','Wrong password');
+      this.setState({pkeyvisibility:{display:"none"}});
+      this.setState({password:""});
+      
+    }
+  }
+
+  validatePasswordsRemoval = () =>{
+    console.log("validating passwords");
+    console.log("mnemonic password: "+this.props.mnemonicpassword);
+    if(this.state.password == this.props.mnemonicpassword || this.state.password === this.props.mnemonicpassword){
+      console.log("passwords match");
+      createNotification('success','Valid password');
+      this.setState({
+        removemodalvisible: false
+      });
+      this.props.removeWallet(this.state.selectedwalletaddress);
+      this.setState({password:""});
+      this.back();
+    } else{
+      console.log("passwords don't match");
+      createNotification('error','Wrong password');
+      this.setState({password:""});
+      
+    }
   }
 
   exportprivatekey = e => {
@@ -108,7 +184,11 @@ class ManageWalletDetail extends Component {
     this.setState({
       removemodalvisible: false,
       exportprivatekeymodalvisible: false,
-      changewalletnamemodalvisible: false
+      changewalletnamemodalvisible: false,
+      exportmnemonicmodalvisible: false,
+      password:"",
+      mnemonicvisibility: {display:"none"},
+      pkeyvisibility: {display:"none"}
     });
   }
 
@@ -173,7 +253,8 @@ class ManageWalletDetail extends Component {
     render() {
 
     const wallet = this.props.walletlist.find(x=>x.publicaddress == this.props.selectedwalletaddress);
-
+    const { mnemonicvisibility } = this.state;
+    const { pkeyvisibility } = this.state;
     return (
       <div className="managewalletdetailpanel fadeInAnim">
         <div className="centerpanel">
@@ -208,7 +289,7 @@ class ManageWalletDetail extends Component {
 
 
             {
-              wallet.holders != null &&
+              
                 wallet.wallettype != "sharedwallet" &&
                 <React.Fragment>
                   <div onClick={this.exportprivatekey} className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"10px"}}>
@@ -231,16 +312,23 @@ class ManageWalletDetail extends Component {
             <Modal
               title=""
               visible={this.state.removemodalvisible}
-              onOk={this.handleRemoveWalletOk}
+              onOk={this.validatePasswordsRemoval}
               onCancel={this.handleCancel}
             >
               <p className='modalcontent'>{intl.get('Modal.AreYouSureRemoveWallet').replace('{walletname}',this.state.selectedwalletname)}</p>
+              <div className="inputpanel">
+            <center>
+              <div className="panelwrapper borderradiusfull">
+                <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px"}} value = {this.state.password} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputPasswordChanged} />
+              </div>
+            </center>
+          </div>
             </Modal>
 
             <Modal
               title=""
               visible={this.state.exportprivatekeymodalvisible}
-              onOk={this.handleExportPrivateKeyOk}
+              onOk={this.validatePasswordsPkey}
               onCancel={this.handleCancel}
             >
               <div className="pheader">{intl.get('Info.Warning')}</div>
@@ -250,6 +338,7 @@ class ManageWalletDetail extends Component {
                 <div className='pmodalcontent'>{intl.get('Settings.ExportPrivateKey.Msg3')}</div>
 
                 <div className='pmodalcontent'>{intl.get('Settings.ExportPrivateKey.SelectTokenAsset')}</div>
+          
                 <div className="inputwrapper">
                   <div className="panelwrapper">
                     <Input value={this.state.temporarytokenname } placeholder={intl.get('Settings.Token')} onClick={this.showlist} onBlur={this.hidelist} onFocus={this.showlist} className="inputTransparent" onChange={this.setfilterlist} />
@@ -270,6 +359,13 @@ class ManageWalletDetail extends Component {
                       <div className="noResult">{intl.get('Common.NoData')}</div>
                     }
                   </div>
+                  <div className="inputpanel">
+            <center>
+              <div className="panelwrapper borderradiusfull">
+                <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px"}} value = {this.state.password} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputPasswordChanged} />
+              </div>
+            </center>
+          </div>
                 </div>
               </div>
             </Modal>
@@ -277,13 +373,21 @@ class ManageWalletDetail extends Component {
             <Modal
               title=""
               visible={this.state.exportmnemonicmodalvisible}
-              onOk={this.handleExportMnemonicOk}
-              cancelButtonProps={{ style: { display: 'none' } }}
+              onOk={this.validatePasswords}
+              onCancel={this.handleCancel}
+             
             >
               <div className="pheader">{intl.get('Info.Warning')}</div>
               <div>
                 <div className='pmodalcontent'>{intl.get('Settings.ExportMnemonic.Msg1')}</div>
-                <div className='pmodalmnemonickey'>{this.state.exportedseedphrase}</div>
+                <div className="inputpanel">
+            <center>
+              <div className="panelwrapper borderradiusfull">
+                <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px"}} value = {this.state.password} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputPasswordChanged} />
+              </div>
+            </center>
+          </div>
+                <div className='pmodalmnemonickey' style={mnemonicvisibility} >{this.state.exportedseedphrase}</div>
               </div>
             </Modal>
 

@@ -21,6 +21,7 @@ const en_US = {
     'Settings.Language': 'Language',
     'Settings.ExportPrivateKey': 'Export Private Key',
     'Settings.Token': 'Token',
+    "Settings.Quit":'Quit',
     'Settings.2FASecurity': 'SECURITY',
     'Settings.2FASecurity.SMS': 'SMS Authentication',
     'Settings.2FASecurity.SecurityCode': 'Secondary Password',
@@ -33,6 +34,7 @@ const en_US = {
     "Settings.ExportPrivateKey.Msg3":"It is important for restoring your account so you should never lose it, but also keep it top secret.",
     "Settings.SuccessfullyRemoved":"Successfully Removed",
     "Settings.ExportPrivateKey.SelectTokenAsset":"Select which token below you want to export ",
+    "Settings.Create":"Create a wallet",
 
     'Modal.RemoveWallet': 'Remove Wallet ?',
     'Modal.AreYouSureRemoveWallet': 'Are you confirm to remove {walletname} ?',

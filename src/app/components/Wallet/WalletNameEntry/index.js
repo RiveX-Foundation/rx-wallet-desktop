@@ -13,6 +13,7 @@ import { setDefaultWordlist } from 'bip39';
 @inject(stores => ({
   CreateEthAddress : () => stores.walletStore.CreateEthAddress(),
   setCurrent: current => stores.walletStore.setCurrent(current),
+  setcurrentReg: current => stores.userRegistration.setCurrent(current),
   setWalletName: walletname => stores.walletStore.setWalletName(walletname),
   seedphase: stores.walletStore.seedphase,
   ethaddress: stores.walletStore.ethaddress,
@@ -44,6 +45,7 @@ class WalletNameEntry extends Component {
     }
 
     this.props.setCurrent("backupwallettutorial");
+    this.props.setcurrentReg("createwalletlogin");
 
     /*
     switch(this.props.WalletEntryNextDirection){
@@ -63,6 +65,7 @@ class WalletNameEntry extends Component {
   back = () => {
     // this.props.setCurrent("splashbasicwalletcreation");
     this.props.setCurrent("basicwallettypeselection");
+    this.props.setcurrentReg("inputmobile");
   }
 
   onKeyDown = (e) => {

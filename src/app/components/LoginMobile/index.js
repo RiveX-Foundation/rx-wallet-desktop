@@ -5,7 +5,8 @@ import intl from 'react-intl-universal';
 const { countrymobile } = require('../../../../config/common/countrymobile');
 import logo from 'static/image/graphic/logo.png';
 import buttonnext from 'static/image/icon/buttonnextarrow.png';
-import WalletRestoreByseed from '../Wallet/WalletRestorebySeed';
+import { createNotification } from 'utils/helper';
+
 
 import './index.less';
 @inject(stores => ({
@@ -15,14 +16,18 @@ import './index.less';
   setWalletName: walletname => stores.walletStore.setWalletName(walletname),
   setSeedPhaseInString: val => stores.walletStore.setSeedPhaseInString(val),
   seedphase: stores.walletStore.seedphase,
-  setCurrent: current => stores.walletStore.setCurrent(current),
   setRequestForgotPassword : val => stores.session.setRequestForgotPassword(val),
   setMobile: mobile => stores.userRegistration.setMobile(mobile),
   setEmail: email => stores.userRegistration.setEmail(email),
   setPassword: password => stores.userRegistration.setPassword(password),
+  setpasswordWallet: pass => stores.walletStore.setPassword(pass),
   setCountryCode: countrycode => stores.userRegistration.setCountryCode(countrycode),
   wsLogin : () => stores.userRegistration.wsLogin(),
-  language: stores.languageIntl.language
+  language: stores.languageIntl.language,
+  setRequestSignIn: current => stores.session.setRequestSignIn(current),
+  setcurrentReg: current => stores.userRegistration.setCurrent(current),
+  mnemonicpassword: stores.walletStore.mnemonicpassword,
+  password: stores.userRegistration.password
 }))
 
 @observer
@@ -32,23 +37,14 @@ class LoginMobile extends Component {
     autoliststyle : "autolisthide",
     countrycode: "+60",
     originallist : [],
-    filterlist : []
+    filterlist : [],
+    mnemonicpassword:""
   }
 
   inputChanged = e => {
-    switch(e.target.id){
-      case "loginemail":
-        this.props.setEmail(e.target.value);
-        break;
-      case "loginmobile":
-        this.props.setMobile(e.target.value);
-        break;
-      case "loginpassword":
-        this.props.setPassword(e.target.value);
-        break;
-    }
-  }
-
+        this.setState({ mnemonicpassword: e.target.value });
+      }
+  
   onKeyDown = (e) => {
     if (e.key === 'Enter') {
       this.login();
@@ -57,7 +53,7 @@ class LoginMobile extends Component {
 
 
   componentDidMount(){
-
+    
     this.props.setCountryCode("+60");
     this.props.setPassword("");
     this.props.setMobile("");
@@ -68,6 +64,9 @@ class LoginMobile extends Component {
       filterlist: countrymobile
     });
     //this.readTextFile("../../static/countrymobile.json");
+    if(localStorage.getItem('password')!=null){
+      this.props.setpasswordWallet(localStorage.getItem('password'));
+    }
   }
 
   readTextFile = file => {
@@ -111,15 +110,33 @@ class LoginMobile extends Component {
   }
 
   login = () => {
-    this.props.wsLogin();
+    
+    console.log("checking: "+this.state.mnemonicpassword + " and "+ this.props.mnemonicpassword);
+    if(this.props.mnemonicpassword=="" || this.props.mnemonicpassword==null || this.props.mnemonicpassword===""){
+      createNotification('error',"Please restore or create an account");
+    }else if(this.state.mnemonicpassword==this.props.mnemonicpassword || this.state.mnemonicpassword===this.props.mnemonicpassword){
+      this.props.wsLogin();
+    } else{
+      createNotification('error',"Invalid password");
+    }
+   
   }
-
+  restore = () => {
+    console.log("restore click");
+    this.props.setRequestSignIn(true);
+    this.props.setCurrent('walletrestorebyseed');
+  }
   signin = () => {
     this.props.setRequestSignIn(true);
   }
 
   forgotpassword = () => {
     this.props.setRequestForgotPassword(true);
+  }
+  create = () => {
+    console.log("create");
+    //this.props.setRequestSignIn(true);
+    this.props.setcurrentReg('walletnameentry');
   }
 
   panelClick = e => {
@@ -147,10 +164,20 @@ class LoginMobile extends Component {
     return (
       <div className="fadeInAnim loginbg">
         <div className="leftpanel" onClick={this.panelClick}>
-
+       
           <img width="350px" src={logo} />
           <div className="subtitle">{intl.get('Register.Welcome')}</div>
-          <center><WalletRestoreByseed></WalletRestoreByseed></center>
+          <center>
+          <div className="panelwrapper borderradiusfull loginpanel">
+              <Input.Password style={{marginLeft:"-20px"}} id="loginpassword" placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
+              <Button className="nextbutton" onClick={this.login}><img src={buttonnext} /></Button>
+            </div>
+            <div className="buttonpanel" style={{marginTop:"0px"}}>
+            <Button className="curvebutton" onClick={this.restore} >{intl.get('Settings.Restore')}</Button>
+            <Button className="curvebutton" style={{marginLeft: "30px"}} onClick={this.next} >{intl.get('Settings.Quit')}</Button>
+            </div>
+            <Button className="curvebutton" onClick={this.create} >{intl.get('Settings.Create')}</Button>
+            </center>
         </div>
       </div>
     );

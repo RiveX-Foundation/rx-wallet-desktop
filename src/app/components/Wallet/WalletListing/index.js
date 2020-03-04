@@ -54,7 +54,7 @@ class WalletListing extends Component {
 
   createWallet = () => {
     switch(this.props.selectedwallettype){
-      case "basicwallet":
+      case "local":
         // this.props.setCurrent("splashbasicwalletcreation");
         this.props.setCurrent("basicwallettypeselection");
         break;
