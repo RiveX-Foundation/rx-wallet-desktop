@@ -83,6 +83,7 @@ class WalletRestorebySeedLogin extends Component {
     if(localStorage.getItem('password')!=null){
       createNotification('error','Password already exists, not saving.');
     }
+    console.log("setting password: "+ this.state.password);
     this.props.setPassword(this.state.password);
     localStorage.setItem('password',this.state.password);
     this.props.setSeedPhaseInString(this.state.seedphase);

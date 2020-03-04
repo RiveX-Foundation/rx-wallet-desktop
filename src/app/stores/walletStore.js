@@ -279,8 +279,9 @@ class walletStore {
   }
 
   @action setPassword(password){
-    localStorage.setItem('password',password);
     this.mnemonicpassword=password;
+    localStorage.setItem('password',password);
+    
   }
   @action setPasswordConfirm(password){
     this.mnemonicpasswordconfirm=password;
@@ -697,7 +698,6 @@ class walletStore {
   encrypt(text) {
     console.log("encrypting:"+text);
     console.log("menmonic: "+this.mnemonicpassword);
-    console.log("menmonicConfirm: "+this.mnemonicpasswordconfirm);
    // this.confirmPasswords();
     if(this.mnemonicpassword=""){
       createNotification('error',"Please create a password for your account");

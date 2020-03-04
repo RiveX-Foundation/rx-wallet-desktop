@@ -13,7 +13,8 @@ import { setDefaultWordlist } from 'bip39';
   update2FA : info => stores.setting.update2FA(info),
   language: stores.languageIntl.language,
   twoFAType: stores.userRegistration.twoFAType,
-  twoFAPassword: stores.userRegistration.twoFAPassword
+  twoFAPassword: stores.userRegistration.twoFAPassword,
+  setPassword: password => stores.walletStore.setPassword(password)
 }))
 
 @observer
@@ -52,7 +53,7 @@ class Security extends Component {
       twoFAType : this.state.value,
       password : this.state.password
     }
-
+    this.props.setPassword(this.state.password);
     this.props.update2FA(info);
   }
 

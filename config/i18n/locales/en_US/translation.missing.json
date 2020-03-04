@@ -18,5 +18,11 @@
         }
       }
     }
+  },
+  "Settings": {
+    "Lang": {
+      "en_US": "Settings.Lang.en_US",
+      "zh_CN": "Settings.Lang.zh_CN"
+    }
   }
 }
