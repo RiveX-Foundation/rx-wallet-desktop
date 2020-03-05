@@ -22,7 +22,6 @@ import { createNotification } from '../../../utils/helper';
   language: stores.languageIntl.language,
   getTotalWorth: wallet => stores.walletStore.getTotalWorth(wallet),
   currencycode:stores.setting.currencycode,
-  mnemonicpassword: stores.walletStore.mnemonicpassword,
   decrypt: text => stores.walletStore.decrypt(text)
 }))
 
@@ -62,6 +61,9 @@ class ManageWalletDetail extends Component {
 
   inputPasswordChanged = e => {
         this.setState({ password: e.target.value });
+        this.setState({
+          mnemonicpass:localStorage.getItem('password')
+        });
   }
 
   inputChanged = e => {
@@ -71,7 +73,7 @@ class ManageWalletDetail extends Component {
   validatePasswords = () =>{
     console.log("validating passwords");
     console.log("mnemonic password: "+this.state.mnemonicpass);
-    if(this.state.password == this.state.mnemonicpass || this.state.password === this.state.mnemonicpass){
+    if(this.state.password == this.state.mnemonicpass){
       console.log("passwords match");
       createNotification('success','Valid password');
       this.setState({mnemonicvisibility:{display:"block"}});
@@ -92,7 +94,7 @@ class ManageWalletDetail extends Component {
   validatePasswordsPkey = () =>{
     console.log("validating passwords");
     console.log("mnemonic password: "+this.state.mnemonicpass);
-    if(this.state.password == this.state.mnemonicpass || this.state.password === this.state.mnemonicpass){
+    if(this.state.password == this.state.mnemonicpass){
       console.log("passwords match");
       createNotification('success','Valid password');
       this.setState({pkeyvisibility:{display:"block"}});
@@ -117,8 +119,8 @@ class ManageWalletDetail extends Component {
 
   validatePasswordsRemoval = () =>{
     console.log("validating passwords");
-    console.log("mnemonic password: "+this.props.mnemonicpassword);
-    if(this.state.password == this.props.mnemonicpassword || this.state.password === this.props.mnemonicpassword){
+    console.log("mnemonic password: "+this.state.mnemonicpass);
+    if(this.state.password == this.state.mnemonicpass){
       console.log("passwords match");
       createNotification('success','Valid password');
       this.setState({

@@ -18,7 +18,7 @@ const HDKey = require('hdkey');
 const ethUtil = require('ethereumjs-util');
 var Crypto = require('crypto'),
 algorithm = 'aes-256-ctr';
-
+//var iv,key
 
 
 //import { getCryptoBalance } from 'utils/cryptohelper';
@@ -73,14 +73,12 @@ class walletStore {
   @observable currentGasPrice = 100;
   @observable infuraprojectid = "/v3/5bc9db68fd43445fbc2e6a5b5f269687";
   @observable pendingpassword="";
-  @observable key;
-  @observable iv;
 
   userstore = null;
   networkstore = null;
-
+  iv;
+  key;
   constructor(){
-    
   }
 
   setuserstore(store){
@@ -181,7 +179,7 @@ class walletStore {
     this.currentGasPrice = price;
   }
 
-  @computed get mnemonicPassword(){
+  @computed get getmnemonicPassword(){
     return this.mnemonicpassword;
   }
 
@@ -703,10 +701,15 @@ class walletStore {
     console.log("encrypting:"+text);
     console.log("menmonic: "+this.mnemonicpassword);
     
-     if(this.iv==null && this.key==null ){
+     if(this.iv==null || this.key==null && JSON.parse(localStorage.getItem('key') == null ||JSON.parse(localStorage.getItem('iv') == null ))){
        console.log("doesn't exist yet key iv");
       this.iv = Buffer.from(Array.prototype.map.call(Buffer.alloc(16), () => {return Math.floor(Math.random() * 256)}));
       this.key = Buffer.concat([Buffer.from(this.mnemonicpassword)], Buffer.alloc(32).length);
+      console.log("ORIGINAL IV AND KEY");
+      console.log(this.iv);
+      console.log(this.key);
+      localStorage.setItem('key',JSON.stringify(this.key));
+      localStorage.setItem('iv',JSON.stringify(this.iv));
      }
    // this.confirmPasswords();
     if(this.mnemonicpassword=""){
@@ -724,6 +727,14 @@ class walletStore {
     }
 
   decrypt(text) {
+    if(this.iv==null || this.key==null)
+    {
+      console.log("IV KEY ARE NULL DECRYPT");
+      this.iv = Buffer.from(JSON.parse(localStorage.getItem('iv')));
+      this.key = Buffer.from(JSON.parse(localStorage.getItem('key')));
+      console.log(this.iv);
+      console.log(this.key);
+    }
     console.log("decrypting: "+text);
     if(this.mnemonicpassword=""){
       createNotification('error',"Please create a password for your account");

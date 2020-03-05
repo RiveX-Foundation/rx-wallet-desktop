@@ -49,6 +49,7 @@ class Security extends Component {
       return;
     } else if(this.state.value == "password" && this.state.password!=""){
       this.props.setPassword(this.state.password);
+      
     }
 
     var info = {
@@ -56,7 +57,7 @@ class Security extends Component {
       password : this.state.password
     }
     
-    this.props.update2FA(info);
+   // this.props.update2FA(info);
   }
 
   render() {
