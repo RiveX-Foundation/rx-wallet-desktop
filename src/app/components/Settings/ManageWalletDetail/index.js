@@ -22,7 +22,8 @@ import { createNotification } from '../../../utils/helper';
   language: stores.languageIntl.language,
   getTotalWorth: wallet => stores.walletStore.getTotalWorth(wallet),
   currencycode:stores.setting.currencycode,
-  mnemonicpassword: stores.walletStore.mnemonicpassword
+  mnemonicpassword: stores.walletStore.mnemonicpassword,
+  decrypt: text => stores.walletStore.decrypt(text)
 }))
 
 @observer
@@ -141,7 +142,8 @@ class ManageWalletDetail extends Component {
 
   exportmnemonic = e => {
     const wallet = this.props.walletlist.find(x => x.publicaddress == this.props.selectedwalletaddress); 
-    this.setState({exportedseedphrase:wallet.seedphase});
+    this.setState({exportedseedphrase:this.props.decrypt(wallet.seedphase)});
+    //console.log("EXPORT MNEMONIC: "+wallet.seedphase);
     const walletaddress = e.currentTarget.getAttribute('data-publicaddress');
     this.setState({selectedwalletaddress:walletaddress,exportmnemonicmodalvisible:true});
   }

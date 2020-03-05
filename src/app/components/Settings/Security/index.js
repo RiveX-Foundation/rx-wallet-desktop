@@ -47,13 +47,15 @@ class Security extends Component {
     if(this.state.value == "password" && this.state.password == "") {
       createNotification('error',intl.get('Error.Passwordisempty'));
       return;
+    } else if(this.state.value == "password" && this.state.password!=""){
+      this.props.setPassword(this.state.password);
     }
 
     var info = {
       twoFAType : this.state.value,
       password : this.state.password
     }
-    this.props.setPassword(this.state.password);
+    
     this.props.update2FA(info);
   }
 

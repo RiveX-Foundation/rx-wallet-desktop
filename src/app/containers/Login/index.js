@@ -12,6 +12,7 @@ import WalletCreation from '../../components/Wallet/WalletCreation';
 import WalletKeyInSeed from '../../components/Wallet/WalletKeyInSeed';
 import WalletCreated from '../../components/Wallet/WalletCreated';
 import WalletNameEntry from '../../components/Wallet/WalletNameEntry';
+import WalletRestorebySeedLogin from '../../components/Wallet/WalletRestorebySeedLogin';
 
 //import { checkCryptographic, checkPhrase } from 'utils/support';
 
@@ -53,6 +54,10 @@ class Login extends Component {
     },{
       content: <BackupWalletTutorial />,
       key:'createwalletlogin'
+    }
+    ,{
+      content: <WalletRestorebySeedLogin />,
+      key:'walletrestorebyseed'
     }
     ,{
       content: <WalletNameEntry />,

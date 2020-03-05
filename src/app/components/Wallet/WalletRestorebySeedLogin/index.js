@@ -17,6 +17,7 @@ import { setDefaultWordlist } from 'bip39';
   setPassword: password => stores.walletStore.setPassword(password),
   setRequestSignIn : val => stores.session.setRequestSignIn(val),
   setRequestForgotPassword : val => stores.session.setRequestForgotPassword(val),
+  setcurrentReg: current => stores.userRegistration.setCurrent(current),
   seedphase: stores.walletStore.seedphase,
   ethaddress: stores.walletStore.ethaddress,
   language: stores.languageIntl.language,
@@ -55,6 +56,7 @@ class WalletRestorebySeedLogin extends Component {
   }
   backToLogin = () => {
     console.log("back to login");
+    this.props.setcurrentReg("inputmobile");
     this.props.setRequestSignIn(false);
     this.props.setRequestForgotPassword(false);
   }

@@ -20,6 +20,7 @@ var Crypto = require('crypto'),
 algorithm = 'aes-256-ctr';
 
 
+
 //import { getCryptoBalance } from 'utils/cryptohelper';
 //var fs = require('fs');
 //const { tokenabi } = require('../../../config/common/tokenabi');
@@ -72,11 +73,14 @@ class walletStore {
   @observable currentGasPrice = 100;
   @observable infuraprojectid = "/v3/5bc9db68fd43445fbc2e6a5b5f269687";
   @observable pendingpassword="";
+  @observable key;
+  @observable iv;
 
   userstore = null;
   networkstore = null;
 
   constructor(){
+    
   }
 
   setuserstore(store){
@@ -698,12 +702,19 @@ class walletStore {
   encrypt(text) {
     console.log("encrypting:"+text);
     console.log("menmonic: "+this.mnemonicpassword);
+    
+     if(this.iv==null && this.key==null ){
+       console.log("doesn't exist yet key iv");
+      this.iv = Buffer.from(Array.prototype.map.call(Buffer.alloc(16), () => {return Math.floor(Math.random() * 256)}));
+      this.key = Buffer.concat([Buffer.from(this.mnemonicpassword)], Buffer.alloc(32).length);
+     }
    // this.confirmPasswords();
     if(this.mnemonicpassword=""){
       createNotification('error',"Please create a password for your account");
       return;
     } else{
-      var cipher = Crypto.createCipher(algorithm,this.mnemonicpassword);
+      
+      var cipher = Crypto.createCipheriv(algorithm,this.key,this.iv);
       var crypted = cipher.update(text,'utf8','hex');
       crypted +=cipher.final('hex');
       console.log("encrypted:"+crypted);
@@ -713,13 +724,13 @@ class walletStore {
     }
 
   decrypt(text) {
-    //this.confirmPasswords();
     console.log("decrypting: "+text);
     if(this.mnemonicpassword=""){
       createNotification('error',"Please create a password for your account");
       return;
     } else{
-      var decipher = Crypto.createDecipher(algorithm,this.mnemonicpassword);
+      var decipher = Crypto.createDecipheriv(algorithm,this.key,this.iv);
+      //var decipher = Crypto.createDecipher(algorithm,this.mnemonicpassword);
       var dec = decipher.update(text,'hex','utf8');
       dec += decipher.final('utf8');
       console.log("decrypted: "+dec);

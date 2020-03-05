@@ -123,8 +123,8 @@ class LoginMobile extends Component {
   }
   restore = () => {
     console.log("restore click");
-    this.props.setRequestSignIn(true);
-    this.props.setCurrent('walletrestorebyseed');
+   // this.props.setRequestSignIn(true);
+    this.props.setcurrentReg('walletrestorebyseed');
   }
   signin = () => {
     this.props.setRequestSignIn(true);
@@ -170,13 +170,13 @@ class LoginMobile extends Component {
           <center>
           <div className="panelwrapper borderradiusfull loginpanel">
               <Input.Password style={{marginLeft:"-20px"}} id="loginpassword" placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
-              <Button className="nextbutton" onClick={this.login}><img src={buttonnext} /></Button>
+              <div><Button className="nextbutton" onClick={this.login}><img src={buttonnext} /></Button></div>
             </div>
             <div className="buttonpanel" style={{marginTop:"0px"}}>
             <Button className="curvebutton" onClick={this.restore} >{intl.get('Settings.Restore')}</Button>
-            <Button className="curvebutton" style={{marginLeft: "30px"}} onClick={this.next} >{intl.get('Settings.Quit')}</Button>
+            <Button className="curvebutton" style={{marginLeft:"30px"}} onClick={this.create} >{intl.get('Settings.Create')}</Button>
             </div>
-            <Button className="curvebutton" onClick={this.create} >{intl.get('Settings.Create')}</Button>
+            
             </center>
         </div>
       </div>
