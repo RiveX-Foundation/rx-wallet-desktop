@@ -85,14 +85,20 @@ class WalletRestorebySeedLogin extends Component {
     if(localStorage.getItem('password')!=null){
       createNotification('error','Password already exists, not saving.');
     }
-    console.log("setting password: "+ this.state.password);
-    this.props.setPassword(this.state.password);
-    localStorage.setItem('password',this.state.password);
-    this.props.setSeedPhaseInString(this.state.seedphase);
-    this.props.CreateEthAddress();
-    this.props.setCurrent("walletcreated");
-    this.props.wsLogin();
-    this.props.setRequestSignIn(false);
+    if(this.state.password==""){
+      createNotification('error','Password must not be empty!');
+    }
+    else{
+      console.log("setting password: "+ this.state.password);
+      this.props.setPassword(this.state.password);
+      localStorage.setItem('password',this.state.password);
+      this.props.setSeedPhaseInString(this.state.seedphase);
+      this.props.CreateEthAddress();
+      this.props.setCurrent("walletcreated");
+      this.props.wsLogin();
+      this.props.setRequestSignIn(false);
+    }
+    
   }
 
   back = () => {

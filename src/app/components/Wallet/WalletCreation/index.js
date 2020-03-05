@@ -116,7 +116,7 @@ class WalletCreation extends Component {
 
     if(this.state.mnemonicpassword == this.state.mnemonicpasswordconfirm){
       this.setState({nextbuttonstyle : {display:"inline-block"}});
-    }else{
+    }else if(this.state.mnemonicpassword=="" || this.state.mnemonicpasswordconfirm){
       this.setState({nextbuttonstyle : {display:"none"}});
     }
   }

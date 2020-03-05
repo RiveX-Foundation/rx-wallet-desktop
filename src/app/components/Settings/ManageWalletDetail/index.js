@@ -79,6 +79,7 @@ class ManageWalletDetail extends Component {
       this.setState({mnemonicvisibility:{display:"block"}});
       this.setState({pkeyvisibility:{display:"block"}});
       this.setState({password:""});
+      return;
       
     } else{
       console.log("passwords don't match");
