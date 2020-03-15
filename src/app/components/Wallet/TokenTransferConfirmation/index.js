@@ -44,6 +44,7 @@ import buttonback from 'static/image/icon/back.png';
   selectedTokenAsset: stores.walletStore.selectedTokenAsset,
   setTrxGasPrice: (price) => stores.walletStore.setTrxGasPrice(price),
   allTokenAsset:stores.walletStore.allTokenAsset,
+  mfaenabled:stores.walletStore.mfaenabled
 }))
 
 @observer
@@ -57,7 +58,8 @@ class TokenTransferConfirmation extends Component {
     otp: "notvalid",
     gaspricevalue: 100,
     mingaspricevalue: 50,
-    maxgaspricevalue: 150
+    maxgaspricevalue: 150,
+    mfa:""
   }
 
   componentDidMount() {
@@ -83,6 +85,10 @@ class TokenTransferConfirmation extends Component {
     this.setState({ mobilevalue: e.target.value }, () => {
       this.props.setMobile(this.state.mobilevalue);
     });
+  }
+
+  inputMFAChanged = e => {
+    this.setState({ mfa: e.target.value });
   }
 
   get12SeedPhase = () => {
@@ -152,6 +158,17 @@ class TokenTransferConfirmation extends Component {
   }
 
   transfer = async () => {
+
+    if(this.props.mfaenabled){
+
+
+
+
+    }else{
+
+
+
+    }
 
     var that = this;
 
@@ -480,6 +497,16 @@ class TokenTransferConfirmation extends Component {
               }
 
             </div>
+            {
+                this.props.mfaenabled == true &&
+                <React.Fragment>
+                  <div className="inputpanel">
+            <div className="panelwrapper borderradiusfull">
+              <Input id="mfa" value={this.state.mfa} placeholder={'Input MFA code'} className="inputTransparent" onChange={this.inputMFAChanged} />
+            </div>
+            </div>
+                </React.Fragment>
+              }
 
             <div><Button className="curvebutton" onClick={this.transfer} >{intl.get('Wallet.Confirm')}</Button></div>
           </center>

@@ -9,6 +9,7 @@ const bip39 = require('bip39');
 import './index.less';
 import { setDefaultWordlist } from 'bip39';
 import buttonback from 'static/image/icon/back.png';
+import { createNotification } from '../../../utils/helper';
 
 @inject(stores => ({
   seedphase: stores.walletStore.seedphase,
@@ -17,7 +18,7 @@ import buttonback from 'static/image/icon/back.png';
   mnemonicpasswordconfirm: stores.walletStore.mnemonicpasswordconfirm,
   generate12SeedPhase : () => stores.walletStore.generate12SeedPhase(),
   setSeedPhase: seedphase => stores.walletStore.setSeedPhase(seedphase),
-  setSeedPhaseInString: seedphase => stores.walletStore.setSeedPhaseInString(seedphase),
+  setSeedPhaseInString: (text,pass) => stores.walletStore.setSeedPhaseInString(text,pass),
   setCurrent: current => stores.walletStore.setCurrent(current),
   setcurrentReg: current => stores.userRegistration.setCurrent(current),
   language: stores.languageIntl.language,
@@ -83,12 +84,19 @@ class WalletCreation extends Component {
   }
 
   next = () => {
-    let mnemonic = this.state.mnemonic;
-    this.props.setPendingPassword(this.state.mnemonicpassword);
-    this.props.setSeedPhase(mnemonic.split(" "));
-    this.props.setSeedPhaseInString(mnemonic);
-    this.props.setCurrent("walletkeyinseed");
-    this.props.setcurrentReg("walletkeyinseed");
+    if(this.state.mnemonicpassword.length < 6 && this.state.mnemonicpasswordconfirm.length < 6){
+      createNotification('error','Password must be more than 6 characters long');
+      this.setState({nextbuttonstyle : {display:"none"}});
+      return;
+    }else {
+      let mnemonic = this.state.mnemonic;
+      this.props.setPendingPassword(this.state.mnemonicpassword);
+      this.props.setSeedPhase(mnemonic.split(" "));
+      this.props.setSeedPhaseInString(mnemonic,this.state.mnemonicpassword);
+      this.props.setCurrent("walletkeyinseed");
+      this.props.setcurrentReg("walletkeyinseed");
+    }
+   
   }
   inputChanged = e => {
     console.log("switching: "+ e.target.id);
@@ -114,9 +122,13 @@ class WalletCreation extends Component {
     console.log(this.state.mnemonicpassword);
     console.log(this.state.mnemonicpasswordconfirm);
 
-    if(this.state.mnemonicpassword == this.state.mnemonicpasswordconfirm){
-      this.setState({nextbuttonstyle : {display:"inline-block"}});
-    }else if(this.state.mnemonicpassword=="" || this.state.mnemonicpasswordconfirm){
+    if(this.state.mnemonicpassword == this.state.mnemonicpasswordconfirm ){
+      if(this.state.mnemonicpassword == "" || this.state.mnemonicpasswordconfirm ==""){
+        this.setState({nextbuttonstyle : {display:"none"}});
+      } else {
+        this.setState({nextbuttonstyle : {display:"inline-block"}});
+      }
+    }if(this.state.mnemonicpassword=="" || this.state.mnemonicpasswordconfirm =="" || this.state.mnemonicpassword!=this.state.mnemonicpasswordconfirm){
       this.setState({nextbuttonstyle : {display:"none"}});
     }
   }

@@ -33,6 +33,9 @@ import HWWalletDetail from 'components/Wallet/HWWalletDetail';
 import BasicWalletTypeSelection from 'components/Wallet/BasicWalletTypeSelection';
 import Settings from 'components/Settings';
 import Dex from 'components/Dex';
+import TwoFAWarning from 'components/Wallet/TwoFAWarning';
+import TwoFACreation from 'components/Wallet/TwoFACreation';
+import TwoFARemove from 'components/Wallet/TwoFARemove';
 import {NotificationContainer, NotificationManager} from 'react-notifications';
 import {
   HashRouter,
@@ -142,6 +145,15 @@ class Dashboard extends Component {
     },{
       content: <Dex />,
       key:'dex'
+    },{
+      content: <TwoFAWarning />,
+      key:'twofawarning'
+    },{
+      content: <TwoFACreation />,
+      key:'twofacreation'
+    },{
+      content: <TwoFARemove />,
+      key:'twofaremove'
     }]
   }
 

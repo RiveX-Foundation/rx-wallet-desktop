@@ -6,6 +6,9 @@ import buttonback from 'static/image/icon/back.png';
 import buttonedit from 'static/image/icon/edit.png';
 import buttonmultisigtick from 'static/image/icon/multisigtick.png';
 import buttonnext from 'static/image/icon/next.png';
+var bcrypt = require('bcryptjs');
+const base32 = require('hi-base32');
+const speakeasy = require("speakeasy");
 
 const bip39 = require('bip39');
 
@@ -45,7 +48,10 @@ class ManageWalletDetail extends Component {
     mnemonicvisibility: {display:"none"},
     pkeyvisibility: {display:"none"},
     password:"",
-    mnemonicpass:""
+    mnemonicpass:"",
+    mfaenabled:{display:"none"},
+    mfa:"",
+    googleAuthKey:""
   }
 
   componentDidMount(){
@@ -69,82 +75,162 @@ class ManageWalletDetail extends Component {
   inputChanged = e => {
     this.setState({ newwalletname : e.target.value });
   }
+  inputMfaChanged = e => {
+    this.setState({ mfa : e.target.value });
+  }
 
   validatePasswords = () =>{
-    console.log("validating passwords");
-    console.log("mnemonic password: "+this.state.mnemonicpass);
-    if(this.state.password == this.state.mnemonicpass){
-      console.log("passwords match");
-      createNotification('success','Valid password');
-      this.setState({mnemonicvisibility:{display:"block"}});
-      this.setState({pkeyvisibility:{display:"block"}});
-      this.setState({password:""});
-      return;
-      
-    } else{
-      console.log("passwords don't match");
-      createNotification('error','Wrong password');
-      this.setState({mnemonicvisibility:{display:"none"}});
-      this.setState({pkeyvisibility:{display:"none"}});
-      this.setState({password:""});
-      
+    if(localStorage.getItem('twofasecret')!=null){
+      const secretAscii = base32.decode(this.state.googleAuthKey);
+      bcrypt.compare(this.state.password, this.state.mnemonicpass, (err, res) => {
+        if(res) {
+        const secretHex = this._toHex(secretAscii);
+        var authcode = speakeasy.totp({
+          secret: secretHex,
+          encoding: 'hex',
+          window: 1
+        });
+        if(authcode==this.state.mfa){
+          console.log("passwords match");
+          createNotification('success','Valid password');
+          this.setState({mnemonicvisibility:{display:"block"}});
+          this.setState({pkeyvisibility:{display:"block"}});
+          this.setState({password:""});
+          this.setState({mfa:""});
+        }else{
+          createNotification('error','Wrong MFA code');
+          this.setState({mfa:""});
+          this.setState({password:""});
+        } 
+        } else {
+          console.log("passwords don't match");
+          createNotification('error','Wrong password');
+          this.setState({mnemonicvisibility:{display:"none"}});
+          this.setState({pkeyvisibility:{display:"none"}});
+          this.setState({password:""});
+        } 
+      });
+    }else{
+      bcrypt.compare(this.state.password, this.state.mnemonicpass, (err, res) => {
+        if(res) {
+          createNotification('success','Valid password');
+          this.setState({mnemonicvisibility:{display:"block"}});
+          this.setState({pkeyvisibility:{display:"block"}});
+          this.setState({password:""});
+          return;
+        } else {
+          createNotification('error','Wrong password');
+          this.setState({mnemonicvisibility:{display:"none"}});
+          this.setState({pkeyvisibility:{display:"none"}});
+          this.setState({password:""});
+        } 
+      });
     }
+  
+  }
+  _toHex = (key) =>{
+    return new Buffer(key, 'ascii').toString('hex');
   }
 
   
   validatePasswordsPkey = () =>{
-    console.log("validating passwords");
-    console.log("mnemonic password: "+this.state.mnemonicpass);
-    if(this.state.password == this.state.mnemonicpass){
-      console.log("passwords match");
-      createNotification('success','Valid password');
-      this.setState({pkeyvisibility:{display:"block"}});
-      if(this.state.temporarypublicaddress==""){
-        return;
-      }
-  
-      this.setState({
-        exportprivatekeymodalvisible: false
-      }, () => {
-        this.props.setCurrent('exportprivatekey');
+    if(localStorage.getItem('twofasecret')!=null){
+      const secretAscii = base32.decode(this.state.googleAuthKey);
+      bcrypt.compare(this.state.password, this.state.mnemonicpass, (err, res) => {
+        if(res) {
+        const secretHex = this._toHex(secretAscii);
+        var authcode = speakeasy.totp({
+          secret: secretHex,
+          encoding: 'hex',
+          window: 1
+        });
+        if(authcode==this.state.mfa){
+          console.log("passwords match");
+          createNotification('success','Valid password');
+          this.setState({pkeyvisibility:{display:"block"}});
+          if(this.state.temporarypublicaddress==""){
+            return;
+          }
+          this.setState({
+            exportprivatekeymodalvisible: false
+          }, () => {
+            this.props.setCurrent('exportprivatekey');
+          });
+          this.setState({password:""});
+        }else{
+          createNotification('error','Wrong MFA code');
+          this.setState({password:""});
+          this.setState({mfa:""});
+        } 
+        } else {
+          console.log("passwords don't match");
+          createNotification('error','Wrong password');
+          this.setState({pkeyvisibility:{display:"none"}});
+          this.setState({password:""});
+          this.setState({mfa:""});
+        } 
       });
-      this.setState({password:""});
-    } else{
-      console.log("passwords don't match");
-      createNotification('error','Wrong password');
-      this.setState({pkeyvisibility:{display:"none"}});
-      this.setState({password:""});
+    }else{
+      bcrypt.compare(this.state.password, this.state.mnemonicpass, (err, res) => {
+        if(res) {
+          console.log("passwords match");
+          createNotification('success','Valid password');
+          this.setState({pkeyvisibility:{display:"block"}});
+          if(this.state.temporarypublicaddress==""){
+            return;
+          }
       
+          this.setState({
+            exportprivatekeymodalvisible: false
+          }, () => {
+            this.props.setCurrent('exportprivatekey');
+          });
+          this.setState({password:""});
+        } else {
+          console.log("passwords don't match");
+          createNotification('error','Wrong password');
+          this.setState({pkeyvisibility:{display:"none"}});
+          this.setState({password:""});
+        } 
+      });
     }
+   
   }
 
   validatePasswordsRemoval = () =>{
-    console.log("validating passwords");
-    console.log("mnemonic password: "+this.state.mnemonicpass);
-    if(this.state.password == this.state.mnemonicpass){
-      console.log("passwords match");
-      createNotification('success','Valid password');
-      this.setState({
-        removemodalvisible: false
-      });
-      this.props.removeWallet(this.state.selectedwalletaddress);
-      this.setState({password:""});
-      this.back();
-    } else{
-      console.log("passwords don't match");
-      createNotification('error','Wrong password');
-      this.setState({password:""});
-      
-    }
+    bcrypt.compare(this.state.password, this.state.mnemonicpass, (err, res) => {
+      if(res) {
+        console.log("passwords match");
+        createNotification('success','Valid password');
+        this.setState({
+          removemodalvisible: false
+        });
+        this.props.removeWallet(this.state.selectedwalletaddress);
+        this.setState({password:""});
+        this.back();
+      } else {
+        console.log("passwords don't match");
+        createNotification('error','Wrong password');
+        this.setState({password:""});
+      } 
+    });
   }
 
   exportprivatekey = e => {
     const walletaddress = e.currentTarget.getAttribute('data-publicaddress');
+    if(localStorage.getItem('twofasecret')){
+      this.setState({mfaenabled:{display:"block"},
+      googleAuthKey: this.props.decrypt(localStorage.getItem('twofasecret'))});
+    }
     this.setState({selectedwalletaddress:walletaddress,exportprivatekeymodalvisible:true});
   }
 
   exportmnemonic = e => {
     const wallet = this.props.walletlist.find(x => x.publicaddress == this.props.selectedwalletaddress); 
+    if(localStorage.getItem('twofasecret')){
+      this.setState({mfaenabled:{display:"block"},
+      googleAuthKey: this.props.decrypt(localStorage.getItem('twofasecret'))});
+    }
     this.setState({exportedseedphrase:this.props.decrypt(wallet.seedphase)});
     //console.log("EXPORT MNEMONIC: "+wallet.seedphase);
     const walletaddress = e.currentTarget.getAttribute('data-publicaddress');
@@ -153,6 +239,10 @@ class ManageWalletDetail extends Component {
 
   removewallet = e => {
     const walletaddress = e.currentTarget.getAttribute('data-publicaddress');
+    if(localStorage.getItem('twofasecret')){
+      this.setState({mfaenabled:{display:"block"},
+      googleAuthKey: this.props.decrypt(localStorage.getItem('twofasecret'))});
+    }
     const walletname = e.currentTarget.getAttribute('data-walletname');
     this.setState({selectedwalletaddress:walletaddress,selectedwalletname:walletname,removemodalvisible:true});
   }
@@ -370,7 +460,8 @@ class ManageWalletDetail extends Component {
                   <div className="inputpanel">
             <center>
               <div className="panelwrapper borderradiusfull">
-                <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px"}} value = {this.state.password} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputPasswordChanged} />
+              <Input id="mfa" style={this.state.mfaenabled} value={this.state.mfa} placeholder={'Input MFA code'} className="inputTransparent" onChange={this.inputMfaChanged} />
+              <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px"}} value = {this.state.password} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputPasswordChanged} />
               </div>
             </center>
           </div>
@@ -391,6 +482,7 @@ class ManageWalletDetail extends Component {
                 <div className="inputpanel">
             <center>
               <div className="panelwrapper borderradiusfull">
+                <Input id="mfa" style={this.state.mfaenabled,{marginLeft:"-40px"}} value={this.state.mfa} placeholder={'Input MFA code'} className="inputTransparent" onChange={this.inputMfaChanged} />
                 <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px"}} value = {this.state.password} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputPasswordChanged} />
               </div>
             </center>

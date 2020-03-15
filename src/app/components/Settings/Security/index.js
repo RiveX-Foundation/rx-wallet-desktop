@@ -5,6 +5,7 @@ import intl from 'react-intl-universal';
 import { createNotification } from 'utils/helper';
 const { currency } = require('../../../../../config/common/currency');
 const { TextArea } = Input;
+var QRCode = require('qrcode.react');
 
 import './index.less';
 import { setDefaultWordlist } from 'bip39';
@@ -14,7 +15,10 @@ import { setDefaultWordlist } from 'bip39';
   language: stores.languageIntl.language,
   twoFAType: stores.userRegistration.twoFAType,
   twoFAPassword: stores.userRegistration.twoFAPassword,
-  setPassword: password => stores.walletStore.setPassword(password)
+  setPassword: password => stores.walletStore.setPassword(password),
+  twoFAPassword: stores.userRegistration.twoFAPassword,
+  googleAuthKey: stores.walletStore.googleAuthKey,
+  setCurrent: current => stores.walletStore.setCurrent(current)
 }))
 
 @observer
@@ -24,15 +28,26 @@ class Security extends Component {
 
   state = {
     value : "password",
-    password : ""
+    password : "",
+    googleAuthKey:""
   }
 
   componentDidMount(){
     console.log(this.props.twoFAType);
     this.setState({
       value : this.props.twoFAType,
-      password : this.props.twoFAPassword
+      password : this.props.twoFAPassword,
+      googleAuthKey: localStorage.getItem('twofasecret')
     });
+    console.log(this.state.googleAuthKey);
+  }
+
+  start2fa = () => {
+    this.props.setCurrent('twofawarning');
+  }
+
+  disable2fa = () => {
+    this.props.setCurrent('twofaremove');
   }
 
   onChange = e => {
@@ -61,10 +76,10 @@ class Security extends Component {
   }
 
   render() {
-
+    var totpurl = "otpauth://totp/RVXWallet?secret=" + this.state.googleAuthKey;
     var smstext = intl.get('Settings.2FASecurity.SMS');
     var smsdisabled = false;
-    if(this.props.mobile == "") { smsdisabled=true; }
+    if(this.props.mobile == "") {  smsdisabled=true; }
 
     return (
       <div className="currencypanel fadeInAnim">
@@ -84,7 +99,8 @@ class Security extends Component {
                     placeholder={this.state.password} 
                     className="inputTransparent" 
                     onChange={this.passwordChanged} />
-                </div>    
+                </div> 
+                <div><Button className="curvebutton" onClick={this.save} >{intl.get('Common.Save')}</Button></div>   
                 <br/>          
               </div>
               {
@@ -95,11 +111,22 @@ class Security extends Component {
                 </div>
               }
               <div>
-                <Radio value="totp">{intl.get('Settings.2FASecurity.TOTPCode')}</Radio>
+              {
+              this.state.googleAuthKey == "" || this.state.googleAuthKey==null &&
+              <React.Fragment>
+             <Button className="curvebutton" onClick={this.start2fa} >{'Enable 2FA'}</Button>
+              </React.Fragment>                
+            }
+               {
+              this.state.googleAuthKey !=null  &&
+              <React.Fragment>
+                <div className="panellabel" style={{marginTop:"30px",paddingLeft:"0px"}}>{'2FA is enabled'}</div>
+                <div><Button className="curvebutton" onClick={this.disable2fa} >{'Disable 2FA'}</Button></div>
+              </React.Fragment>                
+            } 
                 <br/><br/>
               </div>
             </Radio.Group>
-            <div><Button className="curvebutton" onClick={this.save} >{intl.get('Common.Save')}</Button></div>
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
 import { createNotification } from 'utils/helper';
 import buttonback from 'static/image/icon/back.png';
+var bcrypt = require('bcryptjs');
 
 const { TextArea } = Input;
 
@@ -13,7 +14,7 @@ import { setDefaultWordlist } from 'bip39';
   CreateEthAddress : () => stores.walletStore.CreateEthAddress(),
   setCurrent: current => stores.walletStore.setCurrent(current),
   setWalletName: walletname => stores.walletStore.setWalletName(walletname),
-  setSeedPhaseInString: val => stores.walletStore.setSeedPhaseInString(val),
+  setSeedPhaseInString: (val,pass) => stores.walletStore.setSeedPhaseInString(val,pass),
   setPassword: password => stores.walletStore.setPassword(password),
   setRequestSignIn : val => stores.session.setRequestSignIn(val),
   setRequestForgotPassword : val => stores.session.setRequestForgotPassword(val),
@@ -36,7 +37,7 @@ class WalletRestorebySeedLogin extends Component {
   }
 
   onChange = e => {
-    this.setState({seedphase:e.target.value});// e.target.value.replace(/^\s+|\s+$/g, '').replace(/\s+/g, ' '));
+    this.setState({seedphase:e.target.value});// e.target.value.replace(/^\s+|\s+$/g, '').replace(/\s+/g, ' ')); 
   }
 
   copy = () => {
@@ -83,16 +84,17 @@ class WalletRestorebySeedLogin extends Component {
     }
     console.log("log in");
     if(localStorage.getItem('password')!=null){
-      createNotification('error','Password already exists, not saving.');
+      //createNotification('error','Password already exists, not saving.');
     }
-    if(this.state.password==""){
-      createNotification('error','Password must not be empty!');
+    if(this.state.password=="" || this.state.password.length < 6){
+      createNotification('error','Password must not be empty and shorter than 6 characters');
     }
-    else{
-      console.log("setting password: "+ this.state.password);
-      this.props.setPassword(this.state.password);
-      localStorage.setItem('password',this.state.password);
-      this.props.setSeedPhaseInString(this.state.seedphase);
+    else{ //encrypt here
+      bcrypt.hash(this.state.password, 10, (err, hash) => {
+      this.props.setPassword(hash);
+      localStorage.setItem('password',hash);
+      });
+      this.props.setSeedPhaseInString(this.state.seedphase,this.state.password);
       this.props.CreateEthAddress();
       this.props.setCurrent("walletcreated");
       this.props.wsLogin();

@@ -26,7 +26,8 @@ import Axios from 'axios';
   setCurrent: current => stores.walletStore.setCurrent(current),
   settokentransfervalue: (token,receiver) => stores.walletStore.settokentransfervalue(token,receiver),
   language: stores.languageIntl.language,
-  selectedTokenAsset:stores.walletStore.selectedTokenAsset
+  selectedTokenAsset:stores.walletStore.selectedTokenAsset,
+  setMFA: status => stores.walletStore.setMFA(status)
 }))
 
 @observer
@@ -90,6 +91,9 @@ class TokenTransfer extends Component {
   }
 
   transfer = async () => {
+    if(localStorage.getItem('twofasecret')!=null){
+      this.props.setMFA(true);
+    }
     var isvalidaddr=true;
 
     var checksumaddr = "";

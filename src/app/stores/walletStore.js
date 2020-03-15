@@ -16,6 +16,7 @@ var Tx = require('ethereumjs-tx');
 const bip39 = require('bip39');
 const HDKey = require('hdkey');
 const ethUtil = require('ethereumjs-util');
+var bcrypt = require('bcryptjs');
 var Crypto = require('crypto'),
 algorithm = 'aes-256-ctr';
 //var iv,key
@@ -73,6 +74,9 @@ class walletStore {
   @observable currentGasPrice = 100;
   @observable infuraprojectid = "/v3/5bc9db68fd43445fbc2e6a5b5f269687";
   @observable pendingpassword="";
+  @observable googleAuthKeyPending = "";
+  @observable googleAuthKey = "";
+  @observable mfaenabled;
 
   userstore = null;
   networkstore = null;
@@ -102,6 +106,26 @@ class walletStore {
     if(walletlist == null) walletlist = [];
     return walletlist;
   }
+  @action setGoogleAuthKeyPending(googleAuthKey){
+    this.googleAuthKeyPending = googleAuthKey;
+  }
+  @action setMFA(status){
+    this.mfaenabled = status;
+  }
+
+
+  @action setGoogleAuthKey(googleAuthKey,pass){
+    this.googleAuthKey = googleAuthKey;
+    localStorage.setItem('twofasecret',this.encrypt(googleAuthKey,pass))
+    }
+
+    @action clearGoogleAuthKey(){
+      this.googleAuthKey = "";
+      this.googleAuthKeyPending = "";
+      localStorage.removeItem('twofasecret');
+    }
+    
+  
 
   @action setledgerresult(val){
     this.ledgerresult = val;
@@ -288,21 +312,6 @@ class walletStore {
   @action setPasswordConfirm(password){
     this.mnemonicpasswordconfirm=password;
   }
-  @action encrypt(text) {
-    console.log("encrypting: "+text);
-    var cipher = Crypto.createCipher(algorithm,this.mnemonicpassword);
-    var crypted = cipher.update(text,'utf8','hex');
-    crypted +=cipher.final('hex');
-    return crypted;
-    }
-
-  @action decrypt(text) {
-    console.log("decrypting: "+text);
-    var decipher = Crypto.createDecipher(algorithm,this.mnemonicpassword);
-    var dec = decipher.update(text,'hex','utf8');
-    dec += decipher.final('utf8');
-    return dec;
-  }
 
   @action loadWallet(){
     this.walletlist = localStorage.getItem("wallets");
@@ -367,8 +376,8 @@ class walletStore {
     this.seedphase = val;
   }
 
-  @action setSeedPhaseInString(val) {
-    this.seedphaseinstring = this.encrypt(val);
+  @action setSeedPhaseInString(val,pass) {
+    this.seedphaseinstring = this.encrypt(val,pass);
   }
 
   @action setCurrent(val) {
@@ -697,19 +706,22 @@ class walletStore {
     
   }
 
-  encrypt(text) {
+  encrypt(text,pass) {
     console.log("encrypting:"+text);
-    console.log("menmonic: "+this.mnemonicpassword);
     
-     if(this.iv==null || this.key==null && JSON.parse(localStorage.getItem('key') == null ||JSON.parse(localStorage.getItem('iv') == null ))){
+     if(JSON.parse(localStorage.getItem('key')) == null ||JSON.parse(localStorage.getItem('iv') == null )){
        console.log("doesn't exist yet key iv");
       this.iv = Buffer.from(Array.prototype.map.call(Buffer.alloc(16), () => {return Math.floor(Math.random() * 256)}));
-      this.key = Buffer.concat([Buffer.from(this.mnemonicpassword)], Buffer.alloc(32).length);
+      this.key = Buffer.concat([Buffer.from(pass)], Buffer.alloc(32).length);
       console.log("ORIGINAL IV AND KEY");
       console.log(this.iv);
       console.log(this.key);
       localStorage.setItem('key',JSON.stringify(this.key));
       localStorage.setItem('iv',JSON.stringify(this.iv));
+     }else{
+       console.log("KEY and IV already set")
+       this.iv=Buffer.from(JSON.parse(localStorage.getItem('iv'))); 
+       this.key=Buffer.from(JSON.parse(localStorage.getItem('key'))); 
      }
    // this.confirmPasswords();
     if(this.mnemonicpassword=""){

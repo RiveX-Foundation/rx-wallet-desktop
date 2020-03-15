@@ -6,7 +6,7 @@ const { countrymobile } = require('../../../../config/common/countrymobile');
 import logo from 'static/image/graphic/logo.png';
 import buttonnext from 'static/image/icon/buttonnextarrow.png';
 import { createNotification } from 'utils/helper';
-
+var bcrypt = require('bcryptjs');
 
 import './index.less';
 @inject(stores => ({
@@ -64,12 +64,13 @@ class LoginMobile extends Component {
       filterlist: countrymobile
     });
     //this.readTextFile("../../static/countrymobile.json");
-    if(localStorage.getItem('password')!=null){
+    if(localStorage.getItem('password')!=null){ 
       this.props.setpasswordWallet(localStorage.getItem('password'));
     }
   }
 
   readTextFile = file => {
+    
     var rawFile = new XMLHttpRequest();
     rawFile.open("GET", file, false);
     rawFile.onreadystatechange = () => {
@@ -110,15 +111,22 @@ class LoginMobile extends Component {
   }
 
   login = () => {
-    
-    console.log("checking: "+this.state.mnemonicpassword + " and "+ this.props.mnemonicpassword);
+     bcrypt.compare(this.state.mnemonicpassword, localStorage.getItem('password'), (err, res) => {
+      if(res) {
+       // createNotification('success','successfully logged in');
+        this.props.wsLogin();
+      } else {
+        createNotification('error',"Invalid password");
+      } 
+    });
+    /*console.log("checking: "+this.state.mnemonicpassword + " and "+ this.props.mnemonicpassword);
     if(this.props.mnemonicpassword=="" || this.props.mnemonicpassword==null || this.props.mnemonicpassword===""){
       createNotification('error',"Please restore or create an account");
     }else if(this.state.mnemonicpassword==this.props.mnemonicpassword || this.state.mnemonicpassword===this.props.mnemonicpassword){
       this.props.wsLogin();
     } else{
       createNotification('error',"Invalid password");
-    }
+    }*/
    
   }
   restore = () => {

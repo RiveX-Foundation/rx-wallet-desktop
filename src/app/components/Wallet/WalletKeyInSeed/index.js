@@ -4,6 +4,7 @@ import { observer, inject } from 'mobx-react';
 import { toJS } from "mobx";
 import intl from 'react-intl-universal';
 import buttonback from 'static/image/icon/back.png';
+var bcrypt = require('bcryptjs');
 
 const { TextArea } = Input;
 
@@ -99,7 +100,10 @@ class WalletKeyInSeed extends Component {
 
   next = () => {
     //this.validateseedphase();
-    this.props.setPassword(this.state.pendingpassword);
+    bcrypt.hash(this.state.pendingpassword, 10, (err, hash) => {
+      this.props.setPassword(hash);
+      localStorage.setItem('password',hash);
+      });
     this.props.CreateEthAddress();
     this.props.setCurrent("walletcreated");
     this.props.wsLogin();
