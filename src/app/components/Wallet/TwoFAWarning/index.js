@@ -3,7 +3,7 @@ import { Input, Radio, Icon, Tooltip, Button } from 'antd';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
 import buttonback from 'static/image/icon/back.png';
-import buttonartboard3 from 'static/image/graphic/artboard3.png';
+import buttonartboard3 from 'static/image/graphic/security01.jpg';
 const speakeasy = require("speakeasy");
 
 import './index.less';

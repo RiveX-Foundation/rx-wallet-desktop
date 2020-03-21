@@ -22,7 +22,8 @@ var Web3 = require('web3');
   selectedWallet : stores.walletStore.selectedwallet,
   setSelectedWallet : publicaddress => stores.walletStore.setSelectedWallet(publicaddress),
   loadWallet: () => stores.walletStore.loadWallet(),
-  InsertTokenAssetToCloudWallet: (tokenasset,publicaddress,cb) => stores.walletStore.InsertTokenAssetToCloudWallet(tokenasset,publicaddress,cb)
+  InsertTokenAssetToCloudWallet: (tokenasset,publicaddress,cb) => stores.walletStore.InsertTokenAssetToCloudWallet(tokenasset,publicaddress,cb),
+  decrypt: text => stores.walletStore.decrypt(text)
 }))
 
 @observer
@@ -44,7 +45,8 @@ class TokenAssetList extends Component {
       createNotification('error',intl.get('Wallet.TokenAssetAlreadyExist'));
     }else{
       var derivepath = this.props.selectedWallet.derivepath;
-      var seed = this.props.selectedWallet.seedphase;
+     // var seed = this.props.selectedWallet.seedphase;
+      var seed = this.props.decrypt(this.props.selectedWallet.seedphase)
       var walletkey = await this.props.GenerateBIP39Address(derivepath + "0", seed);
       tokenasset.PrivateAddress = walletkey.privateaddress;
       tokenasset.PublicAddress = walletkey.publicaddress;

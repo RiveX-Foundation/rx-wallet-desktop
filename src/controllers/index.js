@@ -516,7 +516,8 @@ ipc.on("system", async (event, actionUni, payload) => {
     switch (action) {
         case 'reload':
             let mainWin = Windows.getByType('main')
-            mainWin.reload();
+          //  mainWin.reload();
+            location.reload();
             break;
     }
 });

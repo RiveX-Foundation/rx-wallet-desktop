@@ -37,6 +37,7 @@ class walletStore {
   @observable walletname = "";
   @observable seedphase = [];
   @observable seedphaseinstring = "";
+  @observable seedphaseinstringtemp = "";
   @observable ethaddress = [];
   @observable wallettype = "";
   @observable derivepath = "";
@@ -377,6 +378,7 @@ class walletStore {
   }
 
   @action setSeedPhaseInString(val,pass) {
+    this.seedphaseinstringtemp=val;
     this.seedphaseinstring = this.encrypt(val,pass);
   }
 
@@ -609,7 +611,7 @@ class walletStore {
       publicaddress : publicaddress,
       addresstype : addresstype,
       wallettype : wallettype,
-      tokenassetlist:await this.insertPrimaryAssetTokenList(seedphase,this.checkisCloud(wallettype),publicaddress,privatekey),
+      tokenassetlist:await this.insertPrimaryAssetTokenList(this.seedphaseinstringtemp,false,publicaddress,privatekey),
       isCloud:false
     };
 
@@ -673,6 +675,7 @@ class walletStore {
 
   insertPrimaryAssetTokenList = async (seedphase,iscloud,defaultpublicaddress,defaultprivatekey) =>{
     console.log("instering primary assets");
+    console.log("LENGTH: "+self.primaryTokenAsset.length);
     if(self.primaryTokenAsset.length > 0){
       var promises = self.primaryTokenAsset.map(async (tokenitem,index)=>{
         var derivepath = BIP44PATH.ETH;
@@ -699,6 +702,7 @@ class walletStore {
       const results = await Promise.all(promises);
       return toJS(results);
     }else{
+      console.log("RETURNING");
       return [];
     }
 
@@ -805,22 +809,15 @@ class walletStore {
   }
 
   async CreateEthAddress(){
-    console.log("seed phrase in string "+this.seedphaseinstring);
+    console.log("seed phrase in string "+this.decrypt(this.seedphaseinstring));
     var derivepath = BIP44PATH.ETH;
-    var walletkey = await this.GenerateBIP39Address(derivepath + "0", this.decrypt(this.seedphaseinstring));
+    var walletkey = await this.GenerateBIP39Address(derivepath + "0", this.seedphaseinstringtemp);
     this.privateaddress = walletkey.privateaddress;
     this.publicaddress = walletkey.publicaddress;
-    if(this.basicwallettype == "cloud"){
-      this.CreateBasicWalletOnCloud(()=>{
-        // for make sure when call api store wallet is success, in order to save in local storage
-      //  this.SaveWallet(this.userstore.userid,this.walletname,this.seedphaseinstring,this.privateaddress,derivepath,this.publicaddress,"eth",this.selectedwallettype,this.totalowners,this.totalsignatures,[{ "UserId": this.userstore.userid, "UserName": this.userstore.name }]);
-      })
-    }else{
-     //this.SaveWallet(this.userstore.userid,this.walletname,this.seedphaseinstring,this.privateaddress,derivepath,this.publicaddress,"eth",this.selectedwallettype,this.totalowners,this.totalsignatures,[{ "UserId": this.userstore.userid, "UserName": this.userstore.name }]);
-    }
     await this.SaveWallet(this.walletname,this.seedphaseinstring,this.privateaddress,derivepath,this.publicaddress,"eth","local");
     console.log("awaited save wallet");
     this.loadTokenAssetList();
+    this.seedphaseinstringtemp = "";
     this.setCurrent("walletcreated");
 
     //this.seedphaseinstring = "scene brain typical travel fire error danger domain athlete initial salad video";
