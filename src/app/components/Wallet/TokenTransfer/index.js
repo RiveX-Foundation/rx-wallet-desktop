@@ -93,6 +93,8 @@ class TokenTransfer extends Component {
   transfer = async () => {
     if(localStorage.getItem('twofasecret')!=null){
       this.props.setMFA(true);
+    } else{
+      this.props.setMFA(false);
     }
     var isvalidaddr=true;
 

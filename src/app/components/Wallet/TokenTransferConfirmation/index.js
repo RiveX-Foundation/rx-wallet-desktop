@@ -14,6 +14,7 @@ var Tx = require('ethereumjs-tx');
 var wanTx = require('wanchain-util').wanchainTx;
 var Web3 = require('web3');
 import Slider from 'react-input-slider';
+var bcrypt = require('bcryptjs');
 
 //var fs = require('fs');
 
@@ -44,7 +45,8 @@ import buttonback from 'static/image/icon/back.png';
   selectedTokenAsset: stores.walletStore.selectedTokenAsset,
   setTrxGasPrice: (price) => stores.walletStore.setTrxGasPrice(price),
   allTokenAsset:stores.walletStore.allTokenAsset,
-  mfaenabled:stores.walletStore.mfaenabled
+  mfaenabled:stores.walletStore.mfaenabled,
+  decrypt: text => stores.walletStore.decrypt(text)
 }))
 
 @observer
@@ -59,7 +61,8 @@ class TokenTransferConfirmation extends Component {
     gaspricevalue: 100,
     mingaspricevalue: 50,
     maxgaspricevalue: 150,
-    mfa:""
+    mfa:"",
+    googleAuthKey:""
   }
 
   componentDidMount() {
@@ -158,18 +161,22 @@ class TokenTransferConfirmation extends Component {
   }
 
   transfer = async () => {
-
     if(this.props.mfaenabled){
-
-
-
-
-    }else{
-
-
-
+      const secretAscii = base32.decode(this.props.decrypt(localStorage.getItem('twofasecret')));
+      const secretHex = this._toHex(secretAscii);
+      var authcode = speakeasy.totp({
+        secret: secretHex,
+        encoding: 'hex',
+        window: 1
+      });
+      if(authcode==this.state.mfa){
+        createNotification('success','Valid OTP password');
+      }
+      else{
+        createNotification('error','Wrong MFA code');
+        return;
+      }
     }
-
     var that = this;
 
     //if(this.props.otptransfertoken == "" || this.state.otp != this.props.otptransfertoken){
@@ -195,6 +202,8 @@ class TokenTransferConfirmation extends Component {
     if (this.props.selectedwallet.wallettype == "sharedwallet") { //PROPOSE TO CLOUD
       this.props.wsCreateTrx(this.props.selectedwallet.publicaddress, this.props.tokentransferreceiver, this.props.tokentransfertoken);
     } else { //DIRECT EXECUTE TRX
+
+      
       createNotification('info', intl.get('Info.Waiting'));
       if (this.props.selectedTokenAsset.TokenType == "eth") {
         var from = this.props.selectedTokenAsset.PublicAddress;

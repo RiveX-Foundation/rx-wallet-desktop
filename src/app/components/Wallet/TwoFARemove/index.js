@@ -3,7 +3,7 @@ import { Input, Radio, Icon, Tooltip, Button } from 'antd';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
 import buttonback from 'static/image/icon/back.png';
-import buttonartboard3 from 'static/image/graphic/artboard3.png';
+import buttonartboard3 from 'static/image/graphic/security01.jpg';
 const speakeasy = require("speakeasy");
 const base32 = require('hi-base32');
 var bcrypt = require('bcryptjs');
@@ -84,7 +84,7 @@ class TwoFARemove extends Component {
           <div style={{marginBottom:"30px"}}><img src={buttonartboard3} width="350px" /></div>
         <div className="inputpanel">
             <div className="panelwrapper borderradiusfull">
-              <Input id="mfa" value={this.state.mfa} placeholder={'Input MFA code'} className="inputTransparent" onChange={this.inputChanged} />
+              <Input id="mfa" value={this.state.mfa} placeholder={intl.get('Auth.EnterOTP')} className="inputTransparent" onChange={this.inputChanged} />
             </div>
             <div className="panelwrapper borderradiusfull">
                 <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px"}} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />

@@ -70,9 +70,9 @@ class Settings extends Component {
           <TabPane tab={intl.get('Settings.Network')} key="3">
             <Network />
           </TabPane>
-        <TabPane tab={intl.get('Settings.Profile')} key="4">
+       {/* <TabPane tab={intl.get('Settings.Profile')} key="4">
             <Profile />
-          </TabPane>
+    </TabPane> */}
           <TabPane tab={intl.get('Settings.2FASecurity')} key="5">
             <Security />
           </TabPane>

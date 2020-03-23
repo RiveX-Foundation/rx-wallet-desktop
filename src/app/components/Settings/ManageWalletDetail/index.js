@@ -198,22 +198,56 @@ class ManageWalletDetail extends Component {
   }
 
   validatePasswordsRemoval = () =>{
-    bcrypt.compare(this.state.password, this.state.mnemonicpass, (err, res) => {
-      if(res) {
-        console.log("passwords match");
-        createNotification('success','Valid password');
-        this.setState({
-          removemodalvisible: false
-        });
-        this.props.removeWallet(this.state.selectedwalletaddress);
-        this.setState({password:""});
-        this.back();
-      } else {
-        console.log("passwords don't match");
-        createNotification('error','Wrong password');
-        this.setState({password:""});
-      } 
-    });
+    if(localStorage.getItem('twofasecret')!=null){
+      const secretAscii = base32.decode(this.state.googleAuthKey);
+      bcrypt.compare(this.state.password, this.state.mnemonicpass, (err, res) => {
+        if(res) {
+          const secretHex = this._toHex(secretAscii);
+          var authcode = speakeasy.totp({
+            secret: secretHex,
+            encoding: 'hex',
+            window: 1
+          });
+          if(authcode==this.state.mfa){
+            console.log("passwords match");
+            createNotification('success','Valid password');
+            this.setState({
+              removemodalvisible: false
+            });
+            this.props.removeWallet(this.state.selectedwalletaddress);
+            this.setState({password:""});
+            this.back();
+          } else {
+            createNotification('error','Wrong MFA code');
+            this.setState({password:""});
+            this.setState({mfa:""});
+          }
+        
+        } else {
+          console.log("passwords don't match");
+          createNotification('error','Wrong password');
+          this.setState({password:""});
+        } 
+      });
+    }
+    else{
+      bcrypt.compare(this.state.password, this.state.mnemonicpass, (err, res) => {
+        if(res) {
+            console.log("passwords match");
+            createNotification('success','Valid password');
+            this.setState({
+              removemodalvisible: false
+            });
+            this.props.removeWallet(this.state.selectedwalletaddress);
+            this.setState({password:""});
+            this.back();
+          } else {
+          console.log("passwords don't match");
+          createNotification('error','Wrong password');
+          this.setState({password:""});
+        } 
+      });
+    }
   }
 
   exportprivatekey = e => {
@@ -417,7 +451,8 @@ class ManageWalletDetail extends Component {
               <div className="inputpanel">
             <center>
               <div className="panelwrapper borderradiusfull">
-                <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px"}} value = {this.state.password} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputPasswordChanged} />
+              <Input id="mfa" style={this.state.mfaenabled,{marginLeft:"-40px"}} value={this.state.mfa} placeholder={intl.get('Auth.EnterOTP')} className="inputTransparent" onChange={this.inputMfaChanged} />
+              <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px"}} value = {this.state.password} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputPasswordChanged} />
               </div>
             </center>
           </div>
@@ -436,7 +471,7 @@ class ManageWalletDetail extends Component {
                 <div className='pmodalcontent'>{intl.get('Settings.ExportPrivateKey.Msg3')}</div>
 
                 <div className='pmodalcontent'>{intl.get('Settings.ExportPrivateKey.SelectTokenAsset')}</div>
-          
+                <center>
                 <div className="inputwrapper">
                   <div className="panelwrapper">
                     <Input value={this.state.temporarytokenname } placeholder={intl.get('Settings.Token')} onClick={this.showlist} onBlur={this.hidelist} onFocus={this.showlist} className="inputTransparent" onChange={this.setfilterlist} />
@@ -458,14 +493,15 @@ class ManageWalletDetail extends Component {
                     }
                   </div>
                   <div className="inputpanel">
-            <center>
+           
               <div className="panelwrapper borderradiusfull">
-              <Input id="mfa" style={this.state.mfaenabled} value={this.state.mfa} placeholder={'Input MFA code'} className="inputTransparent" onChange={this.inputMfaChanged} />
-              <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px"}} value = {this.state.password} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputPasswordChanged} />
+              <Input id="mfa" style={this.state.mfaenabled} value={this.state.mfa} placeholder={intl.get('Auth.EnterOTP')} className="inputTransparent" onChange={this.inputMfaChanged} />
+              <Input.Password id="password" style={{paddingLeft:"0px"}} value = {this.state.password} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputPasswordChanged} />
+             
               </div>
-            </center>
           </div>
                 </div>
+                </center>
               </div>
             </Modal>
 
@@ -482,7 +518,7 @@ class ManageWalletDetail extends Component {
                 <div className="inputpanel">
             <center>
               <div className="panelwrapper borderradiusfull">
-                <Input id="mfa" style={this.state.mfaenabled,{marginLeft:"-40px"}} value={this.state.mfa} placeholder={'Input MFA code'} className="inputTransparent" onChange={this.inputMfaChanged} />
+                <Input id="mfa" style={this.state.mfaenabled,{marginLeft:"-40px"}} value={this.state.mfa} placeholder={intl.get('Auth.EnterOTP')} className="inputTransparent" onChange={this.inputMfaChanged} />
                 <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px"}} value = {this.state.password} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputPasswordChanged} />
               </div>
             </center>

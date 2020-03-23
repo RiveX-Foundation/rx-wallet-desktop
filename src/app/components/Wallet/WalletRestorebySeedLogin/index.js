@@ -99,6 +99,7 @@ class WalletRestorebySeedLogin extends Component {
       this.props.setCurrent("walletcreated");
       this.props.wsLogin();
       this.props.setRequestSignIn(false);
+      this.props.setcurrentReg("inputmobile");
     }
     
   }

@@ -177,8 +177,8 @@ class LoginMobile extends Component {
           <div className="subtitle">{intl.get('Register.Welcome')}</div>
           <center>
           <div className="panelwrapper borderradiusfull loginpanel">
-              <Input.Password style={{marginLeft:"-20px"}} id="loginpassword" placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
-              <div><Button className="nextbutton" onClick={this.login}><img src={buttonnext} /></Button></div>
+              <Input.Password style={{marginLeft:"4px"}} id="loginpassword" placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
+              <span><Button className="nextbutton" onClick={this.login}><img src={buttonnext} /></Button></span>
             </div>
             <div className="buttonpanel" style={{marginTop:"0px"}}>
             <Button className="curvebutton" onClick={this.restore} >{intl.get('Settings.Restore')}</Button>
