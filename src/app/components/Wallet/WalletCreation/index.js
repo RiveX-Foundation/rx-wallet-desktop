@@ -150,7 +150,7 @@ class WalletCreation extends Component {
               <div className="hint">{intl.get('Wallet.WriteDownRecoveryPhrase')}</div>
               <ul>{this.state.seedphaseel}</ul>       
               <div><Button className="copybutton" onClick={this.copy} >{intl.get('Backup.copyToClipboard')}</Button></div>
-              <div className="hint2" style={{marginTop:"40px"}}>{intl.get('Wallet.NeverShareRecovery')}</div>
+              <div className="hint2" style={{marginTop:"40px", marginBottom:"30px"}}>{intl.get('Wallet.NeverShareRecovery')}</div>
               
               <div className="inputpanel">
             <center>

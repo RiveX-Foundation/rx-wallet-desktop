@@ -103,7 +103,7 @@ class TwoFACreation extends Component {
               <div style={{marginTop:"30px"}}></div>
             <div className="inputpanel">
             <div className="panelwrapper borderradiusfull">
-              <Input id="mfa" value={this.state.mfa} placeholder={Intl.get('Auth.EnterOTP')} style={{marginLeft:"-40px"}} className="inputTransparent" onChange={this.inputChanged} />
+              <Input id="mfa" value={this.state.mfa} placeholder={intl.get('Auth.EnterOTP')} style={{marginLeft:"-40px"}} className="inputTransparent" onChange={this.inputChanged} />
               <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px", marginTop:"5px"}} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
               </div>
               <div className="buttonpanel"><Button className="curvebutton" onClick={this.warning}>{intl.get('Auth.Verify')}</Button></div>
