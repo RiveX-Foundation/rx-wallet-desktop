@@ -179,7 +179,7 @@ const en_US = {
     'Auth.EnterOTP': 'Enter OTP',
     'Auth.RequestOTP': 'Request OTP',
     'Auth.SecretKeyInText':'Secret key in plain text: ',
-    'Auth.Verify':'Verify'
+    'Auth.Verify':'Verify',
 
     'STATUS.completed': 'COMPLETED',
     'STATUS.approved': 'APPROVED',
