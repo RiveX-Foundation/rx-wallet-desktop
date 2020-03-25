@@ -170,10 +170,10 @@ class TokenTransferConfirmation extends Component {
         window: 1
       });
       if(authcode==this.state.mfa){
-        createNotification('success','Valid OTP password');
+        createNotification('success',intl.get('Success.ValidOTP'));
       }
       else{
-        createNotification('error','Wrong MFA code');
+        createNotification('error',intl.get('Error.InvalidOTP'));
         return;
       }
     }
@@ -511,7 +511,7 @@ class TokenTransferConfirmation extends Component {
                 <React.Fragment>
                   <div className="inputpanel">
             <div className="panelwrapper borderradiusfull">
-              <Input id="mfa" value={this.state.mfa} placeholder={'Input MFA code'} className="inputTransparent" onChange={this.inputMFAChanged} />
+              <Input id="mfa" value={this.state.mfa} placeholder={Intl.get('Auth.EnterOTP')} className="inputTransparent" onChange={this.inputMFAChanged} />
             </div>
             </div>
                 </React.Fragment>

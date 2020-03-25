@@ -26,6 +26,10 @@ const en_US = {
     'Settings.2FASecurity.SMS': 'SMS Authentication',
     'Settings.2FASecurity.SecurityCode': 'Secondary Password',
     'Settings.2FASecurity.TOTPCode': 'Two-Factor Authentication',
+    'Settings.2FASecurity.Disabled': 'Two-Factor Authentication is disabled',
+    'Settings.2FASecurity.Enabled': 'Two-Factor Authentication is enabled',
+    'Settings.2FASecurity.Disable': 'Disable 2FA',
+    'Settings.2FASecurity.Enable': 'Enable 2FA',
     'Settings.ExportMnemonic': 'Export Mnemonic Word',
     'Settings.ExportMnemonic.Msg1': 'It is essential to understand that the Mnemonic Word is the most important and sensitive part of your account information. Whoever has knowledge of a Mnemonic Word has full control over the associated funds and assets. It is important for restoring your account so you should never lose it, but also keep it top secret. ',
     'Settings.ExportPrivateKeyDesc': 'It is essential to understand that the Private Key is the most important and sensitive part of your account information. Whoever has knowledge of a Private Key has full control over the associated funds and assets. It is important for restoring your account so you should never lose it, but also keep it top secret. ',
@@ -174,6 +178,8 @@ const en_US = {
 
     'Auth.EnterOTP': 'Enter OTP',
     'Auth.RequestOTP': 'Request OTP',
+    'Auth.SecretKeyInText':'Secret key in plain text: ',
+    'Auth.Verify':'Verify'
 
     'STATUS.completed': 'COMPLETED',
     'STATUS.approved': 'APPROVED',
@@ -231,7 +237,10 @@ const en_US = {
     'Error.InvalidPrivateKey': 'Invalid Private Key',
     'Error.LoginIDExisted' : 'Login ID has been used',
     'Error.LoginIDisempty': 'Login ID is empty',
+    'Error.Passwordlonger':'Password must not be empty or shorter than 6 characters',
 
-    "Success.Success":"Success"
+    "Success.Success":"Success",
+    "Success.Valid":"Valid password",
+    "Success.ValidOTP":"Valid OTP"
 }
 export default en_US;

@@ -98,13 +98,13 @@ class ManageWalletDetail extends Component {
           this.setState({password:""});
           this.setState({mfa:""});
         }else{
-          createNotification('error','Wrong MFA code');
+          createNotification('error',intl.get('Error.InvalidOTP'));
           this.setState({mfa:""});
           this.setState({password:""});
         } 
         } else {
           console.log("passwords don't match");
-          createNotification('error','Wrong password');
+          createNotification('error',intl.get('Error.Userwrongpassword'));
           this.setState({mnemonicvisibility:{display:"none"}});
           this.setState({pkeyvisibility:{display:"none"}});
           this.setState({password:""});
@@ -119,7 +119,7 @@ class ManageWalletDetail extends Component {
           this.setState({password:""});
           return;
         } else {
-          createNotification('error','Wrong password');
+          createNotification('error',intl.get('Error.Userwrongpassword'));
           this.setState({mnemonicvisibility:{display:"none"}});
           this.setState({pkeyvisibility:{display:"none"}});
           this.setState({password:""});
@@ -158,13 +158,13 @@ class ManageWalletDetail extends Component {
           });
           this.setState({password:""});
         }else{
-          createNotification('error','Wrong MFA code');
+          createNotification('error',intl.get('Error.InvalidOTP'));
           this.setState({password:""});
           this.setState({mfa:""});
         } 
         } else {
           console.log("passwords don't match");
-          createNotification('error','Wrong password');
+          createNotification('error',intl.get('Error.Userwrongpassword'));
           this.setState({pkeyvisibility:{display:"none"}});
           this.setState({password:""});
           this.setState({mfa:""});
@@ -188,7 +188,7 @@ class ManageWalletDetail extends Component {
           this.setState({password:""});
         } else {
           console.log("passwords don't match");
-          createNotification('error','Wrong password');
+          createNotification('error',intl.get('Error.Userwrongpassword'));
           this.setState({pkeyvisibility:{display:"none"}});
           this.setState({password:""});
         } 
@@ -218,14 +218,14 @@ class ManageWalletDetail extends Component {
             this.setState({password:""});
             this.back();
           } else {
-            createNotification('error','Wrong MFA code');
+            createNotification('error',intl.get('Error.InvalidOTP'));
             this.setState({password:""});
             this.setState({mfa:""});
           }
         
         } else {
           console.log("passwords don't match");
-          createNotification('error','Wrong password');
+          createNotification('error',intl.get('Error.Userwrongpassword'));
           this.setState({password:""});
         } 
       });
@@ -243,7 +243,7 @@ class ManageWalletDetail extends Component {
             this.back();
           } else {
           console.log("passwords don't match");
-          createNotification('error','Wrong password');
+          createNotification('error',intl.get('Error.Userwrongpassword'));
           this.setState({password:""});
         } 
       });

@@ -64,12 +64,12 @@ class TwoFARemove extends Component {
           this.props.clearGoogleAuthKey();
           this.props.setCurrent("settings");
         }else{
-          createNotification('error','Wrong MFA code');
+          createNotification('error',intl.get('Error.InvalidOTP'));
           this.setState({mfa:""});
 
         }
       } else {
-        createNotification('error','Wrong password');
+        createNotification('error',intl.get('Error.Userwrongpassword'));
         this.setState({password:""});
       } 
     });

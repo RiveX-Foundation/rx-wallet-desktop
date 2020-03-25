@@ -3,6 +3,8 @@ import { Input, InputNumber, Tooltip, Button, Radio, Icon } from 'antd';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
 import { createNotification } from 'utils/helper';
+import unlock from 'static/image/graphic/lockunlock01.png';
+import lock from 'static/image/graphic/lockunlock02.png';
 const { currency } = require('../../../../../config/common/currency');
 const { TextArea } = Input;
 var QRCode = require('qrcode.react');
@@ -83,11 +85,11 @@ class Security extends Component {
 
     return (
       <div className="currencypanel fadeInAnim">
-        <div className="title" ><span>{intl.get('Settings.2FASecurity')}</span></div>
-        <div className="centerpanel">
+       {/* <div className="title" ><span>{intl.get('Settings.2FASecurity')}</span></div>*/}
+        <div className="centerpanel" style={{marginTop:"-50px"}}>
           <div className="inputpanel">
             <Radio.Group onChange={this.onChange} value={this.state.value}>
-              <div>
+             {/* <div>
                 <Radio value="password">
                   {intl.get('Settings.2FASecurity.SecurityCode')}
                 </Radio>
@@ -102,7 +104,7 @@ class Security extends Component {
                 </div> 
                 <div><Button className="curvebutton" onClick={this.save} >{intl.get('Common.Save')}</Button></div>   
                 <br/>          
-              </div>
+             </div>*/}
               {
                 !smsdisabled && 
                 <div>
@@ -114,14 +116,17 @@ class Security extends Component {
               {
               this.state.googleAuthKey == "" || this.state.googleAuthKey==null &&
               <React.Fragment>
-             <Button className="curvebutton" onClick={this.start2fa} >{'Enable 2FA'}</Button>
+              <div className="title" style={{marginTop:"30px",paddingLeft:"0px"}}><span className="lock">{intl.get('Settings.2FASecurity.Disabled')}</span></div>
+              <img src={unlock} style={{width:"150px"}} />
+             <Button className="curvebutton" onClick={this.start2fa} >{intl.get('Settings.2FASecurity.Enable')}</Button>
               </React.Fragment>                
             }
                {
               this.state.googleAuthKey !=null  &&
               <React.Fragment>
-                <div className="panellabel" style={{marginTop:"30px",paddingLeft:"0px"}}>{'2FA is enabled'}</div>
-                <div><Button className="curvebutton" onClick={this.disable2fa} >{'Disable 2FA'}</Button></div>
+                <div className="title" style={{marginTop:"30px",paddingLeft:"0px"}}><span className="lock">{intl.get('Settings.2FASecurity.Enabled')}</span></div>
+                <img src={lock} style={{width:"150px"}} />
+                <div><Button className="curvebutton" onClick={this.disable2fa} >{intl.get('Settings.2FASecurity.Disable')}</Button></div>
               </React.Fragment>                
             } 
                 <br/><br/>

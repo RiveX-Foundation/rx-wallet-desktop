@@ -87,7 +87,7 @@ class WalletRestorebySeedLogin extends Component {
       //createNotification('error','Password already exists, not saving.');
     }
     if(this.state.password=="" || this.state.password.length < 6){
-      createNotification('error','Password must not be empty and shorter than 6 characters');
+      createNotification('error',intl.get('Error.Passwordlonger'));
     }
     else{ //encrypt here
       bcrypt.hash(this.state.password, 10, (err, hash) => {

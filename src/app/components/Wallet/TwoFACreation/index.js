@@ -70,12 +70,12 @@ class TwoFACreation extends Component {
           this.setState({password:""});
           this.props.setCurrent("settings");
         }else{
-          createNotification('error','Wrong MFA code');
+          createNotification('error',intl.get('Error.InvalidOTP'));
           this.setState({mfa:""});
 
         }
       } else {
-        createNotification('error','Wrong password');
+        createNotification('error',intl.get('Error.Userwrongpassword'));
         this.setState({password:""});
       } 
     });
@@ -98,15 +98,15 @@ class TwoFACreation extends Component {
         <div className="centerpanel">
         <center>
           <div><QRCode fgColor="#4954AE" style={{marginBottom:"10px"}} size={200} value={'otpauth://totp/RVXWallet?secret='+this.props.googleAuthKeyPending}></QRCode> </div>
-          <div className="plaintext">{'Secret key in plain text: ' }</div> 
+          <div className="plaintext">{intl.get('Auth.SecretKeyInText') }</div> 
           <div className="secretkey"><b className="secretkey">{base32.decode(this.props.googleAuthKeyPending)}</b></div>
               <div style={{marginTop:"30px"}}></div>
             <div className="inputpanel">
             <div className="panelwrapper borderradiusfull">
-              <Input id="mfa" value={this.state.mfa} placeholder={'Input MFA code'} style={{marginLeft:"-40px"}} className="inputTransparent" onChange={this.inputChanged} />
+              <Input id="mfa" value={this.state.mfa} placeholder={Intl.get('Auth.EnterOTP')} style={{marginLeft:"-40px"}} className="inputTransparent" onChange={this.inputChanged} />
               <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px", marginTop:"5px"}} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
               </div>
-              <div className="buttonpanel"><Button className="curvebutton" onClick={this.warning}>{'Verify'}</Button></div>
+              <div className="buttonpanel"><Button className="curvebutton" onClick={this.warning}>{intl.get('Auth.Verify')}</Button></div>
             </div>
         </center>
         <Modal
