@@ -65,9 +65,9 @@ const en_US = {
     'Wallet.BackupWallet': 'BACKUP WALLET',
     'Wallet.RecoveryPhrase': 'RECOVERY PHRASE',
     'Wallet.Join' : "Join",
-    'Wallet.IHaveBackupMySeed': 'I Have Backup My Phrase',
-    'Wallet.WriteDownRecoveryPhrase': 'Write down or copy these words in order and keep it in a secure place.',
-    'Wallet.NeverShareRecovery': 'Never share recovery phrase with anyone, store it securely!',
+    'Wallet.IHaveBackupMySeed': 'I have backed up my Phrase',
+    'Wallet.WriteDownRecoveryPhrase': 'Write down these words IN ORDER and store them in a secure place',
+    'Wallet.NeverShareRecovery': 'Never share your Recovery Phrase with anyone. Store it securely!',
     'Wallet.VerifyRecoveryPhrase': 'VERIFY RECOVERY PHRASE',
     'Wallet.Confirm': 'Confirm',
     'Wallet.WalletCreated': 'Wallet Created !',
@@ -129,7 +129,7 @@ const en_US = {
 
     'BackupTutorial.guide1': 'In the next step you will see 12 words (Recovery Phrase) that allows you to recover your wallet.',
     'BackupTutorial.guide2':'Do not upload the words online nor share them with anyone, store them safely',
-    'BackupTutorial.guide3':'Anyone with your Recovery Phrase can restore and controlls all your assets.',
+    'BackupTutorial.guide3':'Anyone with your Recovery Phrase can restore and control all of your assets.',
 
     'Common.logout': 'Log Out',
     'Common.NoData' : 'No Data',
@@ -168,7 +168,7 @@ const en_US = {
     'Transaction.TransactionID': 'Transaction ID',
     'Transaction.TotalSigners': 'Total Signers',
     'Transaction.TransactionSuccessful': 'Transaction Successful',
-    'Transaction.NoTransaction': 'No Transction',
+    'Transaction.NoTransaction': 'No T',
 
     'menuConfig.wallet': 'WALLET',
     'menuConfig.basicwallet': 'BASIC WALLET',

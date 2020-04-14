@@ -49,7 +49,7 @@ class WalletRestorebySeed extends Component {
 
   PasswordOnChange = e => {
     this.setState({password:e.target.value}, () => {
-      this.props.setPassword(this.state.password);
+     // this.props.setPassword(this.state.password);
     })
     
   }

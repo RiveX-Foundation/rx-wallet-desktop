@@ -39,7 +39,9 @@ const WALLET_ID = 0x02;
   selectedwallettype:stores.walletStore.selectedwallettype,
   setledgerresult : result => stores.walletStore.setledgerresult(result),
   GetPrimaryTokenAssetByNetwork: () => stores.walletStore.GetPrimaryTokenAssetByNetwork(),
-  GetAllTokenAssetByNetwork:() => stores.walletStore.GetAllTokenAssetByNetwork()
+  GetAllTokenAssetByNetwork:() => stores.walletStore.GetAllTokenAssetByNetwork(),
+  getTotalWorthMYR:stores.walletStore.TotalWorthMYR,
+  convertRate:stores.walletStore.convertRate
 }))
 
 @observer
@@ -47,7 +49,8 @@ class SelectedWallet extends Component {
 
   state = {
     trxlist : [],
-    modalIsOpen:false
+    modalIsOpen:false,
+    myrrate:0
   }
 
   componentDidMount(){
@@ -55,6 +58,8 @@ class SelectedWallet extends Component {
     this.props.GetAllTokenAssetByNetwork();
     //this.props.getTokenSparkLineByAssetCode(this.props.selectedTokenAsset.SparklineAssetCode);
   }
+  
+
   
   inputChanged = e => {
     this.setState({ mobilevalue : e.target.value }, () => {
@@ -109,7 +114,9 @@ class SelectedWallet extends Component {
       }
     });
   }
-
+  getTotalWorthMyr = () => {
+    return this.props.getTotalWorthMYR;
+  }
   
   getPublicKey = () => {
     console.log("GET PUBLIC KEY");
@@ -133,6 +140,8 @@ class SelectedWallet extends Component {
     }
   }
 
+
+
   receiveToken = () => {
     this.props.setCurrent("tokenreceive");
   }
@@ -140,17 +149,27 @@ class SelectedWallet extends Component {
   render() {
 
     var w = this.props.selectedWallet;
-
+    
     return (
       <div id="selectwalletmainctn" className="selectedwalletpanel fadeInAnim">
         {this.props.selectedWallet.walletname != null &&
           <div>
             <div className="walletname" >{this.props.selectedWallet.walletname}</div>
             <div className="contentpanel">
+              { 
+              this.props.currencycode =="USD" &&
               <div className="totalworth">
-                <div className="amount">{this.props.getTotalWorth(this.props.selectedWallet)}</div>
+                {<div className="amount">{this.props.getTotalWorth(this.props.selectedWallet)}</div>}
                 <div className="currency">{this.props.currencycode}</div>
               </div>
+              }
+
+              { this.props.currencycode == "MYR" &&
+              <div className="totalworth">
+                {<div className="amount">{this.getTotalWorthMyr()}</div>}
+                <div className="currency">{this.props.currencycode}</div>
+              </div>
+              }
             </div>
 
             {
@@ -184,7 +203,16 @@ class SelectedWallet extends Component {
                       <div className="tokenassetitemrow">
                         <div className="amountctn">
                           <div className="totalcoin">{item.TokenBalance ? `${item.TokenBalance % 1 != 0 ? toFixedNoRounding(item.TokenBalance,4) : toFixedNoRounding(item.TokenBalance,2)}` : `0.00`}<span>{item.AssetCode.toUpperCase()}</span></div>
-                          <div className="totalcurrency">${numberWithCommas(parseFloat(!isNaN(item.TokenPrice * item.TokenBalance) ? item.TokenPrice * item.TokenBalance : 0),true)} {this.props.currencycode}</div>
+                          {
+                            this.props.currencycode == "USD" &&
+                            <div className="totalcurrency">${numberWithCommas(parseFloat(!isNaN(item.TokenPrice * item.TokenBalance) ? item.TokenPrice * item.TokenBalance : 0),true)} {this.props.currencycode}</div>
+                          }
+
+                           {
+                            this.props.currencycode == "MYR" &&
+                            <div className="totalcurrency">${numberWithCommas(parseFloat(!isNaN((item.TokenPrice* item.TokenBalance)*this.props.convertRate) ? (item.TokenPrice * item.TokenBalance)*this.props.convertRate : 0),true)} {this.props.currencycode}</div>
+                          }
+                          
                         </div>
                         <div className="chartctn">
                           <ResponsiveContainer width={'100%'} height={200}>

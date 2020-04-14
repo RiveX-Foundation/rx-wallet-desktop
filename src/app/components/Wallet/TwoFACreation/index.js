@@ -99,7 +99,7 @@ class TwoFACreation extends Component {
         <center>
           <div><QRCode fgColor="#4954AE" style={{marginBottom:"10px"}} size={200} value={'otpauth://totp/RVXWallet?secret='+this.props.googleAuthKeyPending}></QRCode> </div>
           <div className="plaintext">{intl.get('Auth.SecretKeyInText') }</div> 
-          <div className="secretkey"><b className="secretkey">{base32.decode(this.props.googleAuthKeyPending)}</b></div>
+          <div className="secretkey"><b className="secretkey">{this.props.googleAuthKeyPending}</b></div>
               <div style={{marginTop:"30px"}}></div>
             <div className="inputpanel">
             <div className="panelwrapper borderradiusfull">

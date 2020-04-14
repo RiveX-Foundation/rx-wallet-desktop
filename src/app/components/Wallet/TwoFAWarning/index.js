@@ -22,7 +22,7 @@ class TwoFAWarning extends Component {
   }
 
   componentDidMount(){
-    const googleauthKey= speakeasy.generateSecret({length: 32}).base32;
+    const googleauthKey= speakeasy.generateSecret({length: 24}).base32;
     this.setState({
       googleAuthKey: googleauthKey}, () => {
         this.props.setGoogleAuthKeyPending(googleauthKey);

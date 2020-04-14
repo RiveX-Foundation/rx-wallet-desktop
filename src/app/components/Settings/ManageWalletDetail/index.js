@@ -78,6 +78,10 @@ class ManageWalletDetail extends Component {
   inputMfaChanged = e => {
     this.setState({ mfa : e.target.value });
   }
+  getRate = async () => {
+    console.log("asyncing rate");
+   await this.props.getConvertRate(this.props.selectedTokenAsset.AssetCode,this.props.currencycode);
+  }
 
   validatePasswords = () =>{
     if(localStorage.getItem('twofasecret')!=null){
@@ -255,15 +259,19 @@ class ManageWalletDetail extends Component {
     if(localStorage.getItem('twofasecret')){
       this.setState({mfaenabled:{display:"block"},
       googleAuthKey: this.props.decrypt(localStorage.getItem('twofasecret'))});
+    } else {
+      this.setState({mfaenabled:{display:"none"}});
     }
     this.setState({selectedwalletaddress:walletaddress,exportprivatekeymodalvisible:true});
   }
 
   exportmnemonic = e => {
     const wallet = this.props.walletlist.find(x => x.publicaddress == this.props.selectedwalletaddress); 
-    if(localStorage.getItem('twofasecret')){
+    if(localStorage.getItem('twofasecret')!=null){
       this.setState({mfaenabled:{display:"block"},
       googleAuthKey: this.props.decrypt(localStorage.getItem('twofasecret'))});
+    }  else {
+      this.setState({mfaenabled:{display:"none"}});
     }
     this.setState({exportedseedphrase:this.props.decrypt(wallet.seedphase)});
     //console.log("EXPORT MNEMONIC: "+wallet.seedphase);
@@ -276,6 +284,8 @@ class ManageWalletDetail extends Component {
     if(localStorage.getItem('twofasecret')){
       this.setState({mfaenabled:{display:"block"},
       googleAuthKey: this.props.decrypt(localStorage.getItem('twofasecret'))});
+    } else {
+      this.setState({mfaenabled:{display:"none"}});
     }
     const walletname = e.currentTarget.getAttribute('data-walletname');
     this.setState({selectedwalletaddress:walletaddress,selectedwalletname:walletname,removemodalvisible:true});
@@ -451,7 +461,7 @@ class ManageWalletDetail extends Component {
               <div className="inputpanel">
             <center>
               <div className="panelwrapper borderradiusfull">
-              <Input id="mfa" style={this.state.mfaenabled,{marginLeft:"-40px"}} value={this.state.mfa} placeholder={intl.get('Auth.EnterOTP')} className="inputTransparent" onChange={this.inputMfaChanged} />
+              <Input id="mfa" style={this.state.mfaenabled} value={this.state.mfa} placeholder={intl.get('Auth.EnterOTP')} className="inputTransparent2" onChange={this.inputMfaChanged} />
               <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px"}} value = {this.state.password} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputPasswordChanged} />
               </div>
             </center>
@@ -518,7 +528,7 @@ class ManageWalletDetail extends Component {
                 <div className="inputpanel">
             <center>
               <div className="panelwrapper borderradiusfull">
-                <Input id="mfa" style={this.state.mfaenabled,{marginLeft:"-40px"}} value={this.state.mfa} placeholder={intl.get('Auth.EnterOTP')} className="inputTransparent" onChange={this.inputMfaChanged} />
+                <Input id="mfa" style={this.state.mfaenabled} value={this.state.mfa} placeholder={intl.get('Auth.EnterOTP')} className="inputTransparent2" onChange={this.inputMfaChanged} />
                 <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px"}} value = {this.state.password} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputPasswordChanged} />
               </div>
             </center>

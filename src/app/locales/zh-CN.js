@@ -26,7 +26,18 @@ const zh_CN = {
     "Settings.ExportPrivateKey.Msg3":"它将是还原您钱包很重要的一项，千万不能将它公开，收为己用。",
     "Settings.SuccessfullyRemoved":"删除成功",
     "Settings.ExportPrivateKey.SelectTokenAsset":"选择以下您要导出的私钥",
-
+    'Settings.2FASecurity.Disabled': "双重要素身份验证已禁用",
+    'Settings.2FASecurity.Enabled' : "双重要素身份验证已启用",
+    'Settings.2FASecurity.Disable' : "禁用2FA / 禁用双重要素身份验证",
+    'Settings.2FASecurity.Enable': "启用2FA / 启用双重要素身份验证",
+    "Settings.Create": "创建钱包",
+    "Settings.Quit": "离开",
+    "Success.Valid":"有效密码",
+    'Error.Passwordlonger':'密码不可为空或者少于6个字符',
+    'Auth.SecretKeyInText':'纯文本密钥: ',
+    'Auth.Verify':'校验',
+		
+				
     'Modal.RemoveWallet': '删除钱包 ?',
     'Modal.AreYouSureRemoveWallet': '你确认要删除 {walletname} ?',
     'Modal.AreYouSureChangeNetwork.Msg1': '更改网络将重啓应用程序',

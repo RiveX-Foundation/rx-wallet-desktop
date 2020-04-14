@@ -27,7 +27,9 @@ import './index.less';
   setRequestSignIn: current => stores.session.setRequestSignIn(current),
   setcurrentReg: current => stores.userRegistration.setCurrent(current),
   mnemonicpassword: stores.walletStore.mnemonicpassword,
-  password: stores.userRegistration.password
+  password: stores.userRegistration.password,
+  setSelectedWallet: publicaddress => stores.walletStore.setSelectedWallet(publicaddress),
+  toMYR: async() => stores.walletStore.toMYR()
 }))
 
 @observer
@@ -53,7 +55,7 @@ class LoginMobile extends Component {
 
 
   componentDidMount(){
-    
+    this.MYR();
     this.props.setCountryCode("+60");
     this.props.setPassword("");
     this.props.setMobile("");
@@ -109,12 +111,24 @@ class LoginMobile extends Component {
     //  this.props.setMobile(this.state.mobilevalue);
     //});
   }
+  MYR = async () => {
+    await this.props.toMYR();
+  }
 
-  login = () => {
+  login = async () => {
      bcrypt.compare(this.state.mnemonicpassword, localStorage.getItem('password'), (err, res) => {
       if(res) {
-       // createNotification('success','successfully logged in');
+       var wallet = JSON.parse(localStorage.getItem("wallets"));
+       if(wallet!=null){
+        this.MYR();
         this.props.wsLogin();
+        
+       // this.props.setSelectedWallet(wallet[0].publicaddress);
+       } else {
+         this.MYR();
+        this.props.wsLogin();
+       }
+      
       } else {
         createNotification('error',"Invalid password");
       } 

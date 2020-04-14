@@ -63,7 +63,7 @@ class walletStore {
   @observable TokenSparkLine = [];
   @observable primaryTokenAsset = [];
   @observable allTokenAsset = [];
-  @observable convertrate = 1.34;
+  @observable convertrate = 0;
   @observable selectedassettokenlist = [];
   @observable totalassetworth = 0;
   @observable selectedTokenAsset = {};
@@ -113,6 +113,10 @@ class walletStore {
   @action setMFA(status){
     this.mfaenabled = status;
   }
+  @action setConvertRate(rate){
+    console.log("rate set at: "+rate);
+    this.convertrate=rate;
+  }
 
 
   @action setGoogleAuthKey(googleAuthKey,pass){
@@ -124,6 +128,66 @@ class walletStore {
       this.googleAuthKey = "";
       this.googleAuthKeyPending = "";
       localStorage.removeItem('twofasecret');
+    }
+    @computed get convertRate(){
+      return this.convertrate;
+    }
+
+    @action async getConvertRate(tokenasset,currency){
+      var asset;
+      var that = this;
+      if(tokenasset == "eth"){
+        asset = "ethereum";
+      }else if(tokenasset == "wan"){
+        asset = "wanchain";
+      }else if(tokenasset == "RVX"){
+        asset = "rivex";
+      }
+
+      await axios({
+        method: 'get',
+        url: 'https://api.coingecko.com/api/v3/simple/price',
+        params:{
+          ids:asset,
+          vs_currencies:currency
+        },
+        config: { headers: {'Content-Type': 'application/json' }}
+      })
+      .then(function (response) {
+          //handle success
+          console.log("COINGECKO REATE: ");
+         
+       // console.log(response.data.asset.curr);
+        var data = response.data;
+        console.log("asset: "+asset);
+        console.log("currency: "+currency);
+        
+       if(currency =="usd" || currency == "USD"){
+         switch(asset){
+           case "ethereum":
+            console.log("returning eth usd");
+            that.setConvertRate(data.ethereum.usd);
+            break;
+
+            case "wanchain":
+              console.log("returning wan usd");
+              that.setConvertRate(data.wanchain.usd);
+              break;
+         }
+
+       }else if(currency == "yen") {
+
+       } else if(currency == "myr"){
+
+       }
+        console.log(data);
+   
+      })
+      .catch(function (response) {
+
+          createNotification('error',response);
+          console.log(response);
+      });
     }
     
   
@@ -631,7 +695,7 @@ class walletStore {
     localStorage.setItem('wallets',JSON.stringify(localwallets));
     this.walletlist = localwallets;
     this.loadWallet();
-    //this.setSelectedWallet(publicaddress);
+    this.setSelectedWallet(publicaddress);
   }
 
  /* @action async SaveWallet(ownerId,walletname,seedphase,privatekey,derivepath,publicaddress,addresstype,wallettype,totalowners,totalsignatures,holders){
@@ -675,7 +739,7 @@ class walletStore {
 
   insertPrimaryAssetTokenList = async (seedphase,iscloud,defaultpublicaddress,defaultprivatekey) =>{
     console.log("instering primary assets");
-    console.log("LENGTH: "+self.primaryTokenAsset.length);
+
     if(self.primaryTokenAsset.length > 0){
       var promises = self.primaryTokenAsset.map(async (tokenitem,index)=>{
         var derivepath = BIP44PATH.ETH;
@@ -1456,7 +1520,9 @@ class walletStore {
   getTokenPrice = (assetcode) => {
     var price = 0;
     this.allTokenAsset.map(async(token,index) => {
-      if(token.AssetCode == assetcode) price = token.CurrentPrice;
+      if(token.AssetCode == assetcode){
+        price = token.CurrentPrice;
+      } 
     });
     return price;
   }
@@ -1468,6 +1534,7 @@ class walletStore {
     console.log("THIS SELECTED WALLET: "+this.selectedwallet.tokenassetlist);
     this.selectedwallet.tokenassetlist.map(async(tokenitem,index) =>{
       tokenassetcodelist += tokenitem.AssetCode + ",";
+      console.log("TOKEN ITEM TOKEN TYPE: "+tokenitem.TokenType);
       if(tokenitem.TokenType == "eth"){
         var web3 = new Web3(this.networkstore.selectedethnetwork.infuraendpoint  + this.infuraprojectid);
         web3.eth.getBalance(tokenitem.PublicAddress).then(balance => { 
@@ -1493,9 +1560,9 @@ class walletStore {
           self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
         });
         self.selectedassettokenlist.push(tokenitem);
-      }else if(tokenitem.TokenType == "wrc20"){
-        // var TokenInfo = tokenitem.TokenInfoList.find(x => x.Network == this.networkstore.selectedwannetwork.shortcode);
-        // TokenInfo = toJS(TokenInfo);
+      }/*else if(tokenitem.TokenType == "wrc20"){
+         var TokenInfo = tokenitem.TokenInfoList.find(x => x.Network == this.networkstore.selectedwannetwork.shortcode);
+         TokenInfo = toJS(TokenInfo);
         var CurrentNetworkAllTokenInfo = toJS(this.allTokenAsset).find(x => x.AssetCode == tokenitem.AssetCode);
         var TokenInfo = CurrentNetworkAllTokenInfo.TokenInfoList[0];
         console.log("toJS(this.allTokenAsset)", toJS(this.allTokenAsset));
@@ -1516,7 +1583,7 @@ class walletStore {
         }).catch(err => {
           console.log(err);
         });
-      }else if(tokenitem.TokenType == "wan"){
+      }*/else if(tokenitem.TokenType == "wan"){
         var TokenInfo = tokenitem.TokenInfoList.find(x => x.Network == this.networkstore.selectedwannetwork.shortcode);
         TokenInfo = toJS(TokenInfo);
         iWanUtils.getBalance("WAN",tokenitem.PublicAddress).then(res => {
@@ -1610,6 +1677,19 @@ class walletStore {
     */
     return `$${numberWithCommas(parseFloat(!isNaN(this.totalassetworth) ? this.totalassetworth : 0),true)}`;
   }
+  @computed get TotalWorthMYR(){
+   console.log("myr rate: ");
+   console.log(this.convertrate);
+   //return this.convertrate;
+    return `$${numberWithCommas(parseFloat(!isNaN(this.totalassetworth*this.convertrate) ? this.totalassetworth*this.convertrate : 0),true)}`;
+  }
+
+  toMYR = async () => {
+    console.log("GETTING rate...");
+    let response = await axios.get("http://api.openrates.io/latest?base=USD&symbols=MYR");
+    this.setConvertRate(response.data.rates.MYR);
+  }
+
 
   @action ExitMultiSigWallet(publicaddress,cb){
 
