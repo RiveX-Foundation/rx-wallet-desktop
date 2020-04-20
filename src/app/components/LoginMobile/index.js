@@ -29,7 +29,8 @@ import './index.less';
   mnemonicpassword: stores.walletStore.mnemonicpassword,
   password: stores.userRegistration.password,
   setSelectedWallet: publicaddress => stores.walletStore.setSelectedWallet(publicaddress),
-  toMYR: async() => stores.walletStore.toMYR()
+  toMYR: async() => stores.walletStore.toMYR(),
+  toCNY: async() => stores.walletStore.toCNY()
 }))
 
 @observer
@@ -59,7 +60,7 @@ class LoginMobile extends Component {
     this.props.setCountryCode("+60");
     this.props.setPassword("");
     this.props.setMobile("");
-
+    this.CNY();
     this.setState({
       countrycode: "+60",
       originallist: countrymobile,
@@ -114,20 +115,37 @@ class LoginMobile extends Component {
   MYR = async () => {
     await this.props.toMYR();
   }
+  CNY = async () => {
+    await this.props.toCNY();
+  }
 
   login = async () => {
      bcrypt.compare(this.state.mnemonicpassword, localStorage.getItem('password'), (err, res) => {
       if(res) {
        var wallet = JSON.parse(localStorage.getItem("wallets"));
        if(wallet!=null){
-        this.MYR();
         this.props.wsLogin();
         
-       // this.props.setSelectedWallet(wallet[0].publicaddress);
+      //  this.props.setSelectedWallet(wallet[0].publicaddress);
        } else {
-         this.MYR();
         this.props.wsLogin();
        }
+      /* wand.request('account_deleteall',()=>{
+
+       })*/
+       wand.request('wallet_lock', () => {
+       wand.request('wallet_unlock', { pwd: this.state.mnemonicpassword }, async (err, val) => {
+        if (err) {
+          message.error(intl.get('Login.wrongPassword'))
+          return;
+        }
+        // If the user DB is not the latest version, update user account DB
+        if (typeof val === 'object' && Object.prototype.hasOwnProperty.call(val, 'version')) {
+          await this.props.updateUserAccountDB(val.version);
+        }
+        
+      })
+    })
       
       } else {
         createNotification('error',"Invalid password");

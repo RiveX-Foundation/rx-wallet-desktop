@@ -1,5 +1,12 @@
 import Web3 from 'web3';
 const web3 = new Web3();
+export const WALLETID = {
+  NATIVE: 0x01,
+  LEDGER: 0x02,
+  TREZOR: 0x03,
+  KEYSTOREID: 0x05,
+  RAWKEY: 0x06,
+}
 
 export function fromWei(data) {
   return web3.utils.fromWei(data);

@@ -15,7 +15,7 @@ import menuFactoryService from '~/src/services/menuFactory'
 
 const logger = Logger.getLogger('controllers')
 const ipc = ipcMain
-
+const ethUtil = require('ethereumjs-util');
 // route consts
 const ROUTE_PHRASE = 'phrase'
 const ROUTE_WALLET = 'wallet'
@@ -104,7 +104,7 @@ ipc.on(ROUTE_PHRASE, (event, actionUni, payload) => {
 ipc.on(ROUTE_WALLET, async (event, actionUni, payload) => {
     let err
     const [action, id] = actionUni.split('#')
-
+    console.log(action);
     switch (action) {
         case 'lock':
             try {
@@ -181,8 +181,40 @@ ipc.on(ROUTE_WALLET, async (event, actionUni, payload) => {
                 break
             }
 
+            case 'signPersonalMessage':
+                {
+                    let ret = null;
+                    let { walletID, path, rawTx , privatekey} = payload;
+                    console.log(walletID, path, rawTx, privatekey);
+                   // let hdWallet = hdUtil.importPrivateKey(path,Buffer.from(privatekey,'hex'));
+                    //console.log(hdWallet);
+                    let hdWallet = hdUtil.getWalletSafe().getWallet(walletID);
+    
+                    logger.info('Sign signPersonalMessage:');
+                    logger.info('wallet ID:' + walletID + ', path:' + path + ', raw:' + rawTx);
+                    var test = ethUtil.toBuffer(rawTx.toString());
+
+                    if (hdWallet) {
+                        try {
+                            ret = await hdWallet.signMessage(path, test);
+                            console.log("signed msg: "+ret);
+                        } catch (e) {
+                            logger.error(e.message || e.stack);
+                            console.log('hdWallet.signMessage error:', e);
+                            err = e
+                        }
+                    } else {
+                        err = new Error('Can not found wallet.');
+                        console.log('hdWallet is undefine');
+                    }
+    
+                    sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, { err: err, data: ret })
+                    break
+                }
+
         case 'signTransaction':
             {
+                console.log("signing TX");
                 let sig = {};
                 let { walletID, path, rawTx } = payload;
                 let hdWallet = hdUtil.getWalletSafe().getWallet(walletID);
@@ -200,6 +232,7 @@ ipc.on(ROUTE_WALLET, async (event, actionUni, payload) => {
                     logger.error(e.message || e.stack)
                     err = e
                 }
+                console.log(sig);
 
                 sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, { err: err, data: sig })
                 break
@@ -418,23 +451,36 @@ ipc.on(ROUTE_ACCOUNT, (event, actionUni, payload) => {
 
             sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, { err: err, data: ret })
             break
+            
+        case 'deleteall':
+                try {
+                    ret = hdUtil.deleteAll("123456");
+                } catch (e) {
+                    logger.error(e.message || e.stack)
+                    err = e
+                }
+    
+                sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, { err: err, data: ret })
+                break
     }
 })
 
-/*
+
 ipc.on(ROUTE_TX, async (event, actionUni, payload) => {
     let ret, err
     const [action, id] = actionUni.split('#')
-
+    console.log(action);
+   
     switch (action) {
         case 'normal':
             try {
-                let { walletID, chainType, symbol, path, to, amount, gasPrice, gasLimit, nonce } = payload
-                let from = await hdUtil.getAddress(walletID, chainType, path)
-
+                console.log("NORMAL TX");
+                let { walletID, chainType, symbol, path, to, amount, gasPrice, gasLimit, nonce, from } = payload
+                //let from = await hdUtil.getAddress(walletID, chainType, path)
+                console.log(from);
                 let input = {
                     "symbol": symbol,
-                    "from": '0x' + from.address,
+                    "from":  from,
                     "to": to,
                     "amount": amount,
                     "gasPrice": gasPrice,
@@ -508,16 +554,28 @@ ipc.on(ROUTE_TX, async (event, actionUni, payload) => {
             break;
     }
 })
-*/
+
 
 ipc.on("system", async (event, actionUni, payload) => {
     let ret, err
     const [action, id] = actionUni.split('#')
     switch (action) {
         case 'reload':
-        let mainWin = Windows.getByType('main')
-        mainWin.reload();
-        break;
+      //  let mainWin = Windows.getByType('main')
+            app.relaunch();
+            app.exit(0);
+        //mainWin.reload();
+            break
+        case 'getDAppInjectFile':
+            let ret = "";
+            console.log("GETTING DAPP INJECT FILE");
+            if (setting.isDev) {
+                ret = `file://${__dirname}/../modals/dAppInject.js`;
+            } else {
+                ret = `file://${__dirname}/modals/dAppInject.js`
+            }
+            sendResponse(["system", [action, id].join('#')].join('_'), event, { err: err, data: ret })
+            break
     }
 });
 

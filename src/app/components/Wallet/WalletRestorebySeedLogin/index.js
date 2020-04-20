@@ -90,6 +90,38 @@ class WalletRestorebySeedLogin extends Component {
       createNotification('error',intl.get('Error.Passwordlonger'));
     }
     else{ //encrypt here
+      var seed = this.state.seedphase;
+      var pass = this.state.password;
+      wand.request('phrase_import', { phrase: seed, pwd:pass }, err => {
+        if (err) {
+          message.error(intl.get('Register.writeSeedPhraseToDatabaseFailed'));
+          return;
+        }
+        wand.request('wallet_unlock', { pwd: pass }, async (err, val) => {
+          if (err) {
+            console.log(intl.get('Register.unlockWalletFailed'), err);
+          } /*else {
+            try {
+              let [wanAddrInfo, ethAddrInfo, btcMainAddInfo] = await Promise.all([
+                createFirstAddr(WALLETID.NATIVE, 'WAN', `${WANPATH}0`, 'Account1'),
+                createFirstAddr(WALLETID.NATIVE, 'ETH', `${ETHPATH}0`, 'ETH-Account1'),
+                createBTCAddr(chainId === 1 ? BTCPATH_MAIN : BTCPATH_TEST, 0),
+              ]);
+              addWANAddress(wanAddrInfo);
+              addETHAddress(ethAddrInfo);
+              addBTCAddress(btcMainAddInfo);
+              this.props.setMnemonicStatus(true);
+              this.props.setAuth(true);
+              this.setState({ loading: false });
+            } catch (err) {
+              console.log('createFirstAddr:', err);
+              this.setState({ loading: false });
+              message.warn(intl.get('Register.createFirstAddr'));
+            }
+          }*/
+        })
+      });
+    
       bcrypt.hash(this.state.password, 10, (err, hash) => {
       this.props.setPassword(hash);
       localStorage.setItem('password',hash);

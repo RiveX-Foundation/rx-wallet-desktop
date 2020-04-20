@@ -41,7 +41,9 @@ const WALLET_ID = 0x02;
   GetPrimaryTokenAssetByNetwork: () => stores.walletStore.GetPrimaryTokenAssetByNetwork(),
   GetAllTokenAssetByNetwork:() => stores.walletStore.GetAllTokenAssetByNetwork(),
   getTotalWorthMYR:stores.walletStore.TotalWorthMYR,
-  convertRate:stores.walletStore.convertRate
+  convertRate:stores.walletStore.convertRate,
+  convertRateCNY:stores.walletStore.convertRateCNY,
+  getTotalWorthCNY:stores.walletStore.TotalWorthCNY
 }))
 
 @observer
@@ -50,12 +52,16 @@ class SelectedWallet extends Component {
   state = {
     trxlist : [],
     modalIsOpen:false,
-    myrrate:0
+    myrrate:0,
+    convertRate:0,
+    convertRateCNY:0
   }
 
   componentDidMount(){
     this.props.GetPrimaryTokenAssetByNetwork();
     this.props.GetAllTokenAssetByNetwork();
+    this.setState({convertRate:this.props.convertRate});
+    this.setState({convertRateCNY:this.props.convertRateCNY});
     //this.props.getTokenSparkLineByAssetCode(this.props.selectedTokenAsset.SparklineAssetCode);
   }
   
@@ -117,6 +123,11 @@ class SelectedWallet extends Component {
   getTotalWorthMyr = () => {
     return this.props.getTotalWorthMYR;
   }
+  getTotalWorthCny = () => {
+    console.log("GETTINT TOAL WORTH CNY");
+    console.log(this.props.getTotalWorthCNY);
+    return this.props.getTotalWorthCNY;
+  }
   
   getPublicKey = () => {
     console.log("GET PUBLIC KEY");
@@ -170,6 +181,12 @@ class SelectedWallet extends Component {
                 <div className="currency">{this.props.currencycode}</div>
               </div>
               }
+               { this.props.currencycode == "CNY" &&
+              <div className="totalworth">
+                {<div className="amount">{this.getTotalWorthCny()}</div>}
+                <div className="currency">{this.props.currencycode}</div>
+              </div>
+              }
             </div>
 
             {
@@ -210,7 +227,11 @@ class SelectedWallet extends Component {
 
                            {
                             this.props.currencycode == "MYR" &&
-                            <div className="totalcurrency">${numberWithCommas(parseFloat(!isNaN((item.TokenPrice* item.TokenBalance)*this.props.convertRate) ? (item.TokenPrice * item.TokenBalance)*this.props.convertRate : 0),true)} {this.props.currencycode}</div>
+                            <div className="totalcurrency">${numberWithCommas(parseFloat(!isNaN((item.TokenPrice* item.TokenBalance)*this.state.convertRate) ? (item.TokenPrice * item.TokenBalance)*this.state.convertRate : 0),true)} {this.props.currencycode}</div>
+                          }
+                           {
+                            this.props.currencycode == "CNY" &&
+                            <div className="totalcurrency">${numberWithCommas(parseFloat(!isNaN((item.TokenPrice* item.TokenBalance)*this.state.convertRateCNY) ? (item.TokenPrice * item.TokenBalance)*this.state.convertRateCNY : 0),true)} {this.props.currencycode}</div>
                           }
                           
                         </div>

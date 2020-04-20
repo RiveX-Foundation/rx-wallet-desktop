@@ -241,6 +241,9 @@ const en_US = {
 
     "Success.Success":"Success",
     "Success.Valid":"Valid password",
-    "Success.ValidOTP":"Valid OTP"
+    "Success.ValidOTP":"Valid OTP",
+    'dAppConfirm.sign': 'Do you allow this DApp to sign with your wallet?',
+    'dAppConfirm.send': 'Do you allow this DApp to sendTransaction with your wallet?',
+    'dAppConfirm.warn': 'This operation may cause changes to the assets in your wallet.'
 }
 export default en_US;

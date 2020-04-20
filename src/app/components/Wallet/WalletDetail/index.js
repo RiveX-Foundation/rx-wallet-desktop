@@ -235,7 +235,7 @@ class WalletDetail extends Component {
                 <div className="chartvalue-high">{dataMax}</div>
                 <div className="chartvalue-low">{dataMin}</div>
               </div>
-              <Button className="butreceive button" onClick={this.receiveToken} style={{marginRight:"20px"}}><span><img src={buttonreceive} /></span><span style={{marginLeft:"10px"}}>{intl.get('Token.Receive')}</span></Button>
+              <Button className="butreceive button" onClick={this.receiveToken} style={{marginRight:"20px",marginTop:"35px"}}><span><img src={buttonreceive} /></span><span style={{marginLeft:"10px"}}>{intl.get('Token.Receive')}</span></Button>
               <Button className="butsend button" onClick={this.transferToken}><span><img src={buttonsend} /></span><span style={{marginLeft:"10px"}}>{intl.get('Token.Send')}</span></Button>
             </div>
             {

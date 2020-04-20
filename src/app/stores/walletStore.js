@@ -64,6 +64,7 @@ class walletStore {
   @observable primaryTokenAsset = [];
   @observable allTokenAsset = [];
   @observable convertrate = 0;
+  @observable convertratecny = 0;
   @observable selectedassettokenlist = [];
   @observable totalassetworth = 0;
   @observable selectedTokenAsset = {};
@@ -100,8 +101,6 @@ class walletStore {
 
   @computed get selectedwalletlist(){
     // console.log("selectedwalletlist", JSON.stringify(this.walletlist));
-    console.log("WALLET LIST: "+walletlist);
-    console.log("GET SELECTED WALLET", this.selectedwallettype);
     var walletlist = this.walletlist.filter(x => x.wallettype == this.selectedwallettype);
     console.log(walletlist);
     if(walletlist == null) walletlist = [];
@@ -114,8 +113,12 @@ class walletStore {
     this.mfaenabled = status;
   }
   @action setConvertRate(rate){
-    console.log("rate set at: "+rate);
+    console.log("MYR rate set at: "+rate);
     this.convertrate=rate;
+  }
+  @action setConvertRateCNY(rate){
+    console.log("CNY rate set at: "+rate);
+    this.convertratecny=rate;
   }
 
 
@@ -131,6 +134,9 @@ class walletStore {
     }
     @computed get convertRate(){
       return this.convertrate;
+    }
+    @computed get convertRateCNY(){
+      return this.convertratecny;
     }
 
     @action async getConvertRate(tokenasset,currency){
@@ -349,6 +355,7 @@ class walletStore {
 
   @action setSelectedWallet(publicaddress){
     this.selectedwallet = this.walletlist.find(x=>x.publicaddress == publicaddress);
+    console.log("SETTING SELECTED WALLET: "+this.selectedwallet);
     this.loadTokenAssetList();
     //this.current = "walletdetail";
   }
@@ -1683,11 +1690,23 @@ class walletStore {
    //return this.convertrate;
     return `$${numberWithCommas(parseFloat(!isNaN(this.totalassetworth*this.convertrate) ? this.totalassetworth*this.convertrate : 0),true)}`;
   }
+  @computed get TotalWorthCNY(){
+    console.log("cny rate: ");
+    console.log(this.convertratecny);
+    //return this.convertrate;
+     return `$${numberWithCommas(parseFloat(!isNaN(this.totalassetworth*this.convertratecny) ? this.totalassetworth*this.convertratecny : 0),true)}`;
+   }
 
   toMYR = async () => {
     console.log("GETTING rate...");
     let response = await axios.get("http://api.openrates.io/latest?base=USD&symbols=MYR");
     this.setConvertRate(response.data.rates.MYR);
+  }
+
+  toCNY = async () => {
+    console.log("GETTING rate CNY...");
+    let response = await axios.get("http://api.openrates.io/latest?base=USD&symbols=CNY");
+    this.setConvertRateCNY(response.data.rates.CNY);
   }
 
 

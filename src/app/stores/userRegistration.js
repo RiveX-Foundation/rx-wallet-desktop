@@ -398,6 +398,7 @@ class UserRegistration {
 
     this.setIsLogin(true);
     this.setUserAccountExist(true);
+    
 
     this.walletstore.clearSelectedWallet();
     this.walletstore.setselectedwallettype('local');

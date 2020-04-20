@@ -17,6 +17,7 @@ class WalletBackend extends EventEmitter {
     async init(config) {
 
         this.config = Object.assign(configService.getConfig(), config)
+        console.log(this.config);
         try {
             this.logger.info('start creating walletbackend')
             this.sdk = new walletCore(this.config)
