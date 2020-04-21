@@ -6,12 +6,7 @@ import intl from 'react-intl-universal';
 import { WALLETID } from '../../utils/support';
 import { getNonce, getGasPrice, getChainId, createNotification } from '../../utils/helper';
 import { BigNumber } from 'bignumber.js';
-import buttonback from 'static/image/icon/back.png';
-import buttonartboard3 from 'static/image/graphic/artboard3.png';
-import { toJS } from 'mobx';
 
-import style from './index.less';
-import { add } from 'winston';
 
 const pu = require('promisefy-util');
 const WAN_PATH = "m/44'/5718350'/0'/0/0";
