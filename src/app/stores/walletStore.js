@@ -881,7 +881,7 @@ class walletStore {
 
   async CreateEthAddress(){
     console.log("seed phrase in string "+this.decrypt(this.seedphaseinstring));
-    var derivepath = BIP44PATH.ETH;
+    var derivepath = BIP44PATH.WAN;
     var walletkey = await this.GenerateBIP39Address(derivepath + "0", this.seedphaseinstringtemp);
     this.privateaddress = walletkey.privateaddress;
     this.publicaddress = walletkey.publicaddress;
@@ -923,13 +923,12 @@ class walletStore {
 
   async CreateEthAddressByPrivateKey(){
     try{
-      const derivepath = BIP44PATH.ETH;
+      const derivepath = BIP44PATH.WAN;
       var walletkey = await this.GenerateAddressByPrivateKey(this.restoreprivatekey);
       this.privateaddress = this.restoreprivatekey;
       this.publicaddress = walletkey.publicaddress;
-      var seedval = "";
-
-      this.SaveWallet(this.userstore.userid,this.walletname,seedval,this.privateaddress,derivepath,this.publicaddress,"eth","basicwallet",0,0,[]);
+      var seedval = "null";
+      await this.SaveWallet(this.walletname,seedval,this.privateaddress,derivepath,this.publicaddress,"eth","local");
       this.setCurrent("walletcreated");
     }catch(e){
       console.log(e);

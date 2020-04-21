@@ -5,6 +5,7 @@ import intl from 'react-intl-universal';
 import { toJS } from "mobx";
 
 const bip39 = require('bip39');
+var bcrypt = require('bcryptjs');
 
 import './index.less';
 import { setDefaultWordlist } from 'bip39';
@@ -32,7 +33,7 @@ class WalletCreation extends Component {
     seedphase : [],
     mnemonic : "",
     seedphaseel : null,
-    nextbuttonstyle : {display:"none"},
+    nextbuttonstyle : {display:"inline-block"},
     mnemonicpassword:"",
     mnemonicpasswordconfirm:""
   }
@@ -84,32 +85,29 @@ class WalletCreation extends Component {
   }
 
   next = () => {
-    if(this.state.mnemonicpassword.length < 6 && this.state.mnemonicpasswordconfirm.length < 6){
-      createNotification('error','Password must be more than 6 characters long');
-      this.setState({nextbuttonstyle : {display:"none"}});
-      return;
-    }else {
-      let mnemonic = this.state.mnemonic;
-      this.props.setPendingPassword(this.state.mnemonicpassword);
-      this.props.setSeedPhase(mnemonic.split(" "));
-      this.props.setSeedPhaseInString(mnemonic,this.state.mnemonicpassword);
-      this.props.setCurrent("walletkeyinseed");
-      this.props.setcurrentReg("walletkeyinseed");
-    }
+
+    bcrypt.compare(this.state.mnemonicpassword, localStorage.getItem('password'), (err, res) => {
+      if(res) {
+
+        let mnemonic = this.state.mnemonic;
+        this.props.setPendingPassword(this.state.mnemonicpassword);
+        this.props.setSeedPhase(mnemonic.split(" "));
+        this.props.setSeedPhaseInString(mnemonic,this.state.mnemonicpassword);
+        this.props.setCurrent("walletkeyinseed");
+        this.props.setcurrentReg("walletkeyinseed");
+      } else {
+        createNotification('error',"Invalid password");
+      } 
+    });
    
   }
   inputChanged = e => {
-    console.log("switching: "+ e.target.id);
     switch(e.target.id){
       case "password":
-        this.setState({ mnemonicpassword: e.target.value },() => {this.validatepassword();});
+        this.setState({ mnemonicpassword: e.target.value });
        // this.props.setPassword(e.target.value);
         break;
-      case "confirmpassword":
-        console.log("CONFIRMING PASSWORD");
-        this.setState({ mnemonicpasswordconfirm: e.target.value },() => {this.validatepassword();});
-       // this.props.setPasswordConfirm(e.target.value);
-        break;
+
       }
   }
 
@@ -154,13 +152,11 @@ class WalletCreation extends Component {
               
               <div className="inputpanel">
             <center>
+              { 
               <div className="panelwrapper borderradiusfull">
                 <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px"}} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
               </div>
-
-              <div className="panelwrapper borderradiusfull">
-                <Input.Password id="confirmpassword" style={{marginLeft:"-40px",paddingLeft:"0px"}} placeholder={intl.get('Register.ConfirmPassword')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
-              </div>
+               }
             </center>
           </div>
           <div><Button style={nextbuttonstyle} className="curvebutton"  onClick={this.next} >{intl.get('Wallet.IHaveBackupMySeed')}</Button></div>

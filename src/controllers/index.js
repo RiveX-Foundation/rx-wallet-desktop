@@ -184,19 +184,16 @@ ipc.on(ROUTE_WALLET, async (event, actionUni, payload) => {
             case 'signPersonalMessage':
                 {
                     let ret = null;
-                    let { walletID, path, rawTx , privatekey} = payload;
-                    console.log(walletID, path, rawTx, privatekey);
-                   // let hdWallet = hdUtil.importPrivateKey(path,Buffer.from(privatekey,'hex'));
-                    //console.log(hdWallet);
+                    let { walletID, path, rawTx } = payload;
+                    console.log(walletID, path, rawTx);
                     let hdWallet = hdUtil.getWalletSafe().getWallet(walletID);
     
                     logger.info('Sign signPersonalMessage:');
                     logger.info('wallet ID:' + walletID + ', path:' + path + ', raw:' + rawTx);
-                    var test = ethUtil.toBuffer(rawTx.toString());
 
                     if (hdWallet) {
                         try {
-                            ret = await hdWallet.signMessage(path, test);
+                            ret = await hdWallet.signMessage(path, ethUtil.toBuffer(rawTx));
                             console.log("signed msg: "+ret);
                         } catch (e) {
                             logger.error(e.message || e.stack);
@@ -264,6 +261,19 @@ ipc.on(ROUTE_WALLET, async (event, actionUni, payload) => {
                 sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, { err: err, data: true })
                 break
             }
+            case 'setUserTblVersion':
+                try {
+                    const latestVersion = walletBackend.config.dbExtConf.userTblVersion;// get version from config.js file
+                    logger.info('Set user DB version:' + latestVersion);
+                    hdUtil.setUserTableVersion(latestVersion);
+                    sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, { err: err, data: true })
+                } catch (e) {
+                    logger.error(e.message || e.stack)
+                    err = e
+                    sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, { err: err, data: false })
+                }
+    
+                break
     }
 })
 
@@ -327,6 +337,23 @@ ipc.on(ROUTE_ADDRESS, async (event, actionUni, payload) => {
 
             sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, { err: err, data: balance })
             break
+
+        case 'scanMultiOTA':
+                {
+                    try {
+                        const { path } = payload;
+                        if (path.length > 0) {
+                            path.forEach((v) => {
+                                ccUtil.scanOTA(v[0], v[1]);
+                            });
+                        }
+                    } catch (e) {
+                        logger.error(e.message || e.stack)
+                        err = e
+                    }
+                    sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, { err: err, data: { status: 'Opened' } })
+                }
+                break
 
         case 'isWanAddress':
             let ret;
@@ -474,34 +501,37 @@ ipc.on(ROUTE_TX, async (event, actionUni, payload) => {
     switch (action) {
         case 'normal':
             try {
-                console.log("NORMAL TX");
-                let { walletID, chainType, symbol, path, to, amount, gasPrice, gasLimit, nonce, from } = payload
-                //let from = await hdUtil.getAddress(walletID, chainType, path)
-                console.log(from);
+                let { walletID, chainType, symbol, path, to, amount, gasPrice, gasLimit, nonce, data, satellite } = payload
+                let from = await hdUtil.getAddress(walletID, chainType, path)
+                let fromAddr = from.address;
+                if (fromAddr.indexOf('0x') === -1) {
+                    fromAddr = '0x' + fromAddr;
+                }
                 let input = {
-                    "symbol": symbol,
-                    "from":  from,
-                    "to": to,
-                    "amount": amount,
-                    "gasPrice": gasPrice,
-                    "gasLimit": gasLimit,
-                    "BIP44Path": path,
-                    "walletID": walletID,
-                    "nonce": nonce
+                    symbol: symbol,
+                    from: fromAddr,
+                    to: to,
+                    amount: amount,
+                    gasPrice: gasPrice,
+                    gasLimit: gasLimit,
+                    BIP44Path: path,
+                    walletID: walletID,
+                    nonce: nonce,
+                    data: data,
+                    satellite: satellite
                 }
 
                 logger.info('Normal transaction: ' + JSON.stringify(input));
 
                 let srcChain = global.crossInvoker.getSrcChainNameByContractAddr(symbol, chainType);
                 ret = await global.crossInvoker.invokeNormalTrans(srcChain, input);
-                logger.info('Transaction hash: ' + ret);
+                logger.info('Transaction hash: ' + JSON.stringify(ret));
             } catch (e) {
-                logger.error(e.message || e.stack)
+                logger.error('Send transaction failed: ' + e.message || e.stack)
                 err = e
             }
-
             sendResponse([ROUTE_TX, [action, id].join('#')].join('_'), event, { err: err, data: ret })
-            break
+            break;
 
         case 'raw':
             try {

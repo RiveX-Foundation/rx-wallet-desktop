@@ -48,6 +48,7 @@ const en_US = {
 
     'Wallet.CreateWallet': 'Create Wallet',
     'Wallet.BasicWallet': 'Basic Wallet',
+    "Wallet.LocalWallet": "Local Wallet",
     'Wallet.SharedWallet': 'Shared Wallet',
     'Wallet.ImportWallet': 'Import Wallet',
     'Wallet.Trezor': 'Trezor',

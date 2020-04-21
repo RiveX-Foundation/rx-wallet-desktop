@@ -81,6 +81,7 @@ class WalletListing extends Component {
       selectedwalletaddress:walletpublicaddress
     },()=>{
       this.props.setSelectedWallet(walletpublicaddress);
+      localStorage.setItem("selectedwallet",walletpublicaddress);
       this.props.setCurrent("selectedwallet");
       var firstele = document.getElementById("rvxwallet_0");
       this.setState({

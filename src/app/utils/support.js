@@ -7,9 +7,24 @@ export const WALLETID = {
   KEYSTOREID: 0x05,
   RAWKEY: 0x06,
 }
+export const WANPATH = "m/44'/5718350'/0'/0/";
 
 export function fromWei(data) {
   return web3.utils.fromWei(data);
+}
+export function formatNum (num) {
+  if (num && num !== 'N/A') {
+    if (num < 1) {
+      return num;
+    }
+    let tempNum = new BigNumber(num).toString();
+    let [left, right] = tempNum.split('.');
+    let tempLeft = left.split('').reverse().join('').match(/(\d{1,3})/g);
+    let tempRight = right ? `.${right}` : '';
+    return tempLeft.join(',').split('').reverse().join('') + tempRight;
+  } else {
+    return num;
+  }
 }
 
 export function toWei(data, unit) {

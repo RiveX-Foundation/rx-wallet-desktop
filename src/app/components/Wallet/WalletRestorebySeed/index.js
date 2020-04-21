@@ -82,7 +82,7 @@ class WalletRestorebySeed extends Component {
   }
 
   back = () => {
-    this.props.setCurrent("wallettypeselection");
+    this.props.setCurrent("importwallettypeselection");
   }
 
   render() {

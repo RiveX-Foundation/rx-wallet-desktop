@@ -4,6 +4,8 @@ import { observer, inject } from 'mobx-react';
 import { toJS } from "mobx";
 import intl from 'react-intl-universal';
 import buttonback from 'static/image/icon/back.png';
+import {WALLETID,WANPATH} from '../../../utils/support'
+import { createWANAddr } from '../../../utils/helper';
 var bcrypt = require('bcryptjs');
 
 const { TextArea } = Input;
@@ -21,7 +23,8 @@ import { setDefaultWordlist } from 'bip39';
   wsLogin : () => stores.userRegistration.wsLogin(),
   setRequestSignIn : val => stores.session.setRequestSignIn(val),
   setPassword: password => stores.walletStore.setPassword(password),
-  clearPendingPassword : () => stores.walletStore.clearPendingPassword()
+  clearPendingPassword : () => stores.walletStore.clearPendingPassword(),
+  addAddress: newAddr => stores.wanAddress.addAddress(newAddr)
 }))
 
 @observer
@@ -99,11 +102,32 @@ class WalletKeyInSeed extends Component {
   }
 
   next = () => {
+    const { addAddress } = this.props;
+    console.log("CREATING NEW WALLET");
+    try {
+      createWANAddr().then(addressInfo => {
+        console.log(addressInfo);
+        addAddress(addressInfo);
+        wand.request('address_scanMultiOTA', { path: [[WALLETID.NATIVE, addressInfo.path]] }, function (err, res) {
+          if (err) {
+            console.log('Open OTA scanner failed:', err);
+          }
+        });
+        console.log("new acc created succ");
+      });
+    } catch (e) {
+      console.log('err:', e);
+      console.log("failed to create new acc");
+    };
     //this.validateseedphase();
-    bcrypt.hash(this.state.pendingpassword, 10, (err, hash) => {
+    /*bcrypt.hash(this.state.pendingpassword, 10, (err, hash) => {
       this.props.setPassword(hash);
       localStorage.setItem('password',hash);
-      });
+     
+      
+    
+
+      });*/
     this.props.CreateEthAddress();
     this.props.setCurrent("walletcreated");
     this.props.wsLogin();

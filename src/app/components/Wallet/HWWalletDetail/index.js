@@ -200,6 +200,7 @@ class HWWalletDetail extends Component {
               localStorage.setItem('wallets',JSON.stringify(walletlist));
               this.props.loadWallet();
               this.props.setSelectedWallet(wallet.publicaddress);
+              localStorage.setItem("selectedwallet",wallet.publicaddress);
               this.props.setCurrent("selectedwallet");
             }
           })

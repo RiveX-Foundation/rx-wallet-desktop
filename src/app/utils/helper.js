@@ -2,6 +2,8 @@ import { fromWei } from 'utils/support';
 import { BigNumber } from 'bignumber.js';
 import intl from 'react-intl-universal';
 import {NotificationContainer, NotificationManager} from 'react-notifications';
+import wanUtil from 'wanchain-util';
+import {WALLETID, WANPATH } from './support';
 
 let emitterHandlers = {};
 
@@ -31,6 +33,109 @@ export const createNotification = (type,message) => {
 
 export const getDatefromTimestamp = function (timestamp){
   return new Date(timestamp*1000);
+}
+export const openScanOTA = function (path) {
+  return new Promise((resolve, reject) => {
+    wand.request('address_scanMultiOTA', { path }, function (err, res) {
+      if (err) {
+        console.log('Open OTA scanner failed:', err);
+        return reject(err);
+      } else {
+        return resolve();
+      }
+    });
+  })
+}
+
+export const getNewAccountName = function (chainID, prefix) {
+  return new Promise((resolve, reject) => {
+    wand.request('address_getNewNameForNativeAccount', { chainID, prefix }, (err, name) => {
+      if (err) {
+        console.log(`Get new name failed`, err)
+        return reject(err)
+      } else {
+        return resolve(name);
+      }
+    })
+  })
+}
+
+export const getNewPathIndex = function (chainID, pathForm, walletID) {
+  return new Promise((resolve, reject) => {
+    wand.request('address_getNewPathIndex', { chainID, pathForm, walletID }, (err, index) => {
+      if (err) {
+        console.log(`Get new path index failed`, err)
+        return reject(err)
+      } else {
+        return resolve(index);
+      }
+    })
+  })
+}
+
+export const createWANAddr = async function () {
+  let index = await getNewPathIndex(5718350, WANPATH, WALLETID.NATIVE);
+  let path = `${WANPATH}${index}`;
+  return new Promise((resolve, reject) => {
+    wand.request('address_getOne', { walletID: WALLETID.NATIVE, chainType: 'WAN', path: path }, async (err, val_address_get) => {
+      if (!err) {
+        let name = await getNewAccountName(5718350, 'Account');
+        wand.request('account_create', { walletID: WALLETID.NATIVE, path: path, meta: { name, addr: `0x${val_address_get.address}`.toLowerCase(), waddr: `0x${val_address_get.waddress}`.toLowerCase() } }, (err, val_account_create) => {
+          if (!err && val_account_create) {
+            let addressInfo = {
+              start: index,
+              name,
+              path,
+              address: wanUtil.toChecksumAddress(`0x${val_address_get.address}`),
+              waddress: wanUtil.toChecksumOTAddress(`0x${val_address_get.waddress}`),
+            }
+            resolve(addressInfo);
+          } else {
+            reject(err);
+          }
+        });
+      } else {
+        reject(err);
+      }
+    });
+  })
+}
+
+
+export const createFirstAddr = function (walletID, chainType, path, name) {
+  return new Promise((resolve, reject) => {
+    wand.request('address_getOne', { walletID, chainType, path }, (err, val_address_get) => {
+      if (!err) {
+        let meta = { name, addr: `0x${val_address_get.address}` };
+        if (chainType === 'WAN') {
+          meta.waddr = `0x${val_address_get.waddress}`.toLowerCase();
+        }
+        wand.request('account_create', { walletID, path, meta }, (err, val_account_create) => {
+          if (!err && val_account_create) {
+            let addressInfo;
+            if (chainType === 'WAN') {
+              addressInfo = {
+                start: 0,
+                address: wanUtil.toChecksumAddress(`0x${val_address_get.address}`),
+                waddress: (`0x${val_address_get.waddress}`)
+              }
+
+              // Scan new account
+              openScanOTA([[1, path]]);
+            } else {
+              addressInfo = {
+                start: 0,
+                address: `0x${val_address_get.address}`
+              }
+            }
+            resolve(addressInfo);
+          } else {
+            reject(err);
+          }
+        });
+      }
+    });
+  })
 }
 
 
@@ -155,6 +260,50 @@ export const isSdkReady = function () {
     });
   });
 };
+
+export const getTypeByWalletId = function (wid) {
+  let type
+  switch (wid) {
+    case WALLETID.NATIVE:
+      type = 'normal';
+      break;
+    case WALLETID.LEDGER:
+      type = 'ledger';
+      break;
+    case WALLETID.TREZOR:
+      type = 'trezor';
+      break;
+    case WALLETID.KEYSTOREID:
+      type = 'import';
+      break;
+    case WALLETID.RAWKEY:
+      type = 'rawKey';
+      break;
+  }
+  return type;
+}
+
+export const getWalletIdByType = function (type) {
+  let ID
+  switch (type) {
+    case 'normal':
+      ID = WALLETID.NATIVE;
+      break;
+    case 'ledger':
+      ID = WALLETID.LEDGER;
+      break;
+    case 'trezor':
+      ID = WALLETID.TREZOR;
+      break;
+    case 'import':
+      ID = WALLETID.KEYSTOREID;
+      break;
+    case 'rawKey':
+      ID = WALLETID.RAWKEY;
+      break;
+  }
+  return ID;
+}
 
 export const checkAddrType = function (addr, addrInfo) {
   let type = false;

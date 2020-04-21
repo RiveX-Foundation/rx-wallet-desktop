@@ -4,6 +4,8 @@ import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
 import { createNotification } from 'utils/helper';
 import buttonback from 'static/image/icon/back.png';
+import { createFirstAddr } from '../../../utils/helper';
+import {WALLETID,WANPATH} from '../../../utils/support'
 var bcrypt = require('bcryptjs');
 
 const { TextArea } = Input;
@@ -22,6 +24,7 @@ import { setDefaultWordlist } from 'bip39';
   seedphase: stores.walletStore.seedphase,
   ethaddress: stores.walletStore.ethaddress,
   language: stores.languageIntl.language,
+  addWANAddress: newAddr => stores.wanAddress.addAddress(newAddr),
   wsLogin : () => stores.userRegistration.wsLogin(),
 }))
 
@@ -92,33 +95,33 @@ class WalletRestorebySeedLogin extends Component {
     else{ //encrypt here
       var seed = this.state.seedphase;
       var pass = this.state.password;
+      const { addWANAddress } = this.props
       wand.request('phrase_import', { phrase: seed, pwd:pass }, err => {
         if (err) {
-          message.error(intl.get('Register.writeSeedPhraseToDatabaseFailed'));
+          console.log("failed to import: "+err)
           return;
         }
         wand.request('wallet_unlock', { pwd: pass }, async (err, val) => {
           if (err) {
-            console.log(intl.get('Register.unlockWalletFailed'), err);
-          } /*else {
+            console.log("registration failed"+ err);
+          } else {
             try {
-              let [wanAddrInfo, ethAddrInfo, btcMainAddInfo] = await Promise.all([
-                createFirstAddr(WALLETID.NATIVE, 'WAN', `${WANPATH}0`, 'Account1'),
-                createFirstAddr(WALLETID.NATIVE, 'ETH', `${ETHPATH}0`, 'ETH-Account1'),
-                createBTCAddr(chainId === 1 ? BTCPATH_MAIN : BTCPATH_TEST, 0),
+              let [wanAddrInfo] = await Promise.all([
+                createFirstAddr(WALLETID.NATIVE, 'WAN', `${WANPATH}0`, 'Account1')
+               // createFirstAddr(WALLETID.NATIVE, 'ETH', `${ETHPATH}0`, 'ETH-Account1')
               ]);
               addWANAddress(wanAddrInfo);
-              addETHAddress(ethAddrInfo);
-              addBTCAddress(btcMainAddInfo);
-              this.props.setMnemonicStatus(true);
-              this.props.setAuth(true);
+             // addETHAddress(ethAddrInfo);
+              //addBTCAddress(btcMainAddInfo);
+             // this.props.setMnemonicStatus(true);
+              //this.props.setAuth(true);
               this.setState({ loading: false });
             } catch (err) {
               console.log('createFirstAddr:', err);
-              this.setState({ loading: false });
-              message.warn(intl.get('Register.createFirstAddr'));
+             // this.setState({ loading: false });
+             // message.warn(intl.get('Register.createFirstAddr'));
             }
-          }*/
+          }
         })
       });
     

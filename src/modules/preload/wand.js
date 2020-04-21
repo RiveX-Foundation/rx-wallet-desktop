@@ -4,6 +4,7 @@ const EventEmitter = require('events')
 const { ipcRenderer, remote: { Menu }, clipboard, shell } = require('electron')
 const routes = require('./routes')
 const { postMessage } = require('./util')
+const { btcUtil, ccUtil } = require('wanchain-js-sdk');
 
 module.exports = (function() {
     let instance
@@ -33,7 +34,7 @@ module.exports = (function() {
                 _callbacks[route][action][cbID] = cb
                 endpoint = endpoint + '#' + cbID
             }
-
+    
             postMessage({
                 _type: 'renderer_makeRequest',
                 endpoint,
@@ -42,7 +43,6 @@ module.exports = (function() {
         }
 
         function _wndMsgHandler(event) {
-
             let msg
             try {
                 msg = JSON.parse(event.data)
@@ -63,7 +63,7 @@ module.exports = (function() {
                 ) 
             {
                 if (_type === 'renderer_windowMessage') {
-                    console.log(endpoint);
+                    
                     const [route, actionUni] = endpoint.split('_')
                     const [action, cbID] = actionUni.split('#')
                     const { err, data } = payload
@@ -126,6 +126,10 @@ module.exports = (function() {
             emitter: _emitter,
 
             shell: shell,
+
+            btcUtil: btcUtil,
+
+            ccUtil: ccUtil,
 
             isDev: process.env.NODE_ENV === 'development'
         }

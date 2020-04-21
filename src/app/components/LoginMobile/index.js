@@ -131,8 +131,10 @@ class LoginMobile extends Component {
         this.props.wsLogin();
        }
       /* wand.request('account_deleteall',()=>{
+         console.log("deleting all");
 
        })*/
+
        wand.request('wallet_lock', () => {
        wand.request('wallet_unlock', { pwd: this.state.mnemonicpassword }, async (err, val) => {
         if (err) {

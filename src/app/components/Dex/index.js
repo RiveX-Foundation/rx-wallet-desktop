@@ -4,29 +4,35 @@ import { Input, Radio, Icon, Tooltip, Button } from 'antd';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
 import { WALLETID } from '../../utils/support';
-import { getNonce, getGasPrice, getChainId } from '../../utils/helper';
+import { getNonce, getGasPrice, getChainId, createNotification } from '../../utils/helper';
 import { BigNumber } from 'bignumber.js';
 import buttonback from 'static/image/icon/back.png';
 import buttonartboard3 from 'static/image/graphic/artboard3.png';
+import { toJS } from 'mobx';
 
 import style from './index.less';
+import { add } from 'winston';
 
 const pu = require('promisefy-util');
-const WAN_PATH = "m/44'/5718350'/0'";
+const WAN_PATH = "m/44'/5718350'/0'/0/0";
+//const WAN_PATH = "m/44'/60'/0'/0/";
 const { confirm } = Modal;
+// m/44'/5718350'/0'/0/0
+
 
 @inject(stores => ({
   setCurrent: current => stores.walletStore.setCurrent(current),
   setWalletEntryNextDirection: val => stores.walletStore.setWalletEntryNextDirection(val),
-  language: stores.languageIntl.language
+  language: stores.languageIntl.language,
+  addrSelectedList: stores.wanAddress.addrSelectedList,
+  addrInfo: stores.wanAddress.addrInfo
 }))
 
 @observer
 class Dex extends Component {
-  constructor(props){
-    super(props);
-    this.state = {
+     state = {
       mobilevalue : "",
+      selectedwallet:"",
       preload: null,
       loading: true,
       addrInfo: {
@@ -37,11 +43,15 @@ class Dex extends Component {
         rawKey: {}
       }
     }
-    this.addresses = {};
-  }
+    
+ 
   async componentDidMount() {
+    this.addresses = {};
+
     const preload = await this.getPreloadFile();
     console.log("preloaded file!");
+    this.setState({selectedwallet:localStorage.getItem("selectedwallet")});
+    console.log(localStorage.getItem("selectedwallet"));
     this.setState({preload:preload});
     this.addEventListeners();
   }
@@ -123,44 +133,27 @@ class Dex extends Component {
   async getAddresses(msg) {
     msg.err = null;
     msg.val = [];
+    var dAppwallet = JSON.parse(localStorage.getItem("wallets"));
+    if(dAppwallet[0].publicaddress != this.state.selectedwallet){
+      createNotification('error', 'Please choose the dApp wallet!');
+    }
+      else
+    {
 
+    
     try {
-    /*  let chainID = 5718350;
-      let val = await pu.promisefy(wand.request, ['account_getAll', { chainID: chainID }]);
-      let addrs = [];
-      for (var account in val.accounts) {
-        if (Object.prototype.hasOwnProperty.call(val.accounts[account], '1')) {
-          addrs.push(val.accounts[account]['1'].addr);
-        }
-      }
-      console.log(addrs);*/
       var addrs =[];
-      var wallets =JSON.parse(localStorage.getItem("wallets"));
-      console.log(wallets);
-      this.addresses[wallets[0].publicaddress] = {};
-      this.addresses[wallets[0].publicaddress].walletID = WALLETID.KEYSTOREID;
-      addrs.push(wallets[0].publicaddress);
+      this.addresses[this.state.selectedwallet] = {};
+      this.addresses[this.state.selectedwallet].walletID = WALLETID.NATIVE;
+      addrs.push(this.state.selectedwallet);
       console.log(addrs);
-     /* let addrAll = this.props.addrSelectedList.slice();
-      for (var i = 0, len = addrAll.length; i < len; i++) {
-        const addr = addrAll[i];
-        addrAll[i] = addrAll[i].replace(/^Ledger: /, '').toLowerCase();
-        addrAll[i] = addrAll[i].replace(/^trezor: /, '').toLowerCase();
-
-        this.addresses[addrAll[i]] = {};
-        if (addr.indexOf('Ledger') !== -1) {
-          this.addresses[addrAll[i]].walletID = WALLETID.LEDGER;
-        } else if (addr.indexOf('Trezor') !== -1) {
-          this.addresses[addrAll[i]].walletID = WALLETID.TREZOR;
-        } else {
-          this.addresses[addrAll[i]].walletID = WALLETID.NATIVE;
-        }
-      }*/
+      
       msg.val = addrs;
     } catch (error) {
       console.log(error);
       msg.err = error;
     }
+  }
     this.sendToDApp(msg);
   }
 
@@ -187,9 +180,9 @@ class Dex extends Component {
 
   async getWalletFromAddress(address) {
     try {
-      if (!this.addresses[address]) {
+     /* if (!this.addresses[address]) {
         return '';
-      }
+      }*/
       const { addrInfo } = this.state;
 /*
       let addrType = '';
@@ -219,7 +212,7 @@ class Dex extends Component {
       return {
         id: WALLETID.NATIVE,
         path: WAN_PATH,
-        address: address
+        address: address.toString().toLowerCase()
       }
     } catch (error) {
       console.log('getWalletFromAddress error', error);
@@ -227,7 +220,7 @@ class Dex extends Component {
   }
 
   async signPersonalMessage(msg) {
-    console.log(msg);
+   // console.log(msg);
     await this.showConfirm('sign', msg, async (msg) => {
       msg.err = null;
       msg.val = null;
@@ -244,23 +237,20 @@ class Dex extends Component {
         }
         this.sendToDApp(msg);
       } else {
-        console.log("WALLET SIGN PERSONAL MSG");
-        console.log(msg.message);
-        var wallets =JSON.parse(localStorage.getItem("wallets"));
-        console.log(wallets[0].privatekey);
-        var privykey = Buffer.from(wallets[0].privatekey,'hex');
-      //  console.log("private key:" +privykey);
-        //var privkey = new Buffer(wallets[0].privatekey,'hex');
-        wand.request('wallet_signPersonalMessage', { walletID: wallet.id, path: wallet.path, rawTx: msg.message, privatekey:wallets[0].privatekey }, (err, sig) => {
+        msg.address=msg.address.toString().toLowerCase();
+        console.log(msg.address);
+        console.log("before signing: " + msg.val);
+        console.log(msg);
+        console.log(wallet);
+        wand.request('wallet_signPersonalMessage', { walletID: wallet.id, path: wallet.path, rawTx: msg.message }, (err, sig) => {
           if (err) {
             msg.err = err;
             console.log(`Sign Failed:`, JSON.stringify(err));
-          } else {
-            console.log("signature: "+sig);
+          } else { 
             msg.val = sig;
           }
-          console.log("REQUEST DONE");
-          console.log(msg);
+          console.log("after signing add: " + msg.address);
+          console.log("after signing sig: " + msg.val);
           this.sendToDApp(msg);
         });
       }
@@ -282,8 +272,7 @@ class Dex extends Component {
       amount: amountInWei.div(1e18),
       gasLimit: msg.message.gasLimit ? this.toHexString(msg.message.gasLimit) : `0x${(2000000).toString(16)}`,
       gasPrice: msg.message.gasPrice ? fromWei(msg.message.gasPrice, 'Gwei') : gasPrice,
-      data: msg.message.data,
-      from: "0x07DEe23b955E7DFFFF6BA88e8dC632e38C4B23a8"
+      data: msg.message.data
     };
     console.log("wand req");
     console.log(trans);
@@ -412,7 +401,7 @@ class Dex extends Component {
             /> : null}
           <webview
             id="dappView"
-            src="https://demodex.wandevs.org/"
+            src="http://staging.wrdex.io/"
             style={{ width: '100%', height: '100%' }}
             nodeintegration="on"
             preload={preload}

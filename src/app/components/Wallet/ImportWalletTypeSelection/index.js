@@ -89,12 +89,12 @@ class ImportWalletTypeSelection extends Component {
               <div className="panelright"><img src={buttonnext} /></div>
             </div>
             {
-              /*
+              
               <div className="panelwrapper borderradiusfull spacebetween" onClick={this.selectprivatekey} style={{marginBottom:"10px"}}>
                 <div className="panelleft"><img src={buttonprivatekey} /><span>{intl.get('Wallet.PrivateKey')}</span></div>
                 <div className="panelright"><img src={buttonnext} /></div>
               </div>
-              */
+              
             }
           </center>
         </div>

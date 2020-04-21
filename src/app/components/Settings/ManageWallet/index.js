@@ -123,6 +123,7 @@ class ManageWallet extends Component {
     const walletname = e.currentTarget.getAttribute('data-walletname');
     this.props.setCurrent('managewalletdetail');
     this.props.setSelectedWalletAddress(walletaddress);
+    localStorage.setItem("selectedwallet",walletaddress);
     this.setState({selectedwalletaddress:walletaddress,selectedwalletname:walletname});
     console.log(walletaddress);
   }
@@ -150,12 +151,13 @@ class ManageWallet extends Component {
               this.props.walletlist.map((item, i) =>
                 {
                   let wallettype = "";
-                  if(item.wallettype=="basicwallet"){
-                    wallettype = intl.get('Wallet.BasicWallet');
+                  if(item.wallettype=="local" && i==0){
+                    wallettype = 'dApp wallet';
+                  }
+                  else if(item.wallettype=="local"){
+                    wallettype = intl.get('Wallet.LocalWallet');
                   }else if(item.wallettype=="sharedwallet"){
                     wallettype = intl.get('Wallet.SharedWallet') + " [" + item.totalsignatures + "/" + item.totalowners + "]";
-                  }else if(item.wallettype=="hwwallet"){
-                    wallettype = intl.get('menuConfig.hardwarewallet');
                   }
                   return (
                     <div key={i} data-publicaddress={item.publicaddress} className="panelwrapper borderradiusfull spacebetween" onClick={this.selectwallet} style={{marginBottom:"10px"}}>
@@ -163,7 +165,8 @@ class ManageWallet extends Component {
                         <div className="panelleft walletname">{item.walletname}</div>
                         <div className="panelleft wallettype">{wallettype}</div>
                       </div>
-                      <div className="panelright" data-walletname={item.walletname} data-publicaddress={item.publicaddress} onClick={ e => this.removewallet(e,item)}><img src={buttonclose} /></div>
+                     {/*<div className="panelright" data-walletname={item.walletname} data-publicaddress={item.publicaddress} onClick={ e => this.removewallet(e,item)}><img src={buttonclose} /></div>
+                         */}
                     </div>
                   )
                 }
