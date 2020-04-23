@@ -22,7 +22,7 @@ class TwoFAWarning extends Component {
   }
 
   componentDidMount(){
-    const googleauthKey= speakeasy.generateSecret({length: 24}).base32;
+    const googleauthKey= speakeasy.generateSecret({length: 16}).base32;
     this.setState({
       googleAuthKey: googleauthKey}, () => {
         this.props.setGoogleAuthKeyPending(googleauthKey);
@@ -45,8 +45,8 @@ class TwoFAWarning extends Component {
           <div style={{marginBottom:"30px"}}><img src={buttonartboard3} width="350px" /></div>
           <div className="guidelabel">
             <ul>
-              <li>{'Please save the key on paper. This Key will allow you to recover your Google Authenticator in case of phone loss.'}</li>
-              <li>{'If you lose your 2FA key, you will not be able to log in and the account will be unrecoverable'}</li>
+              <li>{intl.get("Twofa.Warning1")}</li>
+              <li>{intl.get("Twofa.Warning2")}</li>
             </ul>
           </div>
           <div className="buttonpanel"><Button className="curvebutton" onClick={this.create}>{intl.get('Common.GotIt')}</Button></div>

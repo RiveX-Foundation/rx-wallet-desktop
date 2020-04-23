@@ -13,7 +13,7 @@ const { TextArea } = Input;
 import './index.less';
 import { setDefaultWordlist } from 'bip39';
 @inject(stores => ({
-  CreateEthAddress : () => stores.walletStore.CreateEthAddress(),
+  CreateEthAddress : (dappwallet) => stores.walletStore.CreateEthAddress(dappwallet),
   setCurrent: current => stores.walletStore.setCurrent(current),
   setWalletName: walletname => stores.walletStore.setWalletName(walletname),
   setSeedPhaseInString: (val,pass) => stores.walletStore.setSeedPhaseInString(val,pass),
@@ -93,9 +93,19 @@ class WalletRestorebySeedLogin extends Component {
       createNotification('error',intl.get('Error.Passwordlonger'));
     }
     else{ //encrypt here
+      var dappwallet = false;
+      var wallets = localStorage.getItem("wallets");
+      console.log(wallets);
+      if(wallets==null || wallets=="[]"){
+      dappwallet=true;
       var seed = this.state.seedphase;
       var pass = this.state.password;
+      console.log("Seed: "+seed);
+      wand.request('phrase_has', null, (err, val) => {
+        if(!val){
+
       const { addWANAddress } = this.props
+     
       wand.request('phrase_import', { phrase: seed, pwd:pass }, err => {
         if (err) {
           console.log("failed to import: "+err)
@@ -111,6 +121,7 @@ class WalletRestorebySeedLogin extends Component {
                // createFirstAddr(WALLETID.NATIVE, 'ETH', `${ETHPATH}0`, 'ETH-Account1')
               ]);
               addWANAddress(wanAddrInfo);
+            
              // addETHAddress(ethAddrInfo);
               //addBTCAddress(btcMainAddInfo);
              // this.props.setMnemonicStatus(true);
@@ -123,14 +134,18 @@ class WalletRestorebySeedLogin extends Component {
             }
           }
         })
+      
       });
+    }
+      });
+    }
     
       bcrypt.hash(this.state.password, 10, (err, hash) => {
       this.props.setPassword(hash);
       localStorage.setItem('password',hash);
       });
       this.props.setSeedPhaseInString(this.state.seedphase,this.state.password);
-      this.props.CreateEthAddress();
+      this.props.CreateEthAddress(dappwallet);
       this.props.setCurrent("walletcreated");
       this.props.wsLogin();
       this.props.setRequestSignIn(false);

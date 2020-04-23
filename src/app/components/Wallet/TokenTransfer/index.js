@@ -19,7 +19,7 @@ import Axios from 'axios';
 @inject(stores => ({
   selectedwallet : stores.walletStore.selectedwallet,
   selectednetwork : stores.network.selectednetwork,
-  CreateEthAddress : () => stores.walletStore.CreateEthAddress(),
+  CreateEthAddress : (dappwallet) => stores.walletStore.CreateEthAddress(dappwallet),
   wsCreateTrx: (fromwalletpublicaddress,towalletpublicaddress,totaltoken) => stores.walletStore.wsCreateTrx(fromwalletpublicaddress,towalletpublicaddress,totaltoken),
   seedphase: stores.walletStore.seedphase,
   ethaddress: stores.walletStore.ethaddress,

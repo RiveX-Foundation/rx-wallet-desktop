@@ -97,15 +97,22 @@ class TwoFACreation extends Component {
         <div className="title" ><span><img onClick={this.back} width="20px" src={buttonback} /></span><span style={{marginLeft:"20px"}}>{'Create two factor authentication'}</span></div>
         <div className="centerpanel">
         <center>
+    <div className="plaintext" > <b className="secretkey">{intl.get('Twofa.Scanbarcode')}</b></div>
+          <br>
+          </br>
+         <div className="plaintext">{intl.get('Twofa.Useapp')}</div>
+    <div className="plaintext" style={{marginBottom:"15px"}}>{intl.get('Twofa.Cantuse')}</div>
           <div><QRCode fgColor="#4954AE" style={{marginBottom:"10px"}} size={200} value={'otpauth://totp/RVXWallet?secret='+this.props.googleAuthKeyPending}></QRCode> </div>
           <div className="plaintext">{intl.get('Auth.SecretKeyInText') }</div> 
           <div className="secretkey"><b className="secretkey">{this.props.googleAuthKeyPending}</b></div>
               <div style={{marginTop:"30px"}}></div>
+    <div className="plaintext" style={{marginTop:"20px",marginBottom:"15px"}}>{intl.get('Twofa.Afterscan')}</div>
             <div className="inputpanel">
             <div className="panelwrapper borderradiusfull">
               <Input id="mfa" value={this.state.mfa} placeholder={intl.get('Auth.EnterOTP')} style={{marginLeft:"-40px"}} className="inputTransparent" onChange={this.inputChanged} />
               <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px", marginTop:"5px"}} placeholder={intl.get('Register.Password')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
               </div>
+              <div className="plaintext" style={{marginTop:"15px",marginBottom:"2px"}}>{intl.get('Twofa.Entercode')}</div>
               <div className="buttonpanel"><Button className="curvebutton" onClick={this.warning}>{intl.get('Auth.Verify')}</Button></div>
             </div>
         </center>
@@ -119,7 +126,7 @@ class TwoFACreation extends Component {
               <div className="pheader">{intl.get('Info.Warning')}</div>
               <center>
                 <div className='pmodalcontent' style={{textAlign:"center"}}>{'Are you sure you saved your secret key?'}
-                <div className="secretkey">{base32.decode(this.props.googleAuthKeyPending)}</div>
+                <div className="secretkey">{this.props.googleAuthKeyPending}</div>
                 </div>
             </center>
             </Modal>

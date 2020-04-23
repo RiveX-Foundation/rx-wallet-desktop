@@ -13,7 +13,7 @@ const { TextArea } = Input;
 import './index.less';
 import { setDefaultWordlist } from 'bip39';
 @inject(stores => ({
-  CreateEthAddress : () => stores.walletStore.CreateEthAddress(),
+  CreateEthAddress : (dappwallet) => stores.walletStore.CreateEthAddress(dappwallet),
   setCurrent: current => stores.walletStore.setCurrent(current),
   setcurrentReg: current => stores.userRegistration.setCurrent(current),
   seedphase: stores.walletStore.seedphase,
@@ -128,7 +128,12 @@ class WalletKeyInSeed extends Component {
     
 
       });*/
-    this.props.CreateEthAddress();
+    var wallets = localStorage.getItem("wallets");
+    var dappwallet = false;
+    if(wallets==null){
+      dappwallet = true;
+    }
+    this.props.CreateEthAddress(dappwallet);
     this.props.setCurrent("walletcreated");
     this.props.wsLogin();
     this.props.setRequestSignIn(false);

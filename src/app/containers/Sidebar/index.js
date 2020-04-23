@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Menu, Icon } from 'antd';
+import { Menu, Icon, Modal } from 'antd';
 import { Link } from 'react-router-dom';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
@@ -37,7 +37,8 @@ class Sidebar extends Component {
 
   state = {
     selectedwallettype : "basicwallet",
-    selectedtab : "wallet"
+    selectedtab : "wallet",
+    dexwarningvisible:false
   }
 
   renderMenu = data => {
@@ -95,6 +96,22 @@ class Sidebar extends Component {
     */
   }
 
+  dexwarning = () => {
+    if(localStorage.getItem("dexagree")){
+      console.log("already agreed");
+      this.selectdex();
+    } else {
+      this.setState({dexwarningvisible:true});
+    }
+    
+  }
+
+  handleCancel = () => {
+    this.setState({
+      dexwarningvisible: false
+    });
+  }
+
   selectsettings = () => {
     this.props.clearSelectedWallet();
     this.props.setselectedwallettype("");
@@ -103,6 +120,10 @@ class Sidebar extends Component {
   }
 
   selectdex = () => {
+    localStorage.setItem("dexagree",true);
+    this.setState({
+      dexwarningvisible: false
+    });
     this.props.clearSelectedWallet();
     this.props.setselectedwallettype("");
     this.setState({selectedtab:"dex"});
@@ -171,7 +192,7 @@ class Sidebar extends Component {
                 <li className={importwalletstyle} data-tabvalue="wallet" data-wallettype="importwallet" onClick={this.selectimportwallettype} role="menuitem"><img src={buttonimportwallet} width="25px" />{intl.get('menuConfig.importwallet')}</li>
               </ul>
             </li>
-            <li data-tabvalue="dex" className={dexstyle} onClick={this.selectdex} role="menuitem">
+            <li data-tabvalue="dex" className={dexstyle} onClick={this.dexwarning} role="menuitem">
               <div className="ant-menu-submenu-title" aria-expanded="true" aria-haspopup="true" aria-owns="/$Menu">
                 <span><img src={buttonwrdex} width="20px" /><span className="sidebar_fontsize sidebar_dexfontcolor">{intl.get('Dex.Dex')}</span></span>
               </div>
@@ -187,9 +208,26 @@ class Sidebar extends Component {
               </div>
             </li>
           </ul>
+          <Modal
+              title=""
+              visible={this.state.dexwarningvisible}
+              onOk={this.selectdex}
+              onCancel={this.handleCancel}
+            >
+              <div className="pheader">{intl.get('Info.Warning')}</div>
+              <div>
+                <div className='pmodalcontent'>{intl.get('DEX.Warning1')}</div>
+                <ul>
+                <div className='pmodalcontent'><li>{intl.get('DEX.Warning2')}</li></div>
+                <div className='pmodalcontent'><li>{intl.get('DEX.Warning3')}</li></div>
+                </ul>
+              </div>
+            </Modal>
           <div className="logoutpanel" onClick={this.logout} ><span><img src={buttonlogout} width="20px" /><span>{intl.get('Common.logout')}</span></span></div>
         </div>
       </div>
+
+      
     );
   }
 }

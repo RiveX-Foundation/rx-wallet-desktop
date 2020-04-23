@@ -3,6 +3,8 @@ import { Input, Radio, Icon, Tooltip, Button } from 'antd';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
 import { toJS } from "mobx";
+import { createFirstAddr } from '../../../utils/helper';
+import {WALLETID,WANPATH} from '../../../utils/support'
 
 const bip39 = require('bip39');
 var bcrypt = require('bcryptjs');
@@ -25,13 +27,15 @@ import { createNotification } from '../../../utils/helper';
   language: stores.languageIntl.language,
   setPendingPassword: password => stores.walletStore.setPendingPassword(password),
   CreateEthAddress : (dappwallet) => stores.walletStore.CreateEthAddress(dappwallet),
+  setPassword: password => stores.walletStore.setPassword(password),
   wsLogin : () => stores.userRegistration.wsLogin(),
-  setRequestSignIn : val => stores.session.setRequestSignIn(val)
+  setRequestSignIn : val => stores.session.setRequestSignIn(val),
+  addWANAddress: newAddr => stores.wanAddress.addAddress(newAddr)
 
 }))
 
 @observer
-class WalletCreation extends Component {
+class WalletCreationLogin extends Component {
   state = {
     seedphase : [],
     mnemonic : "",
@@ -39,6 +43,7 @@ class WalletCreation extends Component {
     nextbuttonstyle : {display:"inline-block"},
     mnemonicpassword:"",
     mnemonicpasswordconfirm:"",
+    passwordvisible : {display:"none"},
     inputcurrentpassword:false
   }
 
@@ -95,21 +100,76 @@ class WalletCreation extends Component {
   }
 
   next = () => {
-
+    var wallets = localStorage.getItem("wallets");
+    let mnemonic = this.state.mnemonic;
+    var dappwallet = false;
+    if(wallets == null ||wallets =="[]"){
+      
+    
+    if(this.state.mnemonicpassword=="" || this.state.mnemonicpassword.length < 6){
+      createNotification('error',intl.get('Error.Passwordlonger'));
+    }
+    else{ //encrypt here
+  
+      console.log(wallets);
+      if(wallets==null || wallets=="[]"){
+      console.log("WALLETS ARE NULL");
+      dappwallet=true;
+      var seed = mnemonic.replace(',',' ');
+      var pass = this.state.mnemonicpassword;
+      const { addWANAddress } = this.props
+      console.log("Seed: "+seed);
+      wand.request('phrase_import', { phrase: seed, pwd:pass }, err => {
+        if (err) {
+          console.log("failed to import: "+err)
+          return;
+        }
+        wand.request('wallet_unlock', { pwd: pass }, async (err, val) => {
+          if (err) {
+            console.log("registration failed"+ err);
+          } else {
+            try {
+              let [wanAddrInfo] = await Promise.all([
+                createFirstAddr(WALLETID.NATIVE, 'WAN', `${WANPATH}0`, 'Account1')
+              ]);
+              addWANAddress(wanAddrInfo);
+              this.setState({ loading: false });
+            } catch (err) {
+              console.log('createFirstAddr:', err);
+            }
+          }
+        })
+      
+      });
+    }
+    bcrypt.hash(this.state.mnemonicpassword, 10, (err, hash) => {
+      //this.props.setPendingPassword(this.state.mnemonicpassword);
+    this.props.setPassword(hash);
+    localStorage.setItem('password',hash);
+    });
+    this.props.setSeedPhaseInString(mnemonic.replace(',',' '),this.state.mnemonicpassword);
+    this.props.CreateEthAddress(dappwallet);
+    this.props.setCurrent("walletcreated");
+    this.props.wsLogin();
+    this.props.setRequestSignIn(false);
+    this.props.setcurrentReg("inputmobile");
+    }
+   } else {
     bcrypt.compare(this.state.mnemonicpassword, localStorage.getItem('password'), (err, res) => {
       if(res) {
-        var dappwallet=false;
-        let mnemonic = this.state.mnemonic;
         this.props.setSeedPhaseInString(mnemonic.replace(',',' '),this.state.mnemonicpassword);
         this.props.CreateEthAddress(dappwallet);
         this.props.setCurrent("walletcreated");
         this.props.wsLogin();
         this.props.setRequestSignIn(false);
         this.props.setcurrentReg("inputmobile");
+      
       } else {
         createNotification('error',"Invalid password");
       } 
     });
+   }
+  
    
   }
   inputChanged = e => {
@@ -165,7 +225,7 @@ class WalletCreation extends Component {
             <center>
               { 
               <div className="panelwrapper borderradiusfull">
-                  {
+                {
                   this.state.inputcurrentpassword == false &&
                   <Input.Password id="password" style={{marginLeft:"-40px",paddingLeft:"0px"}} placeholder = {intl.get('Register.NewPassword')} className="inputTransparent" onChange={this.inputChanged} onKeyDown={this.onKeyDown} />
                 }
@@ -187,4 +247,4 @@ class WalletCreation extends Component {
   }
 }
 
-export default WalletCreation;
+export default WalletCreationLogin;

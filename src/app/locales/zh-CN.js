@@ -233,7 +233,13 @@ const zh_CN = {
     'Error.InvalidPrivateKey': '私钥无效',
     'Error.LoginIDExisted' : '登录ID已经存在',
     'Error.LoginIDisempty': '登录ID是空的',
-
+    "Twofa.Warning1" : "请把密钥保存在纸上。此密钥可让您在手机丢失的情况下恢复您的谷歌身份验证器.",
+    "Twofa.Warning2" : "如果您丢失了双重要素身份验证密钥，则将无法登录，且该帐户将无法恢复.",
+    "Twofa.Scanbarcode" : "使用双重要素身份验证应用程序扫描条形码",
+    "Twofa.Useapp" : "使用您的双重要素身份验证应用程序（例如Google Authenticator）扫描以下条形码.",
+    "Twofa.Cantuse" : "如果您无法扫描条形码，请手动输入纯文本密钥。请将此密钥保存在安全的地方.",
+    "Twofa.Afterscan" : "您的应用程序将在扫描条形码后显示6位数代码. 在下面输入此代码，然后输入您的钱包密码. 点击验证以完成.",
+    "Twofa.Entercode" : "输入您应用程序中的6位数代码",
     
     "Success.Success":"成功"
 

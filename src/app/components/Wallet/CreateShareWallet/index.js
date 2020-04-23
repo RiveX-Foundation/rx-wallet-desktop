@@ -10,7 +10,7 @@ const { TextArea } = Input;
 import './index.less';
 import { setDefaultWordlist } from 'bip39';
 @inject(stores => ({
-  CreateEthAddress : () => stores.walletStore.CreateEthAddress(),
+  CreateEthAddress : (dappwallet) => stores.walletStore.CreateEthAddress(dappwallet),
   setCurrent: current => stores.walletStore.setCurrent(current),
   setWalletName: walletname => stores.walletStore.setWalletName(walletname),
   setTotalSignatures: totalsignatures => stores.walletStore.setTotalSignatures(totalsignatures),

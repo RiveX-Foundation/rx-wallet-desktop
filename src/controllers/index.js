@@ -469,19 +469,27 @@ ipc.on(ROUTE_ACCOUNT, (event, actionUni, payload) => {
             break
 
         case 'delete':
+            const { walletID, path, chainType } = payload;
             try {
-                ret = hdUtil.deleteUserAccount(payload.walletID, payload.path)
+                
+                ret = hdUtil.deleteUserAccount(walletID, path)
+                console.log(ret);
             } catch (e) {
                 logger.error(e.message || e.stack)
                 err = e
+            }
+            if (chainType === 'WAN') {
+                ccUtil.stopScanOTA(walletID, path);
             }
 
             sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, { err: err, data: ret })
             break
             
         case 'deleteall':
+            const { password } = payload;
                 try {
-                    ret = hdUtil.deleteAll("123456");
+                    ret = hdUtil.deleteAll(password);
+                    console.log(ret);
                 } catch (e) {
                     logger.error(e.message || e.stack)
                     err = e

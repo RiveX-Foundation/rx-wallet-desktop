@@ -57,9 +57,9 @@ const Step = Steps.Step;
   */
   current: stores.walletStore.current,
   changeTitle: newTitle => stores.languageIntl.changeTitle(newTitle),
-  CreateEthAddress: () => stores.walletStore.CreateEthAddress(),
+  CreateEthAddress: (dappwallet) => stores.walletStore.CreateEthAddress(dappwallet),
   setCurrent: current => stores.walletStore.setCurrent(current),
-  CreateEthAddress: () => stores.walletStore.CreateEthAddress(),
+  CreateEthAddress: (dappwallet) => stores.walletStore.CreateEthAddress(dappwallet),
   setUserAccountExist : val => stores.session.setUserAccountExist(val),
   IsShowWalletListing : stores.session.IsShowWalletListing
 }))

@@ -8,10 +8,10 @@ import './index.less';
 import LoginMobile from 'components/LoginMobile';
 import { isNullOrEmpty } from '../../utils/helper';
 import BackupWalletTutorial from '../../components/Wallet/BackupWalletTutorial';
-import WalletCreation from '../../components/Wallet/WalletCreation';
+import WalletCreation from '../../components/Wallet/WalletCreationLogin';
 import WalletKeyInSeed from '../../components/Wallet/WalletKeyInSeed';
 import WalletCreated from '../../components/Wallet/WalletCreated';
-import WalletNameEntry from '../../components/Wallet/WalletNameEntry';
+import WalletNameEntry from '../../components/Wallet/WalletNameEntryLogin';
 import WalletRestorebySeedLogin from '../../components/Wallet/WalletRestorebySeedLogin';
 
 //import { checkCryptographic, checkPhrase } from 'utils/support';

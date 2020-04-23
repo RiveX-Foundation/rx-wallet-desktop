@@ -19,6 +19,10 @@ const ethUtil = require('ethereumjs-util');
 var bcrypt = require('bcryptjs');
 var Crypto = require('crypto'),
 algorithm = 'aes-256-ctr';
+const addrOffset = 0
+const BIP44PATHs = {
+  WAN: "m/44'/5718350'/0'/0/"
+}
 //var iv,key
 
 
@@ -572,14 +576,29 @@ class walletStore {
       return "Success";
     }
   }
+  removeBackendWallet(password){
+    var wallets = JSON.parse(localStorage.getItem("wallets"));
+   // if(wallets[0].publicaddress == this.state.selectedwalletaddress){
+      console.log("removing dApp wallet.");
+      wand.request('account_delete', { walletID: 1, path: `${BIP44PATHs.WAN}${addrOffset}`, chainType: 'WAN' }, function(err, val) {
+        if (err) { 
+            console.log('error printed inside callback: ', err)
+            return
+        }
+    });
+  //}
+  }
 
   @action removeWallet(publicaddress){
     console.log(publicaddress);
     const filterwalletlist = this.walletlist.filter(x => x.publicaddress !== publicaddress);
+    console.log(filterwalletlist.length);
+    if(filterwalletlist.length<1){
+      localStorage.removeItem("password");
+    }
     console.log(toJS(filterwalletlist));
     localStorage.setItem('wallets',JSON.stringify(filterwalletlist));
     this.walletlist = filterwalletlist;
-    var abc = "";
   }
 
   @action setBasicWalletType(type){
@@ -673,7 +692,7 @@ class walletStore {
     });
   }//   this.SaveWallet(this.walletname,this.seedphaseinstring,this.privateaddress,this.derivepath,this.publicaddress,"eth",this.selectedwallettype)
   //this.userstore.userid,this.walletname,this.seedphaseinstring,this.privateaddress,derivepath,this.publicaddress,"eth",this.selectedwallettype,this.totalowners,this.totalsignatures,[{ "UserId": this.userstore.userid, "UserName": this.userstore.name }])
-  @action async SaveWallet(walletname,seedphase,privatekey,derivepath,publicaddress,addresstype,wallettype){
+  @action async SaveWallet(walletname,seedphase,privatekey,derivepath,publicaddress,addresstype,wallettype,dappwallet){
     var wallet = {
       walletname : walletname,
       seedphase : seedphase,
@@ -683,7 +702,8 @@ class walletStore {
       addresstype : addresstype,
       wallettype : wallettype,
       tokenassetlist:await this.insertPrimaryAssetTokenList(this.seedphaseinstringtemp,false,publicaddress,privatekey),
-      isCloud:false
+      isCloud:false,
+      dappwallet: dappwallet
     };
 
     /*if(wallet.isCloud){
@@ -879,13 +899,12 @@ class walletStore {
     return {publicaddress:this.publicaddress, privateaddress:privateaddress};
   }
 
-  async CreateEthAddress(){
-    console.log("seed phrase in string "+this.decrypt(this.seedphaseinstring));
+  async CreateEthAddress(dappwallet){
     var derivepath = BIP44PATH.WAN;
     var walletkey = await this.GenerateBIP39Address(derivepath + "0", this.seedphaseinstringtemp);
     this.privateaddress = walletkey.privateaddress;
     this.publicaddress = walletkey.publicaddress;
-    await this.SaveWallet(this.walletname,this.seedphaseinstring,this.privateaddress,derivepath,this.publicaddress,"eth","local");
+    await this.SaveWallet(this.walletname,this.seedphaseinstring,this.privateaddress,derivepath,this.publicaddress,"eth","local",dappwallet);
     console.log("awaited save wallet");
     this.loadTokenAssetList();
     this.seedphaseinstringtemp = "";

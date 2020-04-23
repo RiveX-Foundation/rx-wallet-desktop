@@ -22,7 +22,7 @@ import { setDefaultWordlist } from 'bip39';
 }))
 
 @observer
-class WalletNameEntry extends Component {
+class WalletNameEntryLogin extends Component {
   state = {
     walletname : ""
   }
@@ -44,7 +44,7 @@ class WalletNameEntry extends Component {
       return;
     }
 
-    this.props.setCurrent("backupwallettutorial");
+    //this.props.setCurrent("backupwallettutorial");
     this.props.setcurrentReg("createwalletlogin");
 
     /*
@@ -64,7 +64,7 @@ class WalletNameEntry extends Component {
 
   back = () => {
     // this.props.setCurrent("splashbasicwalletcreation");
-    this.props.setCurrent("basicwallettypeselection");
+   // this.props.setCurrent("basicwallettypeselection");
     this.props.setcurrentReg("inputmobile");
   }
 
@@ -92,4 +92,4 @@ class WalletNameEntry extends Component {
   }
 }
 
-export default WalletNameEntry;
+export default WalletNameEntryLogin;

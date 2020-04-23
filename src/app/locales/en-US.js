@@ -40,8 +40,8 @@ const en_US = {
     "Settings.ExportPrivateKey.SelectTokenAsset":"Select which token below you want to export ",
     "Settings.Create":"Create a wallet",
 
-    'Modal.RemoveWallet': 'Remove Wallet ?',
-    'Modal.AreYouSureRemoveWallet': 'Are you confirm to remove {walletname} ?',
+    'Modal.RemoveWallet': 'Remove Wallet',
+    'Modal.AreYouSureRemoveWallet': 'Are you sure you want to remove {walletname} ?',
     'Modal.AreYouSureChangeNetwork.Msg1': 'Changing network will reload the app',
     'Modal.AreYouSureChangeNetwork.Msg2': 'Do you still want to change?',
     'Modal.AreYouSureRemoveTokenAsset':'Are you sure want to remove asset ?',
@@ -139,7 +139,8 @@ const en_US = {
     'Common.Save': 'Save',
 
     'Register.CreateAccount': 'CREATE ACCOUNT',
-    'Register.NewPassword': 'NEW PASSWORD',
+    'Register.NewPassword': 'New password',
+    'Register.CurrentPassword': 'Current password',
     'Register.ForgotPassword': 'FORGOT PASSWORD?',
     'Register.PhoneNumber': 'Phone Number',
     'Register.CountryCode': 'Country',
@@ -240,11 +241,23 @@ const en_US = {
     'Error.LoginIDisempty': 'Login ID is empty',
     'Error.Passwordlonger':'Password must not be empty or shorter than 6 characters',
 
+    "Twofa.Warning1" : 'Please save the key on paper. This Key will allow you to recover your Google Authenticator in case of phone loss.',
+    "Twofa.Warning2" : 'If you lose your 2FA key, you will not be able to log in and the account will be unrecoverable',
+    "Twofa.Scanbarcode" : "Scan the barcode with your 2FA app",
+    "Twofa.Useapp" : "Use your two-factor authentication app (eg. Google Authenticator) to scan the barcode below.",
+    "Twofa.Cantuse" : "If you can't scan the barcode, then enter the plain text secret key manually. Remember to save this secret key somewhere safe.",
+    "Twofa.Afterscan" : "After scanning the barcode, your app will display a 6-digit code. Enter this code below, followed by your wallet password. Click verify to complete.",
+    "Twofa.Entercode" : "Enter the 6-digit code from your app",
     "Success.Success":"Success",
     "Success.Valid":"Valid password",
     "Success.ValidOTP":"Valid OTP",
     'dAppConfirm.sign': 'Do you allow this DApp to sign with your wallet?',
     'dAppConfirm.send': 'Do you allow this DApp to sendTransaction with your wallet?',
-    'dAppConfirm.warn': 'This operation may cause changes to the assets in your wallet.'
+    'dAppConfirm.warn': 'This operation may cause changes to the assets in your wallet.',
+    "DEX.Warning1" : "By clicking on “WRDEX”, you will be redirected to www.wrdex.io, an open-source decentralized exchange unaffiliated with Rivex Foundation Limited in any way. Furthermore, by continuing to www.wrdex.io you wholly agree to the following:",
+    "DEX.Warning2": "Any losses, damages, arising from the consequential, inconsequential, indirect, and direct use of WRDEX shall be wholly borne by you.",
+    "DEX.Warning3" : "You will abide by the terms set forth by WRDEX for the use of WRDEX’s platform.",
+    'ValidatorRegister.acceptAgency': 'Yes',
+    'ValidatorRegister.notAcceptAgency': 'No'
 }
 export default en_US;

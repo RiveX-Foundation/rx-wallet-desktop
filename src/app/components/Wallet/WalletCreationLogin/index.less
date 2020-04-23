@@ -1,30 +1,8 @@
   @modal-input-bg: #1F2034;
 
-  .ant-modal-content {
-    background-color: #070707!important;
+  .ant-input-affix-wrapper .ant-input-prefix, .ant-input-affix-wrapper .ant-input-suffix {
+    margin-right: 10px;
   }
-
-  .ant-modal-content .ant-btn-primary {
-    background-color: #00d99f!important;
-    color: #fff !important;
-  }
-
-  .ant-modal-confirm .ant-modal-confirm-btns {
-    margin-bottom: 5px;
-    float: none!important;
-  }
-  .ant-modal-confirm-body .ant-modal-confirm-title {
-    color: #00d99f!important;
-    font-size: 15px!important;
-  }
-
-  .ant-modal-confirm-warning .ant-modal-confirm-body > .anticon, .ant-modal-confirm-confirm .ant-modal-confirm-body > .anticon {
-    display: none;
-  }
-
-  .ant-modal-confirm-body > .anticon + .ant-modal-confirm-title + .ant-modal-confirm-content {
-    margin-left: 0px;
-}
 
   .textc {
     color: black;
@@ -51,7 +29,7 @@
     position: relative;
   }
 
-  .splashcreatebasicwalletpanel{
+  .walletcreationpanel{
     height:calc(100vh);
 
     .title{
@@ -73,18 +51,50 @@
       vertical-align: middle;
     }
 
+    .copybutton{
+      background-color:transparent;
+      border:none;
+      color:#4db1b4;
+    }
+
+    .copybutton:hover{
+      color:#84dfe6;
+    }
+
+    ul{
+      padding-inline-start:0px;
+    }
+
+    li{
+      list-style: none;
+      display: inline-block;
+      padding:10px 15px 10px 15px;
+      background-color:#32355d;
+      margin:10px;
+      width:130px;
+      border-radius:50px;
+    }
+
     .guidelabel{
       margin-top:15px;
       color:#d4d4d4;
       font-size:1.2em;
       width:500px;
       display: inline-block;
+    }
 
-      li{
-        line-height: 1.5;
-        text-align: left;
-        margin-bottom:10px;
-      }
+    .hint
+    {
+      color:#9c9fb7;
+      font-size:1.2em;
+      margin-bottom:30px;
+    }
+
+    .hint2
+    {
+      color:#9c9fb7;
+      font-size:1em;
+      margin-bottom:0px;
     }
 
     .buttonpanel{
@@ -92,16 +102,17 @@
     }
 
     .curvebutton{
+      margin-top:30px;
       border-radius:50px;
       background-color:#3834d8;
       color:#fff;
       border: none;
       padding:5px 15px 5px 15px !important;
-      width: 150px;
+      width: 250px;
       transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
     }
 
     .curvebutton:hover{
       background-color:#0b088c;
     }   
-  }
+  }  

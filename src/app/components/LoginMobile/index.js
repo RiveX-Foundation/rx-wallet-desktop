@@ -11,7 +11,7 @@ var bcrypt = require('bcryptjs');
 import './index.less';
 @inject(stores => ({
   countrycode: stores.userRegistration.countrycode,
-  CreateEthAddress : () => stores.walletStore.CreateEthAddress(),
+  CreateEthAddress : (dappwallet) => stores.walletStore.CreateEthAddress(dappwallet),
   setCurrent: current => stores.walletStore.setCurrent(current),
   setWalletName: walletname => stores.walletStore.setWalletName(walletname),
   setSeedPhaseInString: val => stores.walletStore.setSeedPhaseInString(val),
@@ -123,32 +123,21 @@ class LoginMobile extends Component {
      bcrypt.compare(this.state.mnemonicpassword, localStorage.getItem('password'), (err, res) => {
       if(res) {
        var wallet = JSON.parse(localStorage.getItem("wallets"));
-       if(wallet!=null){
+       if(wallet!=null || wallet!="[]"){
+        wand.request('wallet_lock', () => {
+          wand.request('wallet_unlock', { pwd: this.state.mnemonicpassword }, async (err, val) => {
+           if (err) {
+            // message.error(intl.get('Login.wrongPassword'))
+             return;
+           }
+         })
+       })
         this.props.wsLogin();
-        
-      //  this.props.setSelectedWallet(wallet[0].publicaddress);
+
        } else {
         this.props.wsLogin();
        }
-      /* wand.request('account_deleteall',()=>{
-         console.log("deleting all");
-
-       })*/
-
-       wand.request('wallet_lock', () => {
-       wand.request('wallet_unlock', { pwd: this.state.mnemonicpassword }, async (err, val) => {
-        if (err) {
-          message.error(intl.get('Login.wrongPassword'))
-          return;
-        }
-        // If the user DB is not the latest version, update user account DB
-        if (typeof val === 'object' && Object.prototype.hasOwnProperty.call(val, 'version')) {
-          await this.props.updateUserAccountDB(val.version);
-        }
-        
-      })
-    })
-      
+ 
       } else {
         createNotification('error',"Invalid password");
       } 

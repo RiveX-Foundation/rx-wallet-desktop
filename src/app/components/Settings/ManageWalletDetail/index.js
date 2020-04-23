@@ -25,7 +25,8 @@ import { createNotification } from '../../../utils/helper';
   language: stores.languageIntl.language,
   getTotalWorth: wallet => stores.walletStore.getTotalWorth(wallet),
   currencycode:stores.setting.currencycode,
-  decrypt: text => stores.walletStore.decrypt(text)
+  decrypt: text => stores.walletStore.decrypt(text),
+  removeBackendWallet: password => stores.walletStore.removeBackendWallet(password)
 }))
 
 @observer
@@ -213,14 +214,24 @@ class ManageWalletDetail extends Component {
             window: 1
           });
           if(authcode==this.state.mfa){
-            console.log("passwords match");
-            createNotification('success','Valid password');
-            this.setState({
-              removemodalvisible: false
-            });
+            var wallets = JSON.parse(localStorage.getItem("wallets"));
+            if(wallets[0].publicaddress == this.state.selectedwalletaddress ){
+              createNotification('success','Removed dApp wallet! The app will relaunch in 5 seconds');
+              this.setState({
+                removemodalvisible: false
+              });
             this.props.removeWallet(this.state.selectedwalletaddress);
             this.setState({password:""});
             this.back();
+            setTimeout(() => {
+              wand.request('phrase_reset', null, () => {});
+            }, 5000);
+            } else{
+              createNotification('success','Successfully removed the wallet!');
+              this.props.removeWallet(this.state.selectedwalletaddress);
+              this.setState({password:""});
+              this.back();
+            }
           } else {
             createNotification('error',intl.get('Error.InvalidOTP'));
             this.setState({password:""});
@@ -237,14 +248,24 @@ class ManageWalletDetail extends Component {
     else{
       bcrypt.compare(this.state.password, this.state.mnemonicpass, (err, res) => {
         if(res) {
-            console.log("passwords match");
-            createNotification('success','Valid password');
-            this.setState({
-              removemodalvisible: false
-            });
+           var wallets = JSON.parse(localStorage.getItem("wallets"));
+            if(wallets[0].publicaddress == this.state.selectedwalletaddress ){
+              createNotification('success','Removed dApp wallet! The app will relaunch in 5 seconds');
+              this.setState({
+                removemodalvisible: false
+              });
             this.props.removeWallet(this.state.selectedwalletaddress);
             this.setState({password:""});
             this.back();
+            setTimeout(() => {
+              wand.request('phrase_reset', null, () => {});
+            }, 5000);
+            } else{
+              createNotification('success','Successfully removed the wallet!');
+              this.props.removeWallet(this.state.selectedwalletaddress);
+              this.setState({password:""});
+              this.back();
+            }
           } else {
           console.log("passwords don't match");
           createNotification('error',intl.get('Error.Userwrongpassword'));
@@ -394,7 +415,18 @@ class ManageWalletDetail extends Component {
   }
     render() {
 
-    const wallet = this.props.walletlist.find(x=>x.publicaddress == this.props.selectedwalletaddress);
+    var wallet = this.props.walletlist.find(x=>x.publicaddress == this.props.selectedwalletaddress);
+    if(wallet==null){
+      wallet = {
+        walletname:"null",
+        publicaddress:"null",
+        wallettype:"null",
+        totalsignatures:"null",
+        totalowners:"null",
+        holders:"null"
+
+      }
+    }
     const { mnemonicvisibility } = this.state;
     const { pkeyvisibility } = this.state;
     return (

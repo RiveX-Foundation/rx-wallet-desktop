@@ -6,6 +6,7 @@ import intl from 'react-intl-universal';
 import { WALLETID } from '../../utils/support';
 import { getNonce, getGasPrice, getChainId, createNotification } from '../../utils/helper';
 import { BigNumber } from 'bignumber.js';
+import  './index.less';
 
 
 const pu = require('promisefy-util');
@@ -29,6 +30,7 @@ class Dex extends Component {
       mobilevalue : "",
       selectedwallet:"",
       preload: null,
+      displayed:"none",
       loading: true,
       addrInfo: {
         normal: {},
@@ -42,12 +44,11 @@ class Dex extends Component {
  
   async componentDidMount() {
     this.addresses = {};
-
+    this.setState({ loading: true });
     const preload = await this.getPreloadFile();
-    console.log("preloaded file!");
-    this.setState({selectedwallet:localStorage.getItem("selectedwallet")});
-    console.log(localStorage.getItem("selectedwallet"));
-    this.setState({preload:preload});
+    this.setState({preload:preload,
+    selectedwallet:localStorage.getItem("selectedwallet")
+    });
     this.addEventListeners();
   }
 
@@ -65,7 +66,9 @@ class Dex extends Component {
     }
 
     webview.addEventListener('dom-ready', function (e) {
-      this.setState({ loading: false });
+      this.setState({ loading: false,
+        displayed:"flex"
+       });
       // webview.openDevTools();
     }.bind(this));
 
@@ -374,7 +377,7 @@ class Dex extends Component {
   renderLoadTip = () => {
     return (
       <div>
-        {/* Loading... */}
+        Loading... 
         {/* <br />
         <br />
         If you're using it for the first time, it might take a few minutes... */}
@@ -397,7 +400,7 @@ class Dex extends Component {
           <webview
             id="dappView"
             src="http://staging.wrdex.io/"
-            style={{ width: '100%', height: '100%' }}
+            style={{ width: '100%', height: '100%', display:this.state.displayed }}
             nodeintegration="on"
             preload={preload}
             allowpopups="on"

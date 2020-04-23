@@ -11,7 +11,7 @@ import './index.less';
 import { setDefaultWordlist } from 'bip39';
 import InlineSVG from 'react-inlinesvg';
 @inject(stores => ({
-  CreateEthAddress : () => stores.walletStore.CreateEthAddress(),
+  CreateEthAddress : (dappwallet) => stores.walletStore.CreateEthAddress(dappwallet),
   setCurrent: current => stores.walletStore.setCurrent(current),
   setToken: token => stores.userRegistration.setToken(token),
   setWalletName: walletname => stores.walletStore.setWalletName(walletname),

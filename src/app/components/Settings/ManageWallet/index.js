@@ -151,7 +151,7 @@ class ManageWallet extends Component {
               this.props.walletlist.map((item, i) =>
                 {
                   let wallettype = "";
-                  if(item.wallettype=="local" && i==0){
+                  if(item.dappwallet){
                     wallettype = 'dApp wallet';
                   }
                   else if(item.wallettype=="local"){

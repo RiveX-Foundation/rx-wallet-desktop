@@ -19,7 +19,8 @@ import { timingSafeEqual } from 'crypto';
   language: stores.languageIntl.language,
   wsGetMultiSigTrxLog : trxid => stores.walletStore.wsGetMultiSigTrxLog(trxid),
   wsApproveMultiSigTrx : (trxid,to,total,isexecute) => stores.walletStore.wsApproveMultiSigTrx(trxid,to,total,isexecute),
-  WalletEntryNextDirection: stores.walletStore.WalletEntryNextDirection
+  WalletEntryNextDirection: stores.walletStore.WalletEntryNextDirection,
+  selectedTokenAsset: stores.walletStore.selectedTokenAsset
 }))
 
 @observer
@@ -60,7 +61,7 @@ class TransactionDetail extends Component {
           <div className="panelwrapper borderradiusfull" style={{marginBottom:"15px"}}>
             <div className="spacebetween" style={{marginBottom:"10px"}}>
               <div className="panellabel">{intl.get('Transaction.Amount')}</div>
-              <div className="panelvalue">{this.props.trxdetail.value} RVX</div>
+              <div className="panelvalue">{this.props.trxdetail.value} {this.props.selectedTokenAsset.TokenType.toString().toUpperCase() }</div>
             </div>
 
             <div className="spacebetween" style={{marginBottom:"15px"}}>
@@ -105,7 +106,7 @@ class TransactionDetail extends Component {
           </div>
           <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"10px"}}>
             <div className="panellabel">{intl.get('Transaction.Amount')}</div>
-            <div className="panelvalue">{this.props.trxdetail.value}  RVX</div>
+            <div className="panelvalue">{this.props.trxdetail.value} {this.props.selectedTokenAsset.TokenType.toString().toUpperCase() }</div>
           </div>
           <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom:"10px"}}>
             <div className="panellabel">{intl.get('Transaction.CreatedOn')}</div>

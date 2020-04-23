@@ -30,7 +30,7 @@ import buttonback from 'static/image/icon/back.png';
   twoFAType: stores.userRegistration.twoFAType,
   twoFAPassword: stores.userRegistration.twoFAPassword,
   googleAuthKey: stores.userRegistration.googleAuthKey,
-  CreateEthAddress: () => stores.walletStore.CreateEthAddress(),
+  CreateEthAddress: (dappwallet) => stores.walletStore.CreateEthAddress(dappwallet),
   wsCreateTrx: (fromwalletpublicaddress, towalletpublicaddress, totaltoken) => stores.walletStore.wsCreateTrx(fromwalletpublicaddress, towalletpublicaddress, totaltoken),
   seedphase: stores.walletStore.seedphase,
   otptransfertoken: stores.walletStore.otptransfertoken,
@@ -511,7 +511,7 @@ class TokenTransferConfirmation extends Component {
                 <React.Fragment>
                   <div className="inputpanel">
             <div className="panelwrapper borderradiusfull">
-              <Input id="mfa" value={this.state.mfa} placeholder={Intl.get('Auth.EnterOTP')} className="inputTransparent" onChange={this.inputMFAChanged} />
+              <Input id="mfa" value={this.state.mfa} placeholder={intl.get('Auth.EnterOTP')} className="inputTransparent" onChange={this.inputMFAChanged} />
             </div>
             </div>
                 </React.Fragment>

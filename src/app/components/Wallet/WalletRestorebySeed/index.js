@@ -4,21 +4,24 @@ import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
 import { createNotification } from 'utils/helper';
 import buttonback from 'static/image/icon/back.png';
+import {WALLETID,WANPATH} from '../../../utils/support'
+import { createFirstAddr } from '../../../utils/helper';
 
 const { TextArea } = Input;
 
 import './index.less';
 import { setDefaultWordlist } from 'bip39';
 @inject(stores => ({
-  CreateEthAddress : () => stores.walletStore.CreateEthAddress(),
+  CreateEthAddress : (dappwallet) => stores.walletStore.CreateEthAddress(dappwallet),
   setCurrent: current => stores.walletStore.setCurrent(current),
   setWalletName: walletname => stores.walletStore.setWalletName(walletname),
-  setSeedPhaseInString: val => stores.walletStore.setSeedPhaseInString(val),
+  setSeedPhaseInString: (val,pass) => stores.walletStore.setSeedPhaseInString(val,pass),
   setPassword: password => stores.walletStore.setPassword(password),
   seedphase: stores.walletStore.seedphase,
   ethaddress: stores.walletStore.ethaddress,
   language: stores.languageIntl.language,
   wsLogin : () => stores.userRegistration.wsLogin(),
+  addWANAddress: newAddr => stores.wanAddress.addAddress(newAddr)
 }))
 
 @observer
@@ -26,10 +29,17 @@ class WalletRestorebySeed extends Component {
   state = {
     seedphase : "",
     walletname : "",
-    password :""
+    password :"",
+    inputcurrentpassword:false
   }
 
   componentDidMount(){
+    var wallets = JSON.parse(localStorage.getItem("wallets"));
+    if(wallets == null || wallets =="[]"){
+      this.setState({inputcurrentpassword:false});
+    } else {
+      this.setState({inputcurrentpassword:true});
+    }
   }
 
   onChange = e => {
@@ -74,9 +84,46 @@ class WalletRestorebySeed extends Component {
       createNotification('error',intl.get('Error.InvalidMnemonicphrase'));
       return;
     }
-    
-    this.props.setSeedPhaseInString(this.state.seedphase);
-    this.props.CreateEthAddress();
+    var wallets = localStorage.getItem("wallets");
+    var dappwallet = false;
+    if(wallets == null || wallets=="[]" ){
+      dappwallet = true;
+      wand.request('phrase_has', null, (err, val) => {
+        if(!val){
+
+      const { addWANAddress } = this.props
+      console.log("IMPORTING");
+      wand.request('phrase_import', { phrase: this.state.seedphase, pwd:this.state.password }, err => {
+        if (err) {
+          console.log("failed to import: "+err)
+          return;
+        }
+        console.log("imported");
+        wand.request('wallet_unlock', { pwd: this.state.password }, async (err, val) => {
+          if (err) {
+            console.log("registration failed"+ err);
+          } else {
+            try {
+              let [wanAddrInfo] = await Promise.all([
+                createFirstAddr(WALLETID.NATIVE, 'WAN', `${WANPATH}0`, 'Account1')
+              ]);
+              addWANAddress(wanAddrInfo);
+
+              this.setState({ loading: false });
+            } catch (err) {
+              console.log('createFirstAddr:', err);
+
+            }
+          }
+        })
+      
+      });
+    }
+      });
+
+    }
+    this.props.setSeedPhaseInString(this.state.seedphase,this.state.password);
+    this.props.CreateEthAddress(dappwallet);
     this.props.setCurrent("walletcreated");
     this.props.wsLogin();
   }
@@ -104,7 +151,15 @@ class WalletRestorebySeed extends Component {
 
               <div className="subtitle">{intl.get('Wallet.InputPassword')}</div>
               <div className="panelwrapper borderradiusfull" style={{width:"150px"}}>
-              <Input id="password" type="password" className="inputTransparent" value={this.state.password} onChange={this.PasswordOnChange} />
+              {
+                  this.state.inputcurrentpassword == false &&
+                  <Input id="password" type="password" placeholder = {intl.get('Register.NewPassword')} className="inputTransparent" value={this.state.password} onChange={this.PasswordOnChange} />
+                }
+                 {
+                  this.state.inputcurrentpassword == true &&
+                  <Input id="password" type="password" placeholder = {intl.get('Register.CurrentPassword')} className="inputTransparent" value={this.state.password} onChange={this.PasswordOnChange} />
+                }
+              
               </div>
 
               <Button className="curvebutton" onClick={this.next} >{intl.get('Settings.Restore')}</Button>
