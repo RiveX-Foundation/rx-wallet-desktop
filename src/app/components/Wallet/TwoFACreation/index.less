@@ -1,86 +1,89 @@
-  @modal-input-bg: #1F2034;
+@modal-input-bg: #1F2034;
 
-  .textc {
-    color: black;
-    font-size: 50px;
+.textc {
+  color: black;
+  font-size: 50px;
 
-    .pwdTitle {
-      font-size: 16px;
-      font-weight: 900;
-      color: white;
+  .pwdTitle {
+    font-size: 16px;
+    font-weight: 900;
+    color: white;
+    text-align: left;
+    padding: 20px 0 0 153px;
+
+    .anticon-info-circle {
+      display: initial !important;
+    }
+  }
+
+  input {
+    margin-bottom: 0 !important;
+  }
+}
+
+.zContent .registerContent {
+  position: relative;
+}
+
+.splashcreatebasicwalletpanel {
+  height: calc(100vh);
+
+  .title {
+    font-size: 1.5em;
+    padding: 20px;
+    position: absolute;
+
+    img {
+      cursor: pointer;
+      margin-top: -4px;
+    }
+  }
+
+  .centerpanel {
+    text-align: center;
+    width: calc(100vw);
+    height: calc(100vh);
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  .secretkey {
+    font-size: 21px;
+  }
+
+  .secret {
+    font-size: 18px;
+  }
+
+  .guidelabel {
+    margin-top: 15px;
+    color: #d4d4d4;
+    font-size: 1.2em;
+    width: 500px;
+    display: inline-block;
+
+    li {
+      line-height: 1.5;
       text-align: left;
-      padding: 20px 0 0 153px;
-
-      .anticon-info-circle {
-        display: initial!important;
-      }
-    }
-
-    input {
-      margin-bottom: 0!important;
+      margin-bottom: 10px;
     }
   }
 
-  .zContent .registerContent {
-    position: relative;
+  .buttonpanel {
+    display: block;
   }
 
-  .splashcreatebasicwalletpanel{
-    height:calc(100vh);
-
-    .title{
-      font-size:1.5em;
-      padding: 20px;
-      position: absolute;
-
-      img{
-        cursor: pointer;
-        margin-top:-4px;
-      }
-    }
-
-    .centerpanel{
-      text-align: center;
-      width:calc(100vw);
-      height:calc(100vh);
-      display: table-cell;
-      vertical-align: middle;
-    }
-    .secretkey{
-      font-size: 21px;
-    }
-    .secret{
-      font-size: 18px;
-    }
-
-    .guidelabel{
-      margin-top:15px;
-      color:#d4d4d4;
-      font-size:1.2em;
-      width:500px;
-      display: inline-block;
-
-      li{
-        line-height: 1.5;
-        text-align: left;
-        margin-bottom:10px;
-      }
-    }
-
-    .buttonpanel{
-      display: block;
-    }
-    .curvebutton{
-      border-radius:50px;
-      background-color:#3834d8;
-      color:#fff;
-      border: none;
-      padding:5px 15px 5px 15px !important;
-      width: 150px;
-      transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-    }
-
-    .curvebutton:hover{
-      background-color:#0b088c;
-    }   
+  .curvebutton {
+    border-radius: 50px;
+    background-color: #3834d8;
+    color: #fff;
+    border: none;
+    padding: 5px 15px 5px 15px !important;
+    width: 150px;
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
   }
+
+  .curvebutton:hover {
+    background-color: #0b088c;
+  }
+}

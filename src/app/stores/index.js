@@ -1,4 +1,3 @@
-
 import session from './session';
 import languageIntl from './languageIntl';
 import userRegistration from './userRegistration';

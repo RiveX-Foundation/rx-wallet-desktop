@@ -1,5 +1,5 @@
 module.exports = {
-    postMessage: function(msg) {
+    postMessage: function (msg) {
         if (typeof msg === 'object') {
             msg = JSON.stringify(msg)
         }

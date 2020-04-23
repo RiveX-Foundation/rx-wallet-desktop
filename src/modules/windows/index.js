@@ -1,9 +1,9 @@
 import _ from 'lodash'
-import { app, BrowserWindow, ipcMain as ipc } from 'electron'
+import {app, BrowserWindow, ipcMain as ipc} from 'electron'
 import Logger from '~/src/utils/Logger'
 import EventEmitter from 'events'
 import setting from '~/src/utils/Settings'
-import desktopIdle from 'desktop-idle'
+
 var path = require('path');
 const logger = Logger.getLogger('Windows')
 
@@ -56,70 +56,70 @@ class Window extends EventEmitter {
             this.emit('closed')
         })
 
-            /*
-        this.window.on('blur', () => {
-            if (this.type === 'main') {
-                if (global.chainManager && !this.isClosed) {
-                    if (this._idleChecker) {
-                        this._logger.info('main window losing focus, clear idel time checker')
-                        try {
-                            clearInterval(this._idleChecker)
-                            this._logger.info('idle checker cleared')
-                        } catch (e) {
-                            this._logger.error(e.message || e.stack)
-                        }
-
-                        this._idleChecker = null
-                    }
-
-                    this._logger.info('main window losing focus, start autolock timer')
-                    this._timer = setTimeout(() => {
-                        this._logger.info('time out, lock the wallet')
-                        this._mgr.broadcast('notification', 'uiAction', 'lockWallet')
-                        clearTimeout(this._timer)
-                        this._timer = null
-                        this._logger.info('autolock timer cleared')
-                    }, setting.autoLockTimeout)
-                }
-            }
-        })
-            */
-
-            /*
-        this.window.on('focus', () => {
-            if (this.type === 'main') {
-                if (this._timer) {
-                    this._logger.info('main window getting focus again, clear autolock timer')
-                    let timer = this._timer
-                    
+        /*
+    this.window.on('blur', () => {
+        if (this.type === 'main') {
+            if (global.chainManager && !this.isClosed) {
+                if (this._idleChecker) {
+                    this._logger.info('main window losing focus, clear idel time checker')
                     try {
-                        clearTimeout(timer)
-                        this._logger.info('autolock timer cleared')
+                        clearInterval(this._idleChecker)
+                        this._logger.info('idle checker cleared')
                     } catch (e) {
                         this._logger.error(e.message || e.stack)
                     }
 
+                    this._idleChecker = null
+                }
+
+                this._logger.info('main window losing focus, start autolock timer')
+                this._timer = setTimeout(() => {
+                    this._logger.info('time out, lock the wallet')
+                    this._mgr.broadcast('notification', 'uiAction', 'lockWallet')
+                    clearTimeout(this._timer)
                     this._timer = null
-                }
-
-                if (global.chainManager) {
-                    this._logger.info('start an interval checker for idle time')
-                    this._idleChecker = setInterval(() => {
-                        let idleTime = desktopIdle.getIdleTime()
-                        this._logger.info(`user idle time ${idleTime}`)
-                        if (idleTime * 1000 > setting.autoLockTimeout) {
-                            this._logger.info('user idle or away from key board, lock the wallet')
-                            this._mgr.broadcast('notification', 'uiAction', 'lockWallet')
-                            clearInterval(this._idleChecker)
-                            this._idleChecker = null
-                            this._logger.info('idle check interval cleared')
-                        }
-
-                    }, setting.idleCheckInterval)
-                }
+                    this._logger.info('autolock timer cleared')
+                }, setting.autoLockTimeout)
             }
-        })
+        }
+    })
         */
+
+        /*
+    this.window.on('focus', () => {
+        if (this.type === 'main') {
+            if (this._timer) {
+                this._logger.info('main window getting focus again, clear autolock timer')
+                let timer = this._timer
+
+                try {
+                    clearTimeout(timer)
+                    this._logger.info('autolock timer cleared')
+                } catch (e) {
+                    this._logger.error(e.message || e.stack)
+                }
+
+                this._timer = null
+            }
+
+            if (global.chainManager) {
+                this._logger.info('start an interval checker for idle time')
+                this._idleChecker = setInterval(() => {
+                    let idleTime = desktopIdle.getIdleTime()
+                    this._logger.info(`user idle time ${idleTime}`)
+                    if (idleTime * 1000 > setting.autoLockTimeout) {
+                        this._logger.info('user idle or away from key board, lock the wallet')
+                        this._mgr.broadcast('notification', 'uiAction', 'lockWallet')
+                        clearInterval(this._idleChecker)
+                        this._idleChecker = null
+                        this._logger.info('idle check interval cleared')
+                    }
+
+                }, setting.idleCheckInterval)
+            }
+        }
+    })
+    */
 
         this.webContents.once('did-finish-load', () => {
             this.isContentReady = true
@@ -262,7 +262,7 @@ class Windows {
                 }
             }
         }
-        
+
 
         const parent = _.find(this._windows, (w) => {
             return w.type === 'main';
@@ -299,7 +299,7 @@ class Windows {
     }
 
     getById(id) {
-        return _.find(this._windows, (w) => w.id === id )
+        return _.find(this._windows, (w) => w.id === id)
     }
 
     broadcast() {

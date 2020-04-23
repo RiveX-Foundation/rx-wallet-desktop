@@ -1,12 +1,12 @@
 const _ = require('lodash')
 const uuid = require('uuid/v1')
 const EventEmitter = require('events')
-const { ipcRenderer, remote: { Menu }, clipboard, shell } = require('electron')
+const {ipcRenderer, remote: {Menu}, clipboard, shell} = require('electron')
 const routes = require('./routes')
-const { postMessage } = require('./util')
-const { btcUtil, ccUtil } = require('wanchain-js-sdk');
+const {postMessage} = require('./util')
+const {btcUtil, ccUtil} = require('wanchain-js-sdk');
 
-module.exports = (function() {
+module.exports = (function () {
     let instance
 
     function init() {
@@ -21,20 +21,20 @@ module.exports = (function() {
             if (arguments.length === 2 && typeof arguments[1] === 'function') {
                 cb = arguments[1]
             }
-    
-            const [route, action] = endpoint.split('_')    
+
+            const [route, action] = endpoint.split('_')
             if (_.isEmpty(route && action) || !_.includes(routes[route], action)) {
                 return
             }
-    
+
             if (cb) {
                 let cbID = uuid()
-                _callbacks[route] =  _callbacks[route] || {}
+                _callbacks[route] = _callbacks[route] || {}
                 _callbacks[route][action] = _callbacks[route][action] || {}
                 _callbacks[route][action][cbID] = cb
                 endpoint = endpoint + '#' + cbID
             }
-    
+
             postMessage({
                 _type: 'renderer_makeRequest',
                 endpoint,
@@ -51,33 +51,32 @@ module.exports = (function() {
             }
 
             if (typeof msg !== 'object') {
-                return 
+                return
             }
 
-            const { _type, endpoint, payload } = msg
+            const {_type, endpoint, payload} = msg
 
-            if (_type === 'renderer_windowMessage' 
+            if (_type === 'renderer_windowMessage'
                 || _type === 'renderer_makeRequest'
                 || _type === 'renderer_notification'
                 || _type === 'renderer_updateInfo'
-                ) 
-            {
+            ) {
                 if (_type === 'renderer_windowMessage') {
-                    
+
                     const [route, actionUni] = endpoint.split('_')
                     const [action, cbID] = actionUni.split('#')
-                    const { err, data } = payload
+                    const {err, data} = payload
                     if (_callbacks[route] && _callbacks[route][action] && _callbacks[route][action][cbID]) {
                         const cb = _callbacks[route][action][cbID]
-                        
+
                         cb(err, data)
                         delete _callbacks[route][action][cbID]
                     }
 
                 } else if (_type === 'renderer_makeRequest') {
-                    
-                    const [route, action] = endpoint.split('_') 
-                
+
+                    const [route, action] = endpoint.split('_')
+
                     if (_.isEmpty(payload)) {
                         ipcRenderer.send(route, action)
                     } else {
@@ -97,27 +96,27 @@ module.exports = (function() {
         }
 
         function _contextMenuHandler(event) {
-                event.preventDefault();
-                Menu
-                    .buildFromTemplate([
-                        { label: 'Cut', role: 'cut' },
-                        { label: 'Copy', role: 'copy' },
-                        { label: 'Paste', role: 'paste' },
-                        { label: 'Select All', role: 'selectall' },
-                    ])
-                    .popup()
-        } 
+            event.preventDefault();
+            Menu
+                .buildFromTemplate([
+                    {label: 'Cut', role: 'cut'},
+                    {label: 'Copy', role: 'copy'},
+                    {label: 'Paste', role: 'paste'},
+                    {label: 'Select All', role: 'selectall'},
+                ])
+                .popup()
+        }
 
         return {
-            request: function(endpoint, payload, cb) {
+            request: function (endpoint, payload, cb) {
                 _request(...arguments)
             },
 
-            wndMsgHandler: function(event) {
+            wndMsgHandler: function (event) {
                 _wndMsgHandler(event)
             },
 
-            contextMenuHandler: function(event) {
+            contextMenuHandler: function (event) {
                 _contextMenuHandler(event)
             },
 
@@ -136,7 +135,7 @@ module.exports = (function() {
     }
 
     return {
-        getInstance: function() {
+        getInstance: function () {
             if (!instance) {
                 instance = init()
             }

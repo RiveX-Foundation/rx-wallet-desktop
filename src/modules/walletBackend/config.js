@@ -45,7 +45,7 @@ class ConfigFactoryService {
         if (this.config.network.includes('main')) {
             this.config.wanchain_js_testnet = false
             this.config.socketUrl = 'wss://api.wanchain.info'
-            
+
         } else {
             this.config.wanchain_js_testnet = true
             this.config.socketUrl = 'wss://apitest.wanchain.info'
@@ -58,7 +58,7 @@ class ConfigFactoryService {
         this.config.MAX_CONFIRM_BLKS = 100000000
         this.config.MIN_CONFIRM_BLKS = 0
 
-        
+
     }
 
     getConfig() {

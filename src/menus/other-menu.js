@@ -1,18 +1,13 @@
-import path from 'path'
-import { APP_NAME, LANGUAGES } from '../../config/common'
+import {APP_NAME, LANGUAGES} from '../../config/common'
 import setting from '../utils/Settings'
-import { app, shell, dialog } from 'electron'
-import { walletBackend, updater, Windows } from '~/src/modules'
-import menuFactoryService from '~/src/services/menuFactory'
-import intl from 'react-intl-universal';
-import locales from '../../src/app/locales';
+import {app, shell} from 'electron'
 
 export default (i18n) => {
     const menu = []
 
     // Edit menu
     const editMenu = {
-        label: i18n.t('main.applicationMenu.edit.label', { app: APP_NAME }),
+        label: i18n.t('main.applicationMenu.edit.label', {app: APP_NAME}),
         submenu: [
             // {
             //     label: i18n.t('main.applicationMenu.edit.undo', { app: APP_NAME }),
@@ -31,7 +26,7 @@ export default (i18n) => {
                 label: i18n.t('main.applicationMenu.edit.copy'),
                 role: 'copy'
             },
-            {   
+            {
                 label: i18n.t('main.applicationMenu.edit.paste'),
                 role: 'paste'
             },
@@ -49,47 +44,47 @@ export default (i18n) => {
         label: i18n.t('main.applicationMenu.setting.label'),
         submenu: [
             /** TODO */
-        //     {
-        //         label: i18n.t('main.applicationMenu.setting.network.label'),
-        //         submenu: [
-        //             {
-        //                 label: i18n.t('main.applicationMenu.setting.network.main'),
-        //                 accelerator: 'Shift+CommandOrControl+M',
-        //                 checked: setting.network === 'main',
-        //                 type: 'radio',
-        //                 click: async (m) => {
-        //                     if (!setting.network.includes('main')) {
-        //                         menuFactoryService.networkMenu = m.menu
-        //                         const mainWin = Windows.getByType('main')
-        //                         mainWin.hide()
-        //                         Windows.createModal('changeNetwork', {
-        //                             width: 1024 + 208, height: 720, alwaysOnTop: true
-        //                         })
-        //                     }
+            //     {
+            //         label: i18n.t('main.applicationMenu.setting.network.label'),
+            //         submenu: [
+            //             {
+            //                 label: i18n.t('main.applicationMenu.setting.network.main'),
+            //                 accelerator: 'Shift+CommandOrControl+M',
+            //                 checked: setting.network === 'main',
+            //                 type: 'radio',
+            //                 click: async (m) => {
+            //                     if (!setting.network.includes('main')) {
+            //                         menuFactoryService.networkMenu = m.menu
+            //                         const mainWin = Windows.getByType('main')
+            //                         mainWin.hide()
+            //                         Windows.createModal('changeNetwork', {
+            //                             width: 1024 + 208, height: 720, alwaysOnTop: true
+            //                         })
+            //                     }
 
-        //                     return 
-        //                 }
-        //             },
-        //             {
-        //                 label: i18n.t('main.applicationMenu.setting.network.test'),
-        //                 accelerator: 'Shift+CommandOrControl+P',
-        //                 checked: setting.network === 'testnet',
-        //                 type: 'radio',
-        //                 click: async (m) => {
-        //                     if (setting.network.includes('main')) {
-        //                         menuFactoryService.networkMenu = m.menu
-        //                         const mainWin = Windows.getByType('main')
-        //                         mainWin.hide()
-        //                         Windows.createModal('changeNetwork', {
-        //                             width: 1024 + 208, height: 720, alwaysOnTop: true
-        //                         })
-        //                     }
+            //                     return
+            //                 }
+            //             },
+            //             {
+            //                 label: i18n.t('main.applicationMenu.setting.network.test'),
+            //                 accelerator: 'Shift+CommandOrControl+P',
+            //                 checked: setting.network === 'testnet',
+            //                 type: 'radio',
+            //                 click: async (m) => {
+            //                     if (setting.network.includes('main')) {
+            //                         menuFactoryService.networkMenu = m.menu
+            //                         const mainWin = Windows.getByType('main')
+            //                         mainWin.hide()
+            //                         Windows.createModal('changeNetwork', {
+            //                             width: 1024 + 208, height: 720, alwaysOnTop: true
+            //                         })
+            //                     }
 
-        //                     return 
-        //                 }
-        //             }
-        //         ]
-        //     }
+            //                     return
+            //                 }
+            //             }
+            //         ]
+            //     }
         ],
     }
 
@@ -133,7 +128,7 @@ export default (i18n) => {
                 accelerator: 'CommandOrControl+W',
                 role: 'close',
             },
-            { type: 'separator' },
+            {type: 'separator'},
             {
                 label: i18n.t('main.applicationMenu.window.front'),
                 role: 'front',
@@ -148,9 +143,9 @@ export default (i18n) => {
         role: 'help',
         submenu: [
             {
-                label: i18n.t('main.applicationMenu.app.version', { version: app.getVersion() }),
+                label: i18n.t('main.applicationMenu.app.version', {version: app.getVersion()}),
             },
-            { type: 'separator' },
+            {type: 'separator'},
             {
                 label: i18n.t('main.applicationMenu.help.web'),
                 click: () => {
@@ -169,13 +164,15 @@ export default (i18n) => {
                 accelerator: 'Alt+CommandOrControl+I',
                 role: 'toggledevtools'
             },
-            { type: 'separator' },
+            {type: 'separator'},
             {
-                label: i18n.t('main.applicationMenu.app.quit', { app: APP_NAME }),
-                click() { app.quit() }
+                label: i18n.t('main.applicationMenu.app.quit', {app: APP_NAME}),
+                click() {
+                    app.quit()
+                }
             }
         ]
-    }   
+    }
 
     menu.unshift(developerMenu)
 
