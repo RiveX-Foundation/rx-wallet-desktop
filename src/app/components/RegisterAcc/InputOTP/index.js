@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { Input, Button, Radio, Icon, Tooltip } from 'antd';
+import { Input, Button} from 'antd';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
-import {NotificationContainer, NotificationManager} from 'react-notifications';
 import buttonnext from 'static/image/icon/buttonnextarrow.png';
 import buttonback from 'static/image/icon/back.png';
 import logo from 'static/image/graphic/logo.png';

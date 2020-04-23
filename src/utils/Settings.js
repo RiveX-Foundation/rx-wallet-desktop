@@ -1,5 +1,3 @@
-import path from 'path'
-import fs from 'fs'
 import low from 'lowdb'
 import FileSync from 'lowdb/adapters/FileSync'
 import { app } from 'electron'

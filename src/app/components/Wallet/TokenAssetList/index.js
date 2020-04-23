@@ -20,7 +20,8 @@ var Web3 = require('web3');
     setSelectedWallet: publicaddress => stores.walletStore.setSelectedWallet(publicaddress),
     loadWallet: () => stores.walletStore.loadWallet(),
     InsertTokenAssetToCloudWallet: (tokenasset, publicaddress, cb) => stores.walletStore.InsertTokenAssetToCloudWallet(tokenasset, publicaddress, cb),
-    decrypt: text => stores.walletStore.decrypt(text)
+    decrypt: text => stores.walletStore.decrypt(text),
+    GenerateAddressByPrivateKey: async (privatekey) => stores.walletStore.GenerateAddressByPrivateKey(privatekey)
 }))
 
 @observer
@@ -43,10 +44,18 @@ class TokenAssetList extends Component {
         } else {
             var derivepath = this.props.selectedWallet.derivepath;
             // var seed = this.props.selectedWallet.seedphase;
-            var seed = this.props.decrypt(this.props.selectedWallet.seedphase)
-            var walletkey = await this.props.GenerateBIP39Address(derivepath + "0", seed);
-            tokenasset.PrivateAddress = walletkey.privateaddress;
-            tokenasset.PublicAddress = walletkey.publicaddress;
+            if(this.props.selectedWallet.seedphase == "null" || this.props.selectedWallet.seedphase == null || this.props.selectedTokenAsset.seedphase ==""){
+                var walletkey = await this.props.GenerateAddressByPrivateKey(this.props.selectedWallet.privatekey)
+                tokenasset.PrivateAddress = walletkey.privateaddress;
+                tokenasset.PublicAddress = walletkey.publicaddress;
+            } else {
+
+                var seed = this.props.decrypt(this.props.selectedWallet.seedphase)
+                var walletkey = await this.props.GenerateBIP39Address(derivepath + "0", seed);
+                tokenasset.PrivateAddress = walletkey.privateaddress;
+                tokenasset.PublicAddress = walletkey.publicaddress;
+            }
+            
 
             if (tokenasset.TokenType == "wan" || tokenasset.TokenType == "wrc20") { //IF WANCHAIN . CONVERT ALL ADDRESS TO LOWERCASE
                 tokenasset.PublicAddress = tokenasset.PublicAddress.toLowerCase();

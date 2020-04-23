@@ -213,7 +213,7 @@ class Dex extends Component {
             return {
                 id: WALLETID.NATIVE,
                 path: WAN_PATH,
-                address: address.toString().toLowerCase()
+                address: address
             }
         } catch (error) {
             console.log('getWalletFromAddress error', error);
@@ -227,7 +227,6 @@ class Dex extends Component {
             msg.val = null;
 
             const wallet = await this.getWalletFromAddress(msg.address);
-            console.log(wallet);
             if (wallet.id === WALLETID.TREZOR) {
                 try {
                     let sig = await trezorSignPersonalMessage(wallet.path, msg.message);
@@ -238,24 +237,18 @@ class Dex extends Component {
                 }
                 this.sendToDApp(msg);
             } else {
-                msg.address = msg.address.toString().toLowerCase();
-                console.log(msg.address);
-                console.log("before signing: " + msg.val);
-                console.log(msg);
-                console.log(wallet);
                 wand.request('wallet_signPersonalMessage', {
                     walletID: wallet.id,
                     path: wallet.path,
                     rawTx: msg.message
                 }, (err, sig) => {
                     if (err) {
+                      console.log(err.message);
                         msg.err = err;
                         console.log(`Sign Failed:`, JSON.stringify(err));
                     } else {
                         msg.val = sig;
                     }
-                    console.log("after signing add: " + msg.address);
-                    console.log("after signing sig: " + msg.val);
                     this.sendToDApp(msg);
                 });
             }

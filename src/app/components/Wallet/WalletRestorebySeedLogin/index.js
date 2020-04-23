@@ -95,25 +95,24 @@ class WalletRestorebySeedLogin extends Component {
             var dappwallet = false;
             var wallets = localStorage.getItem("wallets");
             console.log(wallets);
+            const {addWANAddress} = this.props;
             if (wallets == null || wallets == "[]") {
                 dappwallet = true;
                 var seed = this.state.seedphase;
                 var pass = this.state.password;
                 console.log("Seed: " + seed);
-                wand.request('phrase_has', null, (err, val) => {
-                    if (!val) {
-
-                        const {addWANAddress} = this.props
-
-                        wand.request('phrase_import', {phrase: seed, pwd: pass}, err => {
+                wand.request('phrase_import', {phrase: this.state.seedphase, pwd: this.state.password}, err => {
+                  console.log("IMPORTING PHRASE");
                             if (err) {
-                                console.log("failed to import: " + err)
+                                console.log("failed to import: " + err.message)
                                 return;
                             }
+                            console.log("PHRASE IMPORTED");
                             wand.request('wallet_unlock', {pwd: pass}, async (err, val) => {
                                 if (err) {
                                     console.log("registration failed" + err);
                                 } else {
+                                  console.log("WALLET UNLOCKED"+ val);
                                     try {
                                         let [wanAddrInfo] = await Promise.all([
                                             createFirstAddr(WALLETID.NATIVE, 'WAN', `${WANPATH}0`, 'Account1')
@@ -122,17 +121,14 @@ class WalletRestorebySeedLogin extends Component {
 
                                         this.setState({loading: false});
                                     } catch (err) {
-                                        console.log('createFirstAddr:', err);
-                                    }
-                                }
-                            })
+                                      console.log('createFirstAddr:', err);
+                             }
+                         }
+                   })
 
-                        });
-                    }
-                });
+              });
             }
-
-            bcrypt.hash(this.state.password, 10, (err, hash) => {
+              bcrypt.hash(this.state.password, 10, (err, hash) => {
                 this.props.setPassword(hash);
                 localStorage.setItem('password', hash);
             });
@@ -141,7 +137,7 @@ class WalletRestorebySeedLogin extends Component {
             this.props.setCurrent("walletcreated");
             this.props.wsLogin();
             this.props.setRequestSignIn(false);
-            this.props.setcurrentReg("inputmobile");
+            this.props.setcurrentReg("inputmobile");   
         }
 
     }

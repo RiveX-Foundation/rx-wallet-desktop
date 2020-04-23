@@ -482,9 +482,10 @@ ipc.on(ROUTE_ACCOUNT, (event, actionUni, payload) => {
             break
 
         case 'deleteall':
-            const {password} = payload;
             try {
-                ret = hdUtil.deleteAll(password);
+                hdUtil.deleteHDWallet();
+                hdUtil.deleteKeyStoreWallet();
+                ret = hdUtil.deleteMnemonic(payload.password);
                 console.log(ret);
             } catch (e) {
                 logger.error(e.message || e.stack)

@@ -969,6 +969,7 @@ class walletStore {
             this.publicaddress = walletkey.publicaddress;
             var seedval = "null";
             await this.SaveWallet(this.walletname, seedval, this.privateaddress, derivepath, this.publicaddress, "eth", "local");
+            this.loadTokenAssetList();
             this.setCurrent("walletcreated");
         } catch (e) {
             console.log(e);

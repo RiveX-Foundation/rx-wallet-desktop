@@ -8,9 +8,6 @@ import lock from 'static/image/graphic/lockunlock02.png';
 import './index.less';
 
 var bcrypt = require('bcryptjs');
-const {currency} = require('../../../../../config/common/currency');
-const {TextArea} = Input;
-var QRCode = require('qrcode.react');
 const base32 = require('hi-base32');
 const speakeasy = require("speakeasy");
 
@@ -19,7 +16,6 @@ const speakeasy = require("speakeasy");
     update2FA: info => stores.setting.update2FA(info),
     language: stores.languageIntl.language,
     twoFAType: stores.userRegistration.twoFAType,
-    twoFAPassword: stores.userRegistration.twoFAPassword,
     setPassword: password => stores.walletStore.setPassword(password),
     twoFAPassword: stores.userRegistration.twoFAPassword,
     googleAuthKey: stores.walletStore.googleAuthKey,

@@ -219,12 +219,19 @@ class ManageWalletDetail extends Component {
                                 removemodalvisible: false
                             });
                             this.props.removeWallet(this.state.selectedwalletaddress);
-                            this.setState({password: ""});
-                            this.back();
+                            
+                            wand.request('account_deleteall', { password: this.state.password }, function(err, val) {
+                              if (err) { 
+                                  console.log('error printed inside callback: ', err)
+                                  return
+                              }
+                              console.log("deleted all");
+                          }.bind(this));
                             setTimeout(() => {
-                                wand.request('phrase_reset', null, () => {
-                                });
+                              wand.request('phrase_reset', null, () => {
+                              });
                             }, 5000);
+                            this.back();
                         } else {
                             createNotification('success', 'Successfully removed the wallet!');
                             this.props.removeWallet(this.state.selectedwalletaddress);
@@ -253,12 +260,19 @@ class ManageWalletDetail extends Component {
                             removemodalvisible: false
                         });
                         this.props.removeWallet(this.state.selectedwalletaddress);
-                        this.setState({password: ""});
                         this.back();
+                        wand.request('account_deleteall', { password: this.state.password }, function(err, val) {
+                          if (err) { 
+                              console.log('error printed inside callback: ', err)
+                              return
+                          }
+                          console.log("deleted all");
+                      }.bind(this));
                         setTimeout(() => {
-                            wand.request('phrase_reset', null, () => {
-                            });
+                          wand.request('phrase_reset', null, () => {
+                          });
                         }, 5000);
+                        this.setState({password: ""});
                     } else {
                         createNotification('success', 'Successfully removed the wallet!');
                         this.props.removeWallet(this.state.selectedwalletaddress);

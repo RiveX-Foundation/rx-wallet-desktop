@@ -76,7 +76,6 @@ const zh_CN = {
     'Wallet.Wallet': '钱包',
     'Wallet.JOINSHAREDWALLET': '加入共享钱包',
     'Wallet.Mnemonicphrase': '助记符',
-    'Wallet.PrivateKey': '私匙',
     'Wallet.IMPORTWALLET': '导入钱包',
     'Wallet.TotalCoPlayer': '拥有者总数',
     'Wallet.CoPlayers': '拥有者',
