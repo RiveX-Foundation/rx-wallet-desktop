@@ -60,12 +60,13 @@ class TwoFACreation extends Component {
         bcrypt.compare(this.state.password, localStorage.getItem('password'), (err, res) => {
             if (res) {
                 const secretHex = this._toHex(secretAscii);
-                var authcode = speakeasy.totp({
+                var authcode = speakeasy.totp.verifyDelta({
                     secret: secretHex,
                     encoding: 'hex',
-                    window: 2
+                    token:this.state.mfa,
+                    window: 3
                 });
-                if (authcode == this.state.mfa) {
+                if (authcode) {
                     createNotification('success', 'Successfully activated 2FA');
                     this.props.setGoogleAuthKey(this.state.googleAuthKey, this.state.password);
                     this.setState({mfa: ""});
@@ -105,7 +106,7 @@ class TwoFACreation extends Component {
                         </br>
                         <div className="plaintext">{intl.get('Twofa.Useapp')}</div>
                         <div className="plaintext" style={{marginBottom: "15px"}}>{intl.get('Twofa.Cantuse')}</div>
-                        <div><QRCode fgColor="#4954AE" style={{marginBottom: "10px"}} size={200}
+                        <div><QRCode fgColor="#FFFFFF" bgColor="#000000" style={{marginBottom: "10px"}} size={200}
                                      value={'otpauth://totp/RVXWallet?secret=' + this.props.googleAuthKeyPending}></QRCode>
                         </div>
                         <div className="plaintext">{intl.get('Auth.SecretKeyInText')}</div>

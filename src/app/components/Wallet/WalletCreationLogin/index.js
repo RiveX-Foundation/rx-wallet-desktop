@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Input} from 'antd';
+import {Button, Input, Modal} from 'antd';
 import {inject, observer} from 'mobx-react';
 import intl from 'react-intl-universal';
 import {createFirstAddr, createNotification} from '../../../utils/helper';
@@ -40,7 +40,8 @@ class WalletCreationLogin extends Component {
         mnemonicpassword: "",
         mnemonicpasswordconfirm: "",
         passwordvisible: {display: "none"},
-        inputcurrentpassword: false
+        inputcurrentpassword: false,
+        backupwarning: false
     }
 
     inputEl1 = null;
@@ -85,6 +86,16 @@ class WalletCreationLogin extends Component {
         this.setState({seedphaseel: seedel});
     }
 
+    backupedwarning = () => {
+        this.setState({backupwarning: true});  
+    }
+
+    handleCancel = () => {
+        this.setState({
+            backupwarning: false
+        });
+    }
+
     copy = () => {
         this.inputEl1.select();
         document.execCommand('copy');
@@ -103,6 +114,10 @@ class WalletCreationLogin extends Component {
 
             if (this.state.mnemonicpassword == "" || this.state.mnemonicpassword.length < 6) {
                 createNotification('error', intl.get('Error.Passwordlonger'));
+                this.setState({
+                    backupwarning: false,
+                    mnemonicpassword:""
+                });
             } else { //encrypt here
 
                 console.log(wallets);
@@ -160,6 +175,10 @@ class WalletCreationLogin extends Component {
 
                 } else {
                     createNotification('error', "Invalid password");
+                    this.setState({
+                        backupwarning: false,
+                        mnemonicpassword:""
+                    });
                 }
             });
         }
@@ -248,7 +267,7 @@ class WalletCreationLogin extends Component {
                                 </center>
                             </div>
                             <div><Button style={nextbuttonstyle} className="curvebutton"
-                                         onClick={this.next}>{intl.get('Wallet.IHaveBackupMySeed')}</Button></div>
+                                         onClick={this.backupedwarning}>{intl.get('Wallet.IHaveBackupMySeed')}</Button></div>
                             <input onChange={this.onChange} style={{marginTop: -99999, position: "absolute"}}
                                    ref={(input) => {
                                        this.inputEl1 = input;
@@ -256,6 +275,19 @@ class WalletCreationLogin extends Component {
                         </div>
                     </center>
                 </div>
+                <Modal
+                        title=""
+                        visible={this.state.backupwarning}
+                        okText = {intl.get('ValidatorRegister.acceptAgency')}
+                        cancelText= {intl.get('ValidatorRegister.notAcceptAgency')}
+                        onOk={this.next}
+                        onCancel={this.handleCancel}
+                    >
+                        <div className="pheader">{intl.get('Info.Warning')}</div>
+                        <div>
+                            <div className='pmodalcontent' style={{textAlign:"center"}}>{intl.get('Wallet.Areyousurebackup')}</div>
+                        </div>
+                    </Modal>
             </div>
         );
     }

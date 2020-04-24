@@ -164,12 +164,13 @@ class TokenTransferConfirmation extends Component {
         if (this.props.mfaenabled) {
             const secretAscii = base32.decode(this.props.decrypt(localStorage.getItem('twofasecret')));
             const secretHex = this._toHex(secretAscii);
-            var authcode = speakeasy.totp({
+            var authcode = speakeasy.totp.verifyDelta({
                 secret: secretHex,
                 encoding: 'hex',
-                window: 1
+                token:this.state.mfa,
+                window: 3
             });
-            if (authcode == this.state.mfa) {
+            if (authcode ) {
                 createNotification('success', intl.get('Success.ValidOTP'));
             } else {
                 createNotification('error', intl.get('Error.InvalidOTP'));

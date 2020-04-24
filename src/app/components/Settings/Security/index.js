@@ -126,12 +126,13 @@ class Security extends Component {
             bcrypt.compare(this.state.currentpassword, localStorage.getItem('password'), (err, res) => {
                 if (res) {
                     const secretHex = this._toHex(secretAscii);
-                    var authcode = speakeasy.totp({
+                    var authcode = speakeasy.totp.verifyDelta({
                         secret: secretHex,
                         encoding: 'hex',
-                        window: 1
+                        token:this.state.mfa,
+                        window: 3
                     });
-                    if (authcode == this.state.mfa) {
+                    if (authcode ) {
                         if (this.state.password == this.state.passwordconfirm && this.state.password.length >= 6) {
                             bcrypt.hash(this.state.password, 10, (err, hash) => {
                                 createNotification('success', 'Changed password, all wallets are deleted. The app will relaunch in 5 seconds.');
@@ -255,21 +256,40 @@ class Security extends Component {
                                         <div className="title" style={{marginTop: "30px", paddingLeft: "0px"}}><span
                                             className="lock">{intl.get('Settings.2FASecurity.Enabled')}</span></div>
                                         <img src={lock} style={{width: "150px"}}/>
-                                        <div><Button className="curvebutton"
+                                        <Button className="curvebutton"
                                                      onClick={this.disable2fa}>{intl.get('Settings.2FASecurity.Disable')}</Button>
-                                        </div>
-                                        <div>
+
+                                            <div>
+                                            <div className="title" style={{marginTop: "30px", paddingLeft: "0px"}}><span
+                                                className="lock">{"Change password"}</span></div>
                                             <div className="panelwrapper borderradiusfull">
                                                 <Input.Password
-                                                    id="name"
+                                                    id="currentpassword"
+                                                    value={this.state.currentpassword}
+                                                    placeholder="Current password"
+                                                    className="inputTransparent"
+                                                    onChange={this.passwordChanged}/>
+                                            </div>
+
+                                            <div className="panelwrapper borderradiusfull">
+                                                <Input.Password
+                                                    id="newpassword"
                                                     value={this.state.password}
-                                                    placeholder={this.state.password}
+                                                    placeholder="New password"
+                                                    className="inputTransparent"
+                                                    onChange={this.passwordChanged}/>
+                                            </div>
+
+                                            <div className="panelwrapper borderradiusfull">
+                                                <Input.Password
+                                                    id="newpasswordconfirm"
+                                                    value={this.state.passwordconfirm}
+                                                    placeholder="Confirm password"
                                                     className="inputTransparent"
                                                     onChange={this.passwordChanged}/>
                                             </div>
                                             <div><Button className="curvebutton"
-                                                         onClick={this.changePassword}>{intl.get('Common.Save')}</Button>
-                                            </div>
+                                                         onClick={this.changePassword}>{"Change"}</Button></div>
                                             <br/>
                                         </div>
                                     </React.Fragment>

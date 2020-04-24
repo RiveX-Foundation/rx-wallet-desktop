@@ -57,12 +57,13 @@ class TwoFARemove extends Component {
         bcrypt.compare(this.state.password, localStorage.getItem('password'), (err, res) => {
             if (res) {
                 const secretHex = this._toHex(secretAscii);
-                var authcode = speakeasy.totp({
+                var authcode = speakeasy.totp.verifyDelta({
                     secret: secretHex,
                     encoding: 'hex',
-                    window: 1
+                    token:this.state.mfa,
+                    window: 3
                 });
-                if (authcode == this.state.mfa) {
+                if (authcode) {
                     createNotification('success', 'Successfully removed 2FA');
                     this.props.clearGoogleAuthKey();
                     this.props.setCurrent("settings");
@@ -85,16 +86,20 @@ class TwoFARemove extends Component {
                     style={{marginLeft: "20px"}}>{'Remove two factor authentication'}</span></div>
                 <div className="centerpanel">
                     <center>
+                    <div className="plaintext" style={{marginBottom:"15px"}}><b className="secretkey">{intl.get('Twofa.Disable')}</b></div>
                         <div style={{marginBottom: "30px"}}><img src={buttonartboard3} width="350px"/></div>
+                        <div className="plaintext" style={{marginBottom: "10px"}}>{intl.get('Twofa.Disablewarning1')}
+                        <br />
+                        {intl.get('Twofa.Disablewarning2')}</div>
                         <div className="inputpanel">
                             <div className="panelwrapper borderradiusfull">
                                 <Input id="mfa" value={this.state.mfa} placeholder={intl.get('Auth.EnterOTP')}
-                                       className="inputTransparent" onChange={this.inputChanged}/>
-                            </div>
-                            <div className="panelwrapper borderradiusfull">
-                                <Input.Password id="password" style={{marginLeft: "-40px", paddingLeft: "0px"}}
+                                       style={{marginLeft: "-40px"}} className="inputTransparent"
+                                       onChange={this.inputChanged}/>
+                                <Input.Password id="password"
+                                                style={{marginLeft: "-40px", paddingLeft: "0px", marginTop: "5px"}}
                                                 placeholder={intl.get('Register.Password')} className="inputTransparent"
-                                                onChange={this.inputChanged} onKeyDown={this.onKeyDown}/>
+                                                onChange={this.inputChanged}/>
                             </div>
                             <div className="buttonpanel"><Button className="curvebutton"
                                                                  onClick={this.remove}>{'Remove'}</Button></div>

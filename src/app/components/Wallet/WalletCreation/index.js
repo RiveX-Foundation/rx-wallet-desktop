@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Input} from 'antd';
+import {Button, Input, Modal} from 'antd';
 import {inject, observer} from 'mobx-react';
 import intl from 'react-intl-universal';
 import './index.less';
@@ -36,7 +36,8 @@ class WalletCreation extends Component {
         nextbuttonstyle: {display: "inline-block"},
         mnemonicpassword: "",
         mnemonicpasswordconfirm: "",
-        inputcurrentpassword: false
+        inputcurrentpassword: false,
+        backupwarning: false
     }
 
     inputEl1 = null;
@@ -81,6 +82,16 @@ class WalletCreation extends Component {
         this.setState({seedphaseel: seedel});
     }
 
+    backupedwarning = () => {
+        this.setState({backupwarning: true});  
+    }
+
+    handleCancel = () => {
+        this.setState({
+            backupwarning: false
+        });
+    }
+
     copy = () => {
         this.inputEl1.select();
         document.execCommand('copy');
@@ -104,6 +115,10 @@ class WalletCreation extends Component {
                 this.props.setcurrentReg("inputmobile");
             } else {
                 createNotification('error', "Invalid password");
+                this.setState({
+                    backupwarning: false,
+                    mnemonicpassword:""
+                });
             }
         });
 
@@ -198,6 +213,19 @@ class WalletCreation extends Component {
                         </div>
                     </center>
                 </div>
+                <Modal
+                        title=""
+                        visible={this.state.backupwarning}
+                        okText = {intl.get('ValidatorRegister.acceptAgency')}
+                        cancelText= {intl.get('ValidatorRegister.notAcceptAgency')}
+                        onOk={this.next}
+                        onCancel={this.handleCancel}
+                    >
+                        <div className="pheader">{intl.get('Info.Warning')}</div>
+                        <div>
+                            <div className='pmodalcontent' style={{textAlign:"center"}}>{intl.get('Wallet.Areyousurebackup')}</div>
+                        </div>
+                    </Modal>
             </div>
         );
     }

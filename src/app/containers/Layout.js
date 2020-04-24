@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import {inject, observer} from 'mobx-react';
-import {getBalance} from 'utils/helper';
+import {getBalance, isSdkReady} from 'utils/helper';
 
 import './Layout.less';
 import RegisterMobile from './RegisterMobile';
 import ForgotPassword from './ForgotPassword';
 import Dashboard from './Dashboard';
 
-
+import Loading from '../components/Loading';
 import Login from 'containers/Login';
 import '../../../static/lib/notifications.css';
 
@@ -56,13 +56,46 @@ export default class Layout extends Component {
     }
     */
 
+    waitUntilSdkReady() {
+        this.setState({
+            initializeStep: 'Layout.waitingForSDK'
+        });
+        let id = setInterval(async () => {
+            let ready = false;
+            try {
+                ready = await isSdkReady();
+                this.setState({
+                    initializeStep: 'Layout.SDKIsReady'
+                });
+            } catch (e) {
+                this.setState({
+                    initializeStep: 'Layout.initSDKFailed'
+                });
+            }
+            if (ready) {
+                try {
+                    await this.props.getMnemonic();
+                    this.setState({
+                        initializeStep: 'Layout.initSuccess',
+                        loading: false
+                    });
+                    clearInterval(id);
+                } catch (err) {
+                    this.setState({
+                        initializeStep: 'Layout.initFailed',
+                    });
+                }
+            }
+        }, 1000);
+    }
+
     componentDidMount() {
         this.props.setuserstore(this.props.getuserStore());
         this.props.setsettinguserstore(this.props.getuserStore());
         this.props.setnetworkstore(this.props.getnetworkStore());
         this.props.setwalletstore(this.props.getwalletStore());
         //this.wanTimer = setInterval(() => this.updateWANBalanceForInter(), 5000);
-        //this.waitUntilSdkReady();
+        this.waitUntilSdkReady();
     }
 
     componentWillUnmount() {
@@ -89,16 +122,19 @@ export default class Layout extends Component {
         //} else {
 
         console.log(UserAccountExist);
-
-        if (RequestSignIn) {
-            return <RegisterMobile/>
-        } else if (RequestForgotPassword) {
-            return <ForgotPassword/>
-        } else if (!IsLogin) {
-            return <Login/>
+        if (this.state.loading) {
+            return <Loading step={this.state.initializeStep}/>
         } else {
-            return <Dashboard/>
+            if (RequestSignIn) {
+                return <RegisterMobile/>
+            } else if (RequestForgotPassword) {
+                return <ForgotPassword/>
+            } else if (!IsLogin) {
+                return <Login/>
+            } else {
+                return <Dashboard/>
+            }
+
         }
-        //}
     }
 }

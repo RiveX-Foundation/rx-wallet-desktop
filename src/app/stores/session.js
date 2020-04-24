@@ -47,6 +47,20 @@ class Session {
         this.setIsLogin(false);
     }
 
+    @action getMnemonic () {
+      return new Promise((resolve, reject) => {
+        wand.request('phrase_has', null, (err, val) => {
+          if (!err) {
+            self.hasMnemonicOrNot = val;
+            resolve(val);
+          } else {
+            self.hasMnemonicOrNot = false;
+            resolve(false);
+          }
+        });
+      })
+    }
+
     @action getUserAcc() {
         if (localStorage.getItem('registeredbefore') == "" || localStorage.getItem('registeredbefore') == null) {
             this.UserAccountExist = false;

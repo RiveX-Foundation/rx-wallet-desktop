@@ -88,12 +88,13 @@ class ManageWalletDetail extends Component {
             bcrypt.compare(this.state.password, this.state.mnemonicpass, (err, res) => {
                 if (res) {
                     const secretHex = this._toHex(secretAscii);
-                    var authcode = speakeasy.totp({
+                    var authcode = speakeasy.totp.verifyDelta({
                         secret: secretHex,
                         encoding: 'hex',
-                        window: 1
+                        token:this.state.mfa,
+                        window: 3
                     });
-                    if (authcode == this.state.mfa) {
+                    if (authcode) {
                         console.log("passwords match");
                         createNotification('success', 'Valid password');
                         this.setState({mnemonicvisibility: {display: "block"}});
@@ -142,12 +143,13 @@ class ManageWalletDetail extends Component {
             bcrypt.compare(this.state.password, this.state.mnemonicpass, (err, res) => {
                 if (res) {
                     const secretHex = this._toHex(secretAscii);
-                    var authcode = speakeasy.totp({
+                    var authcode = speakeasy.totp.verifyDelta({
                         secret: secretHex,
                         encoding: 'hex',
-                        window: 1
+                        token:this.state.mfa,
+                        window: 3
                     });
-                    if (authcode == this.state.mfa) {
+                    if (authcode ) {
                         console.log("passwords match");
                         createNotification('success', 'Valid password');
                         this.setState({pkeyvisibility: {display: "block"}});
@@ -206,12 +208,13 @@ class ManageWalletDetail extends Component {
             bcrypt.compare(this.state.password, this.state.mnemonicpass, (err, res) => {
                 if (res) {
                     const secretHex = this._toHex(secretAscii);
-                    var authcode = speakeasy.totp({
+                    var authcode = speakeasy.totp.verifyDelta({
                         secret: secretHex,
                         encoding: 'hex',
-                        window: 1
+                        token:this.state.mfa,
+                        window: 3
                     });
-                    if (authcode == this.state.mfa) {
+                    if (authcode ) {
                         var wallets = JSON.parse(localStorage.getItem("wallets"));
                         if (wallets[0].publicaddress == this.state.selectedwalletaddress) {
                             createNotification('success', 'Removed dApp wallet! The app will relaunch in 5 seconds');
@@ -524,6 +527,8 @@ class ManageWalletDetail extends Component {
                             visible={this.state.removemodalvisible}
                             onOk={this.validatePasswordsRemoval}
                             onCancel={this.handleCancel}
+                            okText = {intl.get('ValidatorRegister.acceptAgency')}
+                            cancelText= {intl.get('ValidatorRegister.notAcceptAgency')}
                         >
                             <p className='modalcontent'>{intl.get('Modal.AreYouSureRemoveWallet').replace('{walletname}', this.state.selectedwalletname)}</p>
                             <div className="inputpanel">

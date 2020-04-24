@@ -1,16 +1,31 @@
 .loadingBg {
   background-color: #1A1B2C;
-  min-height: calc(100vh);
+  min-height: 100vh;
   text-align: center;
-  vertical-align: middle;
   color: #8D8D96;
-  line-height: 50%;
-  padding: 30% 0;
-  .ant-progress-text {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .loadingCont {
+    width: 50%
+  }
+
+  :global(.ant-progress-text) {
     color: white;
   }
-  .progressSty {
-    width: 50%;
-    margin: 20px 0;
+
+  .tipContainer {
+    height: 10px;
+    overflow: visible;
+
+    .progressSty {
+      margin: 20px 0;
+    }
+
+    .tip {
+      line-height: 100%;
+      margin: 10px 0px;
+    }
   }
 }
