@@ -32,7 +32,7 @@ class WalletListing extends Component {
         this.loadwallet();
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         // console.log(JSON.stringify(newProps.selectedwalletlist));
         if (newProps.selectedwalletlist.length > 0) {
             this.selectWalletOnLoad(newProps.selectedwalletlist[0].publicaddress);

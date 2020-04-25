@@ -40,6 +40,8 @@ const en_US = {
     "Settings.ExportPrivateKey.SelectTokenAsset": "Select which token below you want to export ",
     "Settings.Create": "Create a wallet",
 
+    "Loading.transData": "Loading...",
+
     'Modal.RemoveWallet': 'Remove Wallet',
     'Modal.AreYouSureRemoveWallet': 'Are you sure you want to remove {walletname} ?',
     'Modal.AreYouSureChangeNetwork.Msg1': 'Changing network will reload the app',

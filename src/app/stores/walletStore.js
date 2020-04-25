@@ -1587,10 +1587,8 @@ class walletStore {
         self.selectedassettokenlist = [];
         self.totalassetworth = 0;
         var tokenassetcodelist = "";
-        console.log("THIS SELECTED WALLET: " + this.selectedwallet.tokenassetlist);
         this.selectedwallet.tokenassetlist.map(async (tokenitem, index) => {
             tokenassetcodelist += tokenitem.AssetCode + ",";
-            console.log("TOKEN ITEM TOKEN TYPE: " + tokenitem.TokenType);
             if (tokenitem.TokenType == "eth") {
                 var web3 = new Web3(this.networkstore.selectedethnetwork.infuraendpoint + this.infuraprojectid);
                 web3.eth.getBalance(tokenitem.PublicAddress).then(balance => {

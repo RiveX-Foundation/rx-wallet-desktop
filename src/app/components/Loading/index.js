@@ -45,7 +45,7 @@ class Loading extends Component {
                                           strokeColor={{'0%': '#108ee9', '100%': '#87d068',}}
                                           percent={parseFloat(this.state.percent)}/>
                                 <div className={style.tipContainer}>
-                                    <p className={style.tip}>{intl.get('Loading.tips')} ({step ? intl.get(step) : ''})</p>
+                                    <p className={style.tip}>{intl.get('Loading.transData')}</p>
                                 </div>
                             </div>
                         </div>

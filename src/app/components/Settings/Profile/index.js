@@ -65,7 +65,7 @@ class Profile extends Component {
         //this.readTextFile("../../static/countrymobile.json");
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         console.log(newProps.name);
     }
 

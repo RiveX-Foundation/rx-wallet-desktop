@@ -55,7 +55,7 @@ class HWWalletDetail extends Component {
         this.deriveAddresses(this.page * this.pageSize, this.pageSize, true);
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         if (this.state.createhwwalletcb) {
             createNotification('success', intl.get('Wallet.AddedNewAssetToken', {code: this.state.newaddedaddress}));
             this.updateTokenAssetList(newProps.wallets, newProps.wallets.length - 1);
