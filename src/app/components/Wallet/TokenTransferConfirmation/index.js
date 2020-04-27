@@ -68,7 +68,7 @@ class TokenTransferConfirmation extends Component {
     componentDidMount() {
         this.tokencontract = this.props.selectedTokenAsset.TokenInfoList[0].ContractAddress;
         if (this.props.selectedTokenAsset.TokenType == "eth" || this.props.selectedTokenAsset.TokenType == "erc20") {
-            this.web3Provider = this.props.selectedethnetwork.infuraendpoint + "/v3/5bc9db68fd43445fbc2e6a5b5f269687";
+            this.web3Provider = this.props.selectedethnetwork.infuraendpoint + process.env.INFURA_PROJECT_ID;
         }
 
         this.props.setotptransfertoken("");

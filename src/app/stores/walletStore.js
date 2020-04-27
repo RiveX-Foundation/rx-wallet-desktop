@@ -72,7 +72,7 @@ class walletStore {
     @observable mnemonicpassword = "";
     @observable mnemonicpasswordconfirm = "";
     @observable currentGasPrice = 100;
-    @observable infuraprojectid = "/v3/5bc9db68fd43445fbc2e6a5b5f269687";
+    @observable infuraprojectid = process.env.INFURA_PROJECT_ID;
     @observable pendingpassword = "";
     @observable googleAuthKeyPending = "";
     @observable googleAuthKey = "";
@@ -521,7 +521,7 @@ class walletStore {
             });
             */
         } else if (this.selectedTokenAsset.TokenType == "erc20" || this.selectedTokenAsset.TokenType == "eth") {
-            console.log(this.networkstore.selectedethnetwork.etherscanendpoint + '?module=account&action=txlist&address=' + addr + '&sort=desc&apikey=' + etherscanAPIKey);
+            //console.log(this.networkstore.selectedethnetwork.etherscanendpoint + '?module=account&action=txlist&address=' + addr + '&sort=desc&apikey=' + etherscanAPIKey);
             axios({
                 method: 'get',
                 url: this.networkstore.selectedethnetwork.etherscanendpoint + '?module=account&action=txlist&address=' + addr + '&sort=desc&apikey=' + etherscanAPIKey,

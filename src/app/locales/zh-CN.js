@@ -240,6 +240,15 @@ const zh_CN = {
     "Twofa.Afterscan": "您的应用程序将在扫描条形码后显示6位数代码. 在下面输入此代码，然后输入您的钱包密码. 点击验证以完成.",
     "Twofa.Entercode": "输入您应用程序中的6位数代码",
 
+    "DEX.Warning1": "通过点击“ WRDEX”，您将被带到 www.wrdex.io，这是一个与Rivex Foundation Limited无关联的公开资源的去中心化交易所。当你访问www.wrdex.io，即表示您完全同意以下内容",
+    "DEX.Warning2" : "任何因后果性，无关紧要，间接和直接使用WRDEX而引起的损失及损害均由您完全承担.",
+    "DEX.Warning3" :"您将遵守WRDEX所规定的平台使用条款.",
+    'dAppConfirm.sign':"你是否允许此DApp使用你的钱包签名?",
+    'dAppConfirm.send': "您是否允许此DApp与您的钱包进行交易?",
+    'dAppConfirm.warn' : "此操作可能会更改您钱包中的资产.",
+    'ValidatorRegister.acceptAgency' : '是',
+    'ValidatorRegister.notAcceptAgency' : '否',
+
     "Success.Success": "成功"
 
 }

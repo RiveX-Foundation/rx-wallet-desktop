@@ -3,7 +3,7 @@ import {Button, Input} from 'antd';
 import {inject, observer} from 'mobx-react';
 import intl from 'react-intl-universal';
 import buttonback from 'static/image/icon/back.png';
-import buttonartboard3 from 'static/image/graphic/security01.jpg';
+import buttonartboard3 from 'static/image/graphic/security2faoff.jpg';
 import {createNotification} from 'utils/helper';
 
 import './index.less';

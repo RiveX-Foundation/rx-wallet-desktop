@@ -180,7 +180,8 @@ const en_US = {
     'menuConfig.sharedwallet': 'SHARED WALLET',
     'menuConfig.hardwarewallet': 'HARDWARE WALLET',
     'menuConfig.importwallet': 'IMPORT WALLET',
-
+    'menuConfig.settings': 'Settings',
+    
     'Auth.EnterOTP': 'Enter OTP',
     'Auth.RequestOTP': 'Request OTP',
     'Auth.SecretKeyInText': 'Secret key in plain text: ',
