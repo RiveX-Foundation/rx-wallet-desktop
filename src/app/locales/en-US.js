@@ -69,7 +69,7 @@ const en_US = {
     'Wallet.RecoveryPhrase': 'RECOVERY PHRASE',
     'Wallet.Join': "Join",
     'Wallet.IHaveBackupMySeed': 'I have backed up my Phrase',
-    'Wallet.Areyousurebackup' : "Did you backup the seed phrase?",
+    'Wallet.Areyousurebackup': "Did you backup the seed phrase?",
     'Wallet.WriteDownRecoveryPhrase': 'Write down these words IN ORDER and store them in a secure place',
     'Wallet.NeverShareRecovery': 'Never share your Recovery Phrase with anyone. Store it securely!',
     'Wallet.VerifyRecoveryPhrase': 'VERIFY RECOVERY PHRASE',
@@ -181,7 +181,7 @@ const en_US = {
     'menuConfig.hardwarewallet': 'HARDWARE WALLET',
     'menuConfig.importwallet': 'IMPORT WALLET',
     'menuConfig.settings': 'Settings',
-    
+
     'Auth.EnterOTP': 'Enter OTP',
     'Auth.RequestOTP': 'Request OTP',
     'Auth.SecretKeyInText': 'Secret key in plain text: ',
@@ -251,6 +251,9 @@ const en_US = {
     'Layout.initSuccess': 'Successful initialization',
     'Layout.initFailed': 'Initialize failed',
 
+    "Settings.Walletrename": "Rename wallet?",
+    "Settings.Newwalletname" : "New wallet name",
+
     "Twofa.Warning1": 'Please save the key on paper. This Key will allow you to recover your Google Authenticator in case of phone loss.',
     "Twofa.Warning2": 'If you lose your 2FA key, you will not be able to log in and the account will be unrecoverable',
     "Twofa.Scanbarcode": "Scan the barcode with your 2FA app",
@@ -258,7 +261,7 @@ const en_US = {
     "Twofa.Cantuse": "If you can't scan the barcode, then enter the plain text secret key manually. Remember to save this secret key somewhere safe.",
     "Twofa.Afterscan": "After scanning the barcode, your app will display a 6-digit code. Enter this code below, followed by your wallet password. Click verify to complete.",
     "Twofa.Entercode": "Enter the 6-digit code from your app",
-    "Twofa.Disable":"Disable Two-Factor Authentication?",
+    "Twofa.Disable": "Disable Two-Factor Authentication?",
     "Twofa.Disablewarning1": "If you turn off two-factor authentication, your account becomes less secure, only protected by a password.",
     "Twofa.Disablewarning2": "We strongly advise you to keep two-factor authentication enabled for your own protection.",
     "Success.Success": "Success",

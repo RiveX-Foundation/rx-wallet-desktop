@@ -562,7 +562,7 @@ class ManageWalletDetail extends Component {
                                 <div
                                     className='pmodalcontent'>{intl.get('Settings.ExportPrivateKey.SelectTokenAsset')}</div>
                                 <center>
-                                    <div className="inputwrapper">
+                                    <div className="inputwrapper" style={{width: "50%",alignItems:"center"}}>
                                         <div className="panelwrapper">
                                             <Input value={this.state.temporarytokenname}
                                                    placeholder={intl.get('Settings.Token')} onClick={this.showlist}
@@ -639,18 +639,20 @@ class ManageWalletDetail extends Component {
                         </Modal>
 
                         <Modal
-                            title={intl.get('Settings.EditWalletName')}
+                            title=""
                             visible={this.state.changewalletnamemodalvisible}
                             onOk={this.handleChangeWalletNameOk}
                             onCancel={this.handleCancel}
+                            okText = {intl.get('ValidatorRegister.acceptAgency')}
+                            cancelText= {intl.get('ValidatorRegister.notAcceptAgency')}
                         >
-                            <p className='modalcontent'>
-                                <div></div>
+                             <div className="pheader">{intl.get('Settings.Walletrename')}</div>
+                            <div className='pmodalcontent'> {intl.get('Settings.Newwalletname')}
                                 <div className="panelwrapper borderradiusfull">
-                                    <Input className="inputEditWalletName" onChange={this.inputChanged}
+                                    <Input className="inputTransparent" onChange={this.inputChanged}
                                            onKeyDown={this.onKeyDownChangeName}/>
                                 </div>
-                            </p>
+                            </div>
                         </Modal>
 
                     </div>

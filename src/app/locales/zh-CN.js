@@ -249,7 +249,15 @@ const zh_CN = {
     'ValidatorRegister.acceptAgency' : '是',
     'ValidatorRegister.notAcceptAgency' : '否',
 
-    "Success.Success": "成功"
+    "Success.Success": "成功",
+
+    "Twofa.Disable": "禁用双重要素身份验证?",
+    "Twofa.Disablewarning1" : "如果关闭双重要素身份验证，帐户的安全性将降低，仅受密码保护.",
+    "Twofa.Disablewarning2" : "我们强烈建议您启用双重要素身份验证以保护自己.",
+    'Wallet.Areyousurebackup' : "您是否备份了种子词组?",
+    "Settings.Walletrename" : "",
+    "Settings.Newwalletname" : ""
+
 
 }
 export default zh_CN;
