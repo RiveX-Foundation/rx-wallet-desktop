@@ -1614,7 +1614,7 @@ class walletStore {
                     self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
                 });
                 self.selectedassettokenlist.push(tokenitem);
-            }/*else if(tokenitem.TokenType == "wrc20"){
+            }else if(tokenitem.TokenType == "wrc20"){
          var TokenInfo = tokenitem.TokenInfoList.find(x => x.Network == this.networkstore.selectedwannetwork.shortcode);
          TokenInfo = toJS(TokenInfo);
         var CurrentNetworkAllTokenInfo = toJS(this.allTokenAsset).find(x => x.AssetCode == tokenitem.AssetCode);
@@ -1637,7 +1637,7 @@ class walletStore {
         }).catch(err => {
           console.log(err);
         });
-      }*/ else if (tokenitem.TokenType == "wan") {
+      } else if (tokenitem.TokenType == "wan") {
                 var TokenInfo = tokenitem.TokenInfoList.find(x => x.Network == this.networkstore.selectedwannetwork.shortcode);
                 TokenInfo = toJS(TokenInfo);
                 iWanUtils.getBalance("WAN", tokenitem.PublicAddress).then(res => {

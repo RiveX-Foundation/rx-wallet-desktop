@@ -207,6 +207,8 @@ class Network extends Component {
                     visible={this.state.modalvisible}
                     onOk={this.handleOk}
                     onCancel={this.handleCancel}
+                    okText= {intl.get('ValidatorRegister.acceptAgency')}
+                    cancelText={intl.get('ValidatorRegister.notAcceptAgency')}
                 >
                     <p className='modalcontent'>{intl.get('Modal.AreYouSureChangeNetwork.Msg1')}</p>
                     <p className='modalcontent'>{intl.get('Modal.AreYouSureChangeNetwork.Msg2')}</p>
