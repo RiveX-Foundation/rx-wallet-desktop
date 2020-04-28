@@ -272,8 +272,8 @@ class Dex extends Component {
             gasPrice: msg.message.gasPrice ? fromWei(msg.message.gasPrice, 'Gwei') : gasPrice,
             data: msg.message.data
         };
-        console.log("wand req");
-        console.log(trans);
+       // console.log("wand req");
+       // console.log(trans);
         wand.request('transaction_normal', trans, function (err, val) {
                 if (err) {
                     console.log('error printed inside callback: ', err)

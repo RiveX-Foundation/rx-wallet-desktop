@@ -151,6 +151,27 @@ export default (i18n) => {
                 click: () => {
                     shell.openExternal('https://www.rivex.io')
                 }
+            },
+            {type: 'separator'},
+            {
+                label: i18n.t('main.applicationMenu.help.privacypolicy'),
+                click: () => {
+                    shell.openExternal('https://www.rivex.io')
+                }
+            },
+            {type: 'separator'},
+            {
+                label: i18n.t('main.applicationMenu.help.aml'),
+                click: () => {
+                    shell.openExternal('https://www.rivex.io')
+                }
+            },
+            {type: 'separator'},
+            {
+                label: i18n.t('main.applicationMenu.help.eula'),
+                click: () => {
+                    shell.openExternal('https://www.rivex.io')
+                }
             }
         ]
     }

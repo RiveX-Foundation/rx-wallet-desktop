@@ -95,6 +95,7 @@ class WalletCreation extends Component {
     copy = () => {
         this.inputEl1.select();
         document.execCommand('copy');
+        createNotification('info',intl.get('Info.CopyDone'));
         // This is just personal preference.
         // I prefer to not show the the whole text area selected.
         //e.target.focus();

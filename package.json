@@ -1,7 +1,7 @@
 {
   "name": "rvxwallet",
   "productName": "RX Wallet",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "description": "RiveX Wallet",
   "main": "./build/main.js",
   "author": {
@@ -115,6 +115,7 @@
     "babel-loader": "^8.0.5",
     "babel-plugin-import": "^1.11.0",
     "babel-plugin-root-import": "^6.1.0",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "cross-env": "^5.2.0",
     "css-loader": "^2.1.1",
     "electron": "^5.0.0",

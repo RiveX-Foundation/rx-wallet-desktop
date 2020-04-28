@@ -39,7 +39,7 @@ const en_US = {
     "Settings.SuccessfullyRemoved": "Successfully Removed",
     "Settings.ExportPrivateKey.SelectTokenAsset": "Select which token below you want to export ",
     "Settings.Create": "Create a wallet",
-
+    "Backup.copyToClipboard" : "Copy",
     "Loading.transData": "Loading...",
 
     'Modal.RemoveWallet': 'Remove Wallet',
