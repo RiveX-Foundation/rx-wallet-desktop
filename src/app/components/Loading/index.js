@@ -1,10 +1,8 @@
-import { Progress } from 'antd';
-import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
-
+import {Progress} from 'antd';
+import React, {Component} from 'react';
+import {inject, observer} from 'mobx-react';
 import intl from 'react-intl-universal';
-
-import './index.less';
+import style from './index.less';
 
 @inject(stores => ({
   language: stores.languageIntl.language,
@@ -20,26 +18,43 @@ class Loading extends Component {
     this.timer = setInterval(() => {
       let currePercent = this.state.percent;
       let tmp = 10 + parseFloat(currePercent);
-      if(tmp === 100) {
-        tmp = 99.9
-        clearInterval(this.timer);
-      }
+        if (tmp === 100) {
+            tmp = 99.9
+            clearInterval(this.timer);
+        }
       this.setState({
         percent: tmp
       })
     }, 2000)
   }
-  
+
   componentWillUnmount() {
     clearInterval(this.timer);
   }
 
   render() {
+      let {step} = this.props;
     return (
-      <div className="loadingBg">
-        <Progress className="progressSty" strokeColor={{ '0%': '#108ee9', '100%': '#87d068', }} percent={parseFloat(this.state.percent)} />
-        <p>{intl.get('Loading.tips')}</p>
-      </div>
+        <div className="steps-content" style={{backgroundColor: '#1A1B2C'}}>
+            <div className="fadeInAnim loginbg">
+                <div className="leftpanel" onClick={this.panelClick}>
+                    <center>
+                        <div className={style.loadingBg}>
+                            <div className={style.loadingCont}>
+                                <Progress className={style.progressSty}
+                                          strokeColor={{'0%': '#108ee9', '100%': '#87d068',}}
+                                          percent={parseFloat(this.state.percent)}/>
+                                <div className={style.tipContainer}>
+                                    <p className={style.tip}>{intl.get('Loading.transData')}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </center>
+                </div>
+            </div>
+        </div>
+
+
     );
   }
 }

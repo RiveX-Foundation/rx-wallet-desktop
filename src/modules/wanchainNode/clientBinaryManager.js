@@ -11,7 +11,7 @@ const logger = Logger.getLogger('ClientBinaryManager')
 class Manager extends EventEmitter {
     constructor() {
         super()
-        
+
     }
 
     async init(restart) {
@@ -39,7 +39,7 @@ class Manager extends EventEmitter {
 
         const options = {
             uri: BINARY_URL,
-            timeout: 1000*60*5,
+            timeout: 1000 * 60 * 5,
             json: true
         }
 
@@ -78,7 +78,7 @@ class Manager extends EventEmitter {
         const binaryVersion = latestConfig.clients[nodeType].platforms[platform][process.arch]
         const checksums = _.pick(binaryVersion['download'], ['md5']) // return an object
         const algorithm = _.keys(checksums)
-        const hash = _.values(checksums) 
+        const hash = _.values(checksums)
 
         nodeInfo = {
             type: nodeType,
@@ -87,11 +87,11 @@ class Manager extends EventEmitter {
             algorithm
         }
 
-        if (latestConfig 
+        if (latestConfig
             && JSON.stringify(localConfig) !== JSON.stringify(latestConfig)
             && nodeVersion !== skippedVersion) {
-                logger.debug('New client binaries config found, asking user if they wish to update...');
-            }
+            logger.debug('New client binaries config found, asking user if they wish to update...');
+        }
 
     }
 
@@ -100,7 +100,7 @@ class Manager extends EventEmitter {
     }
 
     _writeLocalConfig(content) {
-        
+
     }
 
     _emit(status, msg) {

@@ -12,8 +12,8 @@ export const FALLBACK_LANG = 'en_US'
 export const NAMESPACE = 'translation'
 
 export const API_EthGas = 'https://ethgasstation.info/json/ethgasAPI.json';
-export const API_Server = 'https://admin.rivex.io/';
-export const etherscanAPIKey = "Z92QFIY7SR8XYJQWHEIRVPNG92VZ274YS4";
+export const API_Server = "https://staging.rivex.io/";
+export const etherscanAPIKey = process.env.ETHERSCAN_API_KEY;
 
 export const BIP44PATH = {
     ETH: "m/44'/60'/0'/0/",

@@ -69,7 +69,13 @@
                 "explorer": "",
                 "webURL": "https://rivex.io",
                 "explorerURL": "",
-                "toggle": "Toggle Developer Tools"
+                "toggle": "Toggle Developer Tools",
+                "privacypolicy": "Privacy Policy",
+                "privacyurl": "https//rivex.io",
+                "aml": "AML Policy",
+                "amlurl": "https//rivex.io",
+                "eula": "EULA",
+                "eulaurl": "https//rivex.io"
             }
         }
     }

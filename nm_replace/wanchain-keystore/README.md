@@ -1,2 +1,0 @@
-# wanchain-keystore
-wanchain keystore 

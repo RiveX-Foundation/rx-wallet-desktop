@@ -1,252 +1,259 @@
-  @modal-input-bg: #1F2034;
+@modal-input-bg: #1F2034;
 
-  .textc {
-    color: black;
-    font-size: 50px;
+.textc {
+  color: black;
+  font-size: 50px;
 
-    .pwdTitle {
-      font-size: 16px;
-      font-weight: 900;
-      color: white;
-      text-align: left;
-      padding: 20px 0 0 153px;
+  .pwdTitle {
+    font-size: 16px;
+    font-weight: 900;
+    color: white;
+    text-align: left;
+    padding: 20px 0 0 153px;
 
-      .anticon-info-circle {
-        display: initial!important;
-      }
-    }
-
-    input {
-      margin-bottom: 0!important;
+    .anticon-info-circle {
+      display: initial !important;
     }
   }
 
-  .zContent .registerContent {
+  input {
+    margin-bottom: 0 !important;
+  }
+}
+
+.zContent .registerContent {
+  position: relative;
+}
+
+.nowalletpanel {
+  text-align: center;
+  width: calc(100vw);
+  height: calc(100vh);
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.nowalletpanel .label {
+  position: absolute;
+  right: 0;
+  left: 0;
+  margin-top: 120px;
+}
+
+.ant-dropdown-menu {
+  background-color: #24284a;
+  padding: 0px;
+  overflow: hidden;
+}
+
+.ant-dropdown-menu-item {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  padding: 8px 12px;
+
+  img {
+    width: 15px;
+    margin-right: 10px;
+  }
+}
+
+.ant-dropdown-menu-item:hover {
+  background-color: #2f3461;
+}
+
+.ant-modal-content .ant-btn:hover {
+  background-color: transparent !important;
+  color: #fff !important;
+}
+
+.ant-modal-content .ant-btn-primary {
+  background-color: #2D2CA0 !important;
+  color: #fff !important;
+}
+
+.ant-modal-content .ant-btn-primary:hover {
+  background-color: #2D2CA0 !important;
+}
+
+.walletdetailpanel {
+  .walletname {
+    font-size: 1.5em;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  .tablewrapperctn {
+    z-index: 1;
     position: relative;
   }
 
-  .nowalletpanel{
-    text-align: center;
-    width:calc(100vw);
-    height:calc(100vh);
-    display: table-cell;
-    vertical-align: middle;
+  .tablewrapper {
+    padding: 0px 20px;
+    border-top: 2px solid #25294D;
+    margin: 0px 20px;
   }
 
-  .nowalletpanel .label{
-    position: absolute;
-    right: 0;
-    left: 0;
-    margin-top: 120px;
-  }
-
-  .ant-dropdown-menu{
-    background-color: #24284a;
-    padding: 0px;
-    overflow: hidden;
-  }
-  .ant-dropdown-menu-item{
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    padding: 8px 12px;
-    img{
-      width: 15px;
-      margin-right: 10px;
-    }
-  }
-  .ant-dropdown-menu-item:hover{
-    background-color: #2f3461;
-  }
-
-  .ant-modal-content .ant-btn:hover{
+  .hovernone:hover {
     background-color: transparent !important;
-    color: #fff !important;
-  }
-  .ant-modal-content .ant-btn-primary{
-    background-color: #2D2CA0 !important;
-    color: #fff !important;
-  }
-  .ant-modal-content .ant-btn-primary:hover{
-    background-color: #2D2CA0 !important;
+    cursor: default !important;
   }
 
-  .walletdetailpanel{
-    .walletname{
-      font-size:1.5em;
-      padding: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+  tr:hover {
+    background-color: #25294d;
+    cursor: pointer;
+  }
 
-    table {
-      width:100%;
-    }
+  thead {
+    // border-top:1px solid #464a5d;
+    font-weight: 600;
 
-    .tablewrapperctn{
-      z-index: 1;
-      position: relative;
-    }
-
-    .tablewrapper{
-      padding: 0px 20px;
-      border-top: 2px solid #25294D;
-      margin: 0px 20px;
-    }
-
-    .hovernone:hover{
-      background-color:transparent !important;
-      cursor: default !important;
-    }
-
-    tr:hover {
-      background-color: #25294d;
-      cursor: pointer;
-    }
-
-    thead{
-      // border-top:1px solid #464a5d;
-      font-weight: 600;
-
-      .header{
-        font-size:1em;
-        padding-top:20px;
-        padding-bottom:20px;  
-        border:0px !important;
-      }
-    }
-
-    .tdgrey{
-      color: #b5b0b0;
-      padding:5px 0px 5px 0px;
-    }
-
-    .tdgreen {
-      color:#64f44c;
-      font-weight:700;
-      padding:5px 0px 5px 0px;
-    }
-
-    .tdred {
-      color:#ef3333;
-      font-weight:700;
-      padding:5px 0px 5px 0px;
-    }
-
-    .tdcenter{
-      text-align: center;
-    }
-
-    .tdright{
-      text-align: right;
-    }
-
-    .tdellipsis{
-      width:150px;
-      white-space: nowrap; 
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: inline-block;
-    }
-
-    .subtitle{
-      padding-top:30px;
-      padding-bottom:15px;
-      text-align: center;
-      font-size:1.2em;
-    }
-
-    .rvxbalance{
-      color: #fff;
-      font-size: 26px;
-      /* font-weight: 700; */
-      /* margin-bottom: 5px; */
-      margin-top: 20px;
-      span{
-        font-size: 20px;
-        margin-left: 5px;
-      }
-    }
-
-    .usdbalance{
-      color: #5f617d;
-      font-size: 1.2em;
-      margin-bottom: 20px;
-    }
-
-    .contentpanel{
-      text-align: center;
-    }
-
-    .button{
-      width:120px;
-      height:40px;
-      border-radius:50px !important;
-      transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-      background-color:transparent !important;
-      border:1.5px solid;
-      align-items: center;
-      display: inline-flex;
-      justify-content: center;
-
-      span{
-        font-size:0.8em;
-      }
-
-      img{
-        width:20px;
-        // margin-top:-2px;
-      }
-    }
-
-    .butreceive{
-      border-color : #66fa74 !important;
-
-      span{
-        color:#66fa74;
-        font-weight: bold;
-      }
-    }
-
-    .button:hover{
-      opacity: 1;        
-    }
-  
-    .butsend{
-      border-color : #ef3333 !important;
-
-      span{
-        color:#ef3333;
-        font-weight: bold;
-      }
-    }
-
-    .notransaction{
-      text-align: center;
-      font-size: 21px;
-      margin-top: 100px;
+    .header {
+      font-size: 1em;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      border: 0px !important;
     }
   }
 
-  .middletitle{
-    font-size: 20px;
+  .tdgrey {
+    color: #b5b0b0;
+    padding: 5px 0px 5px 0px;
+  }
+
+  .tdgreen {
+    color: #64f44c;
+    font-weight: 700;
+    padding: 5px 0px 5px 0px;
+  }
+
+  .tdred {
+    color: #ef3333;
+    font-weight: 700;
+    padding: 5px 0px 5px 0px;
+  }
+
+  .tdcenter {
+    text-align: center;
+  }
+
+  .tdright {
+    text-align: right;
+  }
+
+  .tdellipsis {
+    width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+  }
+
+  .subtitle {
+    padding-top: 30px;
+    padding-bottom: 15px;
+    text-align: center;
+    font-size: 1.2em;
+  }
+
+  .rvxbalance {
     color: #fff;
-    font-family: NotoSans-Bold;
+    font-size: 26px;
+    /* font-weight: 700; */
+    /* margin-bottom: 5px; */
+    margin-top: 20px;
+
+    span {
+      font-size: 20px;
+      margin-left: 5px;
+    }
   }
 
-  .chartvalue-high{
-    position: absolute;
-    color: #3c9292;
-    font-size: 13px;
-    left: 20px;
-    top: 15px;
+  .usdbalance {
+    color: #5f617d;
+    font-size: 1.2em;
+    margin-bottom: 20px;
   }
-  .chartvalue-low{
-    position: absolute;
-    bottom: 15px;
-    color: #3c9292;
-    font-size: 13px;
-    left: 20px;
+
+  .contentpanel {
+    text-align: center;
   }
+
+  .button {
+    width: 120px;
+    height: 40px;
+    border-radius: 50px !important;
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    background-color: transparent !important;
+    border: 1.5px solid;
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+
+    span {
+      font-size: 0.8em;
+    }
+
+    img {
+      width: 20px;
+      // margin-top:-2px;
+    }
+  }
+
+  .butreceive {
+    border-color: #66fa74 !important;
+
+    span {
+      color: #66fa74;
+      font-weight: bold;
+    }
+  }
+
+  .button:hover {
+    opacity: 1;
+  }
+
+  .butsend {
+    border-color: #ef3333 !important;
+
+    span {
+      color: #ef3333;
+      font-weight: bold;
+    }
+  }
+
+  .notransaction {
+    text-align: center;
+    font-size: 21px;
+    margin-top: 100px;
+  }
+}
+
+.middletitle {
+  font-size: 20px;
+  color: #fff;
+  font-family: NotoSans-Bold;
+}
+
+.chartvalue-high {
+  position: absolute;
+  color: #3c9292;
+  font-size: 13px;
+  left: 20px;
+  top: 15px;
+}
+
+.chartvalue-low {
+  position: absolute;
+  bottom: 15px;
+  color: #3c9292;
+  font-size: 13px;
+  left: 20px;
+}
 
