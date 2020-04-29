@@ -7,8 +7,8 @@ import buttonback from 'static/image/icon/back.png';
 import {WALLETID, WANPATH} from '../../../utils/support'
 import {createFirstAddr} from '../../../utils/helper';
 import './index.less';
+const bcrypt = require('bcryptjs');
 
-const {TextArea} = Input;
 
 @inject(stores => ({
     CreateEthAddress: (dappwallet) => stores.walletStore.CreateEthAddress(dappwallet),
@@ -83,13 +83,15 @@ class WalletRestorebySeed extends Component {
             createNotification('error', intl.get('Error.InvalidMnemonicphrase'));
             return;
         }
+        if (this.state.password == "" || this.state.password.length < 6) {
+            createNotification('error', intl.get('Error.Passwordlonger'));
+        } else {
         var wallets = localStorage.getItem("wallets");
         var dappwallet = false;
         if (wallets == null || wallets == "[]") {
             dappwallet = true;
             wand.request('phrase_has', null, (err, val) => {
                 if (!val) {
-
                     const {addWANAddress} = this.props
                     console.log("IMPORTING");
                     wand.request('phrase_import', {phrase: this.state.seedphase, pwd: this.state.password}, err => {
@@ -120,11 +122,28 @@ class WalletRestorebySeed extends Component {
                 }
             });
 
+        } else {
+            bcrypt.compare(this.state.password, localStorage.getItem('password'), (err, res) => {
+                if (res) {
+                    dappwallet = false;
+                    this.props.setSeedPhaseInString(this.state.seedphase, this.state.password);
+                    this.props.CreateEthAddress(dappwallet);
+                    this.props.setCurrent("walletcreated");
+                    this.props.wsLogin();
+                    this.setState({
+                        password:"",
+                        seedphase:"",
+                        walletname:""
+                    });
+                } else {
+                    createNotification('error', "Invalid password");
+                    this.setState({
+                        password:""
+                    });
+                }
+            });
         }
-        this.props.setSeedPhaseInString(this.state.seedphase, this.state.password);
-        this.props.CreateEthAddress(dappwallet);
-        this.props.setCurrent("walletcreated");
-        this.props.wsLogin();
+     }
     }
 
     back = () => {

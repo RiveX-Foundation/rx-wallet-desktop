@@ -156,21 +156,21 @@ export default (i18n) => {
             {
                 label: i18n.t('main.applicationMenu.help.privacypolicy'),
                 click: () => {
-                    shell.openExternal('https://www.rivex.io')
+                    shell.openExternal('https://www.rivex.io/privacy-policy')
                 }
             },
             {type: 'separator'},
             {
                 label: i18n.t('main.applicationMenu.help.aml'),
                 click: () => {
-                    shell.openExternal('https://www.rivex.io')
+                    shell.openExternal('https://www.rivex.io/rx-wallet-aml-policy')
                 }
             },
             {type: 'separator'},
             {
                 label: i18n.t('main.applicationMenu.help.eula'),
                 click: () => {
-                    shell.openExternal('https://www.rivex.io')
+                    shell.openExternal('https://www.rivex.io/rx-wallet-end-user-license-agreemen')
                 }
             }
         ]

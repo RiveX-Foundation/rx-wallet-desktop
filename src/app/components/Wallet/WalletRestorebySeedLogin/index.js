@@ -10,7 +10,6 @@ import './index.less';
 
 const bcrypt = require('bcryptjs');
 
-const {TextArea} = Input;
 
 @inject(stores => ({
     CreateEthAddress: (dappwallet) => stores.walletStore.CreateEthAddress(dappwallet),
