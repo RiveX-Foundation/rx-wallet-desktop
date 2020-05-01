@@ -248,16 +248,34 @@ export default (i18n) => {
         role: 'help',
         submenu: [
             {
+                label: i18n.t('main.applicationMenu.app.version', {version: app.getVersion()}),
+            },
+            {type: 'separator'},
+            {
                 label: i18n.t('main.applicationMenu.help.web'),
                 click: () => {
-                    shell.openExternal(i18n.t('main.applicationMenu.help.webURL'))
+                    shell.openExternal('https://www.rivex.io')
                 }
             },
+            {type: 'separator'},
             {
-                label: i18n.t('main.applicationMenu.help.explorer'),
+                label: i18n.t('main.applicationMenu.help.privacypolicy'),
                 click: () => {
-                    const url = setting.network.includes('main') ? 'https://www.wanscan.org' : 'http://testnet.wanscan.org'
-                    shell.openExternal(url)
+                    shell.openExternal('https://www.rivex.io/privacy-policy')
+                }
+            },
+            {type: 'separator'},
+            {
+                label: i18n.t('main.applicationMenu.help.aml'),
+                click: () => {
+                    shell.openExternal('https://www.rivex.io/rx-wallet-aml-policy')
+                }
+            },
+            {type: 'separator'},
+            {
+                label: i18n.t('main.applicationMenu.help.eula'),
+                click: () => {
+                    shell.openExternal('https://www.rivex.io/rx-wallet-end-user-license-agreemen')
                 }
             }
         ]
