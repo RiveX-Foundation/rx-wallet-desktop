@@ -12,7 +12,7 @@ export const FALLBACK_LANG = 'en_US'
 export const NAMESPACE = 'translation'
 
 export const API_EthGas = 'https://ethgasstation.info/json/ethgasAPI.json';
-export const API_Server = "https://staging.rivex.io/";
+export const API_Server = "https://rxp.rivex.io/";
 export const etherscanAPIKey = process.env.ETHERSCAN_API_KEY;
 
 export const BIP44PATH = {

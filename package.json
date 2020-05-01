@@ -1,12 +1,12 @@
 {
   "name": "rvxwallet",
   "productName": "RX Wallet",
-  "version": "1.0.23",
+  "version": "1.2.0",
   "description": "RiveX Wallet",
   "main": "./build/main.js",
   "author": {
-    "name": "RiveX Research Lab",
-    "email": "dev-team@rivex.org"
+    "name": "RiveX Development Team",
+    "email": "flisko@rivex.io"
   },
   "scripts": {
     "start": "electron .",
@@ -30,14 +30,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xxx"
+    "url": "git+https://github.com/RiveX-Foundation/rx-wallet-desktop"
   },
   "keywords": [],
-  "license": "ISC",
+  "license": "GNUGPL3",
   "bugs": {
-    "url": "https://github.com/xxx"
+    "url": "https://github.com/RiveX-Foundation/rx-wallet-desktop/tree/login-removal-release"
   },
-  "homepage": "https://github.com/xxx#readme",
+  "homepage": "https://rivex.io",
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.4.0",
     "@babel/runtime": "^7.4.0",

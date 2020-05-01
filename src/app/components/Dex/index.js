@@ -400,7 +400,7 @@ class Dex extends Component {
                         /> : null}
                     <webview
                         id="dappView"
-                        src="http://staging.wrdex.io/"
+                        src="https://exchange.wrdex.io/"
                         style={{width: '100%', height: '100%', display: this.state.displayed}}
                         nodeintegration="on"
                         preload={preload}
