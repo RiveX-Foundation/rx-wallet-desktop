@@ -247,7 +247,7 @@ class TokenTransferConfirmation extends Component {
                 const web3 = new Web3(this.web3Provider);
                 var TokenInfo = this.props.selectedTokenAsset.TokenInfoList[0];
                 var abiArray = JSON.parse(TokenInfo.AbiArray);
-                var receiver = this.props.tokentransferreceiver;//"0x8859C2BE1a9D6Fbe37E1Ed58c103487eE7B8b90F";
+                var receiver = this.props.tokentransferreceiver.toString().toLowerCase();//"0x8859C2BE1a9D6Fbe37E1Ed58c103487eE7B8b90F";
 
                 iWanUtils.getNonce("WAN", this.props.selectedTokenAsset.PublicAddress).then(async (res) => {
                     if (res && Object.keys(res).length) {
@@ -298,7 +298,7 @@ class TokenTransferConfirmation extends Component {
                 var abiArray = JSON.parse(TokenInfo.AbiArray);
 
                 var contractdata = new web3.eth.Contract(abiArray, TokenInfo.ContractAddress);
-                var receiver = this.props.tokentransferreceiver;//"0x8859C2BE1a9D6Fbe37E1Ed58c103487eE7B8b90F";
+                var receiver = this.props.tokentransferreceiver.toString().toLowerCase();//"0x8859C2BE1a9D6Fbe37E1Ed58c103487eE7B8b90F";
 
                 iWanUtils.getNonce("WAN", this.props.selectedTokenAsset.PublicAddress).then(async (res) => {
                     if (res && Object.keys(res).length) {
