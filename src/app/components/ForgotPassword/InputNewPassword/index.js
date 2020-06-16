@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Input, Button, Radio, Icon, Tooltip } from 'antd';
+import { Input, Button} from 'antd';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
 import logo from 'static/image/graphic/logo.png';

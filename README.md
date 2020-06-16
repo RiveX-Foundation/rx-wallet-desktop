@@ -97,11 +97,6 @@ Then, create a file named ".env" in the root directory of the project and add yo
 * MAC OS :
 
         npm run pack:mac
-        
-        
-1) Only supports node v11.15.0 and below
-2) To install wanchain-js-sdk successfully, please use node v11.15.0 and below
-3) If electron failed to installed properly, please delete node_modules folder and run npm install again
 
 ## License
 

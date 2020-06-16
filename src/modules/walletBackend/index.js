@@ -1,4 +1,4 @@
-import { walletCore } from 'wanchain-js-sdk';
+import {walletCore} from 'wanchain-js-sdk';
 import Logger from '~/src/utils/Logger'
 import configService from './config'
 import EventEmitter from 'events'
@@ -13,17 +13,18 @@ class WalletBackend extends EventEmitter {
     hdWalletDisconnectHandler(msg) {
         Windows.broadcast('notification', 'hdwallet', msg)
     }
-  
+
     async init(config) {
 
         this.config = Object.assign(configService.getConfig(), config)
+        console.log(this.config);
         try {
             this.logger.info('start creating walletbackend')
             this.sdk = new walletCore(this.config)
             this.logger.info('start initing walletbackend')
             await this.sdk.init()
         } catch (e) {
-            this.logger.error(e.message || e.stack) 
+            this.logger.error(e.message || e.stack)
         }
 
         this.sdk.on('disconnect', this.hdWalletDisconnectHandler)
@@ -33,7 +34,7 @@ class WalletBackend extends EventEmitter {
         this.logger.info('register walletbackend controllers')
         require('~/src/controllers')
         this.logger.info('finish initiating walletbackend')
-        
+
         this.emit('initiationDone')
     }
 }

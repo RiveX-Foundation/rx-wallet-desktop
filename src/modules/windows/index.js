@@ -1,10 +1,14 @@
+import fs from 'fs'
 import _ from 'lodash'
-import { app, BrowserWindow, ipcMain as ipc } from 'electron'
+import path from 'path'
+import { app, BrowserWindow, dialog, ipcMain as ipc } from 'electron'
 import Logger from '~/src/utils/Logger'
 import EventEmitter from 'events'
 import setting from '~/src/utils/Settings'
 import desktopIdle from 'desktop-idle'
-var path = require('path');
+import i18n from '~/config/i18n'
+
+const MAX_LOCKTIME = Math.pow(2, 31) - 1
 const logger = Logger.getLogger('Windows')
 
 class Window extends EventEmitter {
@@ -25,15 +29,16 @@ class Window extends EventEmitter {
         let electronOptions = {
             title: setting.appName,
             show: false,
-            width: 1100,
-            height: 720,
+            width: 1200,
+            height: 800,
             acceptFirstMouse: true,
             darkTheme: true,
             webPreferences: {
                 webaudio: true,
                 webgl: false,
                 webSecurity: true,
-                textAreasAreResizable: true
+                textAreasAreResizable: true,
+                webviewTag: true
             }
         }
 
@@ -55,12 +60,63 @@ class Window extends EventEmitter {
             this.emit('closed')
         })
 
-            /*
+        this.window.on('close', (e) => {
+            if (this.type === 'main') {
+                let history = global.wanDb.getItemAll('crossTrans', {});
+                let BTCHistory = global.wanDb.queryComm('crossTransBtc', items => {
+                    return items;
+                });
+                let hasPendingCrossTx = history.find((item) => {
+                    if (item.status === 'Redeemed' || item.status === 'Revoked' || item.status.toLowerCase().includes('fail')) {
+                        return false;
+                    } else {
+                        this._logger.info(`Unfinished cross chain Tx: ${item.status}`);
+                        this._logger.info(JSON.stringify(item));
+                        return true;
+                    }
+                });
+                let hasPendingBTCCrossTx = BTCHistory.find((item) => {
+                    if (!item.crossAddress) { // skip normal tx
+                        return false;
+                    }
+                    if (item.status === 'Redeemed' || item.status === 'Revoked' || item.status.toLowerCase().includes('fail')) {
+                        return false;
+                    } else {
+                        this._logger.info(`Unfinished BTC cross chain Tx: ${item.status}`);
+                        this._logger.info(JSON.stringify(item));
+                        return true;
+                    }
+                });
+                if (hasPendingCrossTx !== undefined || hasPendingBTCCrossTx !== undefined) {
+                    e.preventDefault();
+                    dialog.showMessageBox(this.window, {
+                        type: 'info',
+                        buttons: [i18n.t('main.exitDialog.ok'), i18n.t('main.exitDialog.cancel')],
+                        title: i18n.t('main.exitDialog.title'),
+                        message: i18n.t('main.exitDialog.message'),
+                    }, (button) => {
+                        if (button === 0) {
+                            this.emit('close', e);
+                            this.window.destroy();
+                        }
+                    });
+                } else {
+                    this.emit('close', e);
+                }
+            } else {
+                this.emit('close', e);
+            }
+        });
+
         this.window.on('blur', () => {
             if (this.type === 'main') {
+                let lockTimeThreshold = setting.autoLockTimeout
+                if (!lockTimeThreshold) lockTimeThreshold = MAX_LOCKTIME
+                this._logger.info(`lockTimeThreshold: , ${lockTimeThreshold}`)
+
                 if (global.chainManager && !this.isClosed) {
                     if (this._idleChecker) {
-                        this._logger.info('main window losing focus, clear idel time checker')
+                        this._logger.info('main window losing focus, clear idle time checker')
                         try {
                             clearInterval(this._idleChecker)
                             this._logger.info('idle checker cleared')
@@ -71,29 +127,36 @@ class Window extends EventEmitter {
                         this._idleChecker = null
                     }
 
-                    this._logger.info('main window losing focus, start autolock timer')
+                    this._logger.info('main window losing focus, start an away-from-main-window timer')
+                    if (this._timer !== null) {
+                        this._logger.info('Remain a timer should be cleared:' + this._timer)
+                        clearTimeout(this._timer)
+                        this._timer = null
+                    }
                     this._timer = setTimeout(() => {
                         this._logger.info('time out, lock the wallet')
                         this._mgr.broadcast('notification', 'uiAction', 'lockWallet')
                         clearTimeout(this._timer)
                         this._timer = null
-                        this._logger.info('autolock timer cleared')
-                    }, setting.autoLockTimeout)
+                        this._logger.info('away-from-main-window timer cleared')
+                    }, lockTimeThreshold)
                 }
             }
         })
-            */
 
-            /*
         this.window.on('focus', () => {
             if (this.type === 'main') {
+                let lockTimeThreshold = setting.autoLockTimeout
+                if (!lockTimeThreshold) lockTimeThreshold = MAX_LOCKTIME
+                this._logger.info(`lockTimeThreshold: , ${lockTimeThreshold}`)
+
                 if (this._timer) {
-                    this._logger.info('main window getting focus again, clear autolock timer')
+                    this._logger.info('main window getting focus again, clear away-from-main-window timer')
                     let timer = this._timer
-                    
+
                     try {
                         clearTimeout(timer)
-                        this._logger.info('autolock timer cleared')
+                        this._logger.info('away-from-main-window timer cleared')
                     } catch (e) {
                         this._logger.error(e.message || e.stack)
                     }
@@ -103,10 +166,15 @@ class Window extends EventEmitter {
 
                 if (global.chainManager) {
                     this._logger.info('start an interval checker for idle time')
+                    if (this._idleChecker !== null) {
+                        this._logger.info('Remain a idle timer should be cleared:' + this._idleChecker)
+                        clearInterval(this._idleChecker)
+                        this._idleChecker = null
+                    }
                     this._idleChecker = setInterval(() => {
                         let idleTime = desktopIdle.getIdleTime()
-                        this._logger.info(`user idle time ${idleTime}`)
-                        if (idleTime * 1000 > setting.autoLockTimeout) {
+                        this._logger.info(`user idle time in seconds is: ${idleTime}`)
+                        if (idleTime * 1000 > lockTimeThreshold) {
                             this._logger.info('user idle or away from key board, lock the wallet')
                             this._mgr.broadcast('notification', 'uiAction', 'lockWallet')
                             clearInterval(this._idleChecker)
@@ -118,7 +186,6 @@ class Window extends EventEmitter {
                 }
             }
         })
-        */
 
         this.webContents.once('did-finish-load', () => {
             this.isContentReady = true
@@ -248,8 +315,8 @@ class Windows {
             show: true,
             ownerId: null,
             electronOptions: {
-                width: 1220,
-                height: process.platform === 'darwin' ? 720 : 760,
+                width: 1456,
+                height: 900,
                 fullscreen: false,
                 center: true,
                 useContentSize: true,
@@ -261,7 +328,7 @@ class Windows {
                 }
             }
         }
-        
+
 
         const parent = _.find(this._windows, (w) => {
             return w.type === 'main';
@@ -272,7 +339,7 @@ class Windows {
             opts.electronOptions.parent = parent.window
         }
 
-        if (type === 'changeNetwork') {
+        if (type === 'changeNetwork' || type === 'systemUpdate') {
             opts.electronOptions.frame = false
         }
 
@@ -298,7 +365,7 @@ class Windows {
     }
 
     getById(id) {
-        return _.find(this._windows, (w) => w.id === id )
+        return _.find(this._windows, (w) => w.id === id)
     }
 
     broadcast() {
@@ -308,6 +375,19 @@ class Windows {
 
         _.each(this._windows, (wnd) => {
             wnd.send(...data)
+        })
+    }
+
+    addDevToolsExtension() {
+        const { addDevToolsExtension, getDevToolsExtensions } = BrowserWindow
+        let currExt = Object.keys(getDevToolsExtensions())
+        let extBasePath = path.join(__dirname, '../../../', '/static/extensions/')
+        let extPathArr = fs.readdirSync(extBasePath).filter(item => fs.lstatSync(`${extBasePath}${item}`).isDirectory() === true)
+        extPathArr.forEach(val => {
+            let ext = `${extBasePath}/${val}/${(fs.readdirSync(extBasePath + val))[0]}`
+            if (!currExt.includes(val)) {
+                addDevToolsExtension(ext)
+            }
         })
     }
 

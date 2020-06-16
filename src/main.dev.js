@@ -11,7 +11,7 @@ import menuFactoryService from '~/src/services/menuFactory'
 import i18n, { i18nOptions } from '~/config/i18n'
 import Logger from '~/src/utils/Logger'
 import windowStateKeeper from 'electron-window-state'
-import { Windows, walletBackend, updater } from '~/src/modules'
+import { Windows, walletBackend} from '~/src/modules'
 require('electron-reload')(__dirname);
 env.config()
 

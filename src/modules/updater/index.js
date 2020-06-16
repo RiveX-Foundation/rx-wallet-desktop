@@ -1,12 +1,12 @@
-import { app, ipcMain as ipc } from 'electron'
-import { autoUpdater } from 'electron-updater'
+import {app, ipcMain as ipc} from 'electron'
+import {autoUpdater} from 'electron-updater'
 import Logger from '~/src/utils/Logger'
 import Windows from '~/src/modules/windows'
 
 class WalletUpdater {
     constructor() {
         this.updater = autoUpdater
-        
+
         this._logger = Logger.getLogger('updater')
         this.updater.logger = this._logger
 
@@ -27,26 +27,26 @@ class WalletUpdater {
         ipc.on('upgrade', (event, actionUni, payload) => {
             let ret, err
             const [action, id] = actionUni.split('#')
-        
-            switch(action) {
-              case 'start': 
-        
-                let choice = parseInt(payload.choice)
-                this._logger.info(`user update choice ${choice}`)
 
-                if (choice === 1) {
-                      this.updater
-                        .downloadUpdate()
-                        .catch(err => this._logger.error(err.message || err.stack))
-                } else if (choice === 0) {
-                  try {
-                    updateModal.close()
-                  } catch (e) {
-                    this._logger.error(`error inside updater: ${err.stack}`)
-                  }
-                }
-        
-                break
+            switch (action) {
+                case 'start':
+
+                    let choice = parseInt(payload.choice)
+                    this._logger.info(`user update choice ${choice}`)
+
+                    if (choice === 1) {
+                        this.updater
+                            .downloadUpdate()
+                            .catch(err => this._logger.error(err.message || err.stack))
+                    } else if (choice === 0) {
+                        try {
+                            updateModal.close()
+                        } catch (e) {
+                            this._logger.error(`error inside updater: ${err.stack}`)
+                        }
+                    }
+
+                    break
             }
         })
 
@@ -56,10 +56,10 @@ class WalletUpdater {
 
         this.updater.on('update-available', (info) => {
             updateModal = Windows.createModal('systemUpdate', {
-              width: 1024 + 208, 
-              height: 720, 
-              alwaysOnTop: true
-            })    
+                width: 1024 + 208,
+                height: 720,
+                alwaysOnTop: true
+            })
 
             console.log('release info: ', info)
             console.log('release info note type: ', typeof info.releaseNotes[0].note)
@@ -67,16 +67,16 @@ class WalletUpdater {
 
             let releaseNote = info.releaseNotes[0].note.split('<table>')[0]
             console.log('releaseNote: ', releaseNote)
-        
+
             const updateInfo = {
-              currVersion: app.getVersion(),
-              releaseVersion: info.version,
-              releaseDate: new Date(info.releaseDate),
-              releaseNotes: releaseNote
+                currVersion: app.getVersion(),
+                releaseVersion: info.version,
+                releaseDate: new Date(info.releaseDate),
+                releaseNotes: releaseNote
             }
-        
+
             updateModal.on('ready', () => {
-              updateModal.webContents.send('updateInfo', 'versionInfo', JSON.stringify(updateInfo))
+                updateModal.webContents.send('updateInfo', 'versionInfo', JSON.stringify(updateInfo))
             })
         })
 
@@ -87,12 +87,12 @@ class WalletUpdater {
         this.updater.on('update-downloaded', (info) => {
             updateModal.webContents.send('updateInfo', 'upgradeProgress', 'done')
             setTimeout(() => {
-              this.updater.quitAndInstall()
+                this.updater.quitAndInstall()
             }, 3 * 1000)
         })
 
         this.updater.checkForUpdates()
-          .catch(err => this._logger.error(err.message || err.stack))
+            .catch(err => this._logger.error(err.message || err.stack))
     }
 }
 

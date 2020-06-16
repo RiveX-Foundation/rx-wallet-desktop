@@ -1,9 +1,8 @@
 //import wanUtil from "wanchain-util";
-import { Row, Col } from 'antd';
-import React, { Component } from 'react';
-import { Button, message, Steps } from 'antd';
+import {Col, Row, Steps} from 'antd';
+import React, {Component} from 'react';
 import SideBar from '../Sidebar';
-import { observer, inject } from 'mobx-react';
+import {inject, observer} from 'mobx-react';
 import intl from 'react-intl-universal';
 
 import './index.less';
@@ -33,215 +32,227 @@ import HWWalletDetail from 'components/Wallet/HWWalletDetail';
 import BasicWalletTypeSelection from 'components/Wallet/BasicWalletTypeSelection';
 import Settings from 'components/Settings';
 import Dex from 'components/Dex';
-import {NotificationContainer, NotificationManager} from 'react-notifications';
-import {
-  HashRouter,
-  Route
-} from "react-router-dom";
+import TwoFAWarning from 'components/Wallet/TwoFAWarning';
+import TwoFACreation from 'components/Wallet/TwoFACreation';
+import TwoFARemove from 'components/Wallet/TwoFARemove';
+import {NotificationContainer} from 'react-notifications';
+import Los from 'components/Los';
 //import { checkCryptographic, checkPhrase } from 'utils/support';
 
 const Step = Steps.Step;
 
 @inject(stores => ({
-  /*
-  pwd: stores.mnemonic.pwd,
-  method: stores.mnemonic.method,
-  mnemonic: stores.mnemonic.mnemonic,
-  newPhrase: stores.mnemonic.newPhrase,
-  isSamePwd: stores.mnemonic.isSamePwd,
-  language: stores.languageIntl.language,
-  isAllEmptyPwd: stores.mnemonic.isAllEmptyPwd,
-  */
-  current: stores.walletStore.current,
-  changeTitle: newTitle => stores.languageIntl.changeTitle(newTitle),
-  CreateEthAddress: () => stores.walletStore.CreateEthAddress(),
-  setCurrent: current => stores.walletStore.setCurrent(current),
-  CreateEthAddress: () => stores.walletStore.CreateEthAddress(),
-  setUserAccountExist : val => stores.session.setUserAccountExist(val),
-  IsShowWalletListing : stores.session.IsShowWalletListing
+    /*
+    pwd: stores.mnemonic.pwd,
+    method: stores.mnemonic.method,
+    mnemonic: stores.mnemonic.mnemonic,
+    newPhrase: stores.mnemonic.newPhrase,
+    isSamePwd: stores.mnemonic.isSamePwd,
+    language: stores.languageIntl.language,
+    isAllEmptyPwd: stores.mnemonic.isAllEmptyPwd,
+    */
+    current: stores.walletStore.current,
+    changeTitle: newTitle => stores.languageIntl.changeTitle(newTitle),
+    CreateEthAddress: (dappwallet) => stores.walletStore.CreateEthAddress(dappwallet),
+    setCurrent: current => stores.walletStore.setCurrent(current),
+    setUserAccountExist: val => stores.session.setUserAccountExist(val),
+    IsShowWalletListing: stores.session.IsShowWalletListing
 }))
 
 @observer
 class Dashboard extends Component {
-  state = {
-    walletsteps: [{
-      content: <WalletListing />,
-      key:'walletlisting'
-    },{
-      content: <WalletTypeSelection />,
-      key:'wallettypeselection'
-    },{
-      content: <WalletNameEntry />,
-      key:'walletnameentry'
-    },{
-      content: <WalletCreation />,
-      key:'walletcreation'
-    },{
-      content: <WalletKeyInSeed />,
-      key:'walletkeyinseed'
-    },{
-      content: <WalletCreated />,
-      key:'walletcreated'
-    },{
-      content: <WalletDetail />,
-      key:'walletdetail'
-    },{
-      content: <SelectedWallet />,
-      key:'selectedwallet'
-    },{
-      content: <TokenAssetList />,
-      key:'tokenassetlist'
-    },{
-      content: <TokenTransfer />,
-      key:'tokentransfer'
-    },{
-      content: <WalletRestorebySeed />,
-      key:'walletrestorebyseed'
-    },{
-      content: <WalletRestorebyPrivateKey />,
-      key:'walletrestorebyprivatekey'
-    },{
-      content: <CreateShareWallet />,
-      key:'createsharewallet'
-    },{
-      content: <TokenReceive />,
-      key:'tokenreceive'
-    },{
-      content: <JoinShareWallet />,
-      key:'joinsharewallet'
-    },{
-      content: <TransactionDetail />,
-      key:'transactiondetail'
-    },{
-      content: <TokenTransferConfirmation />,
-      key:'tokentransferconfirmation'
-    },{
-      content: <SplashBasicWalletCreation />,
-      key:'splashbasicwalletcreation'
-    },{
-      content: <BackupWalletTutorial />,
-      key:'backupwallettutorial'
-    },{
-      content: <TokenTransferSuccessful />,
-      key:'tokentransfersuccessful'
-    },{
-      content: <ImportWalletTypeSelection />,
-      key:'importwallettypeselection'
-    },{
-      content: <HWWalletSelection />,
-      key:'hwwalletselection'
-    },{
-      content: <HWWalletDetail />,
-      key:'hwwalletdetail'
-    },{
-      content: <BasicWalletTypeSelection />,
-      key:'basicwallettypeselection'
-    },{
-      content: <Settings />,
-      key:'settings'
-    },{
-      content: <Dex />,
-      key:'dex'
-    }]
-  }
+    state = {
+        walletsteps: [{
+            content: <WalletListing/>,
+            key: 'walletlisting'
+        }, {
+            content: <WalletTypeSelection/>,
+            key: 'wallettypeselection'
+        }, {
+            content: <WalletNameEntry/>,
+            key: 'walletnameentry'
+        }, {
+            content: <WalletCreation/>,
+            key: 'walletcreation'
+        }, {
+            content: <WalletKeyInSeed/>,
+            key: 'walletkeyinseed'
+        }, {
+            content: <WalletCreated/>,
+            key: 'walletcreated'
+        }, {
+            content: <WalletDetail/>,
+            key: 'walletdetail'
+        }, {
+            content: <SelectedWallet/>,
+            key: 'selectedwallet'
+        }, {
+            content: <TokenAssetList/>,
+            key: 'tokenassetlist'
+        }, {
+            content: <TokenTransfer/>,
+            key: 'tokentransfer'
+        }, {
+            content: <WalletRestorebySeed/>,
+            key: 'walletrestorebyseed'
+        }, {
+            content: <WalletRestorebyPrivateKey/>,
+            key: 'walletrestorebyprivatekey'
+        }, {
+            content: <CreateShareWallet/>,
+            key: 'createsharewallet'
+        }, {
+            content: <TokenReceive/>,
+            key: 'tokenreceive'
+        }, {
+            content: <JoinShareWallet/>,
+            key: 'joinsharewallet'
+        }, {
+            content: <TransactionDetail/>,
+            key: 'transactiondetail'
+        }, {
+            content: <TokenTransferConfirmation/>,
+            key: 'tokentransferconfirmation'
+        }, {
+            content: <SplashBasicWalletCreation/>,
+            key: 'splashbasicwalletcreation'
+        }, {
+            content: <BackupWalletTutorial/>,
+            key: 'backupwallettutorial'
+        }, {
+            content: <TokenTransferSuccessful/>,
+            key: 'tokentransfersuccessful'
+        }, {
+            content: <ImportWalletTypeSelection/>,
+            key: 'importwallettypeselection'
+        }, {
+            content: <HWWalletSelection/>,
+            key: 'hwwalletselection'
+        }, {
+            content: <HWWalletDetail/>,
+            key: 'hwwalletdetail'
+        }, {
+            content: <BasicWalletTypeSelection/>,
+            key: 'basicwallettypeselection'
+        }, {
+            content: <Settings/>,
+            key: 'settings'
+        }, {
+            content: <Dex/>,
+            key: 'dex'
+        },
+        {
+            content: <Los/>,
+            key: 'los'
+        }, {
+            content: <TwoFAWarning/>,
+            key: 'twofawarning'
+        }, {
+            content: <TwoFACreation/>,
+            key: 'twofacreation'
+        }, {
+            content: <TwoFARemove/>,
+            key: 'twofaremove'
+        }]
+    }
 
-  constructor(props) {
-    super(props);
-    this.props.changeTitle(intl.get('Dashboard.Title'));
-    //this.props.CreateEthAddress();
-  }
-    
-   componentDidMount(){
+    constructor(props) {
+        super(props);
+        this.props.changeTitle(intl.get('Dashboard.Title'));
+        //this.props.CreateEthAddress();
+    }
 
-  }
+    componentDidMount() {
 
-  render() {
-    const { walletsteps } = this.state;
-    const { current,IsShowWalletListing } = this.props;
+    }
 
-    var IsDoubleColumn = (
-      current == "walletlisting" || 
-      current == "tokentransfer" || 
-      current == "tokenreceive" || 
-      current == "transactiondetail" || 
-      current == "walletdetail" ||
-      current == "selectedwallet" || 
-      current == "hwwalletselection" || 
-      current == "tokenassetlist"
-    );
-    return (
-      <Row className="container">
-        <Col className="nav-left">
-          <SideBar path={'/'}/>
-        </Col>
-        {IsDoubleColumn && 
-          <div className="parent">
-            <Col className="walletcol">
-              <WalletListing />
-            </Col>
-            <Col className="main">
-              <Row>
-                {walletsteps.find(x => x.key === current).content}
-              </Row>
-            </Col>
-          </div>
-        }
+    render() {
+        const {walletsteps} = this.state;
+        const {current, IsShowWalletListing} = this.props;
 
-        {!IsDoubleColumn &&
-          <Col className="fullmain">
-            <Row>
-              {walletsteps.find(x => x.key === current).content}
+        var IsDoubleColumn = (
+            current == "walletlisting" ||
+            current == "tokentransfer" ||
+            current == "tokenreceive" ||
+            current == "transactiondetail" ||
+            current == "walletdetail" ||
+            current == "selectedwallet" ||
+            current == "hwwalletselection" ||
+            current == "tokenassetlist"
+        );
+        return (
+            <Row className="container">
+                <Col className="nav-left">
+                    <SideBar path={'/'}/>
+                </Col>
+                {IsDoubleColumn &&
+                <div className="parent">
+                    <Col className="walletcol">
+                        <WalletListing/>
+                    </Col>
+                    <Col className="main">
+                        <Row>
+                            {walletsteps.find(x => x.key === current).content}
+                        </Row>
+                    </Col>
+                </div>
+                }
+
+                {!IsDoubleColumn &&
+                <Col className="fullmain">
+                    <Row>
+                        {walletsteps.find(x => x.key === current).content}
+                    </Row>
+                </Col>
+                }
+                <NotificationContainer/>
             </Row>
-          </Col>
-        }
-        <NotificationContainer/>
-      </Row>
-      // <Row className="container">
-      //   <Col className="nav-left">
-      //     <SideBar path={'/'}/>
-      //   </Col>
-      //   {IsDoubleColumn && 
-      //     <div>
-      //       <Col className="walletcol">
-      //         <WalletListing />
-      //       </Col>
-      //       <Col className="main">
-      //         <Row>
-      //           <HashRouter>
-      //               <Route path="/" exact component={ WalletDetail } />
-      //               {
-      //                 walletsteps.map((route,index)=>{
-      //                   return(
-      //                     <Route key={index} path={`/${route.key}`} component={ () => route.content} />
-      //                   )
-      //                 })
-      //               }
-      //           </HashRouter>
-      //         </Row>
-      //       </Col>
-      //     </div>
-      //   }
+            // <Row className="container">
+            //   <Col className="nav-left">
+            //     <SideBar path={'/'}/>
+            //   </Col>
+            //   {IsDoubleColumn &&
+            //     <div>
+            //       <Col className="walletcol">
+            //         <WalletListing />
+            //       </Col>
+            //       <Col className="main">
+            //         <Row>
+            //           <HashRouter>
+            //               <Route path="/" exact component={ WalletDetail } />
+            //               {
+            //                 walletsteps.map((route,index)=>{
+            //                   return(
+            //                     <Route key={index} path={`/${route.key}`} component={ () => route.content} />
+            //                   )
+            //                 })
+            //               }
+            //           </HashRouter>
+            //         </Row>
+            //       </Col>
+            //     </div>
+            //   }
 
-      //   {!IsDoubleColumn &&
-      //     <Col className="fullmain">
-      //       <Row>
-      //         <HashRouter>
-      //             <Route path="/" exact component={ WalletDetail } />
-      //             {
-      //               walletsteps.map((route,index)=>{
-      //                 return(
-      //                   <Route key={index} path={`/${route.key}`} component={ () => route.content} />
-      //                 )
-      //               })
-      //             }
-      //         </HashRouter>
-      //       </Row>
-      //     </Col>
-      //   }
-      //   <NotificationContainer/>
-      // </Row>
-    );
-  }
+            //   {!IsDoubleColumn &&
+            //     <Col className="fullmain">
+            //       <Row>
+            //         <HashRouter>
+            //             <Route path="/" exact component={ WalletDetail } />
+            //             {
+            //               walletsteps.map((route,index)=>{
+            //                 return(
+            //                   <Route key={index} path={`/${route.key}`} component={ () => route.content} />
+            //                 )
+            //               })
+            //             }
+            //         </HashRouter>
+            //       </Row>
+            //     </Col>
+            //   }
+            //   <NotificationContainer/>
+            // </Row>
+        );
+    }
 }
 
 export default Dashboard;

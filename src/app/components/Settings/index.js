@@ -1,17 +1,14 @@
 //import wanUtil from "wanchain-util";
 import React, { Component } from 'react';
-import { Button, message, Steps, Tabs } from 'antd';
+import { Steps, Tabs } from 'antd';
 import { observer, inject } from 'mobx-react';
 import intl from 'react-intl-universal';
-import {NotificationContainer, NotificationManager} from 'react-notifications';
 import ManageWallet from 'components/Settings/ManageWallet';
 import ManageWalletDetail from 'components/Settings/ManageWalletDetail';
 import ExportPrivateKey from 'components/Settings/ExportPrivateKey';
 import Currency from 'components/Settings/Currency';
 import Security from 'components/Settings/Security';
 import Network from 'components/Settings/Network';
-import Profile from 'components/Settings/Profile';
-import Language from 'components/Settings/Language';
 import './index.less';
 
 //import { checkCryptographic, checkPhrase } from 'utils/support';
@@ -70,9 +67,9 @@ class Settings extends Component {
           <TabPane tab={intl.get('Settings.Network')} key="3">
             <Network />
           </TabPane>
-          <TabPane tab={intl.get('Settings.Profile')} key="4">
+       {/* <TabPane tab={intl.get('Settings.Profile')} key="4">
             <Profile />
-          </TabPane>
+    </TabPane> */}
           <TabPane tab={intl.get('Settings.2FASecurity')} key="5">
             <Security />
           </TabPane>

@@ -9,7 +9,7 @@ import intl from 'react-intl-universal';
 import Router from './Routes';
 import stores from './stores';
 import locales from './locales';
-import { initEmitterHandler, regEmitterHandler, isSdkReady } from 'utils/helper';
+import { initEmitterHandler, regEmitterHandler  } from 'utils/helper';
 
 class App extends Component {
   constructor(props) {

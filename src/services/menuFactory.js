@@ -1,5 +1,5 @@
 import EventEmitter from 'events'
-import { Menu } from 'electron'
+import {Menu} from 'electron'
 import setting from '~/src/utils/Settings'
 import Logger from '~/src/utils/Logger'
 import darwinTemplate from '../menus/darwin-menu'
@@ -14,12 +14,12 @@ class MenuFactoryService extends EventEmitter {
         this._networkMenu = null
     }
 
-    set networkMenu(menuItem) {
-        this._networkMenu = menuItem
-    }
-
     get networkMenu() {
         return this._networkMenu
+    }
+
+    set networkMenu(menuItem) {
+        this._networkMenu = menuItem
     }
 
     buildMenu(i18n) {

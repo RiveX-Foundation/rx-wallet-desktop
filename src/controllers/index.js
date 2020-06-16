@@ -2,20 +2,20 @@ import fs from 'fs'
 import fsExtra from 'fs-extra'
 import _ from 'lodash'
 import path from 'path'
-import { ipcMain, app } from 'electron'
-import { hdUtil, ccUtil } from 'wanchain-js-sdk'
+import {app, ipcMain} from 'electron'
+import {ccUtil, hdUtil} from 'wanchain-js-sdk'
 import Logger from '~/src/utils/Logger'
 import setting from '~/src/utils/Settings'
 import Web3 from 'web3';
-import { dateFormat } from '../app/utils/support';
+import {dateFormat} from '../app/utils/support';
+import {walletBackend, Windows} from '~/src/modules'
+import menuFactoryService from '~/src/services/menuFactory'
 
 const web3 = new Web3();
-import { Windows, walletBackend } from '~/src/modules'
-import menuFactoryService from '~/src/services/menuFactory'
 
 const logger = Logger.getLogger('controllers')
 const ipc = ipcMain
-
+const ethUtil = require('ethereumjs-util');
 // route consts
 const ROUTE_PHRASE = 'phrase'
 const ROUTE_WALLET = 'wallet'
@@ -49,7 +49,7 @@ ipc.on(ROUTE_PHRASE, (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_PHRASE, [action, id].join('#')].join('_'), event, { err: err, data: phrase })
+            sendResponse([ROUTE_PHRASE, [action, id].join('#')].join('_'), event, {err: err, data: phrase})
 
             break
         case 'has':
@@ -60,7 +60,7 @@ ipc.on(ROUTE_PHRASE, (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_PHRASE, [action, id].join('#')].join('_'), event, { err: err, data: ret })
+            sendResponse([ROUTE_PHRASE, [action, id].join('#')].join('_'), event, {err: err, data: ret})
 
             break
         case 'reveal':
@@ -72,7 +72,7 @@ ipc.on(ROUTE_PHRASE, (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_PHRASE, [action, id].join('#')].join('_'), event, { err: err, data: phrase })
+            sendResponse([ROUTE_PHRASE, [action, id].join('#')].join('_'), event, {err: err, data: phrase})
 
             break
         case 'import':
@@ -83,7 +83,7 @@ ipc.on(ROUTE_PHRASE, (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_PHRASE, [action, id].join('#')].join('_'), event, { err: err, data: !!ret })
+            sendResponse([ROUTE_PHRASE, [action, id].join('#')].join('_'), event, {err: err, data: !!ret})
             break
 
         case 'reset':
@@ -104,19 +104,19 @@ ipc.on(ROUTE_PHRASE, (event, actionUni, payload) => {
 ipc.on(ROUTE_WALLET, async (event, actionUni, payload) => {
     let err
     const [action, id] = actionUni.split('#')
-
+    console.log(action);
     switch (action) {
         case 'lock':
             try {
                 hdUtil.deleteHDWallet()
                 hdUtil.deleteKeyStoreWallet()
-                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, { err: err, data: true })
+                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: true})
 
             } catch (e) {
                 logger.error(e.message || e.stack)
                 err = e
 
-                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, { err: err, data: false })
+                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: false})
             }
 
             break
@@ -127,83 +127,108 @@ ipc.on(ROUTE_WALLET, async (event, actionUni, payload) => {
                 hdUtil.initializeHDWallet(phrase)
                 // create key file wallet
                 hdUtil.newKeyStoreWallet(payload.pwd)
-                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, { err: err, data: true })
+                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: true})
             } catch (e) {
                 logger.error(e.message || e.stack)
                 err = e
 
-                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, { err: err, data: false })
+                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: false})
             }
 
             break
 
-        case 'getPubKeyChainId':
-            {
-                let { walletID, path } = payload
-                let pubKey
+        case 'getPubKeyChainId': {
+            let {walletID, path} = payload
+            let pubKey
 
+            try {
+                pubKey = await hdUtil.getWalletSafe().getWallet(walletID).getPublicKey(path, true)
+            } catch (e) {
+                logger.error(e.message || e.stack)
+                err = e
+            }
+            sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: pubKey})
+            break
+        }
+
+        case 'getPubKey': {
+            let pubKey
+
+            try {
+                pubKey = await hdUtil.getWalletSafe().getWallet(payload.walletID).getPublicKey(payload.path)
+            } catch (e) {
+                logger.error(e.message || e.stack)
+                err = e
+            }
+
+            sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: pubKey})
+            break
+        }
+
+        case 'isConnected': {
+            let ret = false;
+            try {
+                hdUtil.getWalletSafe().getWallet(payload.walletID);
+                ret = true;
+            } catch (e) {
+                ret = false
+            }
+
+            sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: ret})
+            break
+        }
+
+        case 'signPersonalMessage': {
+            let ret = null;
+            let {walletID, path, rawTx} = payload;
+            console.log(walletID, path, rawTx);
+            let hdWallet = hdUtil.getWalletSafe().getWallet(walletID);
+
+            logger.info('Sign signPersonalMessage:');
+            logger.info('wallet ID:' + walletID + ', path:' + path + ', raw:' + rawTx);
+
+            if (hdWallet) {
                 try {
-                    pubKey = await hdUtil.getWalletSafe().getWallet(walletID).getPublicKey(path, true)
+                    ret = await hdWallet.signMessage(path, ethUtil.toBuffer(rawTx));
+                    console.log("signed msg: " + ret);
                 } catch (e) {
-                    logger.error(e.message || e.stack)
+                    logger.error(e.message || e.stack);
+                    console.log('hdWallet.signMessage error:', e);
                     err = e
                 }
-                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, { err: err, data: pubKey })
-                break
+            } else {
+                err = new Error('Can not found wallet.');
+                console.log('hdWallet is undefine');
             }
 
-        case 'getPubKey':
-            {
-                let pubKey
+            sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: ret})
+            break
+        }
 
-                try {
-                    pubKey = await hdUtil.getWalletSafe().getWallet(payload.walletID).getPublicKey(payload.path)
-                } catch (e) {
-                    logger.error(e.message || e.stack)
-                    err = e
-                }
+        case 'signTransaction': {
+            console.log("signing TX");
+            let sig = {};
+            let {walletID, path, rawTx} = payload;
+            let hdWallet = hdUtil.getWalletSafe().getWallet(walletID);
 
-                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, { err: err, data: pubKey })
-                break
+            logger.info('Sign transaction:');
+            logger.info('wallet ID:' + walletID + ', path:' + path + ', raw:' + rawTx);
+
+            try {
+                let ret = await hdWallet.sec256k1sign(path, rawTx);
+                sig.r = '0x' + ret.r.toString('hex');
+                sig.s = '0x' + ret.s.toString('hex');
+                sig.v = '0x' + ret.v.toString('hex');
+                logger.info('Signature:' + JSON.stringify(sig));
+            } catch (e) {
+                logger.error(e.message || e.stack)
+                err = e
             }
+            console.log(sig);
 
-        case 'isConnected':
-            {
-                let ret = false;
-                try {
-                    hdUtil.getWalletSafe().getWallet(payload.walletID);
-                    ret = true;
-                } catch (e) {
-                    ret = false
-                }
-
-                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, { err: err, data: ret })
-                break
-            }
-
-        case 'signTransaction':
-            {
-                let sig = {};
-                let { walletID, path, rawTx } = payload;
-                let hdWallet = hdUtil.getWalletSafe().getWallet(walletID);
-
-                logger.info('Sign transaction:');
-                logger.info('wallet ID:' + walletID + ', path:' + path + ', raw:' + rawTx);
-
-                try {
-                    let ret = await hdWallet.sec256k1sign(path, rawTx);
-                    sig.r = '0x' + ret.r.toString('hex');
-                    sig.s = '0x' + ret.s.toString('hex');
-                    sig.v = '0x' + ret.v.toString('hex');
-                    logger.info('Signature:' + JSON.stringify(sig));
-                } catch (e) {
-                    logger.error(e.message || e.stack)
-                    err = e
-                }
-
-                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, { err: err, data: sig })
-                break
-            }
+            sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: sig})
+            break
+        }
 
         case 'connectToLedger':
             console.log("COME HERE LAH");
@@ -216,21 +241,33 @@ ipc.on(ROUTE_WALLET, async (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, { err: err, data: data })
+            sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: data})
             break
 
-        case 'deleteLedger':
-            {
-                try {
-                    await hdUtil.disconnectLedger()
-                } catch (e) {
-                    logger.error(e.message || e.stack)
-                    err = e
-                }
-
-                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, { err: err, data: true })
-                break
+        case 'deleteLedger': {
+            try {
+                await hdUtil.disconnectLedger()
+            } catch (e) {
+                logger.error(e.message || e.stack)
+                err = e
             }
+
+            sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: true})
+            break
+        }
+        case 'setUserTblVersion':
+            try {
+                const latestVersion = walletBackend.config.dbExtConf.userTblVersion;// get version from config.js file
+                logger.info('Set user DB version:' + latestVersion);
+                hdUtil.setUserTableVersion(latestVersion);
+                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: true})
+            } catch (e) {
+                logger.error(e.message || e.stack)
+                err = e
+                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: false})
+            }
+
+            break
     }
 })
 
@@ -247,7 +284,7 @@ ipc.on(ROUTE_ADDRESS, async (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, { err: err, data: address })
+            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: address})
             break
 
         case 'getOne':
@@ -258,7 +295,7 @@ ipc.on(ROUTE_ADDRESS, async (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, { err: err, data: address })
+            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: address})
             break
 
         case 'getNonce':
@@ -272,11 +309,11 @@ ipc.on(ROUTE_ADDRESS, async (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, { err: err, data: nonce })
+            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: nonce})
             break
         case 'balance':
             let balance
-            const { addr } = payload
+            const {addr} = payload
 
             try {
                 if (_.isArray(addr) && addr.length > 1) {
@@ -285,14 +322,30 @@ ipc.on(ROUTE_ADDRESS, async (event, actionUni, payload) => {
 
                 } else {
                     balance = await ccUtil.getWanBalance(`0x${addr}`)
-                    balance = { [`0x${addr}`]: balance }
+                    balance = {[`0x${addr}`]: balance}
                 }
             } catch (e) {
                 logger.error(e.message || e.stack)
                 err = e
             }
 
-            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, { err: err, data: balance })
+            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: balance})
+            break
+
+        case 'scanMultiOTA': {
+            try {
+                const {path} = payload;
+                if (path.length > 0) {
+                    path.forEach((v) => {
+                        ccUtil.scanOTA(v[0], v[1]);
+                    });
+                }
+            } catch (e) {
+                logger.error(e.message || e.stack)
+                err = e
+            }
+            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: {status: 'Opened'}})
+        }
             break
 
         case 'isWanAddress':
@@ -304,7 +357,7 @@ ipc.on(ROUTE_ADDRESS, async (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, { err: err, data: ret })
+            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: ret})
             break
 
         case 'isValidatorAddress':
@@ -323,25 +376,28 @@ ipc.on(ROUTE_ADDRESS, async (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, { err: err, data: ret })
+            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: ret})
             break
 
         case 'fromKeyFile':
-            const { keyFilePwd, hdWalletPwd, keyFilePath } = payload;
+            const {keyFilePwd, hdWalletPwd, keyFilePath} = payload;
             const keyFileContent = fs.readFileSync(keyFilePath).toString();
             const keyStoreObj = JSON.parse(keyFileContent)
             try {
                 let path = hdUtil.importKeyStore(`${WANBIP44Path}0`, keyFileContent, keyFilePwd, hdWalletPwd);
 
-                hdUtil.createUserAccount(5, `${WANBIP44Path}${path}`, { name: `Imported${path + 1}`, addr: `0x${keyStoreObj.address}`.toLowerCase() });
-                Windows.broadcast('notification', 'keyfilepath', { path, addr: keyStoreObj.address.toLowerCase() });
+                hdUtil.createUserAccount(5, `${WANBIP44Path}${path}`, {
+                    name: `Imported${path + 1}`,
+                    addr: `0x${keyStoreObj.address}`.toLowerCase()
+                });
+                Windows.broadcast('notification', 'keyfilepath', {path, addr: keyStoreObj.address.toLowerCase()});
 
-                sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, { err: err, data: true })
+                sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: true})
             } catch (e) {
                 logger.error(e.message || e.stack)
                 err = e
 
-                sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, { err: err, data: false })
+                sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: false})
             }
 
             break
@@ -355,7 +411,7 @@ ipc.on(ROUTE_ADDRESS, async (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, { err: err, data: count })
+            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: count})
             break
 
     }
@@ -374,7 +430,7 @@ ipc.on(ROUTE_ACCOUNT, (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, { err: err, data: ret })
+            sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, {err: err, data: ret})
             break
 
         case 'get':
@@ -384,7 +440,7 @@ ipc.on(ROUTE_ACCOUNT, (event, actionUni, payload) => {
                 logger.error(e.message || e.stack)
                 err = e
             }
-            sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, { err: err, data: ret })
+            sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, {err: err, data: ret})
             break
 
         case 'getAll':
@@ -395,7 +451,7 @@ ipc.on(ROUTE_ACCOUNT, (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, { err: err, data: ret })
+            sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, {err: err, data: ret})
             break
         case 'update':
             try {
@@ -405,57 +461,82 @@ ipc.on(ROUTE_ACCOUNT, (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, { err: err, data: ret })
+            sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, {err: err, data: ret})
             break
 
         case 'delete':
+            const {walletID, path, chainType} = payload;
             try {
-                ret = hdUtil.deleteUserAccount(payload.walletID, payload.path)
+
+                ret = hdUtil.deleteUserAccount(walletID, path)
+                console.log(ret);
+            } catch (e) {
+                logger.error(e.message || e.stack)
+                err = e
+            }
+            if (chainType === 'WAN') {
+                ccUtil.stopScanOTA(walletID, path);
+            }
+
+            sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, {err: err, data: ret})
+            break
+
+        case 'deleteall':
+            try {
+                hdUtil.deleteHDWallet();
+                hdUtil.deleteKeyStoreWallet();
+                ret = hdUtil.deleteMnemonic(payload.password);
+                console.log(ret);
             } catch (e) {
                 logger.error(e.message || e.stack)
                 err = e
             }
 
-            sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, { err: err, data: ret })
+            sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, {err: err, data: ret})
             break
     }
 })
 
-/*
+
 ipc.on(ROUTE_TX, async (event, actionUni, payload) => {
     let ret, err
     const [action, id] = actionUni.split('#')
+    console.log(action);
 
     switch (action) {
         case 'normal':
             try {
-                let { walletID, chainType, symbol, path, to, amount, gasPrice, gasLimit, nonce } = payload
+                let {walletID, chainType, symbol, path, to, amount, gasPrice, gasLimit, nonce, data, satellite} = payload
                 let from = await hdUtil.getAddress(walletID, chainType, path)
-
+                let fromAddr = from.address;
+                if (fromAddr.indexOf('0x') === -1) {
+                    fromAddr = '0x' + fromAddr;
+                }
                 let input = {
-                    "symbol": symbol,
-                    "from": '0x' + from.address,
-                    "to": to,
-                    "amount": amount,
-                    "gasPrice": gasPrice,
-                    "gasLimit": gasLimit,
-                    "BIP44Path": path,
-                    "walletID": walletID,
-                    "nonce": nonce
+                    symbol: symbol,
+                    from: fromAddr,
+                    to: to,
+                    amount: amount,
+                    gasPrice: gasPrice,
+                    gasLimit: gasLimit,
+                    BIP44Path: path,
+                    walletID: walletID,
+                    nonce: nonce,
+                    data: data,
+                    satellite: satellite
                 }
 
                 logger.info('Normal transaction: ' + JSON.stringify(input));
 
                 let srcChain = global.crossInvoker.getSrcChainNameByContractAddr(symbol, chainType);
                 ret = await global.crossInvoker.invokeNormalTrans(srcChain, input);
-                logger.info('Transaction hash: ' + ret);
+                logger.info('Transaction hash: ' + JSON.stringify(ret));
             } catch (e) {
-                logger.error(e.message || e.stack)
+                logger.error('Send transaction failed: ' + e.message || e.stack)
                 err = e
             }
-
-            sendResponse([ROUTE_TX, [action, id].join('#')].join('_'), event, { err: err, data: ret })
-            break
+            sendResponse([ROUTE_TX, [action, id].join('#')].join('_'), event, {err: err, data: ret})
+            break;
 
         case 'raw':
             try {
@@ -467,7 +548,7 @@ ipc.on(ROUTE_TX, async (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_TX, [action, id].join('#')].join('_'), event, { err: err, data: ret })
+            sendResponse([ROUTE_TX, [action, id].join('#')].join('_'), event, {err: err, data: ret})
             break
 
         case 'estimateGas':
@@ -480,7 +561,7 @@ ipc.on(ROUTE_TX, async (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_TX, [action, id].join('#')].join('_'), event, { err: err, data: ret })
+            sendResponse([ROUTE_TX, [action, id].join('#')].join('_'), event, {err: err, data: ret})
             break;
 
         case 'showRecords':
@@ -493,7 +574,7 @@ ipc.on(ROUTE_TX, async (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_TX, [action, id].join('#')].join('_'), event, { err: err, data: ret })
+            sendResponse([ROUTE_TX, [action, id].join('#')].join('_'), event, {err: err, data: ret})
             break;
 
         case 'insertTransToDB':
@@ -504,20 +585,32 @@ ipc.on(ROUTE_TX, async (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_TX, [action, id].join('#')].join('_'), event, { err: err, data: true })
+            sendResponse([ROUTE_TX, [action, id].join('#')].join('_'), event, {err: err, data: true})
             break;
     }
 })
-*/
+
 
 ipc.on("system", async (event, actionUni, payload) => {
     let ret, err
     const [action, id] = actionUni.split('#')
     switch (action) {
         case 'reload':
-            let mainWin = Windows.getByType('main')
-            mainWin.reload();
-            break;
+            //  let mainWin = Windows.getByType('main')
+            app.relaunch();
+            app.exit(0);
+            //mainWin.reload();
+            break
+        case 'getDAppInjectFile':
+            let ret = "";
+            console.log("GETTING DAPP INJECT FILE");
+            if (setting.isDev) {
+                ret = `file://${__dirname}/../modals/dAppInject.js`;
+            } else {
+                ret = `file://${__dirname}/modals/dAppInject.js`
+            }
+            sendResponse(["system", [action, id].join('#')].join('_'), event, {err: err, data: ret})
+            break
     }
 });
 
@@ -527,7 +620,7 @@ ipc.on(ROUTE_QUERY, async (event, actionUni, payload) => {
 
     switch (action) {
         case 'config':
-            let { param } = payload
+            let {param} = payload
 
             try {
                 let conf
@@ -537,13 +630,13 @@ ipc.on(ROUTE_QUERY, async (event, actionUni, payload) => {
                     conf = setting[`${param}`]
                 }
 
-                ret = { [param]: conf }
+                ret = {[param]: conf}
             } catch (e) {
                 logger.error(e.message || e.stack)
                 err = e
             }
 
-            sendResponse([ROUTE_QUERY, [action, id].join('#')].join('_'), event, { err: err, data: ret })
+            sendResponse([ROUTE_QUERY, [action, id].join('#')].join('_'), event, {err: err, data: ret})
             break
 
         case 'getGasPrice':
@@ -554,7 +647,7 @@ ipc.on(ROUTE_QUERY, async (event, actionUni, payload) => {
                 logger.error(e.message || e.stack)
                 err = e
             }
-            sendResponse([ROUTE_QUERY, [action, id].join('#')].join('_'), event, { err: err, data: ret })
+            sendResponse([ROUTE_QUERY, [action, id].join('#')].join('_'), event, {err: err, data: ret})
             break;
     }
 
@@ -824,11 +917,11 @@ ipc.on(ROUTE_SETTING, async (event, actionUni, payload) => {
                 ret = false
             }
 
-            sendResponse([ROUTE_SETTING, [action, id].join('#')].join('_'), event, { err: err, data: ret })
+            sendResponse([ROUTE_SETTING, [action, id].join('#')].join('_'), event, {err: err, data: ret})
             break
 
         case 'get':
-            let { keys } = payload
+            let {keys} = payload
 
             try {
                 keys.forEach((key, index) => {
@@ -839,25 +932,23 @@ ipc.on(ROUTE_SETTING, async (event, actionUni, payload) => {
                 err = e
             }
 
-            sendResponse([ROUTE_SETTING, [action, id].join('#')].join('_'), event, { err: err, data: vals })
+            sendResponse([ROUTE_SETTING, [action, id].join('#')].join('_'), event, {err: err, data: vals})
             break
     }
 })
 
 
-
-
 function sendResponse(endpoint, e, payload) {
     const id = e.sender.id
     const senderWindow = Windows.getById(id)
-    const { err } = payload
+    const {err} = payload
 
     if (_.isObject(err) || !_.isEmpty(err)) payload.err = errorWrapper(err)
     senderWindow.send('renderer_windowMessage', endpoint, payload)
 }
 
 function errorWrapper(err) {
-    return { desc: err.message, code: err.errno, cat: err.name }
+    return {desc: err.message, code: err.errno, cat: err.name}
 }
 
 function buildStakingBaseInfo(delegateInfo, incentive, epochID, stakerInfo) {
@@ -954,13 +1045,13 @@ async function buildStakingList(delegateInfo, incentive, epochID, base) {
                 balance: di.account.balance,
                 accountAddress: di.account.address,
                 accountPath: di.account.path,
-                myStake: { title: web3.utils.fromWei(sk.amount), bottom: "0" },
+                myStake: {title: web3.utils.fromWei(sk.amount), bottom: "0"},
                 validator: {
                     name: name ? name : sk.address,
                     img: img,
                 },
                 validatorAddress: sk.address,
-                distributeRewards: { title: "50,000", bottom: "from 50 epochs" },
+                distributeRewards: {title: "50,000", bottom: "from 50 epochs"},
                 modifyStake: ["+", "-"]
             })
         }
