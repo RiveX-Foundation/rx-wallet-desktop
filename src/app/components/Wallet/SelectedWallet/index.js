@@ -238,7 +238,7 @@ class SelectedWallet extends Component {
                                                 }
 
                                             </div>
-                                            <div className="chartctn" style={{marginBottom:"30px"}}>
+                                            <div className="chartctn">
                                                 <ResponsiveContainer width={'100%'} height={200}>
                                                     <AreaChart data={sparkline} baseValue={dataMin}>
                                                         <defs>
