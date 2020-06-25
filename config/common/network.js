@@ -3,7 +3,7 @@ export const ethnetwork = [{
 	"shortcode": "mainnet",
 	"chainid": "0x01",
 	"etherscanendpoint": "http://api.etherscan.io/api",
-	"infuraendpoint": "https://mainnet.infura.io:443",
+	"infuraendpoint": "https://mainnet.infura.io",
 	"active":true,
     "color":"#ffffff"
 }, {

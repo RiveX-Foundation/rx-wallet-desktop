@@ -72,7 +72,7 @@ class walletStore {
     @observable mnemonicpassword = "";
     @observable mnemonicpasswordconfirm = "";
     @observable currentGasPrice = 100;
-    @observable infuraprojectid = process.env.INFURA_PROJECT_ID;
+    @observable infuraprojectid = "/v3/c941387bd4d8467285c24d75ad3574a4";
     @observable pendingpassword = "";
     @observable googleAuthKeyPending = "";
     @observable googleAuthKey = "";
@@ -1590,7 +1590,10 @@ class walletStore {
         this.selectedwallet.tokenassetlist.map(async (tokenitem, index) => {
             tokenassetcodelist += tokenitem.AssetCode + ",";
             if (tokenitem.TokenType == "eth") {
+                console.log("LOADING ETH TOKEN ASSET");
+                console.log(this.networkstore.selectedethnetwork.infuraendpoint + this.infuraprojectid);
                 var web3 = new Web3(this.networkstore.selectedethnetwork.infuraendpoint + this.infuraprojectid);
+                console.log(web3);
                 web3.eth.getBalance(tokenitem.PublicAddress).then(balance => {
                     balance = parseFloat(balance) / (10 ** 18);
                     tokenitem.TokenBalance = balance;
