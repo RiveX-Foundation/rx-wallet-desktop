@@ -211,14 +211,14 @@ class Sidebar extends Component {
                                 <span><img src={buttonwrdex} width="20px"/><span
                                     className="sidebar_fontsize sidebar_dexfontcolor">{intl.get('Dex.Dex')}</span></span>
                             </div>
-                        </li>
+                        </li>{/*
                         <li data-tabvalue="los" className={losstyle} onClick={this.selectlos} role="menuitem">
                             <div className="ant-menu-submenu-title" aria-expanded="true" aria-haspopup="true"
                                  aria-owns="/$Menu">
                                 <span><img src={buttonlos} width="20px"/><span
                                     className="sidebar_fontsize sidebar_dexfontcolor">{intl.get('Los.Los')}</span></span>
                             </div>
-                        </li>
+                        </li>*/}
                         <li data-tabvalue="setting" className={settingstyle} onClick={this.selectsettings}
                             role="menuitem">
                             <div className="ant-menu-submenu-title" aria-expanded="true" aria-haspopup="true"

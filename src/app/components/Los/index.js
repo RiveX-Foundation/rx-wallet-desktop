@@ -400,7 +400,7 @@ class Los extends Component {
                         /> : null}
                     <webview
                         id="dappView"
-                        src="https://teststakes.rvx.today/"
+                        src=""
                         style={{width: '100%', height: '100%', display: this.state.displayed}}
                         nodeintegration="on"
                         preload={preload}
