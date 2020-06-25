@@ -1,7 +1,7 @@
 {
   "name": "rvxwallet",
   "productName": "RX Wallet",
-  "version": "1.2.4",
+  "version": "1.2.2",
   "description": "RiveX Wallet",
   "main": "./build/main.js",
   "author": {
@@ -18,7 +18,7 @@
     "pack:mac": "run-s copy:mac transpile:renderer transpile:main build:mac",
     "pack:win": "run-s copy:win transpile:renderer transpile:main build:win",
     "pack:linux": "run-s copy transpile:renderer transpile:main build:linux",
-    "build:mac": "electron-builder --mac -p never",
+    "build:mac": "sudo electron-builder --mac -p never",
     "build:win": "electron-builder --win -p never",
     "build:linux": "electron-builder --linux -p never",
     "build:all": "electron-builder -mwl -p never",
