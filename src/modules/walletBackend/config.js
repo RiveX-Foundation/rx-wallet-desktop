@@ -12,7 +12,7 @@ class ConfigFactoryService {
             this.config.wanchain_js_testnet = false
 
             this.config.iWAN = {
-                "url": ['api2.wanchain.org'],
+                "url": ['api.wanchain.org'],
                 "port": [8443, 8443],
                 "wallet": {
                     "apikey": process.env.API_KEY,
@@ -44,11 +44,11 @@ class ConfigFactoryService {
 
         if (this.config.network.includes('main')) {
             this.config.wanchain_js_testnet = false
-            this.config.socketUrl = 'wss://api2.wanchain.info'
+            this.config.socketUrl = 'wss://api.wanchain.org'
 
         } else {
             this.config.wanchain_js_testnet = true
-            this.config.socketUrl = 'wss://apitest.wanchain.info'
+            this.config.socketUrl = 'wss://apitest.wanchain.org'
         }
 
         this.config.logPathPrex = WalletHelper.getLogPath()
