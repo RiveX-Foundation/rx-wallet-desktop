@@ -60,7 +60,7 @@ class TokenTransferConfirmation extends Component {
         receiver: "",
         otp: "notvalid",
         gaspricevalue: 30,
-        gaslimit:21000,
+        gaslimit:0,
         mingaspricevalue: 1,
         maxgaspricevalue: 150,
         mfa: "",
