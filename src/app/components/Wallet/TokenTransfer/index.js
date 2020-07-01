@@ -88,6 +88,10 @@ class TokenTransfer extends Component {
         console.log(event.clipboardData);//.items[0].getAsString());
     }
 
+    maxamount = async () => {
+        this.setState({tokenval: this.props.selectedTokenAsset.TokenBalance});
+     }
+
     transfer = async () => {
         if (localStorage.getItem('twofasecret') != null) {
             this.props.setMFA(true);
@@ -123,6 +127,39 @@ class TokenTransfer extends Component {
             return;
         }
 
+        if ((this.state.tokenval.toString()).includes(" ")){
+            createNotification('error', "Amount is not a number!");
+            return;
+        }
+
+        if (isNaN(this.state.tokenval)){
+            createNotification('error', "Amount is not a number!");
+            return;
+        }
+
+        var inputamount = this.state.tokenval.toString();
+        var tokenbalance = this.props.selectedTokenAsset.TokenBalance.toString();
+
+
+        if(inputamount.includes(",")){
+            inputamount = inputamount.replace(",",".");
+        }
+
+
+        if(tokenbalance.includes(",")){
+            tokenbalance = tokenbalance.replace(",",".");
+        }
+
+
+        console.log(parseFloat(inputamount) );
+        console.log(parseFloat(tokenbalance) );
+
+
+        if( parseFloat(inputamount) > parseFloat(tokenbalance) ) {
+            createNotification('error', "Amount is higher than your balance!");
+            return;
+        }
+
         this.props.settokentransfervalue(this.state.tokenval, this.state.receiver);
         this.props.setCurrent("tokentransferconfirmation");
 
@@ -142,11 +179,16 @@ class TokenTransfer extends Component {
                         }} onChange={this.onChangeReceiver}/><img onClick={this.pastetoken} src={buttonpaste}
                                                                   className="pasteicon"/></div>
                         <div className="panelwrapper borderradiusfull" style={{marginBottom: "30px"}}><Input
-                            className="inputTransparent" onChange={this.onChangeTokenValue}/>
+                            className="inputTransparent" value={this.state.tokenval} onChange={this.onChangeTokenValue}/>
                             <div className="currency">{this.props.selectedTokenAsset.AssetCode.toUpperCase()}</div>
                         </div>
-                        <div><Button className="curvebutton"
-                                     onClick={this.transfer}>{intl.get('Token.Transfer')}</Button></div>
+                        <div className="panelwrapper borderradiusfull">
+                        <div className="subtitle">Balance: <br></br>{this.props.selectedTokenAsset.TokenBalance} {this.props.selectedTokenAsset.AssetCode.toUpperCase()} </div>
+                        <div><Button className="curvebutton2"
+                         onClick={this.maxamount} style={{marginTop:"0px!important"}}>Max</Button>
+                         <Button className="curvebutton" onClick={this.transfer}>{intl.get('Token.Transfer')}</Button>
+                         </div>
+                        </div>
                     </center>
                 </div>
             </div>

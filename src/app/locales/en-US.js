@@ -9,7 +9,7 @@ const en_US = {
     'Settings.Key': 'Key',
     'Settings.Lang.en_US': 'English',
     'Settings.Lang.zh_CN': '中文',
-    'Settings.settings': 'SETTING',
+    'Settings.settings': 'SETTINGS',
     'Settings.Restore': 'Restore',
     'Settings.Profile': 'PROFILE',
     'Settings.Currency': 'CURRENCY',
@@ -117,6 +117,8 @@ const en_US = {
     'Table.From': 'FROM',
     'Table.To': 'TO',
     'Table.Time': 'TIME',
+
+    'Los.Los' : 'League of Stakes',
 
     'TokenTransfer.ReceipientAddress': 'Receipient Address',
     'TokenTransfer.SendToken': 'SEND TOKEN',

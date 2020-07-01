@@ -13,6 +13,7 @@ import buttonlogout from 'static/image/icon/logout.png';
 import buttonimportwallet from 'static/image/icon/importwallet.png';
 import buttonbasicwallet from 'static/image/icon/basicwallet.png';
 import buttonwrdex from 'static/image/icon/wrdex_color_100.png';
+import buttonlos from 'static/image/icon/los100.png';
 
 
 const SubMenu = Menu.SubMenu;
@@ -115,6 +116,13 @@ class Sidebar extends Component {
         this.props.setCurrent('settings');
     }
 
+    selectlos = () => {
+        this.props.clearSelectedWallet();
+        this.props.setselectedwallettype("");
+        this.setState({selectedtab: "los"});
+        this.props.setCurrent('los');
+    }
+
     selectdex = () => {
         localStorage.setItem("dexagree", true);
         this.setState({
@@ -142,6 +150,7 @@ class Sidebar extends Component {
         const hardwarewalletstyle = (selectedtab == "wallet" && selectedwallettype == "hwwallet") ? "ant-menu-item fontcolor_green ant-menu-item-selected" : "ant-menu-item fontcolor_green";
         const importwalletstyle = (selectedtab == "wallet" && selectedwallettype == "importwallet") ? "ant-menu-item fontcolor_purple ant-menu-item-selected" : "ant-menu-item fontcolor_purple";
         const dexstyle = (selectedtab == "dex") ? "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open ant-menu-submenu-selected" : "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open";
+        const losstyle = (selectedtab == "los") ? "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open ant-menu-submenu-selected" : "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open";
         const settingstyle = (selectedtab == "setting") ? "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open ant-menu-submenu-selected" : "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open";
 
 
@@ -202,7 +211,14 @@ class Sidebar extends Component {
                                 <span><img src={buttonwrdex} width="20px"/><span
                                     className="sidebar_fontsize sidebar_dexfontcolor">{intl.get('Dex.Dex')}</span></span>
                             </div>
-                        </li>
+                        </li>{/*
+                        <li data-tabvalue="los" className={losstyle} onClick={this.selectlos} role="menuitem">
+                            <div className="ant-menu-submenu-title" aria-expanded="true" aria-haspopup="true"
+                                 aria-owns="/$Menu">
+                                <span><img src={buttonlos} width="20px"/><span
+                                    className="sidebar_fontsize sidebar_dexfontcolor">{intl.get('Los.Los')}</span></span>
+                            </div>
+                        </li>*/}
                         <li data-tabvalue="setting" className={settingstyle} onClick={this.selectsettings}
                             role="menuitem">
                             <div className="ant-menu-submenu-title" aria-expanded="true" aria-haspopup="true"
