@@ -111,6 +111,10 @@ class TokenTransfer extends Component {
             createNotification('error', intl.get('Error.InvalidAddress'));
             return;
         }
+        if(this.props.selectedwallet.publicaddress.toString().toLowerCase() == this.state.receiver.toString().toLowerCase()){
+            createNotification('error', intl.get('Error.InvalidAddress'));
+            return;
+        }
 
         if (!Web3.utils.isAddress(checksumaddr)) { //if(iWanUtils.checkHash(this.state.receiver))
             createNotification('error', intl.get('Error.InvalidAddress'));
