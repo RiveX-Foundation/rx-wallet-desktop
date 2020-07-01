@@ -1611,10 +1611,19 @@ class walletStore {
                     to: !isNullOrEmpty(TokenInfo.ContractAddress) ? TokenInfo.ContractAddress : null,
                     data: contract.methods.balanceOf(tokenitem.PublicAddress).encodeABI()
                 }).then(balance => {
-                    balance = balance / (10 ** 18);
-                    tokenitem.TokenBalance = balance;
-                    tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
-                    self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
+                    //console.log("BALANCE: "+ balance + " "+ tokenitem.AssetCode);
+                    if (tokenitem.AssetCode == "USDT" || tokenitem.AssetCode == "fls6") {
+                        balance = balance / (10 ** 6);
+                        tokenitem.TokenBalance = balance;
+                        tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
+                        self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
+                    } else {
+                        balance = balance / (10 ** 18);
+                        tokenitem.TokenBalance = balance;
+                        tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
+                        self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
+                    }
+                   
                 });
                 self.selectedassettokenlist.push(tokenitem);
             }else if(tokenitem.TokenType == "wrc20"){
