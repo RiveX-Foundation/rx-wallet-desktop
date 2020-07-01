@@ -521,10 +521,10 @@ class TokenTransferConfirmation extends Component {
                             chain: this.props.selectedethnetwork.shortcode,
                             hardfork: 'petersburg'
                         });
-                      //  tx.sign(privKey);
-                        //var serializedTx = tx.serialize();
+                       tx.sign(privKey);
+                        var serializedTx = tx.serialize();
 
-                       /* web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function (err, hash) {
+                        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function (err, hash) {
                             if (!err) { //SUCCESS
                                 console.log(hash);
                                 that.props.setsuccessulhash(hash);
@@ -533,7 +533,7 @@ class TokenTransferConfirmation extends Component {
                                 createNotification('error', intl.get('Error.TransactionFailed'));
                                 console.log(err);
                             }
-                        });*/
+                        });
                     }).catch(error =>{
                     createNotification('error', intl.get('Error.TransactionFailed'));
                     this.props.setCurrent("tokentransfer");
