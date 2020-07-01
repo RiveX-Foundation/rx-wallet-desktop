@@ -7,7 +7,7 @@ function resolve (dir) {
 }
 
 const options = {
-    // externals: [nodeExternals()],
+     //externals: [nodeExternals()],
 
     // target: 'electron-renderer',
     

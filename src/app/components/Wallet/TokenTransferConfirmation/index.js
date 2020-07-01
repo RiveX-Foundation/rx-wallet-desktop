@@ -10,7 +10,6 @@ import Slider from 'react-input-slider';
 import './index.less';
 import Axios from 'axios';
 import buttonback from 'static/image/icon/back.png';
-import { Console, ConsoleTransportOptions } from 'winston/lib/winston/transports';
 
 const speakeasy = require("speakeasy");
 const base32 = require('hi-base32');
@@ -61,6 +60,7 @@ class TokenTransferConfirmation extends Component {
         receiver: "",
         otp: "notvalid",
         gaspricevalue: 30,
+        gaslimit:21000,
         mingaspricevalue: 1,
         maxgaspricevalue: 150,
         mfa: "",
@@ -70,7 +70,7 @@ class TokenTransferConfirmation extends Component {
     componentDidMount() {
         this.tokencontract = this.props.selectedTokenAsset.TokenInfoList[0].ContractAddress;
         if (this.props.selectedTokenAsset.TokenType == "eth" || this.props.selectedTokenAsset.TokenType == "erc20") {
-            this.web3Provider = this.props.selectedethnetwork.infuraendpoint + process.env.INFURA_PROJECT_ID;
+            this.web3Provider = this.props.selectedethnetwork.infuraendpoint + "/v3/c941387bd4d8467285c24d75ad3574a4";
         }
 
         this.props.setotptransfertoken("");
@@ -141,6 +141,10 @@ class TokenTransferConfirmation extends Component {
     OTPChange = e => {
         this.setState({ otp: e.target.value });
     }
+    gasLimitChange = e => {
+        this.setState({ gaslimit: e.target.value });
+    }
+
 
     pastetoken = event => {
         console.log(event.clipboardData);//.items[0].getAsString());
@@ -163,6 +167,23 @@ class TokenTransferConfirmation extends Component {
     }
 
     transfer = async () => {
+        let customgas = false;
+        console.log(this.state.gaslimit);
+        if(this.state.gaslimit == "" || this.state.gaslimit == null){
+
+        } else if(isNaN(parseInt(this.state.gaslimit.toString()))){
+            console.log("not a number");
+            createNotification('error', "Gas limit is not a number!");
+            return;
+        } else  if(parseInt(this.state.gaslimit.toString()) > 0 ){
+            customgas = true;
+         } else {
+             console.log("not a valid number");
+             createNotification('error', "Gas limit is not a valid number!");
+             return;
+         }
+      
+       
         if (this.props.mfaenabled) {
             const secretAscii = base32.decode(this.props.decrypt(localStorage.getItem('twofasecret')));
             const secretHex = this._toHex(secretAscii);
@@ -466,18 +487,33 @@ class TokenTransferConfirmation extends Component {
                             this.props.setCurrent("tokentransfer");
                             return;
                         }
-                        rawTransaction = {
-                            "from": this.props.selectedTokenAsset.PublicAddress.toString(),
-                            "nonce": count,
-                            "gasPrice": web3.utils.toHex(gasPrice),//"0x04e3b29200",
-                            // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-                            "gas": 60000,//"0x7458",
-                            "to": TokenInfo.ContractAddress,//this.tokencontract,
-                            "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
-                            "data": data,//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
-                            "chainId": this.props.selectedethnetwork.chainid
-                        };
-
+                        console.log("custom gas is "+this.state.gaslimit);
+                        if(customgas){
+                            rawTransaction = {
+                                "from": this.props.selectedTokenAsset.PublicAddress.toString(),
+                                "nonce": count,
+                                "gasPrice": web3.utils.toHex(gasPrice),//"0x04e3b29200",
+                                // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
+                                "gas": this.state.gaslimit,//"0x7458",
+                                "to": TokenInfo.ContractAddress,//this.tokencontract,
+                                "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+                                "data": data,//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+                                "chainId": this.props.selectedethnetwork.chainid
+                            };
+                        } else {
+                            rawTransaction = {
+                                "from": this.props.selectedTokenAsset.PublicAddress.toString(),
+                                "nonce": count,
+                                "gasPrice": web3.utils.toHex(gasPrice),//"0x04e3b29200",
+                                // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
+                                "gas": gaslimit,//"0x7458",
+                                "to": TokenInfo.ContractAddress,//this.tokencontract,
+                                "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+                                "data": data,//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+                                "chainId": this.props.selectedethnetwork.chainid
+                            };
+                        }
+                     console.log(rawTransaction);
 
 
                         var privKey = new Buffer(this.props.selectedTokenAsset.PrivateAddress, 'hex');
@@ -485,10 +521,10 @@ class TokenTransferConfirmation extends Component {
                             chain: this.props.selectedethnetwork.shortcode,
                             hardfork: 'petersburg'
                         });
-                        tx.sign(privKey);
-                        var serializedTx = tx.serialize();
+                      //  tx.sign(privKey);
+                        //var serializedTx = tx.serialize();
 
-                        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function (err, hash) {
+                       /* web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function (err, hash) {
                             if (!err) { //SUCCESS
                                 console.log(hash);
                                 that.props.setsuccessulhash(hash);
@@ -497,7 +533,7 @@ class TokenTransferConfirmation extends Component {
                                 createNotification('error', intl.get('Error.TransactionFailed'));
                                 console.log(err);
                             }
-                        });
+                        });*/
                     }).catch(error =>{
                     createNotification('error', intl.get('Error.TransactionFailed'));
                     this.props.setCurrent("tokentransfer");
@@ -586,7 +622,22 @@ class TokenTransferConfirmation extends Component {
                                         },
                                     }}
                                 />
+                            </div> 
+                            {
+                                this.props.selectedTokenAsset.TokenType == "erc20" &&
+                                <React.Fragment>
+                                     <div className="spacebetween" style={{marginTop:"10px"}}>
+                                <div className="panellabel" style={{marginTop:"10px"}}>Gas limit (leave empty for auto)</div>
+                                <Input
+                                            className="inputTransparent gasclass" onChange={this.gasLimitChange}
+                                            placeholder={2100}/>
                             </div>
+                            <div className="spacebetween" style={{marginTop: "10px"}}>
+                                <div className="panellabel">If transactions are failing, try setting a higher has limit (eg. 120000)</div>
+                                </div>
+                                </React.Fragment>
+                            }
+                          
                         </div>
                         <div className="width600 spacebetween" style={{marginBottom: "30px"}}>
 
