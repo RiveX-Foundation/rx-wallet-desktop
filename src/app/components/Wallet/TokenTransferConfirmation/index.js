@@ -265,7 +265,7 @@ class TokenTransferConfirmation extends Component {
                         tosend = sendamount;
                     }
 
-                    console.log(tosend.toString());
+                    console.log("Sending: "+web3.utils.fromWei(tosend.toString(),"ether"));
 
 
 
@@ -372,14 +372,29 @@ class TokenTransferConfirmation extends Component {
                 });
             } else if (this.props.selectedTokenAsset.TokenType == "wrc20") {
                 const web3 = new Web3(this.web3Provider);
-                var tokenitem = toJS(this.props.selectedwallet.tokenassetlist).find(x => x.AssetCode == "wan");
+                var tokenitem = toJS(this.props.selectedTokenAsset);
                 if (tokenitem.TokenBalance < 0.001) {
                     createNotification('error', "WAN balance too low!");
                     this.props.setCurrent("tokentransfer");
                     return;
                 }
+                console.log("ASSET CODE: "+tokenitem.AssetCode)
+                if(tokenitem.AssetCode == "WBTC"){
+                    console.log("SETTING WBTC AMOUNT");
+                    var sendamount = parseFloat(this.props.tokentransfertoken.toString()) * (10**8);
+                  } else if (tokenitem.AssetCode == "WUSDT"){
+                    console.log("SETTING WUSDT AMOUNT");
+                    var sendamount = parseFloat(this.props.tokentransfertoken.toString()) * (10**6);
+                  } else if(tokenitem.AssetCode == "WEOS"){
+                    var sendamount = parseFloat(this.props.tokentransfertoken.toString()) * (10**4);
+                  } else {
+                    var sendamount = new BigNumber(web3.utils.toWei(this.props.tokentransfertoken.toString(), 'ether'));
+                   // tokenitem.TokenBalance = parseFloat(balance) / (10**18);
+                  }
+                  console.log(sendamount.toString());
+                  
                 var from = this.props.selectedTokenAsset.PublicAddress.toString().toLowerCase();
-                var sendamount = new BigNumber(web3.utils.toWei(this.props.tokentransfertoken.toString(), 'ether'));
+               // var sendamount = new BigNumber(web3.utils.toWei(this.props.tokentransfertoken.toString(), 'ether'));
                 // var TokenInfo = this.props.selectedTokenAsset.TokenInfoList[0];
                 var CurrentNetworkAllTokenInfo = toJS(this.props.allTokenAsset).find(x => x.AssetCode == this.props.selectedTokenAsset.AssetCode);
                 var TokenInfo = CurrentNetworkAllTokenInfo.TokenInfoList[0];
@@ -406,7 +421,7 @@ class TokenTransferConfirmation extends Component {
                                         name: "amount",
                                         type: "uint256"
                                     }]
-                                }, [receiver, web3.utils.toWei(this.props.tokentransfertoken.toString(), 'ether')]);
+                                }, [receiver, sendamount.toString()]);
 
                                 var rawTransaction = {
                                     "from": this.props.selectedTokenAsset.PublicAddress,

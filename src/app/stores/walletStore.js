@@ -1631,15 +1631,23 @@ class walletStore {
          TokenInfo = toJS(TokenInfo);
         var CurrentNetworkAllTokenInfo = toJS(this.allTokenAsset).find(x => x.AssetCode == tokenitem.AssetCode);
         var TokenInfo = CurrentNetworkAllTokenInfo.TokenInfoList[0];
-        console.log("toJS(this.allTokenAsset)", toJS(this.allTokenAsset));
-        console.log("CurrentNetworkAllTokenInfo", CurrentNetworkAllTokenInfo);
-        console.log("TokenInfo", TokenInfo);
+       // console.log("toJS(this.allTokenAsset)", toJS(this.allTokenAsset));
+        //console.log("CurrentNetworkAllTokenInfo", CurrentNetworkAllTokenInfo);
+     //   console.log("TokenInfo", TokenInfo);
         TokenInfo = toJS(TokenInfo);
         iWanUtils.getWrc20Balance("WAN",tokenitem.PublicAddress, TokenInfo.ContractAddress).then(res => {
           if (res && Object.keys(res).length) {
             try{
               var balance = res;
-              tokenitem.TokenBalance = parseFloat(balance) / (10**18);
+              if(tokenitem.AssetCode == "WBTC"){
+                tokenitem.TokenBalance = parseFloat(balance) / (10**8);
+              } else if (tokenitem.AssetCode == "WUSDT"){
+                tokenitem.TokenBalance = parseFloat(balance) / (10**6);
+              } else if(tokenitem.AssetCode == "WEOS"){
+                tokenitem.TokenBalance = parseFloat(balance) / (10**4);
+              } else {
+                tokenitem.TokenBalance = parseFloat(balance) / (10**18);
+              }
               console.log("tokenitem.TokenBalance", tokenitem.TokenBalance)
               tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
               self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
