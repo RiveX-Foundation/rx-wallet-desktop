@@ -305,9 +305,9 @@ class TokenTransferConfirmation extends Component {
                 });
             } else if (this.props.selectedTokenAsset.TokenType == "wan") {
                 const web3 = new Web3(this.web3Provider);
-                var totalbalance = new BigNumber(web3.utils.toWei(this.props.selectedTokenAsset.TokenBalance.toString(), 'ether'));
+                var totalbalance = web3.utils.toWei(this.props.selectedTokenAsset.TokenBalance.toString(), 'ether');
                 var from = this.props.selectedTokenAsset.PublicAddress.toString().toLowerCase();
-                var sendamount = new BigNumber(web3.utils.toWei(this.props.tokentransfertoken.toString(), 'ether'));
+                var sendamount = web3.utils.toWei(this.props.tokentransfertoken.toString(), 'ether');
                 var TokenInfo = this.props.selectedTokenAsset.TokenInfoList[0];
                 var abiArray = JSON.parse(TokenInfo.AbiArray);
                 var receiver = this.props.tokentransferreceiver.toString().toLowerCase();//"0x8859C2BE1a9D6Fbe37E1Ed58c103487eE7B8b90F";
@@ -388,7 +388,7 @@ class TokenTransferConfirmation extends Component {
                   } else if(tokenitem.AssetCode == "WEOS"){
                     var sendamount = parseFloat(this.props.tokentransfertoken.toString()) * (10**4);
                   } else {
-                    var sendamount = new BigNumber(web3.utils.toWei(this.props.tokentransfertoken.toString(), 'ether'));
+                    var sendamount = web3.utils.toWei(this.props.tokentransfertoken.toString(), 'ether');
                    // tokenitem.TokenBalance = parseFloat(balance) / (10**18);
                   }
                   console.log(sendamount.toString());
@@ -471,7 +471,7 @@ class TokenTransferConfirmation extends Component {
                 var count = await web3.eth.getTransactionCount(this.props.selectedTokenAsset.PublicAddress);
                 var gasPrices = await this.getCurrentGasPrices();
                 var totalbalance = new BigNumber(web3.utils.toWei(this.props.selectedTokenAsset.TokenBalance.toString(), unit));
-                var sendamount = new BigNumber(web3.utils.toWei(this.props.tokentransfertoken.toString(), unit));
+                var sendamount = web3.utils.toWei(this.props.tokentransfertoken.toString(), unit);
                 var tosend;
                 console.log("sending "+sendamount.toString())
                 var TokenInfo = this.props.selectedTokenAsset.TokenInfoList[0];

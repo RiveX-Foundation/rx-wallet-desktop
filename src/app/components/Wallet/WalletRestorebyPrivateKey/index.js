@@ -5,6 +5,7 @@ import intl from 'react-intl-universal';
 import {createNotification} from 'utils/helper';
 import buttonback from 'static/image/icon/back.png';
 import './index.less';
+var bcrypt = require('bcryptjs');
 
 const {TextArea} = Input;
 
@@ -22,15 +23,35 @@ const {TextArea} = Input;
 class WalletRestorebyPrivateKey extends Component {
     state = {
         privatekey: "",
-        walletname: ""
+        walletname: "",
+        inputcurrentpassword: false,
+        mnemonic: ""
     }
 
     componentDidMount() {
+        var wallets = JSON.parse(localStorage.getItem("wallets"));
+        if (wallets == null || wallets == "[]") {
+            this.setState({inputcurrentpassword: false});
+        } else {
+            this.setState({inputcurrentpassword: true});
+        }
     }
 
     onChange = e => {
         this.setState({privatekey: e.target.value});// e.target.value.replace(/^\s+|\s+$/g, '').replace(/\s+/g, ' '));
     }
+
+    inputChanged = e => {
+        switch (e.target.id) {
+            case "password":
+                this.setState({mnemonicpassword: e.target.value});
+                // this.props.setPassword(e.target.value);
+                break;
+
+        }
+    }
+
+    
 
     copy = () => {
         console.log("COPY");
@@ -57,9 +78,19 @@ class WalletRestorebyPrivateKey extends Component {
             createNotification('error', intl.get('Error.Privatekeyisempty'));
             return;
         }
+        bcrypt.compare(this.state.mnemonicpassword, localStorage.getItem('password'), (err, res) => {
+            if (res) {
+                this.props.setRestorePrivateKey(this.state.privatekey);
+                this.props.CreateEthAddressByPrivateKey();
+            } else {
+                createNotification('error', "Invalid password");
+                this.setState({
+                    mnemonicpassword: ""
+                });
+                return;
+            }
+        });
 
-        this.props.setRestorePrivateKey(this.state.privatekey);
-        this.props.CreateEthAddressByPrivateKey();
     }
 
     back = () => {
@@ -83,6 +114,28 @@ class WalletRestorebyPrivateKey extends Component {
                             <div className="panelwrapper borderradiusfull" style={{width: "600px"}}>
                                 <input className="inputTransparent" onChange={this.onChange}/>
                             </div>
+                            {
+                                        <div className="panelwrapper borderradiusfull" style={{width:"200px"}}>
+                                            {
+                                                this.state.inputcurrentpassword == false &&
+                                                <Input.Password id="password"
+                                                                style={{paddingLeft: "0px"}}
+                                                                placeholder={intl.get('Register.NewPassword')}
+                                                                className="inputTransparent"
+                                                                onChange={this.inputChanged}
+                                                                />
+                                            }
+                                            {
+                                                this.state.inputcurrentpassword == true &&
+                                                <Input.Password id="password"
+                                                                style={{paddingLeft: "0px"}}
+                                                                placeholder={intl.get('Register.CurrentPassword')}
+                                                                className="inputTransparent"
+                                                                onChange={this.inputChanged}
+                                                               />
+                                            }
+                                        </div>
+                                    }
 
                             <Button className="curvebutton" onClick={this.next}>{intl.get('Settings.Restore')}</Button>
                         </div>
