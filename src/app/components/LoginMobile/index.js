@@ -156,8 +156,16 @@ class LoginMobile extends Component {
     }
     restore = () => {
         console.log("restore click");
+        var wallets = localStorage.getItem("wallets");
+        console.log(wallets);
+        if (wallets == null || wallets == "[]") { 
+            this.props.setcurrentReg('walletrestorebyseed');
+        } else {
+            createNotification('error', "Wallet already exists, please log in and import a new wallet there.");
+        }
+        
         // this.props.setRequestSignIn(true);
-        this.props.setcurrentReg('walletrestorebyseed');
+        
     }
     signin = () => {
         this.props.setRequestSignIn(true);
@@ -168,8 +176,16 @@ class LoginMobile extends Component {
     }
     create = () => {
         console.log("create");
+        var wallets = localStorage.getItem("wallets");
+        console.log(wallets);
+        if (wallets == null || wallets == "[]") { 
+            this.props.setcurrentReg('walletnameentry');
+        } else {
+            createNotification('error', "Wallet already exists, please log in and import a new wallet there.");
+        }
+        
         //this.props.setRequestSignIn(true);
-        this.props.setcurrentReg('walletnameentry');
+        
     }
 
     panelClick = e => {

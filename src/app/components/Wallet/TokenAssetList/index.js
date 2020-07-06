@@ -46,7 +46,7 @@ class TokenAssetList extends Component {
             // var seed = this.props.selectedWallet.seedphase;
             if(this.props.selectedWallet.seedphase == "null" || this.props.selectedWallet.seedphase == null || this.props.selectedTokenAsset.seedphase ==""){
                 var walletkey = await this.props.GenerateAddressByPrivateKey(this.props.selectedWallet.privatekey)
-                tokenasset.PrivateAddress = walletkey.privateaddress;
+                tokenasset.PrivateAddress = this.props.selectedWallet.privatekey;
                 tokenasset.PublicAddress = walletkey.publicaddress;
             } else {
 

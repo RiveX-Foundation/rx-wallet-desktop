@@ -421,7 +421,7 @@ class ManageWalletDetail extends Component {
             temporarytokencode: e.currentTarget.getAttribute('data-code'),
             temporarypublicaddress: e.currentTarget.getAttribute('data-publicaddress')
         });
-
+        console.log("private address: "+e.currentTarget.getAttribute('data-privateaddress').toString());
         this.props.setSelectedPrivateAddress(e.currentTarget.getAttribute('data-privateaddress'));
     }
 

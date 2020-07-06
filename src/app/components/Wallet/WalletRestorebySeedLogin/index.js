@@ -104,6 +104,7 @@ class WalletRestorebySeedLogin extends Component {
                   console.log("IMPORTING PHRASE");
                             if (err) {
                                 console.log("failed to import: " + err.message)
+                                createNotification('error', "Failed to import seed phrase!");
                                 return;
                             }
                             console.log("PHRASE IMPORTED");
@@ -123,20 +124,24 @@ class WalletRestorebySeedLogin extends Component {
                                       console.log('createFirstAddr:', err);
                              }
                          }
-                   })
+                   });
+                   bcrypt.hash(this.state.password, 10, (err, hash) => {
+                    this.props.setPassword(hash);
+                    localStorage.setItem('password', hash);
+                });
+                this.props.setSeedPhaseInString(this.state.seedphase, this.state.password);
+                this.props.CreateEthAddress(dappwallet);
+                this.props.setCurrent("walletcreated");
+                this.props.wsLogin();
+                this.props.setRequestSignIn(false);
+                this.props.setcurrentReg("inputmobile");  
 
               });
+           
+            } else {
+                createNotification('error', "Wallet already exists, please log in and import a new wallet there.");
             }
-              bcrypt.hash(this.state.password, 10, (err, hash) => {
-                this.props.setPassword(hash);
-                localStorage.setItem('password', hash);
-            });
-            this.props.setSeedPhaseInString(this.state.seedphase, this.state.password);
-            this.props.CreateEthAddress(dappwallet);
-            this.props.setCurrent("walletcreated");
-            this.props.wsLogin();
-            this.props.setRequestSignIn(false);
-            this.props.setcurrentReg("inputmobile");   
+               
         }
 
     }

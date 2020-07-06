@@ -131,7 +131,8 @@ class WalletCreationLogin extends Component {
                     console.log("Seed: " + seed);
                     wand.request('phrase_import', {phrase: seed, pwd: pass}, err => {
                         if (err) {
-                            console.log("failed to import: " + err)
+                            console.log("failed to import: " + err);
+                            createNotification('error', "Failed to import seed phrase!");
                             return;
                         }
                         wand.request('wallet_unlock', {pwd: pass}, async (err, val) => {
@@ -151,37 +152,24 @@ class WalletCreationLogin extends Component {
                         })
 
                     });
-                }
-                bcrypt.hash(this.state.mnemonicpassword, 10, (err, hash) => {
-                    //this.props.setPendingPassword(this.state.mnemonicpassword);
-                    this.props.setPassword(hash);
-                    localStorage.setItem('password', hash);
-                });
-                this.props.setSeedPhaseInString(mnemonic.replace(',', ' '), this.state.mnemonicpassword);
-                this.props.CreateEthAddress(dappwallet);
-                this.props.setCurrent("walletcreated");
-                this.props.wsLogin();
-                this.props.setRequestSignIn(false);
-                this.props.setcurrentReg("inputmobile");
-            }
-        } else {
-            bcrypt.compare(this.state.mnemonicpassword, localStorage.getItem('password'), (err, res) => {
-                if (res) {
+                    bcrypt.hash(this.state.mnemonicpassword, 10, (err, hash) => {
+                        //this.props.setPendingPassword(this.state.mnemonicpassword);
+                        this.props.setPassword(hash);
+                        localStorage.setItem('password', hash);
+                    });
                     this.props.setSeedPhaseInString(mnemonic.replace(',', ' '), this.state.mnemonicpassword);
                     this.props.CreateEthAddress(dappwallet);
                     this.props.setCurrent("walletcreated");
                     this.props.wsLogin();
                     this.props.setRequestSignIn(false);
                     this.props.setcurrentReg("inputmobile");
-
                 } else {
-                    createNotification('error', "Invalid password");
-                    this.setState({
-                        backupwarning: false,
-                        mnemonicpassword:""
-                    });
+                    createNotification('error', "Wallet already exists, please log in and import a new wallet there.");
                 }
-            });
+              
+            }
+        } else {
+            createNotification('error', "Wallet already exists, please log in and import a new wallet there.");
         }
 
 
