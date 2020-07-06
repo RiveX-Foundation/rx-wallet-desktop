@@ -12,7 +12,7 @@ class ConfigFactoryService {
             this.config.wanchain_js_testnet = false
 
             this.config.iWAN = {
-                "url": ['api.wanchain.org'],
+                "url": ['api.wanchain.org', 'api2.wanchain.org'],
                 "port": [8443, 8443],
                 "wallet": {
                     "apikey": process.env.API_KEY,

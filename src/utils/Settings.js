@@ -16,7 +16,7 @@ const defaultConfig = {
     mode: 'light',
     /** TODO */
     // network: 'main',
-    network: 'testnet',
+    network: 'main',
     lang: 'en_US',
     settings: {
       reinput_pwd: false,
