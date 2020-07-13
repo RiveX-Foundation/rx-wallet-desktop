@@ -4,6 +4,7 @@ import { app } from 'electron'
 import Logger from './Logger'
 import yargs from 'yargs'
 import WalletHelper from '~/src/utils/Helper'
+import { loggers } from 'winston'
 
 // caches for config
 let _mode = undefined
@@ -18,6 +19,7 @@ const defaultConfig = {
     // network: 'main',
     network: 'main',
     lang: 'en_US',
+    skippedUpdateVersion: null,
     settings: {
       reinput_pwd: false,
       staking_advance: false,
@@ -55,6 +57,13 @@ class Settings {
     constructor() {
         this._logger = Logger.getLogger('settings')
         this._logger.info('setting initialized')
+        let ver = app.getVersion()
+        if (ver.indexOf('-') === -1) {
+            this.userPath = app.getPath('userData');
+          }
+          else {
+            this.userPath = app.getPath('userData') + '/test';
+          }
         let path = app.getPath('userData');
         this._logger.info('User data path: ' + path);
         this._db = low(new FileSync(path + '/config.json'))
@@ -190,6 +199,9 @@ class Settings {
 
         _lang = langCode
     }
+    skipUpdateVersion(ver) {
+        this._set('skippedUpdateVersion', ver);
+      }
 }
 
 export default new Settings()

@@ -1,7 +1,7 @@
 appId: org.RiveXFoundation.wallet
 copyright: RiveX Foundation
 productName: RX Wallet
-artifactName: RX-Wallet-${version}-${os}.${ext}
+artifactName: RX-Wallet-${os}-${version}.${ext}
 
 asar: true
 
@@ -48,7 +48,6 @@ nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
   installerIcon: build/assets/icon.ico
-  artifactName: RVX-Wallet-${version}-${os}.exe
 
 deb:
   artifactName: RVX-Wallet-${version}-${os}.deb
