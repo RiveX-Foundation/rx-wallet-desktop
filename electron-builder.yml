@@ -1,5 +1,5 @@
-appId: org.pixielabel.wallet
-copyright: PixieLab
+appId: org.RiveXFoundation.wallet
+copyright: RiveX Foundation
 productName: RX Wallet
 artifactName: RX-Wallet-${version}-${os}.${ext}
 
@@ -15,8 +15,8 @@ files:
 
 publish:
   - provider: github
-    owner: pixielab
-    repo: rvx-desktop-wallet
+    owner: RiveX-Foundation
+    repo: rx-wallet-desktop
 
 mac:
   category: public.app-category.finance

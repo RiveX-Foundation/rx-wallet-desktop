@@ -129,7 +129,7 @@ class TokenTransferConfirmation extends Component {
         let prices = {
             low: response.data.safeLow,
             medium: response.data.average,
-            high: 45
+            high: response.data.fast
         }
         return prices;
     }
@@ -509,7 +509,7 @@ class TokenTransferConfirmation extends Component {
                                 "nonce": count,
                                 "gasPrice": web3.utils.toHex(gasPrice),//"0x04e3b29200",
                                 // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-                                "gas": this.state.gaslimit,//"0x7458",
+                                "gas": parseInt(this.state.gaslimit),//"0x7458",
                                 "to": TokenInfo.ContractAddress,//this.tokencontract,
                                 "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
                                 "data": data,//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),

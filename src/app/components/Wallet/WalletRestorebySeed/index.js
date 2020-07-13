@@ -8,6 +8,7 @@ import {WALLETID, WANPATH} from '../../../utils/support'
 import {createFirstAddr} from '../../../utils/helper';
 import './index.less';
 const bcrypt = require('bcryptjs');
+const bip39 = require('bip39');
 
 
 @inject(stores => ({
@@ -67,6 +68,10 @@ class WalletRestorebySeed extends Component {
 
         //console.log(document.execCommand('paste'));
         //return;
+        if(!bip39.validateMnemonic(this.state.seedphase)){
+            createNotification('error', intl.get('Error.InvalidMnemonicphrase'));
+            return;
+        }
 
         if (this.state.walletname == "") {
             createNotification('error', intl.get('Error.Walletnameisempty'));
