@@ -1,7 +1,9 @@
-import {app, ipcMain as ipc} from 'electron'
+import {app, ipcMain as ipc,dialog} from 'electron'
 import {autoUpdater} from 'electron-updater'
 import Logger from '~/src/utils/Logger'
 import Windows from '~/src/modules/windows'
+import Settings from '~/src/utils/Settings'
+import i18n from '~/config/i18n'
 
 class WalletUpdater {
     constructor() {
