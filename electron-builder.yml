@@ -1,4 +1,4 @@
-appId: org.RiveXFoundation.wallet
+appId: org.wallet.rivex
 copyright: RiveX Foundation
 productName: RX Wallet
 artifactName: RX-Wallet-${os}-${version}.${ext}
@@ -28,31 +28,23 @@ mac:
   target:
     - dmg
     - zip
-
+    
 win:
-  icon: build/assets/icon.ico
+  icon: build/icons/icon.ico
   target: nsis
-
+    
 linux:
   category: Finance
-  icon: build/assets/icon.png
   target: 
     - deb
     - appImage
-
+    
 dmg:
-  artifactName: RVX-Wallet-${version}-${os}.dmg
   sign: false
-
+    
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
-  installerIcon: build/assets/icon.ico
-
-deb:
-  artifactName: RVX-Wallet-${version}-${os}.deb
-
-appImage:
-  artifactName: RVX-Wallet-${version}-${os}.AppImage
-
+  installerIcon: build/icons/icon.ico
+    
 afterSign: scripts/notarize.js

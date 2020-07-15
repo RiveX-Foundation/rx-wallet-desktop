@@ -1646,7 +1646,10 @@ class walletStore {
               } else if(tokenitem.AssetCode == "WEOS"){
                 tokenitem.TokenBalance = parseFloat(balance) / (10**4);
               } else {
-                tokenitem.TokenBalance = parseFloat(balance) / (10**18);
+                  console.log(tokenitem.AssetCode);
+                  console.log(balance);
+                  console.log("TOKEN  BALANCE FROMWEI: "+web3.utils.fromWei(balance,'ether'));
+                tokenitem.TokenBalance = web3.utils.fromWei(balance.toString(),"ether");
               }
               console.log("tokenitem.TokenBalance", tokenitem.TokenBalance)
               tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
