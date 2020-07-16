@@ -30,7 +30,7 @@ mac:
     - zip
     
 win:
-  icon: build/icons/icon.ico
+  icon: build/assets/icon.ico
   target: nsis
     
 linux:
