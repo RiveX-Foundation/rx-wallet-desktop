@@ -45,6 +45,6 @@ dmg:
 nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
-  installerIcon: build/icons/icon.ico
+  installerIcon: build/assets/icon.ico
     
 afterSign: scripts/notarize.js
