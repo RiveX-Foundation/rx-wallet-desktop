@@ -203,6 +203,11 @@ class ManageWalletDetail extends Component {
     }
 
     validatePasswordsRemoval = () => {
+        var wallets = JSON.parse(localStorage.getItem("wallets"));
+        if (wallets[0].publicaddress == this.state.selectedwalletaddress) {
+            createNotification('error', 'Cant remove the dApp wallet!');
+            return;
+        }
         if (localStorage.getItem('twofasecret') != null) {
             const secretAscii = base32.decode(this.state.googleAuthKey);
             bcrypt.compare(this.state.password, this.state.mnemonicpass, (err, res) => {

@@ -67,7 +67,7 @@ class TokenTransferConfirmation extends Component {
         googleAuthKey: ""
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this.tokencontract = this.props.selectedTokenAsset.TokenInfoList[0].ContractAddress;
         if (this.props.selectedTokenAsset.TokenType == "eth" || this.props.selectedTokenAsset.TokenType == "erc20") {
             this.web3Provider = this.props.selectedethnetwork.infuraendpoint + "/v3/c941387bd4d8467285c24d75ad3574a4";
@@ -81,6 +81,13 @@ class TokenTransferConfirmation extends Component {
                 mingaspricevalue: 1,
                 maxgaspricevalue: 180
             }, () => {
+                this.props.setTrxGasPrice(this.state.gaspricevalue);
+            })
+        } else {
+            let gasPrices = await this.getCurrentGasPrices();
+            this.setState({
+                gaspricevalue: gasPrices.medium
+            }, () =>{
                 this.props.setTrxGasPrice(this.state.gaspricevalue);
             })
         }
@@ -127,9 +134,9 @@ class TokenTransferConfirmation extends Component {
         let response = await Axios.get(API_EthGas);
 
         let prices = {
-            low: response.data.safeLow,
-            medium: response.data.average,
-            high: response.data.fast
+            low: parseFloat(response.data.safeLow) /10,
+            medium: parseFloat(response.data.average) /10,
+            high: parseFloat(response.data.fast) /10
         }
         return prices;
     }
@@ -607,7 +614,7 @@ class TokenTransferConfirmation extends Component {
                         </div>
                         <div className="panelwrapper borderradiusfull" style={{marginBottom: "10px"}}>
                             <div className="spacebetween">
-                                <div className="panellabel">{intl.get('Transaction.GasPrice')}</div>
+                                <div className="panellabel">{intl.get('Transaction.GasPrice')} (Displaying average gas price from ethgasstation)</div>
                                 <div
                                     className="panelvalue">{this.state.gaspricevalue} {this._formatWeiWin(this.props.selectedTokenAsset.TokenType)}</div>
                             </div>

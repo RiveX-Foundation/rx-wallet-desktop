@@ -1613,13 +1613,17 @@ class walletStore {
                 }).then(balance => {
                     //console.log("BALANCE: "+ balance + " "+ tokenitem.AssetCode);
                     if (tokenitem.AssetCode == "USDT" || tokenitem.AssetCode == "fls6") {
-                        balance = balance / (10 ** 6);
-                        tokenitem.TokenBalance = balance;
+                        var tokenbal = web3.utils.fromWei(balance,'mwei');
+                        tokenitem.TokenBalance =parseFloat(parseFloat(tokenbal).toFixed(3));
+                      //  balance = balance / (10 ** 6);
+                       // tokenitem.TokenBalance = balance;
                         tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
                         self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
                     } else {
-                        balance = balance / (10 ** 18);
-                        tokenitem.TokenBalance = balance;
+                       // balance = balance / (10 ** 18);
+                        var tokenbal = web3.utils.fromWei(balance,'ether');
+                        tokenitem.TokenBalance =parseFloat(parseFloat(tokenbal).toFixed(3));
+                        //tokenitem.TokenBalance = balance;
                         tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
                         self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
                     }
@@ -1627,6 +1631,7 @@ class walletStore {
                 });
                 self.selectedassettokenlist.push(tokenitem);
             }else if(tokenitem.TokenType == "wrc20"){
+                var web3 = new Web3(this.networkstore.selectedethnetwork.infuraendpoint + this.infuraprojectid);
          var TokenInfo = tokenitem.TokenInfoList.find(x => x.Network == this.networkstore.selectedwannetwork.shortcode);
          TokenInfo = toJS(TokenInfo);
         var CurrentNetworkAllTokenInfo = toJS(this.allTokenAsset).find(x => x.AssetCode == tokenitem.AssetCode);
@@ -1642,14 +1647,15 @@ class walletStore {
               if(tokenitem.AssetCode == "WBTC"){
                 tokenitem.TokenBalance = parseFloat(balance) / (10**8);
               } else if (tokenitem.AssetCode == "WUSDT"){
-                tokenitem.TokenBalance = parseFloat(balance) / (10**6);
+                var tokenbal = web3.utils.fromWei(balance,'ether');
+                tokenitem.TokenBalance = parseFloat(parseFloat(tokenbal).toFixed(3));
               } else if(tokenitem.AssetCode == "WEOS"){
                 tokenitem.TokenBalance = parseFloat(balance) / (10**4);
               } else {
                   console.log(tokenitem.AssetCode);
                   console.log(balance);
-                  console.log("TOKEN  BALANCE FROMWEI: "+web3.utils.fromWei(balance,'ether'));
-                tokenitem.TokenBalance = web3.utils.fromWei(balance.toString(),"ether");
+                  var tokenbal = web3.utils.fromWei(balance,'ether');
+                tokenitem.TokenBalance =parseFloat(parseFloat(tokenbal).toFixed(3));
               }
               console.log("tokenitem.TokenBalance", tokenitem.TokenBalance)
               tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
