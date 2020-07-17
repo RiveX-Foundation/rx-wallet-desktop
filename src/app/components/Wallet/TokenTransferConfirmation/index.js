@@ -614,7 +614,7 @@ class TokenTransferConfirmation extends Component {
                         </div>
                         <div className="panelwrapper borderradiusfull" style={{marginBottom: "10px"}}>
                             <div className="spacebetween">
-                                <div className="panellabel">{intl.get('Transaction.GasPrice')} (Displaying average gas price from ethgasstation)</div>
+                                <div className="panellabel">{intl.get('Transaction.GasPrice')} (Displaying average gas price from API)</div>
                                 <div
                                     className="panelvalue">{this.state.gaspricevalue} {this._formatWeiWin(this.props.selectedTokenAsset.TokenType)}</div>
                             </div>

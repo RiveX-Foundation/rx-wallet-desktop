@@ -1595,16 +1595,24 @@ class walletStore {
                 var web3 = new Web3(this.networkstore.selectedethnetwork.infuraendpoint + this.infuraprojectid);
                 console.log(web3);
                 web3.eth.getBalance(tokenitem.PublicAddress).then(balance => {
-                    balance = parseFloat(balance) / (10 ** 18);
-                    tokenitem.TokenBalance = balance;
+                    var tokenbal = web3.utils.fromWei(balance,'ether');
+                    console.log(tokenbal);
+                    tokenitem.TokenBalance =parseFloat(parseFloat(tokenbal).toFixed(6));
+                    //balance = parseFloat(balance) / (10 ** 18);
+                   // tokenitem.TokenBalance = balance;
                     tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
                     self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
                 })
             } else if (tokenitem.TokenType == "erc20") {
                 var web3 = new Web3(this.networkstore.selectedethnetwork.infuraendpoint + this.infuraprojectid);
+                console.log(this.networkstore.selectedethnetwork.shortcode);
                 var TokenInfo = tokenitem.TokenInfoList.find(x => x.Network == this.networkstore.selectedethnetwork.shortcode);
                 TokenInfo = toJS(TokenInfo);
-                var tokenAbiArray = JSON.parse(TokenInfo.AbiArray);
+                console.log(TokenInfo);
+                try{
+                    var tokenAbiArray = JSON.parse(TokenInfo.AbiArray);
+                }catch(e){}
+               
                 // Get ERC20 Token contract instance
                 let contract = new web3.eth.Contract(tokenAbiArray, TokenInfo.ContractAddress);
                 web3.eth.call({
@@ -1667,19 +1675,20 @@ class walletStore {
           console.log(err);
         });
       } else if (tokenitem.TokenType == "wan") {
+        var web3 = new Web3(this.networkstore.selectedethnetwork.infuraendpoint + this.infuraprojectid);
+          console.log("GETTING WAN BALANCE");
                 var TokenInfo = tokenitem.TokenInfoList.find(x => x.Network == this.networkstore.selectedwannetwork.shortcode);
                 TokenInfo = toJS(TokenInfo);
+                console.log(TokenInfo);
                 iWanUtils.getBalance("WAN", tokenitem.PublicAddress).then(res => {
-                    if (res && Object.keys(res).length) {
-                        try {
-                            var balance = res;
-                            tokenitem.TokenBalance = parseFloat(balance) / (10 ** 18);
-                            tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
-                            self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
-                            self.selectedassettokenlist.push(tokenitem);
-                        } catch (e) {
-                        }
-                    }
+                   try {
+                       var balance = res;
+                       var tokenbal = web3.utils.fromWei(balance, 'ether');
+                       tokenitem.TokenBalance = parseFloat(parseFloat(tokenbal).toFixed(8));
+                       tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
+                       self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
+                       self.selectedassettokenlist.push(tokenitem);
+                   } catch (e) {}
                 }).catch(err => {
                     console.log(err);
                 });
