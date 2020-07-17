@@ -123,6 +123,13 @@ class Sidebar extends Component {
         this.props.setCurrent('los');
     }
 
+    selectaave = () => {
+        this.props.clearSelectedWallet();
+        this.props.setselectedwallettype("");
+        this.setState({selectedtab: "aave"});
+        this.props.setCurrent('aave');
+    }
+
     selectdex = () => {
         localStorage.setItem("dexagree", true);
         this.setState({
@@ -151,6 +158,7 @@ class Sidebar extends Component {
         const importwalletstyle = (selectedtab == "wallet" && selectedwallettype == "importwallet") ? "ant-menu-item fontcolor_purple ant-menu-item-selected" : "ant-menu-item fontcolor_purple";
         const dexstyle = (selectedtab == "dex") ? "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open ant-menu-submenu-selected" : "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open";
         const losstyle = (selectedtab == "los") ? "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open ant-menu-submenu-selected" : "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open";
+        const aavestyle = (selectedtab == "aave") ? "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open ant-menu-submenu-selected" : "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open";
         const settingstyle = (selectedtab == "setting") ? "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open ant-menu-submenu-selected" : "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open";
 
 
@@ -217,6 +225,14 @@ class Sidebar extends Component {
                                  aria-owns="/$Menu">
                                 <span><img src={buttonlos} width="20px"/><span
                                     className="sidebar_fontsize sidebar_dexfontcolor">{intl.get('Los.Los')}</span></span>
+                            </div>
+                        </li>}
+                        {
+                        <li data-tabvalue="aave" className={aavestyle} onClick={this.selectaave} role="menuitem">
+                            <div className="ant-menu-submenu-title" aria-expanded="true" aria-haspopup="true"
+                                 aria-owns="/$Menu">
+                                <span><img src={buttonlos} width="20px"/><span
+                                    className="sidebar_fontsize sidebar_dexfontcolor">AAVE</span></span>
                             </div>
                         </li>}
                         <li data-tabvalue="setting" className={settingstyle} onClick={this.selectsettings}

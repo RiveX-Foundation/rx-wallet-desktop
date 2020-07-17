@@ -37,6 +37,7 @@ import TwoFACreation from 'components/Wallet/TwoFACreation';
 import TwoFARemove from 'components/Wallet/TwoFARemove';
 import {NotificationContainer} from 'react-notifications';
 import Los from 'components/Los';
+import Aave from 'components/Aave';
 //import { checkCryptographic, checkPhrase } from 'utils/support';
 
 const Step = Steps.Step;
@@ -144,6 +145,10 @@ class Dashboard extends Component {
         {
             content: <Los/>,
             key: 'los'
+        },
+        {
+            content: <Aave/>,
+            key: 'aave'
         }, {
             content: <TwoFAWarning/>,
             key: 'twofawarning'

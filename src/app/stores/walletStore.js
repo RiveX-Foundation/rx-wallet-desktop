@@ -1673,7 +1673,8 @@ class walletStore {
                     if (res && Object.keys(res).length) {
                         try {
                             var balance = res;
-                            tokenitem.TokenBalance = parseFloat(balance) / (10 ** 18);
+                            var tokenbal = web3.utils.fromWei(balance,'ether');
+                            tokenitem.TokenBalance = parseFloat(parseFloat(tokenbal).toFixed(3));
                             tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
                             self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
                             self.selectedassettokenlist.push(tokenitem);
