@@ -315,6 +315,7 @@ class TokenTransferConfirmation extends Component {
                 var totalbalance = web3.utils.toWei(this.props.selectedTokenAsset.TokenBalance.toString(), 'ether');
                 var from = this.props.selectedTokenAsset.PublicAddress.toString().toLowerCase();
                 var sendamount = web3.utils.toWei(this.props.tokentransfertoken.toString(), 'ether');
+                var sendingamount = new BigNumber(web3.utils.toWei(this.props.tokentransfertoken.toString(), 'ether'));
                 var TokenInfo = this.props.selectedTokenAsset.TokenInfoList[0];
                 var abiArray = JSON.parse(TokenInfo.AbiArray);
                 var receiver = this.props.tokentransferreceiver.toString().toLowerCase();//"0x8859C2BE1a9D6Fbe37E1Ed58c103487eE7B8b90F";
@@ -334,16 +335,19 @@ class TokenTransferConfirmation extends Component {
                                 var gass = new BigNumber(gas);
                                 var gasPrice = web3.utils.toWei(this.state.gaspricevalue.toString(), "gwei");
                                 var txcost = gass.multipliedBy(gasPrice);
-                                var totalcost = txcost.plus(sendamount);
-                                console.log(totalcost);
+                                var totalcost = txcost.plus(sendingamount);
+                                console.log(gas);
+                                console.log(this.state.gaspricevalue);
+                                console.log(totalcost.toString());
                                 console.log(totalbalance);
                                 if (totalcost > totalbalance) {
                                     console.log("total cost higher");
-                                    tosend = sendamount.minus(txcost);
+                                    tosend = sendingamount.minus(txcost);
                                 } else {
                                     console.log("total cost lower");
                                     tosend = sendamount;
                                 }
+                                console.log(tosend.toString());
                                 var rawTransaction = {
                                     "from": this.props.selectedTokenAsset.PublicAddress,
                                     "nonce": nonce,
@@ -614,7 +618,7 @@ class TokenTransferConfirmation extends Component {
                         </div>
                         <div className="panelwrapper borderradiusfull" style={{marginBottom: "10px"}}>
                             <div className="spacebetween">
-                                <div className="panellabel">{intl.get('Transaction.GasPrice')} (Displaying average gas price from ethgasstation)</div>
+                                <div className="panellabel">{intl.get('Transaction.GasPrice')} (Displaying average gas price from API)</div>
                                 <div
                                     className="panelvalue">{this.state.gaspricevalue} {this._formatWeiWin(this.props.selectedTokenAsset.TokenType)}</div>
                             </div>

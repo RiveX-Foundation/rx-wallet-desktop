@@ -6,6 +6,7 @@ import Web3 from 'web3';
 import intl from 'react-intl-universal';
 import iWanUtils from '../utils/iwanUtils';
 import languageIntl from '../stores/languageIntl';
+import { BigNumber } from 'bignumber.js';
 
 const {API_Server, API_EthGas, BIP44PATH, etherscanAPIKey, aespassword} = require('../../../config/common/index');
 var wanTx = require('wanchain-util').wanchainTx;
@@ -1593,18 +1594,27 @@ class walletStore {
                 console.log("LOADING ETH TOKEN ASSET");
                 console.log(this.networkstore.selectedethnetwork.infuraendpoint + this.infuraprojectid);
                 var web3 = new Web3(this.networkstore.selectedethnetwork.infuraendpoint + this.infuraprojectid);
-                console.log(web3);
+                //console.log(web3);
                 web3.eth.getBalance(tokenitem.PublicAddress).then(balance => {
-                    balance = parseFloat(balance) / (10 ** 18);
-                    tokenitem.TokenBalance = balance;
+                    var tokenbal = new BigNumber(web3.utils.fromWei(balance, 'ether'));
+                    tokenitem.TokenBalance = parseFloat(tokenbal.toString());
+                   // console.log(tokenbal);
+                    //tokenitem.TokenBalance =parseFloat(parseFloat(tokenbal).toFixed(6));
+                    //balance = parseFloat(balance) / (10 ** 18);
+                   // tokenitem.TokenBalance = balance;
                     tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
                     self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
                 })
             } else if (tokenitem.TokenType == "erc20") {
                 var web3 = new Web3(this.networkstore.selectedethnetwork.infuraendpoint + this.infuraprojectid);
+                console.log(this.networkstore.selectedethnetwork.shortcode);
                 var TokenInfo = tokenitem.TokenInfoList.find(x => x.Network == this.networkstore.selectedethnetwork.shortcode);
                 TokenInfo = toJS(TokenInfo);
-                var tokenAbiArray = JSON.parse(TokenInfo.AbiArray);
+                console.log(TokenInfo);
+                try{
+                    var tokenAbiArray = JSON.parse(TokenInfo.AbiArray);
+                }catch(e){}
+               
                 // Get ERC20 Token contract instance
                 let contract = new web3.eth.Contract(tokenAbiArray, TokenInfo.ContractAddress);
                 web3.eth.call({
@@ -1613,16 +1623,20 @@ class walletStore {
                 }).then(balance => {
                     //console.log("BALANCE: "+ balance + " "+ tokenitem.AssetCode);
                     if (tokenitem.AssetCode == "USDT" || tokenitem.AssetCode == "fls6") {
-                        var tokenbal = web3.utils.fromWei(balance,'mwei');
-                        tokenitem.TokenBalance =parseFloat(parseFloat(tokenbal).toFixed(3));
+                        var tokenbal = new BigNumber(web3.utils.fromWei(balance, 'mwei'));
+                       tokenitem.TokenBalance = parseFloat(tokenbal.toString());
+                        //var tokenbal = web3.utils.fromWei(balance,'mwei');
+                        //tokenitem.TokenBalance =parseFloat(parseFloat(tokenbal).toFixed(3));
                       //  balance = balance / (10 ** 6);
                        // tokenitem.TokenBalance = balance;
                         tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
                         self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
                     } else {
                        // balance = balance / (10 ** 18);
-                        var tokenbal = web3.utils.fromWei(balance,'ether');
-                        tokenitem.TokenBalance =parseFloat(parseFloat(tokenbal).toFixed(3));
+                       var tokenbal = new BigNumber(web3.utils.fromWei(balance, 'ether'));
+                       tokenitem.TokenBalance = parseFloat(tokenbal.toString());
+                        //var tokenbal = web3.utils.fromWei(balance,'ether');
+                        //tokenitem.TokenBalance =parseFloat(parseFloat(tokenbal).toFixed(3));
                         //tokenitem.TokenBalance = balance;
                         tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
                         self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
@@ -1654,8 +1668,10 @@ class walletStore {
               } else {
                   console.log(tokenitem.AssetCode);
                   console.log(balance);
-                  var tokenbal = web3.utils.fromWei(balance,'ether');
-                tokenitem.TokenBalance =parseFloat(parseFloat(tokenbal).toFixed(3));
+                  var tokenbal = new BigNumber(web3.utils.fromWei(balance, 'ether'));
+                  tokenitem.TokenBalance = parseFloat(tokenbal.toString());
+                  //var tokenbal = web3.utils.fromWei(balance,'ether');
+                //tokenitem.TokenBalance =parseFloat(parseFloat(tokenbal).toFixed(3));
               }
               console.log("tokenitem.TokenBalance", tokenitem.TokenBalance)
               tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
@@ -1667,20 +1683,21 @@ class walletStore {
           console.log(err);
         });
       } else if (tokenitem.TokenType == "wan") {
+        var web3 = new Web3(this.networkstore.selectedethnetwork.infuraendpoint + this.infuraprojectid);
+          console.log("GETTING WAN BALANCE");
                 var TokenInfo = tokenitem.TokenInfoList.find(x => x.Network == this.networkstore.selectedwannetwork.shortcode);
                 TokenInfo = toJS(TokenInfo);
+                console.log(TokenInfo);
                 iWanUtils.getBalance("WAN", tokenitem.PublicAddress).then(res => {
-                    if (res && Object.keys(res).length) {
-                        try {
-                            var balance = res;
-                            var tokenbal = web3.utils.fromWei(balance,'ether');
-                            tokenitem.TokenBalance = parseFloat(parseFloat(tokenbal).toFixed(3));
-                            tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
-                            self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
-                            self.selectedassettokenlist.push(tokenitem);
-                        } catch (e) {
-                        }
-                    }
+                   try {
+                       var balance = res;
+                       var tokenbal = new BigNumber(web3.utils.fromWei(balance, 'ether'));
+                       tokenitem.TokenBalance = parseFloat(tokenbal.toString());
+                      // tokenitem.TokenBalance = tokenbal;
+                       tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
+                       self.totalassetworth += (this.getTokenPrice(tokenitem.AssetCode) * tokenitem.TokenBalance);
+                       self.selectedassettokenlist.push(tokenitem);
+                   } catch (e) {}
                 }).catch(err => {
                     console.log(err);
                 });
