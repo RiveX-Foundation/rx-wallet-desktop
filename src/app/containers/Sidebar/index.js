@@ -14,7 +14,7 @@ import buttonimportwallet from 'static/image/icon/importwallet.png';
 import buttonbasicwallet from 'static/image/icon/basicwallet.png';
 import buttonwrdex from 'static/image/icon/wrdex_color_100.png';
 import buttonlos from 'static/image/icon/los100.png';
-
+import buttonaave from 'static/image/icon/aaveround.png';
 
 const SubMenu = Menu.SubMenu;
 
@@ -30,7 +30,7 @@ const SubMenu = Menu.SubMenu;
 
 @observer
 class Sidebar extends Component {
-
+ 
     state = {
         selectedwallettype: "basicwallet",
         selectedtab: "wallet",
@@ -231,7 +231,7 @@ class Sidebar extends Component {
                         <li data-tabvalue="aave" className={aavestyle} onClick={this.selectaave} role="menuitem">
                             <div className="ant-menu-submenu-title" aria-expanded="true" aria-haspopup="true"
                                  aria-owns="/$Menu">
-                                <span><img src={buttonlos} width="20px"/><span
+                                <span><img src={buttonaave} width="20px"/><span
                                     className="sidebar_fontsize sidebar_dexfontcolor">AAVE</span></span>
                             </div>
                         </li>}

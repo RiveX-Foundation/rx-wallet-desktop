@@ -149,7 +149,8 @@ class Dashboard extends Component {
         {
             content: <Aave/>,
             key: 'aave'
-        }, {
+        },
+         {
             content: <TwoFAWarning/>,
             key: 'twofawarning'
         }, {
