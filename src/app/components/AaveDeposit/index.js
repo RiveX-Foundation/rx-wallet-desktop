@@ -13,6 +13,7 @@ import ERC20ABI from '../../ABIs/ERC20.json';
 import LendingPoolAddressProviderABI from '../../ABIs/AddressProvider.json';
 import LendingPoolABI from '../../ABIs/LendingPool.json';
 import buttonback from 'static/image/icon/back.png';
+import Axios from 'axios';
 var Tx = require('ethereumjs-tx');
 const ethUtil = require('ethereumjs-util');
 const pu = require('promisefy-util');
@@ -91,148 +92,183 @@ class AaveDeposit extends Component {
       console.log("LendingPoolCore address: ", lpCoreAddress)
       return lpCoreAddress
      }
-    deposit = async() => {
+    deposit = async () => {
         console.log(this.state.tokenInfo);
         const depositAmount = web3.utils.toWei(this.state.depositamount.toString(), "ether").toString();
-        const tokenContract = this.state.tokenInfo.ContractAddress; 
+        const tokenContract = this.state.tokenInfo.ContractAddress;
         const referralCode = "0";
 
-    try {
-        const lpCoreAddress = await getLendingPoolCoreAddress()
-        //check for approval
-        const ERCcontract = new web3.eth.Contract(ERC20ABI, tokenContract)
-        web3.eth.call({
-            to:tokenContract,
-            data: tokenContract.methods.allowance(this.state.selectedWallet,lpCoreAddress).encodeABI()
-        }).then(balance => {
-            console.log(balance);
-            let approval = false;
-            let allowance = web3.utils.fromWei(balance.toString(),'ether');
-            console.log(allowance);
-            if(parseFloat(allowance.toString()) >= parseFloat(this.state.depositamount.toString()) ){
-                console.log("allowance is bigger")
-            } else {
-                console.log("allowance is smaller, need to approve")
-                approval = true;
-            }
-            if(approval) {
-                var dataApprove = ERCcontract.methods.approve(lpCoreAddress,depositAmount).encodeABI();
-                var count = await web3.eth.getTransactionCount(this.props.selectedTokenAsset.PublicAddress);
-                var rawTransaction = {
-                    "from": this.state.selecetedwallet,
-                    "to": tokenContract,//this.tokencontract,
-                    "nonce": count,
-                    "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
-                    "data": dataApprove//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
-                };
-                ERCcontract.methods.approve(lpCoreAddress,depositAmount).estimateGas({from: this.state.selectedWallet}).then(gasLimit => {
-                    var gas = new BigNumber(gaslimit);
-                    var gasPrice = web3.utils.toWei(this.state.gaspricevalue.toString(), "gwei");
-                    rawTransaction = {
-                        "from": this.state.selecetedwallet.toString(),
-                        "nonce": count,
-                        "gasPrice": web3.utils.toHex(gasPrice),//"0x04e3b29200",
-                        // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-                        "gas": gasLimit,//"0x7458",
+        try {
+            const lpCoreAddress = await getLendingPoolCoreAddress()
+            //check for approval
+            const ERCcontract = new web3.eth.Contract(ERC20ABI, tokenContract)
+            web3.eth.call({
+                to: tokenContract,
+                data: tokenContract.methods.allowance(this.state.selectedWallet, lpCoreAddress).encodeABI()
+            }).then(async(balance) => {
+                console.log(balance);
+                let approval = false;
+                let allowance = web3.utils.fromWei(balance.toString(), 'ether');
+                console.log(allowance);
+                if (parseFloat(allowance.toString()) >= parseFloat(this.state.depositamount.toString())) {
+                    console.log("allowance is bigger")
+                } else {
+                    console.log("allowance is smaller, need to approve")
+                    approval = true;
+                }
+                if (approval) { //approve first
+                    var dataApprove = ERCcontract.methods.approve(lpCoreAddress, depositAmount).encodeABI();
+                    var count = await web3.eth.getTransactionCount(this.props.selectedTokenAsset.PublicAddress);
+                    var rawTransaction = {
+                        "from": this.state.selecetedwallet,
                         "to": tokenContract,//this.tokencontract,
+                        "nonce": count,
                         "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
-                        "data": dataApprove,//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
-                        "chainId": this.props.selectedethnetwork.chainid
+                        "data": dataApprove//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
                     };
-                    var privKey = new Buffer(this.props.selectedTokenAsset.PrivateAddress, 'hex');
-                    var tx = this.props.selectedethnetwork.shortcode == "mainnet" ? new Tx(rawTransaction) : new Tx(rawTransaction, {
-                        chain: this.props.selectedethnetwork.shortcode,
-                        hardfork: 'petersburg'
-                    });
-                   tx.sign(privKey);
-                    var serializedTx = tx.serialize();
-                    web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function (err, hash) {
-                        if (!err) { //SUCCESS
-                            console.log(hash);
-                           // that.props.setsuccessulhash(hash);
-                            //that.props.setCurrent("tokentransfersuccessful");
-                        } else {
-                            createNotification('error', intl.get('Error.TransactionFailed'));
-                            console.log(err);
-                        }
-                    });
+                    ERCcontract.methods.approve(lpCoreAddress, depositAmount).estimateGas({ from: this.state.selectedWallet }).then(gasLimit => {
+                        var gas = new BigNumber(gaslimit);
+                        var gasPrice = web3.utils.toWei(this.state.gaspricevalue.toString(), "gwei");
+                        rawTransaction = {
+                            "from": this.state.selecetedwallet.toString(),
+                            "nonce": count,
+                            "gasPrice": web3.utils.toHex(gasPrice),//"0x04e3b29200",
+                            // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
+                            "gas": gasLimit,//"0x7458",
+                            "to": tokenContract,//this.tokencontract,
+                            "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+                            "data": dataApprove,//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+                            "chainId": this.props.selectedethnetwork.chainid
+                        };
+                        var privKey = new Buffer(this.props.selectedTokenAsset.PrivateAddress, 'hex');
+                        var tx = this.props.selectedethnetwork.shortcode == "mainnet" ? new Tx(rawTransaction) : new Tx(rawTransaction, {
+                            chain: this.props.selectedethnetwork.shortcode,
+                            hardfork: 'petersburg'
+                        });
+                        tx.sign(privKey);
+                        var serializedTx = tx.serialize();
+                        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function (err, hash) {
+                            if (!err) { //SUCCESS
+                                console.log(hash);
+                                // that.props.setsuccessulhash(hash);
+                                //that.props.setCurrent("tokentransfersuccessful");
+                            } else {
+                                createNotification('error', intl.get('Error.TransactionFailed'));
+                                console.log(err);
+                            }
+                        });
+                    })
+                } else { //if no approval then deposit
+                    const lpAddress = await getLendingPoolAddress();
+                    const lpContract = new web3.eth.Contract(LendingPoolABI, lpAddress);
+                    var dataDeposit = lpContract.methods.deposit(tokenContract, depositAmount, referralCode).encodeABI();
+                    var count = await web3.eth.getTransactionCount(this.props.selectedTokenAsset.PublicAddress);
+                    var rawTransaction = {
+                        "from": this.state.selecetedwallet,
+                        "to": lpAddress,//this.tokencontract,
+                        "nonce": count,
+                        "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+                        "data": dataDeposit//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+                    };
+                    lpContract.methods.deposit(tokenContract, depositAmount, referralCode).estimateGas({ from: this.state.selectedWallet }).then(gasLimit => {
+                        var gasPrice = web3.utils.toWei(this.state.gaspricevalue.toString(), "gwei");
+                        rawTransaction = {
+                            "from": this.state.selecetedwallet.toString(),
+                            "nonce": count,
+                            "gasPrice": web3.utils.toHex(gasPrice),//"0x04e3b29200",
+                            // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
+                            "gas": gasLimit,//"0x7458",
+                            "to": lpAddress,//this.tokencontract,
+                            "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+                            "data": dataDeposit,//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+                            "chainId": this.props.selectedethnetwork.chainid
+                        };
+                        var privKey = new Buffer(this.props.selectedTokenAsset.PrivateAddress, 'hex');
+                        var tx = this.props.selectedethnetwork.shortcode == "mainnet" ? new Tx(rawTransaction) : new Tx(rawTransaction, {
+                            chain: this.props.selectedethnetwork.shortcode,
+                            hardfork: 'petersburg'
+                        });
+                        tx.sign(privKey);
+                        var serializedTx = tx.serialize();
+                        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function (err, hash) {
+                            if (!err) { //SUCCESS
+                                console.log(hash);
+                                // that.props.setsuccessulhash(hash);
+                                //that.props.setCurrent("tokentransfersuccessful");
+                            } else {
+                                createNotification('error', intl.get('Error.TransactionFailed'));
+                                console.log(err);
+                            }
+                        });
+                    })
+
+                }
+            })
+
+
+         /*   await daiContract.methods
+                .approve(lpCoreAddress, depositAmount)
+                .send({ from: this.state.selectedWallet })
+                .catch((e) => {
+                    throw Error(`Error approving DAI allowance: ${e.message}`)
                 })
-            } else {
 
-            }
-        })
-        // Approve the LendingPoolCore address with the DAI contract
-        
-      
-
-
-        await daiContract.methods
-          .approve(lpCoreAddress, depositAmount)
-          .send({ from: this.state.selectedWallet })
-          .catch((e) => {
-            throw Error(`Error approving DAI allowance: ${e.message}`)
-          })
-  
-        // Make the deposit transaction via LendingPool contract
-        const lpAddress = await getLendingPoolAddress()
-        const lpContract = new web3.eth.Contract(LendingPoolABI, lpAddress)
-        await lpContract.methods
-          .deposit(tokenContract, depositAmount, referralCode)
-          .send({ from: this.state.selectedWallet })
-          .catch((e) => {
-            throw Error(`Error depositing to the LendingPool contract: ${e.message}`)
-          })
-      } catch (e) {
-        alert(e.message)
-        console.log(e.message)
-      }
+            // Make the deposit transaction via LendingPool contract
+            const lpAddress = await getLendingPoolAddress()
+            const lpContract = new web3.eth.Contract(LendingPoolABI, lpAddress)
+            await lpContract.methods
+                .deposit(tokenContract, depositAmount, referralCode)
+                .send({ from: this.state.selectedWallet })
+                .catch((e) => {
+                    throw Error(`Error depositing to the LendingPool contract: ${e.message}`)
+                })*/
+        } catch (e) {
+            alert(e.message)
+            console.log(e.message)
+        }
     }
+  
 
     getTokenBalance = () => {
-       // console.log(this.props.selectedwalletlist);
+        // console.log(this.props.selectedwalletlist);
         var selecetedwallet = toJS(this.props.selectedwalletlist);
         let walletlist = selecetedwallet.find(x => x.publicaddress == localStorage.getItem("selectedwallet"));
-       walletlist = toJS(walletlist);
-       console.log(walletlist);
-        walletlist.tokenassetlist.map(async (tokenitem, index) => {
-            console.log(tokenitem);
+        walletlist = toJS(walletlist);
+        console.log(walletlist);
+        let tokenitem = walletlist.tokenassetlist.find(x => x.AssetCode == this.props.aavedeposittoken);
+        if (tokenitem == null || tokenitem == "") {
+            console.log("wallet does not have this asset.");
+            createNotification('error', 'Please add asset:' + this.props.aavedeposittoken + ' to your wallet!');
+            this.props.setCurrent('aave');
+            return;
+        } else {
             var TokenInfo = tokenitem.TokenInfoList.find(x => x.Network == "mainnet");
-            if(tokenitem.AssetCode != this.props.aavedeposittoken.toString().toUpperCase()){
-                console.log("wallet does not have this asset.");
-                createNotification('error','Please add asset:'+this.props.aavedeposittoken+ ' to your wallet!');
-                this.props.setCurrent('aave');
-                return;
-            }
             TokenInfo = toJS(TokenInfo);
-            console.log(TokenInfo)
             this.setState({
-                tokenInfo:TokenInfo
+                tokenInfo: TokenInfo
             });
-            try{
+            try {
                 var tokenAbiArray = JSON.parse(TokenInfo.AbiArray);
-            }catch(e){}
-            if(tokenitem.AssetCode == this.props.aavedeposittoken.toString().toUpperCase()){
-                let contract = new web3.eth.Contract(tokenAbiArray,TokenInfo.ContractAddress);
-                web3.eth.call({
-                    to: !isNullOrEmpty(TokenInfo.ContractAddress) ? TokenInfo.ContractAddress : null,
-                    data: contract.methods.balanceOf(tokenitem.PublicAddress).encodeABI()
-                }).then(balance => { 
-                    if (tokenitem.AssetCode == "USDT") {
-                        var tokenbal = new BigNumber(web3.utils.fromWei(balance, 'mwei'));
-                        this.setState({
-                            tokenbalance:parseFloat(tokenbal.toString())
-                        })
-                       tokenitem.TokenBalance = parseFloat(tokenbal.toString());
-                    } else {
-                        var tokenbal = new BigNumber(web3.utils.fromWei(balance, 'ether'));
-                        this.setState({
-                            tokenbalance:parseFloat(tokenbal.toString())
-                        })
-                    }
-                })
-            }
-            
-        })
+            } catch (e) { }
+            let contract = new web3.eth.Contract(tokenAbiArray, TokenInfo.ContractAddress);
+            web3.eth.call({
+                to: !isNullOrEmpty(TokenInfo.ContractAddress) ? TokenInfo.ContractAddress : null,
+                data: contract.methods.balanceOf(tokenitem.PublicAddress).encodeABI()
+            }).then(balance => {
+                if (tokenitem.AssetCode == "USDT") {
+                    var tokenbal = new BigNumber(web3.utils.fromWei(balance, 'mwei'));
+                    this.setState({
+                        tokenbalance: parseFloat(tokenbal.toString())
+                    })
+                    tokenitem.TokenBalance = parseFloat(tokenbal.toString());
+                } else {
+                    var tokenbal = new BigNumber(web3.utils.fromWei(balance, 'ether'));
+                    this.setState({
+                        tokenbalance: parseFloat(tokenbal.toString())
+                    })
+                }
+            })
+        }
     }
 
     back = () => {
