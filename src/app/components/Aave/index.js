@@ -47,9 +47,10 @@ class Aave extends Component {
        
     }
 
-    deposit = (token) => {
-      //  this.props.setAaveDepositToken(token);
-       // this.props.setCurrent("depositaave");
+    deposit = async(e) => {
+        console.log(e.target.value);
+        this.props.setAaveDepositToken(e.target.value);
+        this.props.setCurrent("aavedeposit");
     }
 
 
@@ -68,16 +69,16 @@ class Aave extends Component {
                     <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom: "10px"}}>
                             <div className="panellabel">APY</div>
                             <div className="panelvalue">0.66%</div>
-                            <Button className="curvebutton"
-                                     onClick={this.deposit("xd")}>Deposit</Button>
+                            <Button className="curvebutton" value="USDT"
+                                     onClick={this.deposit}>Deposit</Button>
                         </div>
                         <div className="spacebetween"> </div>
                         <div className="subtitle">DAI (savings)</div>
                     <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom: "10px"}}>
                             <div className="panellabel">APY</div>
                             <div className="panelvalue">2.14%</div>
-                            <Button className="curvebutton"
-                                     onClick={this.next}>Deposit</Button>
+                            <Button className="curvebutton" value="DAI"
+                                     onClick={this.deposit}>Deposit</Button>
                         </div>
                     </center>
             </div> 
