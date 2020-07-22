@@ -79,6 +79,7 @@ class walletStore {
     @observable googleAuthKey = "";
     @observable mfaenabled;
     @observable aavedeposittoken="";
+    @observable aavedeposittokenamount="";
 
     userstore = null;
     networkstore = null;
@@ -408,6 +409,10 @@ class walletStore {
 
     @action setAaveDepositToken(token){
         this.aavedeposittoken = token;
+    }
+
+    @action setAaveDepositTokenAmount(amount){
+        this.aavedeposittokenamount = amount;
     }
 
     @action loadWallet() {

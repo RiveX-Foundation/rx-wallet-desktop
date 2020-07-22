@@ -32,6 +32,7 @@ var web3;
     addrInfo: stores.wanAddress.addrInfo,
     infuraprojectid: stores.walletStore.infuraprojectid,
     aavedeposittoken: stores.walletStore.aavedeposittoken,
+    aavedeposittokenamount: stores.walletStore.aavedeposittokenamount,
     setAaveDepositToken: token => stores.walletStore.setAaveDepositToken(token),
     selectedwalletlist: stores.walletStore.selectedwalletlist,
     selectedethnetwork: stores.network.selectedethnetwork,
@@ -46,7 +47,9 @@ class AaveDeposit extends Component {
         depositamount:"",
         tokenInfo:{},
         selectedWallet:"",
-        gaspricevalue:0
+        gaspricevalue:0,
+        privatekey:"",
+        approval:false
 
     }
     onChangeTokenValue = e => {
@@ -55,10 +58,12 @@ class AaveDeposit extends Component {
 
     async componentDidMount() {
          web3 = new Web3("https://mainnet.infura.io"+ this.props.infuraprojectid);
-         this.getTokenBalance();
          this.setState({
-             selectedWallet:localStorage.getItem("selectedwallet").toString().toLowerCase()
-         });
+            selectedWallet:localStorage.getItem("selectedwallet").toString().toLowerCase(),
+            depositamount:this.props.aavedeposittokenamount
+        });
+         await this.getTokenBalance();
+        await this.getAllowance();
          let gasPrices = await this.getCurrentGasPrices();
          this.setState({
              gaspricevalue: gasPrices.medium
@@ -75,6 +80,94 @@ class AaveDeposit extends Component {
         return prices;
     }
 
+    getAllowance = async () => {
+        const depositAmount = web3.utils.toWei(this.props.aavedeposittokenamount.toString(), "ether");
+        console.log(depositAmount);
+        //return;
+        const tokenContract = this.state.tokenInfo.ContractAddress;
+        console.log(tokenContract);
+        const lpCoreAddress = await this.getLendingPoolCoreAddress();
+        console.log(lpCoreAddress);
+        const ERCcontract = new web3.eth.Contract(ERC20ABI, tokenContract)
+        console.log(ERCcontract);
+        web3.eth.call({
+            to: tokenContract,
+            data: ERCcontract.methods.allowance(this.state.selectedWallet, lpCoreAddress).encodeABI()
+        }).then(async (balance) => {
+            console.log(balance);
+            let allowance = web3.utils.hexToNumberString(balance.toString());
+            console.log(allowance);
+            if (parseFloat(allowance.toString()) >= parseFloat(this.state.depositamount.toString())) {
+                console.log("allowance is bigger, no need to approve")
+            } else {
+                console.log("allowance is smaller, need to approve")
+                this.setState({
+                    approval: true
+                })
+            }
+        })
+    }
+
+    approve = async () => {
+        const depositAmount = web3.utils.toWei(this.props.aavedeposittokenamount.toString(), "gether");
+        console.log(depositAmount);
+        //return;
+        const tokenContract = this.state.tokenInfo.ContractAddress;
+        const lpCoreAddress = await this.getLendingPoolCoreAddress();
+        const ERCcontract = new web3.eth.Contract(ERC20ABI, tokenContract)
+        if (this.state.approval) { //approve first
+            createNotification('info', 'Approving...');
+            var dataApprove = ERCcontract.methods.approve(lpCoreAddress, depositAmount).encodeABI();
+            var count = await web3.eth.getTransactionCount(this.state.selectedWallet);
+            var rawTransaction = {
+                "from": this.state.selectedWallet,
+                "to": tokenContract,//this.tokencontract,
+                "nonce": count,
+                "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+                "data": dataApprove//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+            };
+            ERCcontract.methods.approve(lpCoreAddress, depositAmount).estimateGas({ from: this.state.selectedWallet }).then(gasLimit => {
+                var gas = new BigNumber(gasLimit);
+                var gasPrice = web3.utils.toWei(this.state.gaspricevalue.toString(), "gwei");
+                rawTransaction = {
+                    "from": this.state.selectedWallet.toString(),
+                    "nonce": count,
+                    "gasPrice": web3.utils.toHex(gasPrice),//"0x04e3b29200",
+                    // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
+                    "gas": gasLimit,//"0x7458",
+                    "to": tokenContract,//this.tokencontract,
+                    "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+                    "data": dataApprove,//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+                    "chainId": this.props.selectedethnetwork.chainid
+                };
+                var privKey = new Buffer(this.state.privatekey, 'hex');
+                var tx = this.props.selectedethnetwork.shortcode == "mainnet" ? new Tx(rawTransaction) : new Tx(rawTransaction, {
+                    chain: this.props.selectedethnetwork.shortcode,
+                    hardfork: 'petersburg'
+                });
+                tx.sign(privKey);
+                var serializedTx = tx.serialize();
+                web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function (err, hash) {
+                    if (!err) { //SUCCESS
+                        console.log(hash);
+                        // that.props.setsuccessulhash(hash);
+                        //that.props.setCurrent("tokentransfersuccessful");
+                    } else {
+                        createNotification('error', intl.get('Error.TransactionFailed'));
+                        console.log(err);
+                    }
+                }).once('confirmation', function (confNumber, receipt, latestBlockHash) {
+                    console.log("mined");
+
+                })
+                    .on('error', function (error) {
+                        console.log(error);
+                        createNotification('error', 'Transaction failed.');
+                    })
+            })
+        }
+    }
+
     getLendingPoolAddressProviderContract = () => {
     const lpAddressProviderAddress = "0x24a42fD28C976A61Df5D00D0599C34c4f90748c8"; // mainnet address, for other addresses: https://docs.aave.com/developers/developing-on-aave/deployed-contract-instances
     const lpAddressProviderContract = new web3.eth.Contract(LendingPoolAddressProviderABI, lpAddressProviderAddress);
@@ -82,7 +175,7 @@ class AaveDeposit extends Component {
     }
 
     getLendingPoolCoreAddress = async() => {
-        const lpCoreAddress = await getLendingPoolAddressProviderContract()
+        const lpCoreAddress = await this.getLendingPoolAddressProviderContract()
         .methods.getLendingPoolCore()
         .call()
         .catch((e) => {
@@ -94,139 +187,98 @@ class AaveDeposit extends Component {
      }
     deposit = async () => {
         console.log(this.state.tokenInfo);
-        const depositAmount = web3.utils.toWei(this.state.depositamount.toString(), "ether").toString();
+        const depositAmount = web3.utils.toWei(this.state.depositamount.toString(), "ether");
+        console.log(depositAmount);
+        //return;
         const tokenContract = this.state.tokenInfo.ContractAddress;
         const referralCode = "0";
 
         try {
-            const lpCoreAddress = await getLendingPoolCoreAddress()
-            //check for approval
-            const ERCcontract = new web3.eth.Contract(ERC20ABI, tokenContract)
-            web3.eth.call({
-                to: tokenContract,
-                data: tokenContract.methods.allowance(this.state.selectedWallet, lpCoreAddress).encodeABI()
-            }).then(async(balance) => {
-                console.log(balance);
-                let approval = false;
-                let allowance = web3.utils.fromWei(balance.toString(), 'ether');
-                console.log(allowance);
-                if (parseFloat(allowance.toString()) >= parseFloat(this.state.depositamount.toString())) {
-                    console.log("allowance is bigger")
-                } else {
-                    console.log("allowance is smaller, need to approve")
-                    approval = true;
-                }
-                if (approval) { //approve first
-                    var dataApprove = ERCcontract.methods.approve(lpCoreAddress, depositAmount).encodeABI();
-                    var count = await web3.eth.getTransactionCount(this.props.selectedTokenAsset.PublicAddress);
-                    var rawTransaction = {
-                        "from": this.state.selecetedwallet,
-                        "to": tokenContract,//this.tokencontract,
-                        "nonce": count,
-                        "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
-                        "data": dataApprove//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
-                    };
-                    ERCcontract.methods.approve(lpCoreAddress, depositAmount).estimateGas({ from: this.state.selectedWallet }).then(gasLimit => {
-                        var gas = new BigNumber(gaslimit);
-                        var gasPrice = web3.utils.toWei(this.state.gaspricevalue.toString(), "gwei");
-                        rawTransaction = {
-                            "from": this.state.selecetedwallet.toString(),
-                            "nonce": count,
-                            "gasPrice": web3.utils.toHex(gasPrice),//"0x04e3b29200",
-                            // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-                            "gas": gasLimit,//"0x7458",
-                            "to": tokenContract,//this.tokencontract,
-                            "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
-                            "data": dataApprove,//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
-                            "chainId": this.props.selectedethnetwork.chainid
-                        };
-                        var privKey = new Buffer(this.props.selectedTokenAsset.PrivateAddress, 'hex');
-                        var tx = this.props.selectedethnetwork.shortcode == "mainnet" ? new Tx(rawTransaction) : new Tx(rawTransaction, {
-                            chain: this.props.selectedethnetwork.shortcode,
-                            hardfork: 'petersburg'
-                        });
-                        tx.sign(privKey);
-                        var serializedTx = tx.serialize();
-                        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function (err, hash) {
-                            if (!err) { //SUCCESS
-                                console.log(hash);
-                                // that.props.setsuccessulhash(hash);
-                                //that.props.setCurrent("tokentransfersuccessful");
-                            } else {
-                                createNotification('error', intl.get('Error.TransactionFailed'));
-                                console.log(err);
-                            }
-                        });
-                    })
-                } else { //if no approval then deposit
-                    const lpAddress = await getLendingPoolAddress();
-                    const lpContract = new web3.eth.Contract(LendingPoolABI, lpAddress);
-                    var dataDeposit = lpContract.methods.deposit(tokenContract, depositAmount, referralCode).encodeABI();
-                    var count = await web3.eth.getTransactionCount(this.props.selectedTokenAsset.PublicAddress);
-                    var rawTransaction = {
-                        "from": this.state.selecetedwallet,
-                        "to": lpAddress,//this.tokencontract,
-                        "nonce": count,
-                        "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
-                        "data": dataDeposit//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
-                    };
-                    lpContract.methods.deposit(tokenContract, depositAmount, referralCode).estimateGas({ from: this.state.selectedWallet }).then(gasLimit => {
-                        var gasPrice = web3.utils.toWei(this.state.gaspricevalue.toString(), "gwei");
-                        rawTransaction = {
-                            "from": this.state.selecetedwallet.toString(),
-                            "nonce": count,
-                            "gasPrice": web3.utils.toHex(gasPrice),//"0x04e3b29200",
-                            // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-                            "gas": gasLimit,//"0x7458",
-                            "to": lpAddress,//this.tokencontract,
-                            "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
-                            "data": dataDeposit,//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
-                            "chainId": this.props.selectedethnetwork.chainid
-                        };
-                        var privKey = new Buffer(this.props.selectedTokenAsset.PrivateAddress, 'hex');
-                        var tx = this.props.selectedethnetwork.shortcode == "mainnet" ? new Tx(rawTransaction) : new Tx(rawTransaction, {
-                            chain: this.props.selectedethnetwork.shortcode,
-                            hardfork: 'petersburg'
-                        });
-                        tx.sign(privKey);
-                        var serializedTx = tx.serialize();
-                        web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function (err, hash) {
-                            if (!err) { //SUCCESS
-                                console.log(hash);
-                                // that.props.setsuccessulhash(hash);
-                                //that.props.setCurrent("tokentransfersuccessful");
-                            } else {
-                                createNotification('error', intl.get('Error.TransactionFailed'));
-                                console.log(err);
-                            }
-                        });
-                    })
-
-                }
-            })
-
-
-         /*   await daiContract.methods
-                .approve(lpCoreAddress, depositAmount)
-                .send({ from: this.state.selectedWallet })
-                .catch((e) => {
-                    throw Error(`Error approving DAI allowance: ${e.message}`)
+            console.log(balance);
+            let approval = false;
+            let allowance = web3.utils.hexToNumberString(balance.toString());
+            console.log(allowance);
+            if (parseFloat(allowance.toString()) >= parseFloat(this.state.depositamount.toString())) {
+                console.log("allowance is bigger, no need to approve")
+            } else {
+                console.log("allowance is smaller, need to approve")
+                approval = true;
+            }
+            //if no approval then deposit
+            const lpAddress = await this.getLendingPoolAddress();
+            const lpContract = new web3.eth.Contract(LendingPoolABI, lpAddress);
+            var dataDeposit = lpContract.methods.deposit(tokenContract, depositAmount, referralCode).encodeABI();
+            var count = await web3.eth.getTransactionCount(this.state.selectedWallet);
+            var rawTransaction = {
+                "from": this.state.selectedWallet,
+                "to": lpAddress,//this.tokencontract,
+                "nonce": count,
+                "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+                "data": dataDeposit//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+            };
+            console.log(dataDeposit);
+            lpContract.methods.deposit(tokenContract, depositAmount, referralCode).estimateGas({ from: this.state.selectedWallet, data: dataDeposit }).then(gasLimit => {
+                var gasPrice = web3.utils.toWei(this.state.gaspricevalue.toString(), "gwei");
+                var limit = Number(gasLimit);
+                limit = limit + 50000;
+                //console.log("GAS LIMIT: "+limit);
+                rawTransaction = {
+                    "from": this.state.selectedWallet.toString(),
+                    "nonce": count,
+                    "gasPrice": web3.utils.toHex(gasPrice),//"0x04e3b29200",
+                    // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
+                    "gas": limit,//"0x7458",
+                    "to": lpAddress,//this.tokencontract,
+                    "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+                    "data": dataDeposit,//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+                    "chainId": this.props.selectedethnetwork.chainid
+                };
+                var privKey = new Buffer(this.state.privatekey, 'hex');
+                var tx = this.props.selectedethnetwork.shortcode == "mainnet" ? new Tx(rawTransaction) : new Tx(rawTransaction, {
+                    chain: this.props.selectedethnetwork.shortcode,
+                    hardfork: 'istanbul'
+                });
+                tx.sign(privKey);
+                var serializedTx = tx.serialize();
+                web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function (err, hash) {
+                    if (!err) { //SUCCESS
+                        console.log(hash);
+                        // that.props.setsuccessulhash(hash);
+                        //that.props.setCurrent("tokentransfersuccessful");
+                    } else {
+                        createNotification('error', intl.get('Error.TransactionFailed'));
+                        console.log(err);
+                    }
                 })
+                    .once('confirmation', function (confNumber, receipt, latestBlockHash) {
+                        console.log("mined");
+                        console.log(receipt);
+                        console.log(confNumber);
 
-            // Make the deposit transaction via LendingPool contract
-            const lpAddress = await getLendingPoolAddress()
-            const lpContract = new web3.eth.Contract(LendingPoolABI, lpAddress)
-            await lpContract.methods
-                .deposit(tokenContract, depositAmount, referralCode)
-                .send({ from: this.state.selectedWallet })
-                .catch((e) => {
-                    throw Error(`Error depositing to the LendingPool contract: ${e.message}`)
-                })*/
+                    })
+                    .on('error', function (error) {
+                        console.log(error);
+                        createNotification('error', 'Transaction failed.');
+                    })
+            }).catch((e) => {
+                createNotification('error', 'Always failing transaction. Please check your deposit amount!');
+            })
         } catch (e) {
             alert(e.message)
             console.log(e.message)
         }
     }
+
+      getLendingPoolAddress = async() => {
+        const lpAddress = await this.getLendingPoolAddressProviderContract().methods
+          .getLendingPool()
+          .call()
+          .catch((e) => {
+            throw Error(`Error getting lendingPool address: ${e.message}`)
+          })
+        console.log("LendingPool address: ", lpAddress)
+        return lpAddress
+      }
   
 
     getTokenBalance = () => {
@@ -235,6 +287,9 @@ class AaveDeposit extends Component {
         let walletlist = selecetedwallet.find(x => x.publicaddress == localStorage.getItem("selectedwallet"));
         walletlist = toJS(walletlist);
         console.log(walletlist);
+        this.setState({
+            privatekey:walletlist.privatekey
+        });
         let tokenitem = walletlist.tokenassetlist.find(x => x.AssetCode == this.props.aavedeposittoken);
         if (tokenitem == null || tokenitem == "") {
             console.log("wallet does not have this asset.");
@@ -282,20 +337,39 @@ class AaveDeposit extends Component {
        style={{marginLeft: "20px"}}>AAVE DEPOSIT</span></div>
             <div className="centerpanel">
                     <center>
-                <div className="subtitle">{this.props.aavedeposittoken.toString().toUpperCase()} (savings)</div>
-                    <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom: "10px"}}>
+                <div className="subtitle" stlye={{marginBottom:"10px"}}>{this.props.aavedeposittoken.toString().toUpperCase()} (savings)</div>
+                    <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom: "10px", padding:"10px 10px"}}>
                             <div className="panellabel">APY: 0.66%</div>
                         </div>
                         <div className="spacebetween"> </div>
-                        <div className="panelwrapper borderradiusfull" style={{marginBottom: "10px"}}>
-                        <div className="spacebetween">
-                        <div className="panellabel">Balance: {this.state.tokenbalance} {this.props.aavedeposittoken.toString().toUpperCase()}</div>
-                            </div>
+                        <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom: "10px", padding:"10px 10px"}}>
+                        <div className="panellabel">Balance: {this.state.tokenbalance + " "+ this.props.aavedeposittoken}</div>
+                        </div>
+                        <div className="subtitle" style={{marginBottom:"10px"}}>Deposit amount</div>
+                        <div className="panelwrapper borderradiusfull" style={{marginBottom: "10px",alignItems:"center",display:"flex",padding:"10px 10px"}}>
                             <Input
-                            className="inputTransparent" placeholder="Deposit amount" value={this.state.depositamount} onChange={this.onChangeTokenValue}/>
+                            className="inputTransparent" style={{textAlign:"center"}} placeholder="Deposit amount" value={this.state.depositamount} onChange={this.onChangeTokenValue}/>
+                             <div className="currency">{this.props.aavedeposittoken}</div> 
+                             </div>
+                            { 
+                            this.state.approval === true &&
+                            <React.Fragment>
+
+                            <Button className="curvebutton" style={{marginTop:"15px"}}
+                                     onClick={this.approve}>Approve</Button>
+
+                            </React.Fragment>
+                            }
+
+{ 
+                            this.state.approval === false &&
+                            <React.Fragment>
+
                             <Button className="curvebutton" style={{marginTop:"15px"}}
                                      onClick={this.deposit}>Deposit</Button>
-                        </div>
+                                     
+                            </React.Fragment>
+                            }
                     </center>
             </div> 
         </div>   

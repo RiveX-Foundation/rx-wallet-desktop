@@ -13,7 +13,6 @@ import Web3 from 'web3';
 import LendingPoolAddressProviderABI from '../../ABIs/AddressProvider.json';
 import LendingPoolABI from '../../ABIs/LendingPool.json';
 import LendingPoolCoreABI from '../../ABIs/LendingPoolCore.json';
-import Item from 'antd/lib/list/Item';
 var web3;
 const pu = require('promisefy-util');
 const WAN_PATH = "m/44'/5718350'/0'/0/0";
@@ -59,7 +58,6 @@ class Aave extends Component {
     async componentDidMount() {
         web3 = new Web3("https://mainnet.infura.io"+ this.props.infuraprojectid);
        await this.getAPYrates();
-       console.log(this.state.apy);
     }
 
     getLendingPoolAddressProviderContract = () => {
@@ -129,39 +127,71 @@ class Aave extends Component {
     }
 
     render() {
-        var apylist = this.state.apy;
-        console.log(apylist);
         return (
         <div className="splashcreatebasicwalletpanel fadeInAnim">
         <div className="title"><span><img onClick={this.back} width="20px" src={buttonback}/></span><span
        style={{marginLeft: "20px"}}>AAVE</span></div>
             <div className="centerpanel">
                     <center>
-                    <div>
-                {
-                    apylist.map((item,index) => {
-                        return (
-                            <div key={index}>
-                        <div className="subtitle">{item.token}(savings)</div>
-                        <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom: "10px"}}>
-                              <div className="panellabel">APY</div>
-                              <div className="panelvalue">{Number(item.apy).toFixed(4)}%</div>
-                              <Input
+                    <table>
+                    <tbody>
+                    <tr>
+
+                    <td>
+                    <div className="subtitle">USDT (savings)</div>
+                    <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom: "10px"}}>
+                            <div className="panellabel">APY</div>
+                            <div className="panelvalue">0.66%</div>
+                            <Input
                             className="inputTransparent" style={{textAlign:"center"}} placeholder="Deposit amount" value={this.state.depositamount} onChange={this.onChangeTokenValue}/>
-                            <Button className="curvebutton" value={item.token}
+                            <Button className="curvebutton" value="USDT"
                                      onClick={this.deposit}>Deposit</Button>
-                            </div>
+
                         </div>
+                        <div className="spacebetween"> </div>
+                    </td>
 
-                        )})
-                }
-                 </div>
+                    <td>
+                    <div className="subtitle">DAI (savings)</div>
+                    <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom: "10px"}}>
+                            <div className="panellabel">APY</div>
+                            <div className="panelvalue">2.14%</div>
+                            <Input
+                            className="inputTransparent"  style={{textAlign:"center"}} placeholder="Deposit amount" value={this.state.depositamount} onChange={this.onChangeTokenValue}/>
+                            <Button className="curvebutton" value="DAI"
+                                     onClick={this.deposit}>Deposit</Button>
+                        </div>
+                    </td>
 
+                    </tr>
+
+                    <tr>
+                    <td>
+                    <div className="subtitle">SNX (savings)</div>
+                    <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom: "10px"}}>
+                            <div className="panellabel">Deposit APY: 1.46%</div>
+                            <Input
+                            className="inputTransparent"  style={{textAlign:"center"}} placeholder="Deposit amount" value={this.state.depositamount} onChange={this.onChangeTokenValue}/>
+                            <Button className="curvebutton" value="SNX"
+                                     onClick={this.deposit}>Deposit</Button>
+                        </div>
+                    </td>
+                    </tr>
+                    </tbody>
+                        </table>
                     </center>
             </div> 
         </div>   
-        );
+        )
     }
+
+    /* render() {
+       return (
+         <div className="splashcreatebasicwalletpanel fadeInAnim">
+           <iframe frameBorder="0" width="100%" height="100%" src="http://staging.wrdex.io/" ></iframe>
+         </div>
+       );
+     }*/
 }
 
 export default Aave;
