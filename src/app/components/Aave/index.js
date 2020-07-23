@@ -8,12 +8,13 @@ import {createNotification, getChainId, getGasPrice, getNonce} from '../../utils
 import {BigNumber} from 'bignumber.js';
 import './index.less';
 import buttonback from 'static/image/icon/back.png';
+import aavevertical from 'static/image/aavevertical.png';
 import ERC20ABI from '../../ABIs/ERC20.json';
 import Web3 from 'web3';
 import LendingPoolAddressProviderABI from '../../ABIs/AddressProvider.json';
 import LendingPoolABI from '../../ABIs/LendingPool.json';
 import LendingPoolCoreABI from '../../ABIs/LendingPoolCore.json';
-import Item from 'antd/lib/list/Item';
+
 var web3;
 const pu = require('promisefy-util');
 const WAN_PATH = "m/44'/5718350'/0'/0/0";
@@ -92,6 +93,7 @@ class Aave extends Component {
         const lpCoreContract = new web3.eth.Contract(LendingPoolCoreABI, lpCoreAddress);
         console.log(toJS(this.props.allTokenAsset));
         var apylist =[];
+        console.log("GETTING APY RATES");
         alltokens.map((item, index) => {
             if(item.AssetCode == "DAI" || item.AssetCode == "USDC" ||item.AssetCode == "USDT" ||item.AssetCode == "LINK" || item.AssetCode == "KNC" ||item.AssetCode == "SNX" ||item.AssetCode == "MKR"){
                 var TokenInfo = item.TokenInfoList.find(x => x.Network == "mainnet");
@@ -107,14 +109,18 @@ class Aave extends Component {
                         apy: apy,
                         LogoUrl: item.LogoUrl
                     });
+                    
                     console.log(item.AssetCode + " " +apy.toString() +"%");
                 })
             }
 
         });
-        this.setState({
-            apy:apylist
-        });
+        setTimeout(() => {
+            this.setState({
+                apy:apylist
+            });
+          }, 800);
+       
     }
 
 
@@ -127,13 +133,18 @@ class Aave extends Component {
     }
 
     render() {
-        console.log(this.state.apy);
         return (
             <div id="selectwalletmainctn" className="selectedwalletpanel fadeInAnim">
-                 <div className="tokenwrapper">
+                <div className="title"><span><img onClick={this.back} width="20px" src={buttonback}/></span><span
+            style={{marginLeft: "20px"}} >AAVE</span></div>
+                    <div className="contentpanel">
+                    <img src={aavevertical} style={{height:"20%",width:"20%"}} ></img>
+                    </div>
+                    <div className="centerpanel">
+                        <div className="tokenwrapper">
                      {
                          
-                         this.state.apy.map(async(item, index) => {
+                         this.state.apy.map((item, index) => {
                             return (
                                 <div key={index} className="tokenassetitem">
                                        <div className="tokenassetitemrow">
@@ -152,7 +163,8 @@ class Aave extends Component {
                             )
                          })
                      }
-                 </div>
+                        </div>
+                    </div>
             </div>  
         );
     }
