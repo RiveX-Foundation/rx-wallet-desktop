@@ -22,8 +22,7 @@ const BIP44PATHs = {
     WAN: "m/44'/5718350'/0'/0/"
 }
 //var iv,key
-
-
+ 
 //import { getCryptoBalance } from 'utils/cryptohelper';
 //var fs = require('fs');
 //const { tokenabi } = require('../../../config/common/tokenabi');

@@ -33,7 +33,7 @@ const {confirm} = Modal;
     setAaveDepositTokenAmount: amount => stores.walletStore.setAaveDepositTokenAmount(amount),
     selectedwalletlist: stores.walletStore.selectedwalletlist,
     allTokenAsset: stores.walletStore.allTokenAsset,
-    infuraprojectid: stores.walletStore.infuraprojectid,
+    infuraprojectid: stores.walletStore.infuraprojectid
 }))
 
 @observer
@@ -58,8 +58,7 @@ class Aave extends Component {
 
     async componentDidMount() {
         web3 = new Web3("https://mainnet.infura.io"+ this.props.infuraprojectid);
-       await this.getAPYrates();
-       console.log(this.state.apy);
+        await this.getAPYrates();
     }
 
     getLendingPoolAddressProviderContract = () => {
@@ -87,12 +86,12 @@ class Aave extends Component {
         this.props.setCurrent("aavedeposit");
     }
 
-    getAPYrates = async() => {
+    getAPYrates =async() => {
         var alltokens = toJS(this.props.allTokenAsset);
         const lpCoreAddress = await this.getLendingPoolCoreAddress();
         const lpCoreContract = new web3.eth.Contract(LendingPoolCoreABI, lpCoreAddress);
         console.log(toJS(this.props.allTokenAsset));
-        let apylist =[];
+        var apylist =[];
         alltokens.map((item, index) => {
             if(item.AssetCode == "DAI" || item.AssetCode == "USDC" ||item.AssetCode == "USDT" ||item.AssetCode == "LINK" || item.AssetCode == "KNC" ||item.AssetCode == "SNX" ||item.AssetCode == "MKR"){
                 var TokenInfo = item.TokenInfoList.find(x => x.Network == "mainnet");
@@ -103,11 +102,11 @@ class Aave extends Component {
                     test = test.toString().slice(0,7);
                     let apy = parseFloat(test).toFixed(4);
                     apy = apy*100;
-                    let obj = {
-                        token:item.AssetCode,
-                        apy: apy
-                    };
-                    apylist.push(obj);
+                    apylist.push({
+                        token: item.AssetCode,
+                        apy: apy,
+                        LogoUrl: item.LogoUrl
+                    });
                     console.log(item.AssetCode + " " +apy.toString() +"%");
                 })
             }
@@ -116,7 +115,6 @@ class Aave extends Component {
         this.setState({
             apy:apylist
         });
-
     }
 
 
@@ -129,37 +127,33 @@ class Aave extends Component {
     }
 
     render() {
-        var apylist = this.state.apy;
-        console.log(apylist);
+        console.log(this.state.apy);
         return (
-        <div className="splashcreatebasicwalletpanel fadeInAnim">
-        <div className="title"><span><img onClick={this.back} width="20px" src={buttonback}/></span><span
-       style={{marginLeft: "20px"}}>AAVE</span></div>
-            <div className="centerpanel">
-                    <center>
-                    <div>
-                {
-                    apylist.map((item,index) => {
-                        return (
-                            <div key={index}>
-                        <div className="subtitle">{item.token}(savings)</div>
-                        <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom: "10px"}}>
-                              <div className="panellabel">APY</div>
-                              <div className="panelvalue">{Number(item.apy).toFixed(4)}%</div>
-                              <Input
-                            className="inputTransparent" style={{textAlign:"center"}} placeholder="Deposit amount" value={this.state.depositamount} onChange={this.onChangeTokenValue}/>
-                            <Button className="curvebutton" value={item.token}
-                                     onClick={this.deposit}>Deposit</Button>
-                            </div>
-                        </div>
-
-                        )})
-                }
+            <div id="selectwalletmainctn" className="selectedwalletpanel fadeInAnim">
+                 <div className="tokenwrapper">
+                     {
+                         
+                         this.state.apy.map(async(item, index) => {
+                            return (
+                                <div key={index} className="tokenassetitem">
+                                       <div className="tokenassetitemrow">
+                                            <img src={item.LogoUrl} className="tokenimg"/>
+                                            <div className="infoctn">
+                                                <div className="assetcode">{item.token}</div>
+                                            </div>
+                                        </div>
+                                        <div className="tokenassetitemrow">
+                                            <div className="amountctn">
+                                            <div className="totalcoin"> 15M <span>{item.token}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </div>   
+                            )
+                         })
+                     }
                  </div>
-
-                    </center>
-            </div> 
-        </div>   
+            </div>  
         );
     }
 }
