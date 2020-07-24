@@ -9,10 +9,17 @@
     margin-top: -4px;
   }
 }
+.ant-modal {
+  width: 600px!important;
+  .ant-modal-content .ant-btn-primary { 
+  margin-left: 150px!important;
+  }
+}
+
 .centerpanel {
   text-align: center;
   width: calc(100vw);
-  height: calc(100vh);
+  height: calc(50vh);
   display: table-cell;
   vertical-align: middle;
 }
@@ -90,6 +97,8 @@
     text-align: center;
     justify-content: center;
     display: flex;
+    margin-bottom: 50px;
+    margin-top: 20px;
   }
 
   .button {
@@ -155,9 +164,108 @@
       font-size: 20px;
     }
   }
+  .tokenwrapper {
+    margin: 20px;
+
+    .tokenassetitemtop {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 10px 25px;
+      justify-content: space-between;
+      transition: 0.3s all ease;
+      cursor: pointer;
+      border-bottom: 2px solid #25294D;
+
+      img.tokenimg {
+        width: 35px;
+        height: 35px;
+        margin-right: 20px;
+      }
+
+      .infoctn {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .amountctn {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+
+      .tokenassetitemrow, .buttonctn {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+      }
+      .tokenassetitemrowmid, .buttonctn {
+        display: contents;
+        align-items: center;
+        flex-direction: row;
+      }
+
+      .assetcode, .totalcoin {
+        color: #fff;
+        font-size: 20px;
+      }
+
+      .totalcoin span {
+        color: #fff;
+        font-size: 17px;
+        margin-left: 5px;
+      }
+
+      .assetcodename, .totalcurrency {
+        color: #9092A3;
+        font-size: 14px;
+
+        span {
+          font-size: 12px;
+        }
+      }
+
+      .chartctn {
+        width: 150px;
+        height: 50px;
+        margin: 0px 20px;
+        margin-bottom: 55px;
+      }
+
+      .btnitem:first-child {
+        margin-right: 25px;
+      }
+
+      .btnitem img {
+        width: 22px;
+        height: 22px;;
+      }
+    }
+
+    .tokenassetitem:hover {
+      background-image: linear-gradient(to right, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d);
+    }
+
+    .addmorebtn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed #326C79;
+      color: #326C79;
+      height: 65px;
+      margin-top: 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+
+      img {
+        width: 18px;
+        margin-right: 10px;
+      }
+    }
+  }
 
   .tokenwrapper {
-    border-top: 2px solid #25294D;
     margin: 20px;
 
     .tokenassetitem {
@@ -191,6 +299,11 @@
 
       .tokenassetitemrow, .buttonctn {
         display: flex;
+        align-items: center;
+        flex-direction: row;
+      }
+      .tokenassetitemrowmid, .buttonctn {
+        display: contents;
         align-items: center;
         flex-direction: row;
       }

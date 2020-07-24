@@ -16,12 +16,15 @@ import LendingPoolABI from '../../ABIs/LendingPool.json';
 import LendingPoolCoreABI from '../../ABIs/LendingPoolCore.json';
 
 var web3;
-const pu = require('promisefy-util');
-const WAN_PATH = "m/44'/5718350'/0'/0/0";
-//const WAN_PATH = "m/44'/60'/0'/0/";
-const {confirm} = Modal;
+var ranges = [
+    { divider: 1e18 , suffix: 'E' },
+    { divider: 1e15 , suffix: 'P' },
+    { divider: 1e12 , suffix: 'T' },
+    { divider: 1e9 , suffix: 'G' },
+    { divider: 1e6 , suffix: 'M' },
+    { divider: 1e3 , suffix: 'K' }
+  ];
 
-// m/44'/5718350'/0'/0/0
 
 
 @inject(stores => ({
@@ -34,7 +37,8 @@ const {confirm} = Modal;
     setAaveDepositTokenAmount: amount => stores.walletStore.setAaveDepositTokenAmount(amount),
     selectedwalletlist: stores.walletStore.selectedwalletlist,
     allTokenAsset: stores.walletStore.allTokenAsset,
-    infuraprojectid: stores.walletStore.infuraprojectid
+    infuraprojectid: stores.walletStore.infuraprojectid,
+    selectedwalletlist: stores.walletStore.selectedwalletlist
 }))
 
 @observer
@@ -45,7 +49,7 @@ class Aave extends Component {
         preload: null,
         displayed: "none",
         loading: true,
-        depositamount:"",
+        depositamount:0,
         addrInfo: {
             normal: {},
             ledger: {},
@@ -53,7 +57,10 @@ class Aave extends Component {
             import: {},
             rawKey: {}
         },
-        apy:[]
+        apy:[],
+        depositmodalvisible:false,
+        selectedtoken:{},
+        tokenbalance:0
     }
 
 
@@ -80,9 +87,17 @@ class Aave extends Component {
       return lpCoreAddress
      }
 
-    deposit = async(e) => {
-        console.log(e.target.value);
-        this.props.setAaveDepositToken(e.target.value);
+     formatNumber = (n) => {
+        for (var i = 0; i < ranges.length; i++) {
+            if (n >= ranges[i].divider) {
+              return (n / ranges[i].divider).toString() + ranges[i].suffix;
+            }
+          }
+          return n.toString();
+     }
+
+    deposit = async() => {
+        this.props.setAaveDepositToken(this.state.selectedtoken);
         this.props.setAaveDepositTokenAmount(this.state.depositamount);
         this.props.setCurrent("aavedeposit");
     }
@@ -93,6 +108,7 @@ class Aave extends Component {
         const lpCoreContract = new web3.eth.Contract(LendingPoolCoreABI, lpCoreAddress);
         console.log(toJS(this.props.allTokenAsset));
         var apylist =[];
+        var obj = {};
         console.log("GETTING APY RATES");
         alltokens.map((item, index) => {
             if(item.AssetCode == "DAI" || item.AssetCode == "USDC" ||item.AssetCode == "USDT" ||item.AssetCode == "LINK" || item.AssetCode == "KNC" ||item.AssetCode == "SNX" ||item.AssetCode == "MKR"){
@@ -104,13 +120,34 @@ class Aave extends Component {
                     test = test.toString().slice(0,7);
                     let apy = parseFloat(test).toFixed(4);
                     apy = apy*100;
-                    apylist.push({
-                        token: item.AssetCode,
-                        apy: apy,
-                        LogoUrl: item.LogoUrl
-                    });
+                    lpCoreContract.methods.getReserveTotalLiquidity(TokenInfo.ContractAddress).call().then(async(market)=> { 
+                        let unit = "ether";
+                        if(item.AssetCode == "USDT" || item.AssetCode == "USDC"){
+                            unit = "mwei";
+                        }
+                        var rez = web3.utils.fromWei(market.toString(),unit);
+                        rez = rez.toString().slice(0,12);
+                        rez = Number(rez).toFixed(2);
+                        console.log(rez);
+                        var s = this.formatNumber(rez);
+                        console.log(s);
+                        let lastchar = s.slice(-1);
+                        var x = s.indexOf('.');
+                        
+                        console.log(x);
+                        s = s.slice(0,x+2);
+                        s=s+lastchar;
+                        //console.log(item.AssetCode + " " +s);
+                        apylist.push({
+                            token: item.AssetCode,
+                            apy: apy,
+                            LogoUrl: item.LogoUrl,
+                            market:s
+                        });
+                    })
+                 
                     
-                    console.log(item.AssetCode + " " +apy.toString() +"%");
+                   
                 })
             }
 
@@ -119,8 +156,28 @@ class Aave extends Component {
             this.setState({
                 apy:apylist
             });
-          }, 800);
+          }, 1000);
        
+    }
+
+    
+    handleCancel = () => {
+        this.setState({
+            depositmodalvisible: false
+        });
+    }
+
+    openModal = (token) => {
+        var selecetedwallet = toJS(this.props.selectedwalletlist);
+        let walletlist = selecetedwallet.find(x => x.publicaddress == localStorage.getItem("selectedwallet"));
+        walletlist = toJS(walletlist);
+        let tokenasset = walletlist.tokenassetlist.find(x => x.AssetCode == token.token);
+        console.log(tokenasset.TokenBalance);
+        this.setState({
+            depositmodalvisible: true,
+            selectedtoken:token,
+            tokenbalance: tokenasset.TokenBalance
+        });
     }
 
 
@@ -132,30 +189,55 @@ class Aave extends Component {
         this.setState({depositamount: e.target.value});
     }
 
+
     render() {
         return (
             <div id="selectwalletmainctn" className="selectedwalletpanel fadeInAnim">
                 <div className="title"><span><img onClick={this.back} width="20px" src={buttonback}/></span><span
             style={{marginLeft: "20px"}} >AAVE</span></div>
+            <div className="walletname"></div>
                     <div className="contentpanel">
                     <img src={aavevertical} style={{height:"20%",width:"20%"}} ></img>
                     </div>
                     <div className="centerpanel">
                         <div className="tokenwrapper">
+                        <div className="tokenassetitemtop">
+                                       <div className="tokenassetitemrow">
+                                            <div className="infoctn">
+                                                <div className="assetcode">Asset</div>
+                                            </div>
+                                        </div>
+                                        <div className="tokenassetitemrowmid">
+                                            <div className="infoctn">
+                                                <div className="assetcode">Deposit APY</div>
+                                            </div>
+                                        </div>
+                                        <div className="tokenassetitemrow">
+                                            <div className="amountctn">
+                                            <div className="totalcoin"><span>Market size</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                </div>
                      {
                          
                          this.state.apy.map((item, index) => {
                             return (
-                                <div key={index} className="tokenassetitem">
+                                <div key={index} className="tokenassetitem" onClick={() => this.openModal(item)} >
                                        <div className="tokenassetitemrow">
                                             <img src={item.LogoUrl} className="tokenimg"/>
                                             <div className="infoctn">
                                                 <div className="assetcode">{item.token}</div>
                                             </div>
                                         </div>
+                                        <div className="tokenassetitemrowmid">
+                                            <div className="infoctn">
+                                                <div className="assetcode">{Number(item.apy).toFixed(2)}%</div>
+                                            </div>
+                                        </div>
                                         <div className="tokenassetitemrow">
                                             <div className="amountctn">
-                                            <div className="totalcoin"> 15M <span>{item.token}</span>
+                                            <div className="totalcoin"> {item.market}<span></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -165,6 +247,21 @@ class Aave extends Component {
                      }
                         </div>
                     </div>
+                    <Modal
+                            title=""
+                            visible={this.state.depositmodalvisible}
+                            onOk={this.deposit}
+                            onCancel={this.handleCancel}
+                            okText = "Deposit"
+                            cancelText= "Cancel"
+                        >
+                             <div className="pheader">Amount to deposit</div>
+                            <div className='pmodalcontent'><span>balance: {this.state.tokenbalance} {this.state.selectedtoken.token}</span>
+                                <div className="panelwrapper borderradiusfull" style={{width:"500px"}}>
+                                    <Input className="inputTransparent" value={this.state.depositamount} onChange={this.onChangeTokenValue}/>
+                                </div>
+                            </div>
+                        </Modal>
             </div>  
         );
     }
