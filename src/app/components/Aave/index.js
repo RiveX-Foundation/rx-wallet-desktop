@@ -14,6 +14,7 @@ import Web3 from 'web3';
 import LendingPoolAddressProviderABI from '../../ABIs/AddressProvider.json';
 import LendingPoolABI from '../../ABIs/LendingPool.json';
 import LendingPoolCoreABI from '../../ABIs/LendingPoolCore.json';
+import { create } from 'lodash';
 
 var web3;
 var ranges = [
@@ -172,6 +173,10 @@ class Aave extends Component {
         let walletlist = selecetedwallet.find(x => x.publicaddress == localStorage.getItem("selectedwallet"));
         walletlist = toJS(walletlist);
         let tokenasset = walletlist.tokenassetlist.find(x => x.AssetCode == token.token);
+        if(tokenasset == null ||tokenasset == ""){
+            createNotification('error','Please add '+token.token +' to your wallet!');;
+            return;
+        }
         console.log(tokenasset.TokenBalance);
         this.setState({
             depositmodalvisible: true,
@@ -246,6 +251,8 @@ class Aave extends Component {
                          })
                      }
                         </div>
+                        <Button className="curvebutton" style={{marginTop:"15px"}}
+                                     onClick={this.dashboard}>Dasboard</Button>
                     </div>
                     <Modal
                             title=""
@@ -256,7 +263,7 @@ class Aave extends Component {
                             cancelText= "Cancel"
                         >
                              <div className="pheader">Amount to deposit</div>
-                            <div className='pmodalcontent'><span>balance: {this.state.tokenbalance} {this.state.selectedtoken.token}</span>
+                            <div className='pmodalcontent'><div className="balancetext">balance: {this.state.tokenbalance} {this.state.selectedtoken.token}</div>
                                 <div className="panelwrapper borderradiusfull" style={{width:"500px"}}>
                                     <Input className="inputTransparent" value={this.state.depositamount} onChange={this.onChangeTokenValue}/>
                                 </div>

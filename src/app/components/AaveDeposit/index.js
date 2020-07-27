@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {toJS} from 'mobx';
-import {Modal, Button, Input} from 'antd';
+import {Modal, Button, Input, Spin} from 'antd';
 import {inject, observer} from 'mobx-react';
 import intl from 'react-intl-universal';
 import {WALLETID} from '../../utils/support';
@@ -14,6 +14,7 @@ import LendingPoolAddressProviderABI from '../../ABIs/AddressProvider.json';
 import LendingPoolABI from '../../ABIs/LendingPool.json';
 import buttonback from 'static/image/icon/back.png';
 import Axios from 'axios';
+import { create } from 'lodash';
 var Tx = require('ethereumjs-tx');
 const ethUtil = require('ethereumjs-util');
 const pu = require('promisefy-util');
@@ -43,39 +44,43 @@ var web3;
 class AaveDeposit extends Component {
     state = {
         mobilevalue: "",
-        tokenbalance:0,
-        depositamount:"",
-        tokenInfo:{},
-        selectedWallet:"",
-        gaspricevalue:0,
-        privatekey:"",
-        approval:false
+        tokenbalance: 0,
+        depositamount: "",
+        tokenInfo: {},
+        selectedWallet: "",
+        gaspricevalue: 0,
+        privatekey: "",
+        approval: false,
+        loading: false
 
     }
     onChangeTokenValue = e => {
-        this.setState({depositamount: e.target.value});
+        this.setState({
+            depositamount: e.target.value
+        });
     }
 
     async componentDidMount() {
-         web3 = new Web3("https://mainnet.infura.io"+ this.props.infuraprojectid);
-         this.setState({
-            selectedWallet:localStorage.getItem("selectedwallet").toString().toLowerCase(),
-            depositamount:this.props.aavedeposittokenamount
+        web3 = new Web3("https://mainnet.infura.io" + this.props.infuraprojectid);
+        this.setState({
+            selectedWallet: localStorage.getItem("selectedwallet").toString().toLowerCase(),
+            depositamount: this.props.aavedeposittokenamount
         });
-         await this.getTokenBalance();
+        await this.getTokenBalance();
         await this.getAllowance();
-         let gasPrices = await this.getCurrentGasPrices();
-         this.setState({
-             gaspricevalue: gasPrices.medium
-         });
+        let gasPrices = await this.getCurrentGasPrices();
+        this.setState({
+            gaspricevalue: gasPrices.medium
+        });
+        console.log(this.props.aavedeposittoken);
     }
     getCurrentGasPrices = async () => {
         let response = await Axios.get(API_EthGas);
 
         let prices = {
-            low: parseFloat(response.data.safeLow) /10,
-            medium: parseFloat(response.data.average) /10,
-            high: parseFloat(response.data.fast) /10
+            low: parseFloat(response.data.safeLow) / 10,
+            medium: parseFloat(response.data.average) / 10,
+            high: parseFloat(response.data.fast) / 10
         }
         return prices;
     }
@@ -109,6 +114,9 @@ class AaveDeposit extends Component {
     }
 
     approve = async () => {
+        this.setState({
+            loading: true
+        });
         const depositAmount = web3.utils.toWei(this.props.aavedeposittokenamount.toString(), "gether");
         console.log(depositAmount);
         //return;
@@ -121,23 +129,25 @@ class AaveDeposit extends Component {
             var count = await web3.eth.getTransactionCount(this.state.selectedWallet);
             var rawTransaction = {
                 "from": this.state.selectedWallet,
-                "to": tokenContract,//this.tokencontract,
+                "to": tokenContract, //this.tokencontract,
                 "nonce": count,
-                "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
-                "data": dataApprove//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+                "value": "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+                "data": dataApprove //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
             };
-            ERCcontract.methods.approve(lpCoreAddress, depositAmount).estimateGas({ from: this.state.selectedWallet }).then(gasLimit => {
+            ERCcontract.methods.approve(lpCoreAddress, depositAmount).estimateGas({
+                from: this.state.selectedWallet
+            }).then(gasLimit => {
                 var gas = new BigNumber(gasLimit);
                 var gasPrice = web3.utils.toWei(this.state.gaspricevalue.toString(), "gwei");
                 rawTransaction = {
                     "from": this.state.selectedWallet.toString(),
                     "nonce": count,
-                    "gasPrice": web3.utils.toHex(gasPrice),//"0x04e3b29200",
+                    "gasPrice": web3.utils.toHex(gasPrice), //"0x04e3b29200",
                     // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-                    "gas": gasLimit,//"0x7458",
-                    "to": tokenContract,//this.tokencontract,
-                    "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
-                    "data": dataApprove,//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+                    "gas": gasLimit, //"0x7458",
+                    "to": tokenContract, //this.tokencontract,
+                    "value": "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+                    "data": dataApprove, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
                     "chainId": this.props.selectedethnetwork.chainid
                 };
                 var privKey = new Buffer(this.state.privatekey, 'hex');
@@ -148,44 +158,61 @@ class AaveDeposit extends Component {
                 tx.sign(privKey);
                 var serializedTx = tx.serialize();
                 web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function (err, hash) {
-                    if (!err) { //SUCCESS
-                        console.log(hash);
-                        // that.props.setsuccessulhash(hash);
-                        //that.props.setCurrent("tokentransfersuccessful");
-                    } else {
-                        createNotification('error', intl.get('Error.TransactionFailed'));
-                        console.log(err);
-                    }
-                }).once('confirmation', function (confNumber, receipt, latestBlockHash) {
-                    console.log("mined");
+                        if (!err) { //SUCCESS
+                            console.log(hash);
+                            // that.props.setsuccessulhash(hash);
+                            //that.props.setCurrent("tokentransfersuccessful");
+                        } else {
+                            createNotification('error', intl.get('Error.TransactionFailed'));
+                            this.setState({
+                                loading: false
+                            });
+                            console.log(err);
+                        }
+                    }).once('confirmation', function (confNumber, receipt, latestBlockHash) {
+                        console.log("mined");
+                        createNotification("info", "Transaction mined!");
+                        this.setState({
+                            loading: false
+                        });
 
-                })
+                    })
                     .on('error', function (error) {
                         console.log(error);
                         createNotification('error', 'Transaction failed.');
+                        this.setState({
+                            loading: false
+                        });
                     })
             })
+        } else {
+            this.setState({
+                loading: false
+            });
         }
     }
 
     getLendingPoolAddressProviderContract = () => {
-    const lpAddressProviderAddress = "0x24a42fD28C976A61Df5D00D0599C34c4f90748c8"; // mainnet address, for other addresses: https://docs.aave.com/developers/developing-on-aave/deployed-contract-instances
-    const lpAddressProviderContract = new web3.eth.Contract(LendingPoolAddressProviderABI, lpAddressProviderAddress);
-    return lpAddressProviderContract;
+        const lpAddressProviderAddress = "0x24a42fD28C976A61Df5D00D0599C34c4f90748c8"; // mainnet address, for other addresses: https://docs.aave.com/developers/developing-on-aave/deployed-contract-instances
+        const lpAddressProviderContract = new web3.eth.Contract(LendingPoolAddressProviderABI, lpAddressProviderAddress);
+        return lpAddressProviderContract;
     }
 
-    getLendingPoolCoreAddress = async() => {
+    getLendingPoolCoreAddress = async () => {
         const lpCoreAddress = await this.getLendingPoolAddressProviderContract()
-        .methods.getLendingPoolCore()
-        .call()
-        .catch((e) => {
-          throw Error(`Error getting lendingPool address: ${e.message}`)
-        })
-  
-      console.log("LendingPoolCore address: ", lpCoreAddress)
-      return lpCoreAddress
-     }
+            .methods.getLendingPoolCore()
+            .call()
+            .catch((e) => {
+                throw Error(`Error getting lendingPool address: ${e.message}`)
+            })
+
+        console.log("LendingPoolCore address: ", lpCoreAddress)
+        return lpCoreAddress
+    }
     deposit = async () => {
+        this.setState({
+            loading: true
+        });
         console.log(this.state.tokenInfo);
         const depositAmount = web3.utils.toWei(this.state.depositamount.toString(), "ether");
         console.log(depositAmount);
@@ -203,6 +230,11 @@ class AaveDeposit extends Component {
             } else {
                 console.log("allowance is smaller, need to approve")
                 approval = true;
+                this.setState({
+                    loading: false
+                });
+                createNotification("info", "Please approve first!");
+                return;
             }
             //if no approval then deposit
             const lpAddress = await this.getLendingPoolAddress();
@@ -211,13 +243,16 @@ class AaveDeposit extends Component {
             var count = await web3.eth.getTransactionCount(this.state.selectedWallet);
             var rawTransaction = {
                 "from": this.state.selectedWallet,
-                "to": lpAddress,//this.tokencontract,
+                "to": lpAddress, //this.tokencontract,
                 "nonce": count,
-                "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
-                "data": dataDeposit//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+                "value": "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+                "data": dataDeposit //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
             };
             console.log(dataDeposit);
-            lpContract.methods.deposit(tokenContract, depositAmount, referralCode).estimateGas({ from: this.state.selectedWallet, data: dataDeposit }).then(gasLimit => {
+            lpContract.methods.deposit(tokenContract, depositAmount, referralCode).estimateGas({
+                from: this.state.selectedWallet,
+                data: dataDeposit
+            }).then(gasLimit => {
                 var gasPrice = web3.utils.toWei(this.state.gaspricevalue.toString(), "gwei");
                 var limit = Number(gasLimit);
                 limit = limit + 50000;
@@ -225,12 +260,12 @@ class AaveDeposit extends Component {
                 rawTransaction = {
                     "from": this.state.selectedWallet.toString(),
                     "nonce": count,
-                    "gasPrice": web3.utils.toHex(gasPrice),//"0x04e3b29200",
+                    "gasPrice": web3.utils.toHex(gasPrice), //"0x04e3b29200",
                     // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-                    "gas": limit,//"0x7458",
-                    "to": lpAddress,//this.tokencontract,
-                    "value": "0x0",//web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
-                    "data": dataDeposit,//contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+                    "gas": limit, //"0x7458",
+                    "to": lpAddress, //this.tokencontract,
+                    "value": "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+                    "data": dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
                     "chainId": this.props.selectedethnetwork.chainid
                 };
                 var privKey = new Buffer(this.state.privatekey, 'hex');
@@ -241,45 +276,60 @@ class AaveDeposit extends Component {
                 tx.sign(privKey);
                 var serializedTx = tx.serialize();
                 web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function (err, hash) {
-                    if (!err) { //SUCCESS
-                        console.log(hash);
-                        // that.props.setsuccessulhash(hash);
-                        //that.props.setCurrent("tokentransfersuccessful");
-                    } else {
-                        createNotification('error', intl.get('Error.TransactionFailed'));
-                        console.log(err);
-                    }
-                })
+                        if (!err) { //SUCCESS
+                            console.log(hash);
+                            // that.props.setsuccessulhash(hash);
+                            //that.props.setCurrent("tokentransfersuccessful");
+                        } else {
+                            createNotification('error', intl.get('Error.TransactionFailed'));
+                            console.log(err);
+                            this.setState({
+                                loading: false
+                            });
+                        }
+                    })
                     .once('confirmation', function (confNumber, receipt, latestBlockHash) {
                         console.log("mined");
                         console.log(receipt);
                         console.log(confNumber);
+                        this.setState({
+                            loading: false
+                        });
 
                     })
                     .on('error', function (error) {
                         console.log(error);
                         createNotification('error', 'Transaction failed.');
+                        this.setState({
+                            loading: false
+                        });
                     })
             }).catch((e) => {
                 createNotification('error', 'Always failing transaction. Please check your deposit amount!');
+                this.setState({
+                    loading: false
+                });
             })
         } catch (e) {
             alert(e.message)
             console.log(e.message)
+            this.setState({
+                loading: false
+            });
         }
     }
 
-      getLendingPoolAddress = async() => {
+    getLendingPoolAddress = async () => {
         const lpAddress = await this.getLendingPoolAddressProviderContract().methods
-          .getLendingPool()
-          .call()
-          .catch((e) => {
-            throw Error(`Error getting lendingPool address: ${e.message}`)
-          })
+            .getLendingPool()
+            .call()
+            .catch((e) => {
+                throw Error(`Error getting lendingPool address: ${e.message}`)
+            })
         console.log("LendingPool address: ", lpAddress)
         return lpAddress
-      }
-  
+    }
+
 
     getTokenBalance = () => {
         // console.log(this.props.selectedwalletlist);
@@ -288,9 +338,9 @@ class AaveDeposit extends Component {
         walletlist = toJS(walletlist);
         console.log(walletlist);
         this.setState({
-            privatekey:walletlist.privatekey
+            privatekey: walletlist.privatekey
         });
-        let tokenitem = walletlist.tokenassetlist.find(x => x.AssetCode == this.props.aavedeposittoken);
+        let tokenitem = walletlist.tokenassetlist.find(x => x.AssetCode == this.props.aavedeposittoken.token);
         if (tokenitem == null || tokenitem == "") {
             console.log("wallet does not have this asset.");
             createNotification('error', 'Please add asset:' + this.props.aavedeposittoken + ' to your wallet!');
@@ -304,7 +354,7 @@ class AaveDeposit extends Component {
             });
             try {
                 var tokenAbiArray = JSON.parse(TokenInfo.AbiArray);
-            } catch (e) { }
+            } catch (e) {}
             let contract = new web3.eth.Contract(tokenAbiArray, TokenInfo.ContractAddress);
             web3.eth.call({
                 to: !isNullOrEmpty(TokenInfo.ContractAddress) ? TokenInfo.ContractAddress : null,
@@ -337,20 +387,28 @@ class AaveDeposit extends Component {
        style={{marginLeft: "20px"}}>AAVE DEPOSIT</span></div>
             <div className="centerpanel">
                     <center>
-                <div className="subtitle" stlye={{marginBottom:"10px"}}>{this.props.aavedeposittoken.toString().toUpperCase()} (savings)</div>
+                <div className="subtitle" stlye={{marginBottom:"10px"}}>{this.props.aavedeposittoken.token.toString().toUpperCase()} (savings)</div>
                     <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom: "10px", padding:"10px 10px"}}>
-                            <div className="panellabel">APY: 0.66%</div>
+                        <div className="panellabel">APY: {this.props.aavedeposittoken.apy}</div>
                         </div>
                         <div className="spacebetween"> </div>
                         <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom: "10px", padding:"10px 10px"}}>
-                        <div className="panellabel">Balance: {this.state.tokenbalance + " "+ this.props.aavedeposittoken}</div>
+                        <div className="panellabel">Balance: {this.state.tokenbalance + " "+ this.props.aavedeposittoken.token}</div>
                         </div>
                         <div className="subtitle" style={{marginBottom:"10px"}}>Deposit amount</div>
                         <div className="panelwrapper borderradiusfull" style={{marginBottom: "10px",alignItems:"center",display:"flex",padding:"10px 10px"}}>
                             <Input
                             className="inputTransparent" style={{textAlign:"center"}} placeholder="Deposit amount" value={this.state.depositamount} onChange={this.onChangeTokenValue}/>
-                             <div className="currency">{this.props.aavedeposittoken}</div> 
+                             <div className="currency">{this.props.aavedeposittoken.token}</div> 
                              </div>
+                             { 
+                            this.state.loading === true &&
+                            <React.Fragment>
+
+                            <Spin></Spin>
+                                     
+                            </React.Fragment>
+                            }
                             { 
                             this.state.approval === true &&
                             <React.Fragment>
@@ -370,7 +428,10 @@ class AaveDeposit extends Component {
                                      
                             </React.Fragment>
                             }
+                            <Button className="curvebutton" style={{marginTop:"15px"}}
+                                     onClick={this.dashboard}>Dasboard</Button>
                     </center>
+                    
             </div> 
         </div>   
         )
