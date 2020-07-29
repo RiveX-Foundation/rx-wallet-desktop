@@ -39,6 +39,7 @@ import {NotificationContainer} from 'react-notifications';
 import Los from 'components/Los';
 import Aave from 'components/Aave';
 import AaveDeposit from 'components/AaveDeposit';
+import AaveDashboard from 'components/AaveDashboard';
 //import { checkCryptographic, checkPhrase } from 'utils/support';
 
 const Step = Steps.Step;
@@ -150,6 +151,10 @@ class Dashboard extends Component {
         {
             content: <Aave/>,
             key: 'aave'
+        },
+        {
+            content: <AaveDashboard/>,
+            key: 'aavedashboard'
         },
         {
             content: <AaveDeposit/>,

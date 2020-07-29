@@ -428,8 +428,7 @@ class AaveDeposit extends Component {
                                      
                             </React.Fragment>
                             }
-                            <Button className="curvebutton" style={{marginTop:"15px"}}
-                                     onClick={this.dashboard}>Dasboard</Button>
+                           
                     </center>
                     
             </div> 

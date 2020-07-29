@@ -1,0 +1,392 @@
+@modal-input-bg: #1F2034;
+.title {
+  font-size: 1.5em;
+  padding: 20px;
+  position: absolute;
+
+  img {
+    cursor: pointer;
+    margin-top: -4px;
+  }
+}
+.ant-modal {
+  width: 600px!important;
+  .ant-modal-content .ant-btn-primary { 
+  margin-left: 150px!important;
+  }
+}
+.ant-modal-content .balancetext {
+  text-align: right;
+  margin-right: 60px;
+  font-size: 12px;
+}
+
+
+.centerpanel {
+  text-align: center;
+  width: calc(100vw);
+  height: calc(50vh);
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.textc {
+  color: black;
+  font-size: 50px;
+
+  .pwdTitle {
+    font-size: 16px;
+    font-weight: 900;
+    color: white;
+    text-align: left;
+    padding: 20px 0 0 153px;
+
+    .anticon-info-circle {
+      display: initial !important;
+    }
+  }
+
+  input {
+    margin-bottom: 0 !important;
+  }
+}
+
+.zContent .registerContent {
+  position: relative;
+}
+
+.nowalletpanel {
+  text-align: center;
+  width: calc(100vw);
+  height: calc(100vh);
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.nowalletpanel .label {
+  position: absolute;
+  right: 0;
+  left: 0;
+  margin-top: 120px;
+}
+
+.selectedwalletpanel {
+  .walletname {
+    font-size: 1.5em;
+    margin-bottom: 0px;
+    padding: 20px;
+  }
+
+  .subtitle {
+    padding-top: 30px;
+    padding-bottom: 15px;
+    text-align: center;
+    font-size: 1.2em;
+  }
+
+  .rvxbalance {
+    color: #fff;
+    font-size: 1.5em;
+    font-weight: 700;
+    margin-bottom: 5px;
+    margin-top: 20px;
+  }
+
+  .usdbalance {
+    color: #5f617d;
+    font-size: 1.2em;
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+
+  .contentpanel {
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    margin-bottom: 50px;
+    margin-top: 20px;
+  }
+
+  .button {
+    width: 120px;
+    height: 40px;
+    border-radius: 50px !important;
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    background-color: transparent !important;
+    border: 1.5px solid;
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+
+    span {
+      font-size: 0.8em;
+    }
+
+    img {
+      width: 20px;
+      margin-top: -2px;
+    }
+  }
+
+  .butreceive {
+    border-color: #ff5a5a !important;
+
+    span {
+      color: #ff5a5a;
+      font-weight: bold;
+    }
+  }
+
+  .button:hover {
+    opacity: 1;
+  }
+
+  .butsend {
+    border-color: #ff9852 !important;
+
+    span {
+      color: #ff9852;
+      font-weight: bold;
+    }
+  }
+
+  .totalworth {
+    border-radius: 100%;
+    border: 1px solid #64F4F4;
+    height: 170px;
+    width: 170px;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    display: flex;
+
+    .amount {
+      color: #64F4F4;
+      font-size: 25px;
+    }
+
+    .currency {
+      color: #3E8898;
+      font-size: 20px;
+    }
+  }
+  .tokenwrapper {
+    margin: 20px;
+
+    .tokenassetitemtop {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 10px 25px;
+      justify-content: space-between;
+      transition: 0.3s all ease;
+      cursor: pointer;
+      border-bottom: 2px solid #25294D;
+
+      img.tokenimg {
+        width: 35px;
+        height: 35px;
+        margin-right: 20px;
+      }
+
+      .infoctn {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .amountctn {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+
+      .tokenassetitemrow, .buttonctn {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+      }
+      .tokenassetitemrowmid, .buttonctn {
+        display: contents;
+        align-items: center;
+        flex-direction: row;
+      }
+
+      .assetcode, .totalcoin {
+        color: #fff;
+        font-size: 20px;
+      }
+
+      .totalcoin span {
+        color: #fff;
+        font-size: 17px;
+        margin-left: 5px;
+      }
+
+      .assetcodename, .totalcurrency {
+        color: #9092A3;
+        font-size: 14px;
+
+        span {
+          font-size: 12px;
+        }
+      }
+
+      .chartctn {
+        width: 150px;
+        height: 50px;
+        margin: 0px 20px;
+        margin-bottom: 55px;
+      }
+
+      .btnitem:first-child {
+        margin-right: 25px;
+      }
+
+      .btnitem img {
+        width: 22px;
+        height: 22px;;
+      }
+    }
+
+    .tokenassetitem:hover {
+      background-image: linear-gradient(to right, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d);
+    }
+
+    .addmorebtn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed #326C79;
+      color: #326C79;
+      height: 65px;
+      margin-top: 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+
+      img {
+        width: 18px;
+        margin-right: 10px;
+      }
+    }
+  }
+
+  .tokenwrapper {
+    margin: 20px;
+
+    .tokenassetitem {
+      background-image: linear-gradient(to right, #25294d, #24284b, #222749, #212647, #202545, #1f2443, #1e2441, #1d233f, #1c223d, #1b213b, #1a2039, #191f37);
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 10px 25px;
+      border-radius: 8px;
+      margin-top: 10px;
+      justify-content: space-between;
+      transition: 0.3s all ease;
+      cursor: pointer;
+
+      img.tokenimg {
+        width: 35px;
+        height: 35px;
+        margin-right: 20px;
+      }
+
+      .infoctn {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .amountctn {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+
+      .tokenassetitemrow, .buttonctn {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+      }
+      .tokenassetitemrowmid, .buttonctn {
+        display: contents;
+        align-items: center;
+        flex-direction: row;
+      }
+
+      .assetcode, .totalcoin {
+        color: #fff;
+        font-size: 20px;
+      }
+
+      .totalcoin span {
+        color: #fff;
+        font-size: 17px;
+        margin-left: 5px;
+      }
+
+      .assetcodename, .totalcurrency {
+        color: #9092A3;
+        font-size: 14px;
+
+        span {
+          font-size: 12px;
+        }
+      }
+
+      .chartctn {
+        width: 150px;
+        height: 50px;
+        margin: 0px 20px;
+        margin-bottom: 55px;
+      }
+
+      .btnitem:first-child {
+        margin-right: 25px;
+      }
+
+      .btnitem img {
+        width: 22px;
+        height: 22px;;
+      }
+    }
+
+    .tokenassetitem:hover {
+      background-image: linear-gradient(to right, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d);
+    }
+
+    .addmorebtn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed #326C79;
+      color: #326C79;
+      height: 65px;
+      margin-top: 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+
+      img {
+        width: 18px;
+        margin-right: 10px;
+      }
+    }
+  }
+
+  .sharedwalletpanel {
+    margin-top: 30px;
+    cursor: pointer;
+    padding: 5px 20px 5px 20px;
+    border-radius: 50px;
+    display: inline-block;
+    background-color: #473cb3;
+    opacity: 0.7;
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  }
+
+  .sharedwalletpanel:hover {
+    opacity: 1;
+  }
+}
+

@@ -43,7 +43,7 @@ var ranges = [
 }))
 
 @observer
-class Aave extends Component {
+class AaveDashboard extends Component {
     state = {
         mobilevalue: "",
         selectedwallet: "",
@@ -58,7 +58,7 @@ class Aave extends Component {
             import: {},
             rawKey: {}
         },
-        apy:[],
+        tokenlist:[],
         depositmodalvisible:false,
         selectedtoken:{},
         tokenbalance:0
@@ -66,8 +66,11 @@ class Aave extends Component {
 
 
     async componentDidMount() {
+        this.setState({
+            selecetedwallet: localStorage.getItem("selectedwallet")
+        })
         web3 = new Web3("https://mainnet.infura.io"+ this.props.infuraprojectid);
-        await this.getAPYrates();
+        await this.getAtokenAddress();
     }
 
     getLendingPoolAddressProviderContract = () => {
@@ -103,61 +106,47 @@ class Aave extends Component {
         this.props.setCurrent("aavedeposit");
     }
 
-    getAPYrates =async() => {
+    getAtokenAddress =async() => {
         var alltokens = toJS(this.props.allTokenAsset);
         const lpCoreAddress = await this.getLendingPoolCoreAddress();
         const lpCoreContract = new web3.eth.Contract(LendingPoolCoreABI, lpCoreAddress);
         console.log(toJS(this.props.allTokenAsset));
-        var apylist =[];
+        var dashtoken =[];
         var obj = {};
         console.log("GETTING APY RATES");
         alltokens.map((item, index) => {
             if(item.AssetCode == "DAI" || item.AssetCode == "USDC" ||item.AssetCode == "USDT" ||item.AssetCode == "LINK" || item.AssetCode == "KNC" ||item.AssetCode == "SNX" ||item.AssetCode == "MKR" || item.AssetCode == "BAT"){
                 var TokenInfo = item.TokenInfoList.find(x => x.Network == "mainnet");
                 TokenInfo = toJS(TokenInfo);
-                lpCoreContract.methods.getReserveCurrentLiquidityRate(TokenInfo.ContractAddress).call().then(async(result)=> {
-                    BigNumber.config({RANGE:27});
-                    var test = web3.utils.fromWei(result.toString(),'gether');
-                    test = test.toString().slice(0,7);
-                    let apy = parseFloat(test).toFixed(4);
-                    apy = apy*100;
-                    lpCoreContract.methods.getReserveTotalLiquidity(TokenInfo.ContractAddress).call().then(async(market)=> { 
+                lpCoreContract.methods.getReserveATokenAddress(TokenInfo.ContractAddress).call().then(async(result)=> {
+                    var addy = result.toString();
+                    console.log(addy);
+                    let ercContract = new web3.eth.Contract(ERC20ABI,addy);
+                    ercContract.methods.balanceOf(this.state.selectedwallet.toString().toLowerCase()).call().then(async(balance)=> { 
                         let unit = "ether";
                         if(item.AssetCode == "USDT" || item.AssetCode == "USDC"){
                             unit = "mwei";
                         }
-                        var rez = web3.utils.fromWei(market.toString(),unit);
-                        rez = rez.toString().slice(0,12);
-                        rez = Number(rez).toFixed(2);
-                        console.log(rez);
-                        var s = this.formatNumber(rez);
-                        console.log(s);
-                        let lastchar = s.slice(-1);
-                        var x = s.indexOf('.');
-                        
-                        console.log(x);
-                        s = s.slice(0,x+2);
-                        s=s+lastchar;
-                        //console.log(item.AssetCode + " " +s);
-                        apylist.push({
+                        var rez = web3.utils.fromWei(balance.toString(),unit);
+                        var bal = new BigNumber(rez.toString());
+                        console.log(bal.toString());
+                        dashtoken.push({
                             token: item.AssetCode,
-                            apy: apy,
+                            balance: bal,
                             LogoUrl: item.LogoUrl,
-                            market:s
+                            aContract: addy
                         });
                     })
-                 
-                    
-                   
+  
                 })
             }
 
         });
         setTimeout(() => {
             this.setState({
-                apy:apylist
+                tokenlist:dashtoken
             });
-          }, 1000);
+          }, 1500);
        
     }
 
@@ -166,10 +155,6 @@ class Aave extends Component {
         this.setState({
             depositmodalvisible: false
         });
-    }
-
-    dashboard = () => {
-        this.props.setCurrent("aavedashboard");
     }
 
     openModal = (token) => {
@@ -191,7 +176,7 @@ class Aave extends Component {
 
 
     back = () => {
-        this.props.setCurrent("selectedwallet");
+        this.props.setCurrent("aave");
     }
 
     onChangeTokenValue = e => {
@@ -216,21 +201,16 @@ class Aave extends Component {
                                                 <div className="assetcode">Asset</div>
                                             </div>
                                         </div>
-                                        <div className="tokenassetitemrowmid">
-                                            <div className="infoctn">
-                                                <div className="assetcode">Deposit APY</div>
-                                            </div>
-                                        </div>
                                         <div className="tokenassetitemrow">
                                             <div className="amountctn">
-                                            <div className="totalcoin"><span>Market size</span>
+                                            <div className="totalcoin"><span>Balance</span>
                                                 </div>
                                             </div>
                                         </div>
                                 </div>
                      {
                          
-                         this.state.apy.map((item, index) => {
+                         this.state.tokenlist.map((item, index) => {
                             return (
                                 <div key={index} className="tokenassetitem" onClick={() => this.openModal(item)} >
                                        <div className="tokenassetitemrow">
@@ -239,14 +219,9 @@ class Aave extends Component {
                                                 <div className="assetcode">{item.token}</div>
                                             </div>
                                         </div>
-                                        <div className="tokenassetitemrowmid">
-                                            <div className="infoctn">
-                                                <div className="assetcode">{Number(item.apy).toFixed(2)}%</div>
-                                            </div>
-                                        </div>
                                         <div className="tokenassetitemrow">
                                             <div className="amountctn">
-                                            <div className="totalcoin"> {item.market}<span></span>
+                                            <div className="totalcoin"> {item.balance + " "+ item.token}<span></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -278,4 +253,4 @@ class Aave extends Component {
     }
 }
 
-export default Aave;
+export default AaveDashboard;
