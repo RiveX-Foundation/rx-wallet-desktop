@@ -203,7 +203,7 @@ class Aave extends Component {
         return (
             <div id="selectwalletmainctn" className="selectedwalletpanel fadeInAnim">
                 <div className="title"><span><img onClick={this.back} width="20px" src={buttonback}/></span><span
-            style={{marginLeft: "20px"}} >AAVE</span></div>
+            style={{marginLeft: "20px"}} >AAVE Deposit</span></div>
             <div className="walletname"></div>
                     <div className="contentpanel">
                     <img src={aavevertical} style={{height:"20%",width:"20%"}} ></img>
