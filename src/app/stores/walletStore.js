@@ -1622,7 +1622,7 @@ class walletStore {
                     data: contract.methods.balanceOf(tokenitem.PublicAddress).encodeABI()
                 }).then(balance => {
                     //console.log("BALANCE: "+ balance + " "+ tokenitem.AssetCode);
-                    if (tokenitem.AssetCode == "USDT" || tokenitem.AssetCode == "fls6") {
+                    if (tokenitem.AssetCode == "USDT" || tokenitem.AssetCode == "USDC") {
                         var tokenbal = new BigNumber(web3.utils.fromWei(balance, 'mwei'));
                        tokenitem.TokenBalance = parseFloat(tokenbal.toString());
                         //var tokenbal = web3.utils.fromWei(balance,'mwei');
