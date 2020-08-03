@@ -51,7 +51,8 @@ class AaveDeposit extends Component {
         gaspricevalue: 0,
         privatekey: "",
         approval: false,
-        loading: false
+        loading: false,
+        buttondisable:false
 
     }
     onChangeTokenValue = e => {
@@ -70,7 +71,7 @@ class AaveDeposit extends Component {
         await this.getAllowance();
         let gasPrices = await this.getCurrentGasPrices();
         this.setState({
-            gaspricevalue: gasPrices.medium
+            gaspricevalue: gasPrices.high
         });
         console.log(this.props.aavedeposittoken);
     }
@@ -175,6 +176,7 @@ class AaveDeposit extends Component {
                         this.setState({
                             loading: false
                         });
+                        this.props.setCurrent("aave");
 
                     })
                     .on('error', function (error) {
@@ -183,6 +185,7 @@ class AaveDeposit extends Component {
                         this.setState({
                             loading: false
                         });
+                        this.props.setCurrent("aave");
                     })
             })
         } else {
@@ -221,21 +224,7 @@ class AaveDeposit extends Component {
         const referralCode = "0";
 
         try {
-            console.log(balance);
-            let approval = false;
-            let allowance = web3.utils.hexToNumberString(balance.toString());
-            console.log(allowance);
-            if (parseFloat(allowance.toString()) >= parseFloat(this.state.depositamount.toString())) {
-                console.log("allowance is bigger, no need to approve")
-            } else {
-                console.log("allowance is smaller, need to approve")
-                approval = true;
-                this.setState({
-                    loading: false
-                });
-                createNotification("info", "Please approve first!");
-                return;
-            }
+          
             //if no approval then deposit
             const lpAddress = await this.getLendingPoolAddress();
             const lpContract = new web3.eth.Contract(LendingPoolABI, lpAddress);
@@ -275,7 +264,7 @@ class AaveDeposit extends Component {
                 });
                 tx.sign(privKey);
                 var serializedTx = tx.serialize();
-                web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'), function (err, hash) {
+                web3.eth.sendSignedTransaction('0x' + serializedTx.toString('hex'),  (err, hash) => {
                         if (!err) { //SUCCESS
                             console.log(hash);
                             // that.props.setsuccessulhash(hash);
@@ -288,16 +277,18 @@ class AaveDeposit extends Component {
                             });
                         }
                     })
-                    .once('confirmation', function (confNumber, receipt, latestBlockHash) {
+                    .once('confirmation',  (confNumber, receipt, latestBlockHash) => {
                         console.log("mined");
                         console.log(receipt);
                         console.log(confNumber);
+                        createNotification('success', 'Transaction mined.');
+                        this.getTokenBalance();
                         this.setState({
                             loading: false
                         });
 
                     })
-                    .on('error', function (error) {
+                    .on('error',  (error) => {
                         console.log(error);
                         createNotification('error', 'Transaction failed.');
                         this.setState({
@@ -389,7 +380,7 @@ class AaveDeposit extends Component {
                     <center>
                 <div className="subtitle" stlye={{marginBottom:"10px"}}>{this.props.aavedeposittoken.token.toString().toUpperCase()} (savings)</div>
                     <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom: "10px", padding:"10px 10px"}}>
-                        <div className="panellabel">APY: {this.props.aavedeposittoken.apy}</div>
+                        <div className="panellabel">APY: {this.props.aavedeposittoken.apy.toFixed(2)}%</div>
                         </div>
                         <div className="spacebetween"> </div>
                         <div className="panelwrapper borderradiusfull spacebetween" style={{marginBottom: "10px", padding:"10px 10px"}}>
@@ -405,15 +396,15 @@ class AaveDeposit extends Component {
                             this.state.loading === true &&
                             <React.Fragment>
 
-                            <Spin></Spin>
-                                     
+                            <Spin tip="Transaction pending..." style={{marginBottom:"10px"}}></Spin>
+                            <div className="spacebetween"> </div>       
                             </React.Fragment>
                             }
                             { 
                             this.state.approval === true &&
                             <React.Fragment>
 
-                            <Button className="curvebutton" style={{marginTop:"15px"}}
+                            <Button disabled={this.state.loading} className="curvebutton" style={{marginTop:"15px"}}
                                      onClick={this.approve}>Approve</Button>
 
                             </React.Fragment>
@@ -423,7 +414,7 @@ class AaveDeposit extends Component {
                             this.state.approval === false &&
                             <React.Fragment>
 
-                            <Button className="curvebutton" style={{marginTop:"15px"}}
+                            <Button disabled={this.state.loading} className="curvebutton" style={{marginTop:"15px"}}
                                      onClick={this.deposit}>Deposit</Button>
                                      
                             </React.Fragment>

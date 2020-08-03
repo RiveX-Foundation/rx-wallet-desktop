@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Modal, Button,Input} from 'antd';
+import {Modal, Button,Input,Spin} from 'antd';
 import {toJS} from 'mobx';
 import {inject, observer} from 'mobx-react';
 import intl from 'react-intl-universal';
@@ -155,7 +155,8 @@ class Aave extends Component {
         });
         setTimeout(() => {
             this.setState({
-                apy:apylist
+                apy:apylist,
+                loading:false
             });
           }, 1000);
        
@@ -228,6 +229,14 @@ class Aave extends Component {
                                             </div>
                                         </div>
                                 </div>
+                                { 
+                            this.state.loading === true &&
+                            <React.Fragment>
+
+                            <Spin size="large" tip="Loading..."></Spin>
+                                     
+                            </React.Fragment>
+                            }
                      {
                          
                          this.state.apy.map((item, index) => {

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Modal, Button,Input} from 'antd';
+import {Modal, Button,Input, Spin} from 'antd';
 import {toJS} from 'mobx';
 import {inject, observer} from 'mobx-react';
 import intl from 'react-intl-universal';
@@ -54,7 +54,7 @@ class AaveDashboard extends Component {
         selectedwallet: "",
         preload: null,
         displayed: "none",
-        loading: true,
+        loading: false,
         withdrawamount:0,
         addrInfo: {
             normal: {},
@@ -128,6 +128,9 @@ class AaveDashboard extends Component {
      }
 
     withdraw = async () => {
+        if(this.state.loading){
+            createNotification('info','Wait for transaction to be mined!');
+        }
         let unit = "ether";
         if (this.state.selectedtoken.token == "USDT" || this.state.selectedtoken.token == "USDC") {
             unit = "mwei";
@@ -217,6 +220,7 @@ class AaveDashboard extends Component {
     }
 
     getAtokenAddress =async() => {
+        this.setState({loading:true});
         var alltokens = toJS(this.props.allTokenAsset);
         const lpCoreAddress = await this.getLendingPoolCoreAddress();
         const lpCoreContract = new web3.eth.Contract(LendingPoolCoreABI, lpCoreAddress);
@@ -256,7 +260,8 @@ class AaveDashboard extends Component {
         });
         setTimeout(() => {
             this.setState({
-                tokenlist:dashtoken
+                tokenlist:dashtoken,
+                loading:false
             });
           }, 1000);
        
@@ -322,6 +327,13 @@ class AaveDashboard extends Component {
                                             </div>
                                         </div>
                                 </div>
+                                { 
+                            this.state.loading === true &&
+                            <React.Fragment>
+
+                            <Spin size="large" tip="Loading..."></Spin>   
+                            </React.Fragment>
+                            }
                      {
                          
                          this.state.tokenlist.map((item, index) => {
@@ -359,6 +371,16 @@ class AaveDashboard extends Component {
                                 <div className="panelwrapper borderradiusfull" style={{width:"500px"}}>
                                     <Input className="inputTransparent" value={this.state.withdrawamount} onChange={this.onChangeTokenValue}/>
                                 </div>
+                                { 
+                            this.state.loading === true &&
+                            <React.Fragment>
+                            <div>
+                            <center>
+                            <Spin tip="Transaction pending..." ></Spin> 
+                            </center> 
+                            </div>
+                            </React.Fragment>
+                            }
                             </div>
                         </Modal>
             </div>  
