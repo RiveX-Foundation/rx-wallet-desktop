@@ -1,74 +1,76 @@
-import {action, observable} from 'mobx';
+import { action, observable } from "mobx";
 
-const os = require('os');
+const os = require("os");
 
 class Session {
-    @observable IsLogin = false;
-    @observable hasMnemonicOrNot = false;
-    @observable hasUseAcc = false;
-    @observable UserAccountExist = false;
-    @observable RequestSignIn = false;
-    @observable RequestForgotPassword = false;
-    @observable IsShowWalletListing = true;
+  @observable IsLogin = false;
+  @observable hasMnemonicOrNot = false;
+  @observable hasUseAcc = false;
+  @observable UserAccountExist = false;
+  @observable RequestSignIn = false;
+  @observable RequestForgotPassword = false;
+  @observable IsShowWalletListing = true;
 
+  constructor() {
+    //super();
+    //this.getMnemonic();
+    this.getUserAcc();
+  }
 
-    constructor() {
-        //super();
-        //this.getMnemonic();
-        this.getUserAcc();
-    }
+  @action setHasAcc(val) {
+    this.hasUseAcc = val;
+  }
 
-    @action setHasAcc(val) {
-        this.hasUseAcc = val;
-    }
+  @action setIsShowWalletListing(val) {
+    this.IsShowWalletListing = val;
+  }
 
-    @action setIsShowWalletListing(val) {
-        this.IsShowWalletListing = val;
-    }
+  @action setIsLogin(val) {
+    this.IsLogin = val;
+  }
 
-    @action setIsLogin(val) {
-        this.IsLogin = val;
-    }
+  @action setRequestSignIn(val) {
+    this.RequestSignIn = val;
+  }
 
-    @action setRequestSignIn(val) {
-        this.RequestSignIn = val;
-    }
+  @action setRequestForgotPassword(val) {
+    this.RequestForgotPassword = val;
+  }
 
-    @action setRequestForgotPassword(val) {
-        this.RequestForgotPassword = val;
-    }
+  @action setUserAccountExist(val) {
+    this.UserAccountExist = val;
+  }
 
-    @action setUserAccountExist(val) {
-        this.UserAccountExist = val;
-    }
+  @action logout() {
+    localStorage.setItem("user", "");
+    this.setIsLogin(false);
+  }
 
-    @action logout() {
-        localStorage.setItem('user', '');
-        this.setIsLogin(false);
-    }
-
-    @action getMnemonic () {
-      return new Promise((resolve, reject) => {
-        wand.request('phrase_has', null, (err, val) => {
-          if (!err) {
-            self.hasMnemonicOrNot = val;
-            resolve(val);
-          } else {
-            self.hasMnemonicOrNot = false;
-            resolve(false);
-          }
-        });
-      })
-    }
-
-    @action getUserAcc() {
-        if (localStorage.getItem('registeredbefore') == "" || localStorage.getItem('registeredbefore') == null) {
-            this.UserAccountExist = false;
+  @action getMnemonic() {
+    return new Promise((resolve, reject) => {
+      wand.request("phrase_has", null, (err, val) => {
+        if (!err) {
+          self.hasMnemonicOrNot = val;
+          resolve(val);
         } else {
-            //this.setIsLogin(true);
-            this.UserAccountExist = true;
+          self.hasMnemonicOrNot = false;
+          resolve(false);
         }
-        /*
+      });
+    });
+  }
+
+  @action getUserAcc() {
+    if (
+      localStorage.getItem("registeredbefore") == "" ||
+      localStorage.getItem("registeredbefore") == null
+    ) {
+      this.UserAccountExist = false;
+    } else {
+      //this.setIsLogin(true);
+      this.UserAccountExist = true;
+    }
+    /*
         return new Promise((resolve, reject) => {
           wand.request('phrase_has', null, (err, val) => {
             if (!err) {
@@ -80,9 +82,9 @@ class Session {
           });
         })
         */
-    }
+  }
 
-    /*
+  /*
     @observable chainId = 1;
     @observable auth = false;
     @observable settings = {

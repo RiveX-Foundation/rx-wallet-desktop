@@ -1,55 +1,55 @@
 //import wanUtil from "wanchain-util";
-import React, { Component } from 'react';
-import { Steps, Tabs } from 'antd';
-import { observer, inject } from 'mobx-react';
-import intl from 'react-intl-universal';
-import ManageWallet from 'components/Settings/ManageWallet';
-import ManageWalletDetail from 'components/Settings/ManageWalletDetail';
-import ExportPrivateKey from 'components/Settings/ExportPrivateKey';
-import Currency from 'components/Settings/Currency';
-import Security from 'components/Settings/Security';
-import Network from 'components/Settings/Network';
-import './index.less';
+import React, { Component } from "react";
+import { Steps, Tabs } from "antd";
+import { observer, inject } from "mobx-react";
+import intl from "react-intl-universal";
+import ManageWallet from "components/Settings/ManageWallet";
+import ManageWalletDetail from "components/Settings/ManageWalletDetail";
+import ExportPrivateKey from "components/Settings/ExportPrivateKey";
+import Currency from "components/Settings/Currency";
+import Security from "components/Settings/Security";
+import Network from "components/Settings/Network";
+import "./index.less";
 
 //import { checkCryptographic, checkPhrase } from 'utils/support';
 
 const Step = Steps.Step;
 
-@inject(stores => ({
+@inject((stores) => ({
   current: stores.setting.current,
-  setCurrent: val => stores.setting.setCurrent(val)
+  setCurrent: (val) => stores.setting.setCurrent(val),
 }))
-
 @observer
 class Settings extends Component {
   state = {
     walletsteps: [
       {
-      content: <ManageWallet />,
-      key:'managewalletlist'
+        content: <ManageWallet />,
+        key: "managewalletlist",
       },
       {
         content: <ManageWalletDetail />,
-        key:'managewalletdetail'  
+        key: "managewalletdetail",
       },
       {
         content: <ExportPrivateKey />,
-        key:'exportprivatekey'
+        key: "exportprivatekey",
       },
       {
         content: <Network />,
-        key:'network'
-    }]
-  }
+        key: "network",
+      },
+    ],
+  };
 
-  constructor(props){
+  constructor(props) {
     super(props);
   }
 
-  callback = key => {
+  callback = (key) => {
     console.log(key);
-  }
-  
+  };
+
   render() {
     const { current } = this.props;
     const { TabPane } = Tabs;
@@ -58,19 +58,19 @@ class Settings extends Component {
     return (
       <div className="tabcontainer">
         <Tabs defaultActiveKey="1" onChange={this.callback}>
-          <TabPane tab={intl.get('Settings.ManageWallets')} key="1">
-            {this.state.walletsteps.find(x => x.key === current).content}
+          <TabPane tab={intl.get("Settings.ManageWallets")} key="1">
+            {this.state.walletsteps.find((x) => x.key === current).content}
           </TabPane>
-          <TabPane tab={intl.get('Settings.Currency')} key="2">
+          <TabPane tab={intl.get("Settings.Currency")} key="2">
             <Currency />
           </TabPane>
-          <TabPane tab={intl.get('Settings.Network')} key="3">
+          <TabPane tab={intl.get("Settings.Network")} key="3">
             <Network />
           </TabPane>
-       {/* <TabPane tab={intl.get('Settings.Profile')} key="4">
+          {/* <TabPane tab={intl.get('Settings.Profile')} key="4">
             <Profile />
     </TabPane> */}
-          <TabPane tab={intl.get('Settings.2FASecurity')} key="5">
+          <TabPane tab={intl.get("Settings.2FASecurity")} key="5">
             <Security />
           </TabPane>
         </Tabs>

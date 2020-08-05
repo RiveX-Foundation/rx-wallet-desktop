@@ -1,13 +1,13 @@
-'use strict';
+"use strict";
 
-const assert = require('assert');
+const assert = require("assert");
 
 /**
  * Helper for multiplexing promise implementations
  */
 
 const store = {
-    _promise: null
+  _promise: null,
 };
 
 /**
@@ -15,7 +15,7 @@ const store = {
  */
 
 store.get = function () {
-    return store._promise;
+  return store._promise;
 };
 
 /**
@@ -23,9 +23,11 @@ store.get = function () {
  */
 
 store.set = function (lib) {
-    assert.ok(typeof lib === 'function',
-        `iwan-js-sdk.Promise must be a function, got ${lib}`);
-    store._promise = lib;
+  assert.ok(
+    typeof lib === "function",
+    `iwan-js-sdk.Promise must be a function, got ${lib}`
+  );
+  store._promise = lib;
 };
 
 /*!

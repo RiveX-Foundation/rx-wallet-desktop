@@ -1,24 +1,24 @@
 //import wanUtil from "wanchain-util";
-import React, {Component} from 'react';
-import {Steps} from 'antd';
-import {inject, observer} from 'mobx-react';
-import {NotificationContainer} from 'react-notifications';
-import './index.less';
-import LoginMobile from 'components/LoginMobile';
-import {isNullOrEmpty} from '../../utils/helper';
-import BackupWalletTutorial from '../../components/Wallet/BackupWalletTutorial';
-import WalletCreation from '../../components/Wallet/WalletCreationLogin';
-import WalletKeyInSeed from '../../components/Wallet/WalletKeyInSeed';
-import WalletCreated from '../../components/Wallet/WalletCreated';
-import WalletNameEntry from '../../components/Wallet/WalletNameEntryLogin';
-import WalletRestorebySeedLogin from '../../components/Wallet/WalletRestorebySeedLogin';
+import React, { Component } from "react";
+import { Steps } from "antd";
+import { inject, observer } from "mobx-react";
+import { NotificationContainer } from "react-notifications";
+import "./index.less";
+import LoginMobile from "components/LoginMobile";
+import { isNullOrEmpty } from "../../utils/helper";
+import BackupWalletTutorial from "../../components/Wallet/BackupWalletTutorial";
+import WalletCreation from "../../components/Wallet/WalletCreationLogin";
+import WalletKeyInSeed from "../../components/Wallet/WalletKeyInSeed";
+import WalletCreated from "../../components/Wallet/WalletCreated";
+import WalletNameEntry from "../../components/Wallet/WalletNameEntryLogin";
+import WalletRestorebySeedLogin from "../../components/Wallet/WalletRestorebySeedLogin";
 
 //import { checkCryptographic, checkPhrase } from 'utils/support';
 
 const Step = Steps.Step;
 
-@inject(stores => ({
-    /*
+@inject((stores) => ({
+  /*
     pwd: stores.mnemonic.pwd,
     method: stores.mnemonic.method,
     mnemonic: stores.mnemonic.mnemonic,
@@ -27,92 +27,125 @@ const Step = Steps.Step;
     language: stores.languageIntl.language,
     isAllEmptyPwd: stores.mnemonic.isAllEmptyPwd,
     */
-    current: stores.userRegistration.current,
-    mobile: stores.userRegistration.mobile,
-    otp: stores.userRegistration.otp,
-    setCurrent: val => stores.walletStore.setCurrent(val),
-    setselectedwallettype: val => stores.walletStore.setselectedwallettype(val),
-    setHasAcc: val => stores.session.setHasAcc(val),
-    setUserAccountExist: val => stores.session.setUserAccountExist(val),
-    wsMobileRegistration: () => stores.userRegistration.wsMobileRegistration(),
-    wsEmailRegistration: () => stores.userRegistration.wsEmailRegistration(),
-    wsUserRegistration: () => stores.userRegistration.wsUserRegistration(),
-    wsOTPVerification: type => stores.userRegistration.wsOTPVerification(type),
-    setIsLogin: status => stores.userRegistration.setIsLogin(status),
-    setUserAccountExist: status => stores.userRegistration.setUserAccountExist(status),
-    setToken: token => stores.userRegistration.setToken(token),
-    setUserObject: (userid, mobile, name, email, loginid, twoFAType, twoFAPassword, googleAuthKey) => stores.userRegistration.setUserObject(userid, mobile, name, email, loginid, twoFAType, twoFAPassword, googleAuthKey)
+  current: stores.userRegistration.current,
+  mobile: stores.userRegistration.mobile,
+  otp: stores.userRegistration.otp,
+  setCurrent: (val) => stores.walletStore.setCurrent(val),
+  setselectedwallettype: (val) => stores.walletStore.setselectedwallettype(val),
+  setHasAcc: (val) => stores.session.setHasAcc(val),
+  setUserAccountExist: (val) => stores.session.setUserAccountExist(val),
+  wsMobileRegistration: () => stores.userRegistration.wsMobileRegistration(),
+  wsEmailRegistration: () => stores.userRegistration.wsEmailRegistration(),
+  wsUserRegistration: () => stores.userRegistration.wsUserRegistration(),
+  wsOTPVerification: (type) => stores.userRegistration.wsOTPVerification(type),
+  setIsLogin: (status) => stores.userRegistration.setIsLogin(status),
+  setUserAccountExist: (status) =>
+    stores.userRegistration.setUserAccountExist(status),
+  setToken: (token) => stores.userRegistration.setToken(token),
+  setUserObject: (
+    userid,
+    mobile,
+    name,
+    email,
+    loginid,
+    twoFAType,
+    twoFAPassword,
+    googleAuthKey
+  ) =>
+    stores.userRegistration.setUserObject(
+      userid,
+      mobile,
+      name,
+      email,
+      loginid,
+      twoFAType,
+      twoFAPassword,
+      googleAuthKey
+    ),
 }))
-
 @observer
 class Login extends Component {
-    state = {
-        steps: [{
-            content: <LoginMobile/>,
-            key: 'inputmobile'
-        }, {
-            content: <BackupWalletTutorial/>,
-            key: 'createwalletlogin'
-        }
-            , {
-                content: <WalletRestorebySeedLogin/>,
-                key: 'walletrestorebyseed'
-            }
-            , {
-                content: <WalletNameEntry/>,
-                key: 'walletnameentry'
-            }
-            , {
-                content: <WalletCreation/>,
-                key: 'walletcreation'
-            }, {
-                content: <WalletKeyInSeed/>,
-                key: 'walletkeyinseed'
-            }, {
-                content: <WalletCreated/>,
-                key: 'walletcreated'
-            }]
-    }
+  state = {
+    steps: [
+      {
+        content: <LoginMobile />,
+        key: "inputmobile",
+      },
+      {
+        content: <BackupWalletTutorial />,
+        key: "createwalletlogin",
+      },
+      {
+        content: <WalletRestorebySeedLogin />,
+        key: "walletrestorebyseed",
+      },
+      {
+        content: <WalletNameEntry />,
+        key: "walletnameentry",
+      },
+      {
+        content: <WalletCreation />,
+        key: "walletcreation",
+      },
+      {
+        content: <WalletKeyInSeed />,
+        key: "walletkeyinseed",
+      },
+      {
+        content: <WalletCreated />,
+        key: "walletcreated",
+      },
+    ],
+  };
 
-    constructor(props) {
-        super(props);
-    }
+  constructor(props) {
+    super(props);
+  }
 
-    componentDidMount() {
-        //this.checkUserExist();
-    }
+  componentDidMount() {
+    //this.checkUserExist();
+  }
 
-    checkUserExist = () => {
-        let userinfo = localStorage.getItem('user');
-        if (!isNullOrEmpty(userinfo)) {
-            console.log("userinfo", JSON.parse(userinfo));
-            let simpleUser = JSON.parse(userinfo);
-            this.props.setUserObject(simpleUser.userid, simpleUser.mobile, simpleUser.name, simpleUser.email, simpleUser.loginid, simpleUser.twoFAType, simpleUser.twoFAPassword, simpleUser.googleAuthKey);
-            this.props.setIsLogin(true);
-            this.props.setUserAccountExist(true);
-            this.props.setToken(simpleUser.logintoken);
-            this.props.setselectedwallettype('basicwallet');
-            this.props.setCurrent('selectedwallet');
-        }
+  checkUserExist = () => {
+    let userinfo = localStorage.getItem("user");
+    if (!isNullOrEmpty(userinfo)) {
+      console.log("userinfo", JSON.parse(userinfo));
+      let simpleUser = JSON.parse(userinfo);
+      this.props.setUserObject(
+        simpleUser.userid,
+        simpleUser.mobile,
+        simpleUser.name,
+        simpleUser.email,
+        simpleUser.loginid,
+        simpleUser.twoFAType,
+        simpleUser.twoFAPassword,
+        simpleUser.googleAuthKey
+      );
+      this.props.setIsLogin(true);
+      this.props.setUserAccountExist(true);
+      this.props.setToken(simpleUser.logintoken);
+      this.props.setselectedwallettype("basicwallet");
+      this.props.setCurrent("selectedwallet");
     }
+  };
 
-    next = async () => {
-        const {mobile} = this.props;
-        const {current} = this.props;
-        if (current === 0) {
-            //this.props.wsMobileRegistration();
-            this.props.wsEmailRegistration();
-        } else if (current === 1) {
-            this.props.wsOTPVerification('registration');
-        } else if (current === 2) {
-            this.props.wsUserRegistration();
-        }
-        //if(isAllEmptyPwd) {
-        //console.log(mobile);
-        //message.error(intl.get('Register.passwordsEmpty'));
-        //return;
-        //}
-        /*
+  next = async () => {
+    const { mobile } = this.props;
+    const { current } = this.props;
+    if (current === 0) {
+      //this.props.wsMobileRegistration();
+      this.props.wsEmailRegistration();
+    } else if (current === 1) {
+      this.props.wsOTPVerification("registration");
+    } else if (current === 2) {
+      this.props.wsUserRegistration();
+    }
+    //if(isAllEmptyPwd) {
+    //console.log(mobile);
+    //message.error(intl.get('Register.passwordsEmpty'));
+    //return;
+    //}
+    /*
         if (isSamePwd) {
           if (checkCryptographic(pwd)) {
             if (method === 'create') {
@@ -135,7 +168,7 @@ class Login extends Component {
           message.error(intl.get('Register.passwordsMismatched'));
         }
         */
-        /*
+    /*
        } else if (current === 1 && method === 'import') {
          if (checkPhrase(mnemonic)) {
            this.props.setMnemonic(mnemonic);
@@ -144,17 +177,17 @@ class Login extends Component {
            message.error(intl.get('Register.seedPhraseIsInvalid'));
          }
        */
-        //} else {
-        //  setIndex(current + 1);
-        //}
-    }
+    //} else {
+    //  setIndex(current + 1);
+    //}
+  };
 
-    prev = () => {
-        const {setIndex, current} = this.props;
-        setIndex(current - 1);
-    }
+  prev = () => {
+    const { setIndex, current } = this.props;
+    setIndex(current - 1);
+  };
 
-    /*
+  /*
     done = () => {
       const { mnemonic, newPhrase, pwd, addAddress } = this.props;
       if (newPhrase.join(' ') === mnemonic) {
@@ -192,16 +225,17 @@ class Login extends Component {
     }
     */
 
-    render() {
-        const {steps} = this.state;
-        const {current} = this.props;
-        console.log(current);
-        return (
-            <div className="steps-content"
-                 style={{backgroundColor: '#1A1B2C'}}>{steps.find(x => x.key === current).content}<NotificationContainer/>
-            </div>
-        );
-    }
+  render() {
+    const { steps } = this.state;
+    const { current } = this.props;
+    console.log(current);
+    return (
+      <div className="steps-content" style={{ backgroundColor: "#1A1B2C" }}>
+        {steps.find((x) => x.key === current).content}
+        <NotificationContainer />
+      </div>
+    );
+  }
 }
 
 export default Login;

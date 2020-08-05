@@ -1,22 +1,22 @@
 //import wanUtil from "wanchain-util";
-import React, {Component} from 'react';
-import {Steps} from 'antd';
-import {inject, observer} from 'mobx-react';
-import intl from 'react-intl-universal';
+import React, { Component } from "react";
+import { Steps } from "antd";
+import { inject, observer } from "mobx-react";
+import intl from "react-intl-universal";
 
-import './index.less';
-import InputMobile from 'components/ForgotPassword/InputMobile';
-import InputOTP from 'components/ForgotPassword/InputOTP';
-import InputNewPassword from 'components/ForgotPassword/InputNewPassword';
-import {NotificationContainer} from 'react-notifications';
-import bgimg from 'static/image/graphic/loginbg.jpg';
+import "./index.less";
+import InputMobile from "components/ForgotPassword/InputMobile";
+import InputOTP from "components/ForgotPassword/InputOTP";
+import InputNewPassword from "components/ForgotPassword/InputNewPassword";
+import { NotificationContainer } from "react-notifications";
+import bgimg from "static/image/graphic/loginbg.jpg";
 
 //import { checkCryptographic, checkPhrase } from 'utils/support';
 
 const Step = Steps.Step;
 
-@inject(stores => ({
-    /*
+@inject((stores) => ({
+  /*
     pwd: stores.mnemonic.pwd,
     method: stores.mnemonic.method,
     mnemonic: stores.mnemonic.mnemonic,
@@ -25,33 +25,36 @@ const Step = Steps.Step;
     language: stores.languageIntl.language,
     isAllEmptyPwd: stores.mnemonic.isAllEmptyPwd,
     */
-    current: stores.userRegistration.current,
-    mobile: stores.userRegistration.mobile,
-    otp: stores.userRegistration.otp,
-    setHasAcc: val => stores.session.setHasAcc(val),
-    setUserAccountExist: val => stores.session.setUserAccountExist(val),
-    //wsMobileRegistration : () => stores.userRegistration.wsMobileRegistration(),
+  current: stores.userRegistration.current,
+  mobile: stores.userRegistration.mobile,
+  otp: stores.userRegistration.otp,
+  setHasAcc: (val) => stores.session.setHasAcc(val),
+  setUserAccountExist: (val) => stores.session.setUserAccountExist(val),
+  //wsMobileRegistration : () => stores.userRegistration.wsMobileRegistration(),
 }))
-
 @observer
 class ForgotPassword extends Component {
-    state = {
-        steps: [{
-            content: <InputMobile/>,
-            key: 'inputmobile'
-        }, {
-            title: intl.get('Register.registrationOTPEntry'),
-            content: <InputOTP/>,
-            key: 'inputotp'
-        }, {
-            title: intl.get('Register.registerUserInfo'),
-            content: <InputNewPassword/>,
-            key: 'inputuserinfo'
-        }]
-    }
+  state = {
+    steps: [
+      {
+        content: <InputMobile />,
+        key: "inputmobile",
+      },
+      {
+        title: intl.get("Register.registrationOTPEntry"),
+        content: <InputOTP />,
+        key: "inputotp",
+      },
+      {
+        title: intl.get("Register.registerUserInfo"),
+        content: <InputNewPassword />,
+        key: "inputuserinfo",
+      },
+    ],
+  };
 
-    next = async () => {
-        /*
+  next = async () => {
+    /*
         const { mobile,current } = this.props;
         const { steps } = this.state;
         if (steps[current].key === 'inputmobile') {
@@ -62,13 +65,12 @@ class ForgotPassword extends Component {
           this.props.wsUserRegistration();
         }
         */
-
-        //if(isAllEmptyPwd) {
-        //console.log(mobile);
-        //message.error(intl.get('Register.passwordsEmpty'));
-        //return;
-        //}
-        /*
+    //if(isAllEmptyPwd) {
+    //console.log(mobile);
+    //message.error(intl.get('Register.passwordsEmpty'));
+    //return;
+    //}
+    /*
         if (isSamePwd) {
           if (checkCryptographic(pwd)) {
             if (method === 'create') {
@@ -91,7 +93,7 @@ class ForgotPassword extends Component {
           message.error(intl.get('Register.passwordsMismatched'));
         }
         */
-        /*
+    /*
        } else if (current === 1 && method === 'import') {
          if (checkPhrase(mnemonic)) {
            this.props.setMnemonic(mnemonic);
@@ -100,17 +102,17 @@ class ForgotPassword extends Component {
            message.error(intl.get('Register.seedPhraseIsInvalid'));
          }
        */
-        //} else {
-        //  setIndex(current + 1);
-        //}
-    }
+    //} else {
+    //  setIndex(current + 1);
+    //}
+  };
 
-    prev = () => {
-        const {setIndex, current} = this.props;
-        setIndex(current - 1);
-    }
+  prev = () => {
+    const { setIndex, current } = this.props;
+    setIndex(current - 1);
+  };
 
-    /*
+  /*
     done = () => {
       const { mnemonic, newPhrase, pwd, addAddress } = this.props;
       if (newPhrase.join(' ') === mnemonic) {
@@ -148,18 +150,18 @@ class ForgotPassword extends Component {
     }
     */
 
-    render() {
-        const {steps} = this.state;
-        const {current} = this.props;
-        return (
-            <div className="zContent" style={{backgroundImage: bgimg}}>
-                <div className="registerContent">
-                    {steps.find(x => x.key === current).content}
-                </div>
-                <NotificationContainer/>
-            </div>
-        );
-    }
+  render() {
+    const { steps } = this.state;
+    const { current } = this.props;
+    return (
+      <div className="zContent" style={{ backgroundImage: bgimg }}>
+        <div className="registerContent">
+          {steps.find((x) => x.key === current).content}
+        </div>
+        <NotificationContainer />
+      </div>
+    );
+  }
 }
 
 export default ForgotPassword;
