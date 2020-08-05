@@ -1,6 +1,6 @@
-const { ipcRenderer } = require('electron');
-const uuid = require('uuid/v1');
-var Web3 = require('web3');
+const { ipcRenderer } = require("electron");
+const uuid = require("uuid/v1");
+var Web3 = require("web3");
 var ethers = require("ethers");
 
 //import WalletConnectProvider from "@walletconnect/web3-provider";
@@ -12,9 +12,8 @@ class Web3Eth {
   constructor() {
     this._callback = {}; //Save all callback funcs
     console.log("cosntructor");
-    ipcRenderer.on('dapp-message', this.dexMessageHandler.bind(this));
+    ipcRenderer.on("dapp-message", this.dexMessageHandler.bind(this));
   }
-
 
   // ---------------------------------
   // Functions called by DEX
@@ -23,13 +22,12 @@ class Web3Eth {
     const msg = {
       method: "getAddresses",
       id: uuid(),
-      cb: cb
+      cb: cb,
     };
 
     this.saveCb(msg);
     this.sendToHost([msg.method, msg.id]);
   }
-
 
   sign(message, address, cb) {
     const msg = {
@@ -37,7 +35,7 @@ class Web3Eth {
       id: uuid(),
       cb: cb,
       message: message,
-      address: address
+      address: address,
     };
 
     this.saveCb(msg);
@@ -60,7 +58,7 @@ class Web3Eth {
     const msg = {
       method: "loadNetworkId",
       id: uuid(),
-      cb: cb
+      cb: cb,
     };
 
     this.saveCb(msg);
@@ -71,42 +69,44 @@ class Web3Eth {
   // -------------------------------
   // Functions used for internal data transfer
   sendToHost(obj) {
-    ipcRenderer.sendToHost('dapp-message', obj);
+    ipcRenderer.sendToHost("dapp-message", obj);
   }
   enable() {
     return "0xa3152a3e96653f87c47421c8d7a7aeec626439ee";
   }
 
   saveCb(msg) {
-    this._callback[msg.method + '#' + msg.id] = {};
-    this._callback[msg.method + '#' + msg.id].cb = msg.cb;
+    this._callback[msg.method + "#" + msg.id] = {};
+    this._callback[msg.method + "#" + msg.id].cb = msg.cb;
   }
 
   runCb(msg) {
-    if (this._callback[msg.method + '#' + msg.id] &&
-      this._callback[msg.method + '#' + msg.id].cb) {
-      this._callback[msg.method + '#' + msg.id].cb(msg.err, msg.val);
+    if (
+      this._callback[msg.method + "#" + msg.id] &&
+      this._callback[msg.method + "#" + msg.id].cb
+    ) {
+      this._callback[msg.method + "#" + msg.id].cb(msg.err, msg.val);
       this.removeCb(msg);
     } else {
-      console.log('can not found cb.');
+      console.log("can not found cb.");
     }
   }
 
   removeCb(msg) {
-    delete this._callback[msg.method + '#' + msg.id];
+    delete this._callback[msg.method + "#" + msg.id];
   }
 
   dexMessageHandler(event, data) {
-    console.log("DAPP EVENT: "+event);
-    console.log("DAPP DATA: "+data);
+    console.log("DAPP EVENT: " + event);
+    console.log("DAPP DATA: " + data);
     const msg = data;
     this.runCb(msg);
   }
   // --------------------------------
 }
-//window.web3 = web3; 
+//window.web3 = web3;
 //console.log(new Web3Eth());
 //window.ethereum = web3;
-window.ethereum ={ eth: new Web3Eth() };
-//window.web3 = web3; 
+window.ethereum = { eth: new Web3Eth() };
+//window.web3 = web3;
 window.injectWeb3 = false;

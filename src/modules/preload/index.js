@@ -1,13 +1,12 @@
-require('./ipc')
+require("./ipc");
 
-const _wand = require('./wand').getInstance()
+const _wand = require("./wand").getInstance();
 
 // register handlers for current window
-window.addEventListener('message', _wand.wndMsgHandler)
-window.addEventListener('contextmenu', _wand.contextMenuHandler)
+window.addEventListener("message", _wand.wndMsgHandler);
+window.addEventListener("contextmenu", _wand.contextMenuHandler);
 
 // expose wand singleton
-window.wand = _wand
+window.wand = _wand;
 
-window.require = process.env.NODE_ENV === 'development' ? require : undefined
-
+window.require = process.env.NODE_ENV === "development" ? require : undefined;
