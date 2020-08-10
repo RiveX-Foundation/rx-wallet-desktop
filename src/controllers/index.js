@@ -1,657 +1,831 @@
-import fs from 'fs'
-import fsExtra from 'fs-extra'
-import _ from 'lodash'
-import path from 'path'
-import {app, ipcMain} from 'electron'
-import {ccUtil, hdUtil} from 'wanchain-js-sdk'
-import Logger from '~/src/utils/Logger'
-import setting from '~/src/utils/Settings'
-import Web3 from 'web3';
-import {dateFormat} from '../app/utils/support';
-import {walletBackend, Windows} from '~/src/modules'
-import menuFactoryService from '~/src/services/menuFactory'
+import fs from "fs";
+import fsExtra from "fs-extra";
+import _ from "lodash";
+import path from "path";
+import { app, ipcMain } from "electron";
+import { ccUtil, hdUtil } from "wanchain-js-sdk";
+import Logger from "~/src/utils/Logger";
+import setting from "~/src/utils/Settings";
+import Web3 from "web3";
+import { dateFormat } from "../app/utils/support";
+import { walletBackend, Windows } from "~/src/modules";
+import menuFactoryService from "~/src/services/menuFactory";
 
 const web3 = new Web3();
 
-const logger = Logger.getLogger('controllers')
-const ipc = ipcMain
-const ethUtil = require('ethereumjs-util');
+const logger = Logger.getLogger("controllers");
+const ipc = ipcMain;
+const ethUtil = require("ethereumjs-util");
 // route consts
-const ROUTE_PHRASE = 'phrase'
-const ROUTE_WALLET = 'wallet'
-const ROUTE_ADDRESS = 'address'
-const ROUTE_ACCOUNT = 'account'
-const ROUTE_TX = 'transaction'
-const ROUTE_QUERY = 'query'
-const ROUTE_STAKING = 'staking'
-const ROUTE_SETTING = 'setting'
+const ROUTE_PHRASE = "phrase";
+const ROUTE_WALLET = "wallet";
+const ROUTE_ADDRESS = "address";
+const ROUTE_ACCOUNT = "account";
+const ROUTE_TX = "transaction";
+const ROUTE_QUERY = "query";
+const ROUTE_STAKING = "staking";
+const ROUTE_SETTING = "setting";
 
 // db collection consts
-const DB_NORMAL_COLLECTION = 'normalTrans'
+const DB_NORMAL_COLLECTION = "normalTrans";
 
 // wallet path consts
-const WANBIP44Path = "m/44'/5718350'/0'/0/"
+const WANBIP44Path = "m/44'/5718350'/0'/0/";
 
 // chain ID consts
 const WAN_ID = 5718350;
 
 ipc.on(ROUTE_PHRASE, (event, actionUni, payload) => {
-    let err, phrase, ret
-    const [action, id] = actionUni.split('#')
+  let err, phrase, ret;
+  const [action, id] = actionUni.split("#");
 
-    switch (action) {
-        case 'generate':
-            try {
-                phrase = hdUtil.generateMnemonic(payload.pwd)
+  switch (action) {
+    case "generate":
+      try {
+        phrase = hdUtil.generateMnemonic(payload.pwd);
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+      sendResponse([ROUTE_PHRASE, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: phrase,
+      });
 
-            sendResponse([ROUTE_PHRASE, [action, id].join('#')].join('_'), event, {err: err, data: phrase})
+      break;
+    case "has":
+      try {
+        ret = hdUtil.hasMnemonic();
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-            break
-        case 'has':
-            try {
-                ret = hdUtil.hasMnemonic()
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+      sendResponse([ROUTE_PHRASE, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
 
-            sendResponse([ROUTE_PHRASE, [action, id].join('#')].join('_'), event, {err: err, data: ret})
+      break;
+    case "reveal":
+      try {
+        phrase = hdUtil.revealMnemonic(payload.pwd);
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-            break
-        case 'reveal':
-            try {
-                phrase = hdUtil.revealMnemonic(payload.pwd)
+      sendResponse([ROUTE_PHRASE, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: phrase,
+      });
 
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+      break;
+    case "import":
+      try {
+        ret = hdUtil.importMnemonic(payload.phrase, payload.pwd);
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-            sendResponse([ROUTE_PHRASE, [action, id].join('#')].join('_'), event, {err: err, data: phrase})
+      sendResponse([ROUTE_PHRASE, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: !!ret,
+      });
+      break;
 
-            break
-        case 'import':
-            try {
-                ret = hdUtil.importMnemonic(payload.phrase, payload.pwd)
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+    case "reset":
+      try {
+        fsExtra.removeSync(path.join(setting.userDataPath, "Db"));
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-            sendResponse([ROUTE_PHRASE, [action, id].join('#')].join('_'), event, {err: err, data: !!ret})
-            break
+      app.relaunch();
+      app.exit(0);
 
-        case 'reset':
-            try {
-                fsExtra.removeSync(path.join(setting.userDataPath, 'Db'))
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
-
-            app.relaunch()
-            app.exit(0)
-
-            break
-    }
-})
+      break;
+  }
+});
 
 ipc.on(ROUTE_WALLET, async (event, actionUni, payload) => {
-    let err
-    const [action, id] = actionUni.split('#')
-    console.log(action);
-    switch (action) {
-        case 'lock':
-            try {
-                hdUtil.deleteHDWallet()
-                hdUtil.deleteKeyStoreWallet()
-                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: true})
+  let err;
+  const [action, id] = actionUni.split("#");
+  console.log(action);
+  switch (action) {
+    case "lock":
+      try {
+        hdUtil.deleteHDWallet();
+        hdUtil.deleteKeyStoreWallet();
+        sendResponse([ROUTE_WALLET, [action, id].join("#")].join("_"), event, {
+          err: err,
+          data: true,
+        });
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
 
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
+        sendResponse([ROUTE_WALLET, [action, id].join("#")].join("_"), event, {
+          err: err,
+          data: false,
+        });
+      }
 
-                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: false})
-            }
+      break;
+    case "unlock":
+      let phrase;
+      try {
+        phrase = hdUtil.revealMnemonic(payload.pwd);
+        hdUtil.initializeHDWallet(phrase);
+        // create key file wallet
+        hdUtil.newKeyStoreWallet(payload.pwd);
+        sendResponse([ROUTE_WALLET, [action, id].join("#")].join("_"), event, {
+          err: err,
+          data: true,
+        });
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
 
-            break
-        case 'unlock':
-            let phrase
-            try {
-                phrase = hdUtil.revealMnemonic(payload.pwd)
-                hdUtil.initializeHDWallet(phrase)
-                // create key file wallet
-                hdUtil.newKeyStoreWallet(payload.pwd)
-                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: true})
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
+        sendResponse([ROUTE_WALLET, [action, id].join("#")].join("_"), event, {
+          err: err,
+          data: false,
+        });
+      }
 
-                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: false})
-            }
+      break;
 
-            break
+    case "getPubKeyChainId": {
+      let { walletID, path } = payload;
+      let pubKey;
 
-        case 'getPubKeyChainId': {
-            let {walletID, path} = payload
-            let pubKey
-
-            try {
-                pubKey = await hdUtil.getWalletSafe().getWallet(walletID).getPublicKey(path, true)
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
-            sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: pubKey})
-            break
-        }
-
-        case 'getPubKey': {
-            let pubKey
-
-            try {
-                pubKey = await hdUtil.getWalletSafe().getWallet(payload.walletID).getPublicKey(payload.path)
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
-
-            sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: pubKey})
-            break
-        }
-
-        case 'isConnected': {
-            let ret = false;
-            try {
-                hdUtil.getWalletSafe().getWallet(payload.walletID);
-                ret = true;
-            } catch (e) {
-                ret = false
-            }
-
-            sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break
-        }
-
-        case 'signPersonalMessage': {
-            let ret = null;
-            let {walletID, path, rawTx} = payload;
-            console.log(walletID, path, rawTx);
-            let hdWallet = hdUtil.getWalletSafe().getWallet(walletID);
-
-            logger.info('Sign signPersonalMessage:');
-            logger.info('wallet ID:' + walletID + ', path:' + path + ', raw:' + rawTx);
-
-            if (hdWallet) {
-                try {
-                    ret = await hdWallet.signMessage(path, ethUtil.toBuffer(rawTx));
-                    console.log("signed msg: " + ret);
-                } catch (e) {
-                    logger.error(e.message || e.stack);
-                    console.log('hdWallet.signMessage error:', e);
-                    err = e
-                }
-            } else {
-                err = new Error('Can not found wallet.');
-                console.log('hdWallet is undefine');
-            }
-
-            sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break
-        }
-
-        case 'signTransaction': {
-            console.log("signing TX");
-            let sig = {};
-            let {walletID, path, rawTx} = payload;
-            let hdWallet = hdUtil.getWalletSafe().getWallet(walletID);
-
-            logger.info('Sign transaction:');
-            logger.info('wallet ID:' + walletID + ', path:' + path + ', raw:' + rawTx);
-
-            try {
-                let ret = await hdWallet.sec256k1sign(path, rawTx);
-                sig.r = '0x' + ret.r.toString('hex');
-                sig.s = '0x' + ret.s.toString('hex');
-                sig.v = '0x' + ret.v.toString('hex');
-                logger.info('Signature:' + JSON.stringify(sig));
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
-            console.log(sig);
-
-            sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: sig})
-            break
-        }
-
-        case 'connectToLedger':
-            console.log("COME HERE LAH");
-            let data = false;
-            try {
-                await hdUtil.connectToLedger()
-                data = true;
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
-
-            sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: data})
-            break
-
-        case 'deleteLedger': {
-            try {
-                await hdUtil.disconnectLedger()
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
-
-            sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: true})
-            break
-        }
-        case 'setUserTblVersion':
-            try {
-                const latestVersion = walletBackend.config.dbExtConf.userTblVersion;// get version from config.js file
-                logger.info('Set user DB version:' + latestVersion);
-                hdUtil.setUserTableVersion(latestVersion);
-                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: true})
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-                sendResponse([ROUTE_WALLET, [action, id].join('#')].join('_'), event, {err: err, data: false})
-            }
-
-            break
+      try {
+        pubKey = await hdUtil
+          .getWalletSafe()
+          .getWallet(walletID)
+          .getPublicKey(path, true);
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
+      sendResponse([ROUTE_WALLET, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: pubKey,
+      });
+      break;
     }
-})
+
+    case "getPubKey": {
+      let pubKey;
+
+      try {
+        pubKey = await hdUtil
+          .getWalletSafe()
+          .getWallet(payload.walletID)
+          .getPublicKey(payload.path);
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
+
+      sendResponse([ROUTE_WALLET, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: pubKey,
+      });
+      break;
+    }
+
+    case "isConnected": {
+      let ret = false;
+      try {
+        hdUtil.getWalletSafe().getWallet(payload.walletID);
+        ret = true;
+      } catch (e) {
+        ret = false;
+      }
+
+      sendResponse([ROUTE_WALLET, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
+    }
+
+    case "signPersonalMessage": {
+      let ret = null;
+      let { walletID, path, rawTx } = payload;
+      console.log(walletID, path, rawTx);
+      let hdWallet = hdUtil.getWalletSafe().getWallet(walletID);
+
+      logger.info("Sign signPersonalMessage:");
+      logger.info(
+        "wallet ID:" + walletID + ", path:" + path + ", raw:" + rawTx
+      );
+
+      if (hdWallet) {
+        try {
+          ret = await hdWallet.signMessage(path, ethUtil.toBuffer(rawTx));
+          console.log("signed msg: " + ret);
+        } catch (e) {
+          logger.error(e.message || e.stack);
+          console.log("hdWallet.signMessage error:", e);
+          err = e;
+        }
+      } else {
+        err = new Error("Can not found wallet.");
+        console.log("hdWallet is undefine");
+      }
+
+      sendResponse([ROUTE_WALLET, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
+    }
+
+    case "signTransaction": {
+      console.log("signing TX");
+      let sig = {};
+      let { walletID, path, rawTx } = payload;
+      let hdWallet = hdUtil.getWalletSafe().getWallet(walletID);
+
+      logger.info("Sign transaction:");
+      logger.info(
+        "wallet ID:" + walletID + ", path:" + path + ", raw:" + rawTx
+      );
+
+      try {
+        let ret = await hdWallet.sec256k1sign(path, rawTx);
+        sig.r = "0x" + ret.r.toString("hex");
+        sig.s = "0x" + ret.s.toString("hex");
+        sig.v = "0x" + ret.v.toString("hex");
+        logger.info("Signature:" + JSON.stringify(sig));
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
+      console.log(sig);
+
+      sendResponse([ROUTE_WALLET, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: sig,
+      });
+      break;
+    }
+
+    case "connectToLedger":
+      console.log("COME HERE LAH");
+      let data = false;
+      try {
+        await hdUtil.connectToLedger();
+        data = true;
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
+
+      sendResponse([ROUTE_WALLET, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: data,
+      });
+      break;
+
+    case "deleteLedger": {
+      try {
+        await hdUtil.disconnectLedger();
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
+
+      sendResponse([ROUTE_WALLET, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: true,
+      });
+      break;
+    }
+    case "setUserTblVersion":
+      try {
+        const latestVersion = walletBackend.config.dbExtConf.userTblVersion; // get version from config.js file
+        logger.info("Set user DB version:" + latestVersion);
+        hdUtil.setUserTableVersion(latestVersion);
+        sendResponse([ROUTE_WALLET, [action, id].join("#")].join("_"), event, {
+          err: err,
+          data: true,
+        });
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+        sendResponse([ROUTE_WALLET, [action, id].join("#")].join("_"), event, {
+          err: err,
+          data: false,
+        });
+      }
+
+      break;
+  }
+});
 
 ipc.on(ROUTE_ADDRESS, async (event, actionUni, payload) => {
-    let err, address, nonce
-    const [action, id] = actionUni.split('#')
+  let err, address, nonce;
+  const [action, id] = actionUni.split("#");
 
-    switch (action) {
-        case 'get':
-            try {
-                address = await hdUtil.getAddress(payload.walletID, payload.chainType, payload.start, payload.end)
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+  switch (action) {
+    case "get":
+      try {
+        address = await hdUtil.getAddress(
+          payload.walletID,
+          payload.chainType,
+          payload.start,
+          payload.end
+        );
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: address})
-            break
+      sendResponse([ROUTE_ADDRESS, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: address,
+      });
+      break;
 
-        case 'getOne':
-            try {
-                address = await hdUtil.getAddress(payload.walletID, payload.chainType, payload.path)
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+    case "getOne":
+      try {
+        address = await hdUtil.getAddress(
+          payload.walletID,
+          payload.chainType,
+          payload.path
+        );
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: address})
-            break
+      sendResponse([ROUTE_ADDRESS, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: address,
+      });
+      break;
 
-        case 'getNonce':
-            try {
-                console.log('getNonce called');
-                // nonce = await ccUtil.getNonceByLocal(payload.addr, payload.chainType)
-                nonce = await ccUtil.getNonce(payload.addr, payload.chainType, payload.includePending)
-                logger.info('Nonce: ' + payload.addr + ',' + nonce);
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+    case "getNonce":
+      try {
+        console.log("getNonce called");
+        // nonce = await ccUtil.getNonceByLocal(payload.addr, payload.chainType)
+        nonce = await ccUtil.getNonce(
+          payload.addr,
+          payload.chainType,
+          payload.includePending
+        );
+        logger.info("Nonce: " + payload.addr + "," + nonce);
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: nonce})
-            break
-        case 'balance':
-            let balance
-            const {addr} = payload
+      sendResponse([ROUTE_ADDRESS, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: nonce,
+      });
+      break;
+    case "balance":
+      let balance;
+      const { addr } = payload;
 
-            try {
-                if (_.isArray(addr) && addr.length > 1) {
-                    const addresses = addr.map(item => `0x${item}`)
-                    balance = await ccUtil.getMultiWanBalances(addresses)
-
-                } else {
-                    balance = await ccUtil.getWanBalance(`0x${addr}`)
-                    balance = {[`0x${addr}`]: balance}
-                }
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
-
-            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: balance})
-            break
-
-        case 'scanMultiOTA': {
-            try {
-                const {path} = payload;
-                if (path.length > 0) {
-                    path.forEach((v) => {
-                        ccUtil.scanOTA(v[0], v[1]);
-                    });
-                }
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
-            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: {status: 'Opened'}})
+      try {
+        if (_.isArray(addr) && addr.length > 1) {
+          const addresses = addr.map((item) => `0x${item}`);
+          balance = await ccUtil.getMultiWanBalances(addresses);
+        } else {
+          balance = await ccUtil.getWanBalance(`0x${addr}`);
+          balance = { [`0x${addr}`]: balance };
         }
-            break
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-        case 'isWanAddress':
-            let ret;
-            try {
-                ret = await ccUtil.isWanAddress(payload.address);
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+      sendResponse([ROUTE_ADDRESS, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: balance,
+      });
+      break;
 
-            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break
+    case "scanMultiOTA":
+      {
+        try {
+          const { path } = payload;
+          if (path.length > 0) {
+            path.forEach((v) => {
+              ccUtil.scanOTA(v[0], v[1]);
+            });
+          }
+        } catch (e) {
+          logger.error(e.message || e.stack);
+          err = e;
+        }
+        sendResponse([ROUTE_ADDRESS, [action, id].join("#")].join("_"), event, {
+          err: err,
+          data: { status: "Opened" },
+        });
+      }
+      break;
 
-        case 'isValidatorAddress':
-            try {
-                console.log('isValidatorAddress', payload.address);
-                ret = await ccUtil.isWanAddress(payload.address);
-                console.log('isWanAddress', ret);
-                let info = await ccUtil.getValidatorInfo('wan', payload.address);
-                console.log('getValidatorInfo', info);
+    case "isWanAddress":
+      let ret;
+      try {
+        ret = await ccUtil.isWanAddress(payload.address);
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-                if (!info || info.feeRate == 10000) {
-                    ret = false;
-                }
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+      sendResponse([ROUTE_ADDRESS, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
 
-            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break
+    case "isValidatorAddress":
+      try {
+        console.log("isValidatorAddress", payload.address);
+        ret = await ccUtil.isWanAddress(payload.address);
+        console.log("isWanAddress", ret);
+        let info = await ccUtil.getValidatorInfo("wan", payload.address);
+        console.log("getValidatorInfo", info);
 
-        case 'fromKeyFile':
-            const {keyFilePwd, hdWalletPwd, keyFilePath} = payload;
-            const keyFileContent = fs.readFileSync(keyFilePath).toString();
-            const keyStoreObj = JSON.parse(keyFileContent)
-            try {
-                let path = hdUtil.importKeyStore(`${WANBIP44Path}0`, keyFileContent, keyFilePwd, hdWalletPwd);
+        if (!info || info.feeRate == 10000) {
+          ret = false;
+        }
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-                hdUtil.createUserAccount(5, `${WANBIP44Path}${path}`, {
-                    name: `Imported${path + 1}`,
-                    addr: `0x${keyStoreObj.address}`.toLowerCase()
-                });
-                Windows.broadcast('notification', 'keyfilepath', {path, addr: keyStoreObj.address.toLowerCase()});
+      sendResponse([ROUTE_ADDRESS, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
 
-                sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: true})
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
+    case "fromKeyFile":
+      const { keyFilePwd, hdWalletPwd, keyFilePath } = payload;
+      const keyFileContent = fs.readFileSync(keyFilePath).toString();
+      const keyStoreObj = JSON.parse(keyFileContent);
+      try {
+        let path = hdUtil.importKeyStore(
+          `${WANBIP44Path}0`,
+          keyFileContent,
+          keyFilePwd,
+          hdWalletPwd
+        );
 
-                sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: false})
-            }
+        hdUtil.createUserAccount(5, `${WANBIP44Path}${path}`, {
+          name: `Imported${path + 1}`,
+          addr: `0x${keyStoreObj.address}`.toLowerCase(),
+        });
+        Windows.broadcast("notification", "keyfilepath", {
+          path,
+          addr: keyStoreObj.address.toLowerCase(),
+        });
 
-            break
+        sendResponse([ROUTE_ADDRESS, [action, id].join("#")].join("_"), event, {
+          err: err,
+          data: true,
+        });
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
 
-        case 'getKeyStoreCount':
-            let count;
-            try {
-                count = hdUtil.getKeyStoreCount(WAN_ID);
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+        sendResponse([ROUTE_ADDRESS, [action, id].join("#")].join("_"), event, {
+          err: err,
+          data: false,
+        });
+      }
 
-            sendResponse([ROUTE_ADDRESS, [action, id].join('#')].join('_'), event, {err: err, data: count})
-            break
+      break;
 
-    }
-})
+    case "getKeyStoreCount":
+      let count;
+      try {
+        count = hdUtil.getKeyStoreCount(WAN_ID);
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
+
+      sendResponse([ROUTE_ADDRESS, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: count,
+      });
+      break;
+  }
+});
 
 ipc.on(ROUTE_ACCOUNT, (event, actionUni, payload) => {
-    let err, ret
-    const [action, id] = actionUni.split('#')
+  let err, ret;
+  const [action, id] = actionUni.split("#");
 
-    switch (action) {
-        case 'create':
-            try {
-                ret = hdUtil.createUserAccount(payload.walletID, payload.path, payload.meta)
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+  switch (action) {
+    case "create":
+      try {
+        ret = hdUtil.createUserAccount(
+          payload.walletID,
+          payload.path,
+          payload.meta
+        );
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-            sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break
+      sendResponse([ROUTE_ACCOUNT, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
 
-        case 'get':
-            try {
-                ret = hdUtil.getUserAccount(payload.walletID, payload.path)
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
-            sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break
+    case "get":
+      try {
+        ret = hdUtil.getUserAccount(payload.walletID, payload.path);
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
+      sendResponse([ROUTE_ACCOUNT, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
 
-        case 'getAll':
-            try {
-                ret = hdUtil.getUserAccountForChain(payload.chainID)
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+    case "getAll":
+      try {
+        ret = hdUtil.getUserAccountForChain(payload.chainID);
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-            sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break
-        case 'update':
-            try {
-                ret = hdUtil.updateUserAccount(payload.walletID, payload.path, payload.meta)
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+      sendResponse([ROUTE_ACCOUNT, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
+    case "update":
+      try {
+        ret = hdUtil.updateUserAccount(
+          payload.walletID,
+          payload.path,
+          payload.meta
+        );
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-            sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break
+      sendResponse([ROUTE_ACCOUNT, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
 
-        case 'delete':
-            const {walletID, path, chainType} = payload;
-            try {
+    case "delete":
+      const { walletID, path, chainType } = payload;
+      try {
+        ret = hdUtil.deleteUserAccount(walletID, path);
+        console.log(ret);
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
+      if (chainType === "WAN") {
+        ccUtil.stopScanOTA(walletID, path);
+      }
 
-                ret = hdUtil.deleteUserAccount(walletID, path)
-                console.log(ret);
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
-            if (chainType === 'WAN') {
-                ccUtil.stopScanOTA(walletID, path);
-            }
+      sendResponse([ROUTE_ACCOUNT, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
 
-            sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break
+    case "deleteall":
+      try {
+        hdUtil.deleteHDWallet();
+        hdUtil.deleteKeyStoreWallet();
+        ret = hdUtil.deleteMnemonic(payload.password);
+        console.log(ret);
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-        case 'deleteall':
-            try {
-                hdUtil.deleteHDWallet();
-                hdUtil.deleteKeyStoreWallet();
-                ret = hdUtil.deleteMnemonic(payload.password);
-                console.log(ret);
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
-
-            sendResponse([ROUTE_ACCOUNT, [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break
-    }
-})
-
+      sendResponse([ROUTE_ACCOUNT, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
+  }
+});
 
 ipc.on(ROUTE_TX, async (event, actionUni, payload) => {
-    let ret, err
-    const [action, id] = actionUni.split('#')
-    console.log(action);
+  let ret, err;
+  const [action, id] = actionUni.split("#");
+  console.log(action);
 
-    switch (action) {
-        case 'normal':
-            try {
-                let {walletID, chainType, symbol, path, to, amount, gasPrice, gasLimit, nonce, data, satellite} = payload
-                let from = await hdUtil.getAddress(walletID, chainType, path)
-                let fromAddr = from.address;
-                if (fromAddr.indexOf('0x') === -1) {
-                    fromAddr = '0x' + fromAddr;
-                }
-                let input = {
-                    symbol: symbol,
-                    from: fromAddr,
-                    to: to,
-                    amount: amount,
-                    gasPrice: gasPrice,
-                    gasLimit: gasLimit,
-                    BIP44Path: path,
-                    walletID: walletID,
-                    nonce: nonce,
-                    data: data,
-                    satellite: satellite
-                }
+  switch (action) {
+    case "normal":
+      try {
+        let {
+          walletID,
+          chainType,
+          symbol,
+          path,
+          to,
+          amount,
+          gasPrice,
+          gasLimit,
+          nonce,
+          data,
+          satellite,
+        } = payload;
+        let from = await hdUtil.getAddress(walletID, chainType, path);
+        let fromAddr = from.address;
+        if (fromAddr.indexOf("0x") === -1) {
+          fromAddr = "0x" + fromAddr;
+        }
+        let input = {
+          symbol: symbol,
+          from: fromAddr,
+          to: to,
+          amount: amount,
+          gasPrice: gasPrice,
+          gasLimit: gasLimit,
+          BIP44Path: path,
+          walletID: walletID,
+          nonce: nonce,
+          data: data,
+          satellite: satellite,
+        };
 
-                logger.info('Normal transaction: ' + JSON.stringify(input));
+        logger.info("Normal transaction: " + JSON.stringify(input));
 
-                let srcChain = global.crossInvoker.getSrcChainNameByContractAddr(symbol, chainType);
-                ret = await global.crossInvoker.invokeNormalTrans(srcChain, input);
-                logger.info('Transaction hash: ' + JSON.stringify(ret));
-            } catch (e) {
-                logger.error('Send transaction failed: ' + e.message || e.stack)
-                err = e
-            }
-            sendResponse([ROUTE_TX, [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break;
+        let srcChain = global.crossInvoker.getSrcChainNameByContractAddr(
+          symbol,
+          chainType
+        );
+        ret = await global.crossInvoker.invokeNormalTrans(srcChain, input);
+        logger.info("Transaction hash: " + JSON.stringify(ret));
+      } catch (e) {
+        logger.error("Send transaction failed: " + e.message || e.stack);
+        err = e;
+      }
+      sendResponse([ROUTE_TX, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
 
-        case 'raw':
-            try {
-                logger.info('Send raw transaction: ' + JSON.stringify(payload))
-                ret = await ccUtil.sendTrans(payload.raw, payload.chainType)
-                logger.info('Transaction hash: ' + ret);
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+    case "raw":
+      try {
+        logger.info("Send raw transaction: " + JSON.stringify(payload));
+        ret = await ccUtil.sendTrans(payload.raw, payload.chainType);
+        logger.info("Transaction hash: " + ret);
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-            sendResponse([ROUTE_TX, [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break
+      sendResponse([ROUTE_TX, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
 
-        case 'estimateGas':
-            try {
-                logger.info('Try to estimate gas: ' + payload.chainType + ',' + JSON.stringify(payload.tx));
-                ret = await ccUtil.estimateGas(payload.chainType, payload.tx);
-                logger.info('Estimated gas: ' + ret);
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+    case "estimateGas":
+      try {
+        logger.info(
+          "Try to estimate gas: " +
+            payload.chainType +
+            "," +
+            JSON.stringify(payload.tx)
+        );
+        ret = await ccUtil.estimateGas(payload.chainType, payload.tx);
+        logger.info("Estimated gas: " + ret);
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-            sendResponse([ROUTE_TX, [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break;
+      sendResponse([ROUTE_TX, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
 
-        case 'showRecords':
-            try {
-                ret = global.wanDb.queryComm(DB_NORMAL_COLLECTION, (items) => {
-                    return items
-                })
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+    case "showRecords":
+      try {
+        ret = global.wanDb.queryComm(DB_NORMAL_COLLECTION, (items) => {
+          return items;
+        });
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-            sendResponse([ROUTE_TX, [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break;
+      sendResponse([ROUTE_TX, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
 
-        case 'insertTransToDB':
-            try {
-                ccUtil.insertNormalTx(payload.rawTx);
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+    case "insertTransToDB":
+      try {
+        ccUtil.insertNormalTx(payload.rawTx);
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-            sendResponse([ROUTE_TX, [action, id].join('#')].join('_'), event, {err: err, data: true})
-            break;
-    }
-})
-
+      sendResponse([ROUTE_TX, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: true,
+      });
+      break;
+  }
+});
 
 ipc.on("system", async (event, actionUni, payload) => {
-    let ret, err
-    const [action, id] = actionUni.split('#')
-    switch (action) {
-        case 'reload':
-            //  let mainWin = Windows.getByType('main')
-            app.relaunch();
-            app.exit(0);
-            //mainWin.reload();
-            break
-        case 'getDAppInjectFile':
-            let ret = "";
-            console.log("GETTING DAPP INJECT FILE");
-            if (setting.isDev) {
-                ret = `file://${__dirname}/../modals/dAppInject.js`;
-            } else {
-                ret = `file://${__dirname}/modals/dAppInject.js`
-            }
-            sendResponse(["system", [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break
-    }
+  let ret, err;
+  const [action, id] = actionUni.split("#");
+  switch (action) {
+    case "reload":
+      //  let mainWin = Windows.getByType('main')
+      app.relaunch();
+      app.exit(0);
+      //mainWin.reload();
+      break;
+    case "getDAppInjectFile":
+      let ret = "";
+      console.log("GETTING DAPP INJECT FILE");
+      if (setting.isDev) {
+        ret = `file://${__dirname}/../modals/dAppInject.js`;
+      } else {
+        ret = `file://${__dirname}/modals/dAppInject.js`;
+      }
+      sendResponse(["system", [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
+  }
 });
 
 ipc.on(ROUTE_QUERY, async (event, actionUni, payload) => {
-    let ret, err
-    const [action, id] = actionUni.split('#')
+  let ret, err;
+  const [action, id] = actionUni.split("#");
 
-    switch (action) {
-        case 'config':
-            let {param} = payload
+  switch (action) {
+    case "config":
+      let { param } = payload;
 
-            try {
-                let conf
-                if (param === 'sdkStatus') {
-                    conf = global.chainManager ? 'ready' : 'init'
-                } else {
-                    conf = setting[`${param}`]
-                }
+      try {
+        let conf;
+        if (param === "sdkStatus") {
+          conf = global.chainManager ? "ready" : "init";
+        } else {
+          conf = setting[`${param}`];
+        }
 
-                ret = {[param]: conf}
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
+        ret = { [param]: conf };
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-            sendResponse([ROUTE_QUERY, [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break
+      sendResponse([ROUTE_QUERY, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
 
-        case 'getGasPrice':
-            try {
-                ret = await ccUtil.getGasPrice(payload.chainType);
-                logger.info('Gas price: ' + payload.chainType + ',' + ret);
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
-            sendResponse([ROUTE_QUERY, [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break;
-    }
-
-})
+    case "getGasPrice":
+      try {
+        ret = await ccUtil.getGasPrice(payload.chainType);
+        logger.info("Gas price: " + payload.chainType + "," + ret);
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
+      sendResponse([ROUTE_QUERY, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
+  }
+});
 
 /*
 ipc.on(ROUTE_STAKING, async (event, actionUni, payload) => {
@@ -860,228 +1034,244 @@ ipc.on(ROUTE_STAKING, async (event, actionUni, payload) => {
 */
 
 ipc.on(ROUTE_SETTING, async (event, actionUni, payload) => {
-    let ret, err, keys, vals = []
-    const [action, id] = actionUni.split('#')
+  let ret,
+    err,
+    keys,
+    vals = [];
+  const [action, id] = actionUni.split("#");
 
-    switch (action) {
-        case 'switchNetwork':
+  switch (action) {
+    case "switchNetwork":
+      let choice = parseInt(payload.choice);
+      let mainWin = Windows.getByType("main");
+      let switchWin = Windows.getByType("changeNetwork");
 
-            let choice = parseInt(payload.choice)
-            let mainWin = Windows.getByType('main')
-            let switchWin = Windows.getByType('changeNetwork')
+      if (choice === 1) {
+        try {
+          setting.switchNetwork();
 
-            if (choice === 1) {
-                try {
+          Windows.broadcast("notification", "sdk", "init");
 
-                    setting.switchNetwork()
+          await walletBackend.init();
 
-                    Windows.broadcast('notification', 'sdk', 'init')
+          Windows.broadcast("notification", "network", setting.network);
+        } catch (e) {
+          logger.error(e.message || e.stack);
+          err = e;
+        }
+      } else if (choice === 0) {
+        try {
+          const networkMenu = menuFactoryService.networkMenu;
+          const [targetMenu] = networkMenu.items.filter((i) => !i.checked);
+          targetMenu.checked = true;
+        } catch (e) {
+          logger.error(e.message || e.stack);
+          err = e;
+        }
+      }
 
-                    await walletBackend.init()
+      mainWin.show();
+      switchWin.close();
 
-                    Windows.broadcast('notification', 'network', setting.network)
-                } catch (e) {
-                    logger.error(e.message || e.stack)
-                    err = e
-                }
-            } else if (choice === 0) {
-                try {
-                    const networkMenu = menuFactoryService.networkMenu
-                    const [targetMenu] = networkMenu.items.filter(i => !i.checked)
-                    targetMenu.checked = true
-                } catch (e) {
-                    logger.error(e.message || e.stack)
-                    err = e
-                }
-            }
+      break;
 
-            mainWin.show()
-            switchWin.close()
+    case "set":
+      keys = Object.keys(payload);
+      vals = Object.values(payload);
 
-            break
+      try {
+        keys.forEach((key, index) => {
+          let newValue =
+            key === "settings"
+              ? Object.assign(setting.get("settings"), vals[index])
+              : vals[index];
+          setting.set(key, newValue);
+        });
+        ret = true;
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
 
-        case 'set':
-            keys = Object.keys(payload)
-            vals = Object.values(payload)
+        ret = false;
+      }
 
-            try {
-                keys.forEach((key, index) => {
-                    let newValue = key === 'settings' ? Object.assign(setting.get('settings'), vals[index]) : vals[index]
-                    setting.set(key, newValue)
-                })
-                ret = true
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
+      sendResponse([ROUTE_SETTING, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: ret,
+      });
+      break;
 
-                ret = false
-            }
+    case "get":
+      let { keys } = payload;
 
-            sendResponse([ROUTE_SETTING, [action, id].join('#')].join('_'), event, {err: err, data: ret})
-            break
+      try {
+        keys.forEach((key, index) => {
+          vals[index] = setting.get(key);
+        });
+      } catch (e) {
+        logger.error(e.message || e.stack);
+        err = e;
+      }
 
-        case 'get':
-            let {keys} = payload
-
-            try {
-                keys.forEach((key, index) => {
-                    vals[index] = setting.get(key)
-                })
-            } catch (e) {
-                logger.error(e.message || e.stack)
-                err = e
-            }
-
-            sendResponse([ROUTE_SETTING, [action, id].join('#')].join('_'), event, {err: err, data: vals})
-            break
-    }
-})
-
+      sendResponse([ROUTE_SETTING, [action, id].join("#")].join("_"), event, {
+        err: err,
+        data: vals,
+      });
+      break;
+  }
+});
 
 function sendResponse(endpoint, e, payload) {
-    const id = e.sender.id
-    const senderWindow = Windows.getById(id)
-    const {err} = payload
+  const id = e.sender.id;
+  const senderWindow = Windows.getById(id);
+  const { err } = payload;
 
-    if (_.isObject(err) || !_.isEmpty(err)) payload.err = errorWrapper(err)
-    senderWindow.send('renderer_windowMessage', endpoint, payload)
+  if (_.isObject(err) || !_.isEmpty(err)) payload.err = errorWrapper(err);
+  senderWindow.send("renderer_windowMessage", endpoint, payload);
 }
 
 function errorWrapper(err) {
-    return {desc: err.message, code: err.errno, cat: err.name}
+  return { desc: err.message, code: err.errno, cat: err.name };
 }
 
 function buildStakingBaseInfo(delegateInfo, incentive, epochID, stakerInfo) {
-    let base = {
-        myStake: "N/A",
-        validatorCnt: "N/A",
-        pendingWithdrawal: "N/A",
-        epochID: "Epoch N/A",
-        epochIDRaw: "N/A",
-        currentRewardRate: "N/A %",
-        stakePool: 0,
-        currentRewardRateChange: "↑",
-        totalDistributedRewards: "N/A",
-        startFrom: dateFormat((new Date()) / 1000),
-    };
+  let base = {
+    myStake: "N/A",
+    validatorCnt: "N/A",
+    pendingWithdrawal: "N/A",
+    epochID: "Epoch N/A",
+    epochIDRaw: "N/A",
+    currentRewardRate: "N/A %",
+    stakePool: 0,
+    currentRewardRateChange: "↑",
+    totalDistributedRewards: "N/A",
+    startFrom: dateFormat(new Date() / 1000),
+  };
 
-    let totalStake = web3.utils.toBN(0);
-    let withdrawStake = web3.utils.toBN(0);
-    let validator = {};
-    let totalReward = web3.utils.toBN(0);
-    for (let i = 0; i < delegateInfo.length; i++) {
-        const info = delegateInfo[i].stake;
-        for (let m = 0; m < info.length; m++) {
-            const staker = info[m];
-            totalStake = web3.utils.toBN(staker.amount).add(totalStake);
-            if (staker.quitEpoch != 0) {
-                withdrawStake = web3.utils.toBN(staker.amount).add(withdrawStake);
-            }
+  let totalStake = web3.utils.toBN(0);
+  let withdrawStake = web3.utils.toBN(0);
+  let validator = {};
+  let totalReward = web3.utils.toBN(0);
+  for (let i = 0; i < delegateInfo.length; i++) {
+    const info = delegateInfo[i].stake;
+    for (let m = 0; m < info.length; m++) {
+      const staker = info[m];
+      totalStake = web3.utils.toBN(staker.amount).add(totalStake);
+      if (staker.quitEpoch != 0) {
+        withdrawStake = web3.utils.toBN(staker.amount).add(withdrawStake);
+      }
 
-            if (!validator[staker.address]) {
-                validator[staker.address] = web3.utils.toBN(staker.amount);
-            } else {
-                validator[staker.address] = web3.utils.toBN(staker.amount).add(validator[staker.address]);
-            }
-        }
+      if (!validator[staker.address]) {
+        validator[staker.address] = web3.utils.toBN(staker.amount);
+      } else {
+        validator[staker.address] = web3.utils
+          .toBN(staker.amount)
+          .add(validator[staker.address]);
+      }
     }
+  }
 
-    for (let i = 0; i < incentive.length; i++) {
-        const inc = incentive[i].incentive;
-        for (let m = 0; m < inc.length; m++) {
-            const one = inc[m];
-            totalReward = web3.utils.toBN(one.amount).add(totalReward);
-        }
+  for (let i = 0; i < incentive.length; i++) {
+    const inc = incentive[i].incentive;
+    for (let m = 0; m < inc.length; m++) {
+      const one = inc[m];
+      totalReward = web3.utils.toBN(one.amount).add(totalReward);
     }
+  }
 
-    base.myStake = Number(web3.utils.fromWei(totalStake.toString())).toFixed(0);
-    base.pendingWithdrawal = Number(web3.utils.fromWei(withdrawStake.toString())).toFixed(0);
-    base.totalDistributedRewards = Number(web3.utils.fromWei(totalReward.toString())).toFixed(2);
+  base.myStake = Number(web3.utils.fromWei(totalStake.toString())).toFixed(0);
+  base.pendingWithdrawal = Number(
+    web3.utils.fromWei(withdrawStake.toString())
+  ).toFixed(0);
+  base.totalDistributedRewards = Number(
+    web3.utils.fromWei(totalReward.toString())
+  ).toFixed(2);
 
-    base.validatorCnt = Object.getOwnPropertyNames(validator).length;
+  base.validatorCnt = Object.getOwnPropertyNames(validator).length;
 
-    if (typeof epochID === "number") {
-        base.epochIDRaw = epochID;
+  if (typeof epochID === "number") {
+    base.epochIDRaw = epochID;
+  }
+
+  let stakePool = web3.utils.toBN(0);
+  if (stakerInfo) {
+    for (let i = 0; i < stakerInfo.length; i++) {
+      const si = stakerInfo[i];
+      stakePool = web3.utils.toBN(si.amount).add(stakePool);
+      for (let m = 0; m < si.clients.length; m++) {
+        const cl = si.clients[m];
+        stakePool = web3.utils.toBN(cl.amount).add(stakePool);
+      }
+
+      for (let m = 0; m < si.partners.length; m++) {
+        const pr = si.partners[m];
+        stakePool = web3.utils.toBN(pr.amount).add(stakePool);
+      }
     }
+  }
 
-    let stakePool = web3.utils.toBN(0)
-    if (stakerInfo) {
-        for (let i = 0; i < stakerInfo.length; i++) {
-            const si = stakerInfo[i];
-            stakePool = web3.utils.toBN(si.amount).add(stakePool);
-            for (let m = 0; m < si.clients.length; m++) {
-                const cl = si.clients[m];
-                stakePool = web3.utils.toBN(cl.amount).add(stakePool);
-            }
+  base.stakePool = Number(web3.utils.fromWei(stakePool.toString())).toFixed(0);
 
-            for (let m = 0; m < si.partners.length; m++) {
-                const pr = si.partners[m];
-                stakePool = web3.utils.toBN(pr.amount).add(stakePool);
-            }
-        }
-    }
-
-    base.stakePool = Number(web3.utils.fromWei(stakePool.toString())).toFixed(0);
-
-    return base;
+  return base;
 }
 
 async function buildStakingList(delegateInfo, incentive, epochID, base) {
-    let list = [];
+  let list = [];
 
-    for (let i = 0; i < delegateInfo.length; i++) {
-        const di = delegateInfo[i];
-        for (let m = 0; m < di.stake.length; m++) {
-            const sk = di.stake[m]
-            let ret = await ccUtil.getRegisteredValidator(sk.address);
-            let img, name;
-            if (ret && ret.length > 0) {
-                img = 'data:image/' + ret[0].iconType + ';base64,' + ret[0].iconData;
-                name = ret[0].name;
+  for (let i = 0; i < delegateInfo.length; i++) {
+    const di = delegateInfo[i];
+    for (let m = 0; m < di.stake.length; m++) {
+      const sk = di.stake[m];
+      let ret = await ccUtil.getRegisteredValidator(sk.address);
+      let img, name;
+      if (ret && ret.length > 0) {
+        img = "data:image/" + ret[0].iconType + ";base64," + ret[0].iconData;
+        name = ret[0].name;
+      }
+
+      list.push({
+        myAccount: di.account.name,
+        balance: di.account.balance,
+        accountAddress: di.account.address,
+        accountPath: di.account.path,
+        myStake: { title: web3.utils.fromWei(sk.amount), bottom: "0" },
+        validator: {
+          name: name ? name : sk.address,
+          img: img,
+        },
+        validatorAddress: sk.address,
+        distributeRewards: { title: "50,000", bottom: "from 50 epochs" },
+        modifyStake: ["+", "-"],
+      });
+    }
+  }
+
+  let longestDays = 0;
+  for (let i = 0; i < list.length; i++) {
+    let validatorAddress = list[i].validatorAddress;
+    let accountAddress = list[i].accountAddress;
+    let distributeRewards = web3.utils.toBN(0);
+    let epochs = [];
+
+    for (let m = 0; m < incentive.length; m++) {
+      const inc = incentive[m];
+      if (accountAddress == inc.account.address) {
+        for (let n = 0; n < inc.incentive.length; n++) {
+          const obj = inc.incentive[n];
+
+          if (obj.address.toLowerCase() == validatorAddress.toLowerCase()) {
+            distributeRewards = web3.utils
+              .toBN(obj.amount)
+              .add(distributeRewards);
+            if (!epochs.includes(obj.epochId)) {
+              epochs.push(obj.epochId);
             }
-
-            list.push({
-                myAccount: di.account.name,
-                balance: di.account.balance,
-                accountAddress: di.account.address,
-                accountPath: di.account.path,
-                myStake: {title: web3.utils.fromWei(sk.amount), bottom: "0"},
-                validator: {
-                    name: name ? name : sk.address,
-                    img: img,
-                },
-                validatorAddress: sk.address,
-                distributeRewards: {title: "50,000", bottom: "from 50 epochs"},
-                modifyStake: ["+", "-"]
-            })
+          }
         }
+      }
     }
 
-    let longestDays = 0;
-    for (let i = 0; i < list.length; i++) {
-        let validatorAddress = list[i].validatorAddress;
-        let accountAddress = list[i].accountAddress;
-        let distributeRewards = web3.utils.toBN(0);
-        let epochs = [];
-
-        for (let m = 0; m < incentive.length; m++) {
-            const inc = incentive[m];
-            if (accountAddress == inc.account.address) {
-
-                for (let n = 0; n < inc.incentive.length; n++) {
-                    const obj = inc.incentive[n];
-
-                    if (obj.address.toLowerCase() == validatorAddress.toLowerCase()) {
-                        distributeRewards = web3.utils.toBN(obj.amount).add(distributeRewards);
-                        if (!epochs.includes(obj.epochId)) {
-                            epochs.push(obj.epochId);
-                        }
-                    }
-                }
-            }
-        }
-
-        /*
+    /*
         if (epochs.length > 0) {
             epochs.sort((a, b) => { return a - b })
             let days = (epochID - epochs[0]) * (global.slotCount * global.slotTime) / (24 * 3600); // 1 epoch last 2 days.
@@ -1100,7 +1290,7 @@ async function buildStakingList(delegateInfo, incentive, epochID, base) {
         d.setDate(d.getDate() - longestDays);
         base.startFrom = dateFormat(d / 1000);
         */
-    }
+  }
 
-    return list;
+  return list;
 }

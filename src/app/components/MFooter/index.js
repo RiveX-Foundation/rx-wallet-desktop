@@ -1,23 +1,23 @@
-import React, { Component } from 'react';
-import { observer, inject } from 'mobx-react';
-import intl from 'react-intl-universal';
-import './index.less';
+import React, { Component } from "react";
+import { observer, inject } from "mobx-react";
+import intl from "react-intl-universal";
+import "./index.less";
 
-@inject(stores => ({
+@inject((stores) => ({
   language: stores.languageIntl.language,
 }))
-
 @observer
 class MFooter extends Component {
-    render() {
-        return (
-            <div className="footer">
-              <div className="f-content">
-                {intl.get('Footer.allRightsReserved')} <br/> ©{new Date().getFullYear()} {intl.get('Footer.Company')}
-              </div>
-            </div>
-        );
-    }
+  render() {
+    return (
+      <div className="footer">
+        <div className="f-content">
+          {intl.get("Footer.allRightsReserved")} <br /> ©
+          {new Date().getFullYear()} {intl.get("Footer.Company")}
+        </div>
+      </div>
+    );
+  }
 }
 
 export default MFooter;

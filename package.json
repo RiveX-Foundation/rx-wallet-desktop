@@ -9,6 +9,7 @@
     "email": "flisko@rivex.io"
   },
   "scripts": {
+    "pretty": "prettier --write \"./**/*.{js,jsx,json}\"",
     "start": "electron .",
     "dev": "npm run dev:renderer",
     "dev:main": "cross-env NODE_ENV=development electron -r @babel/register ./src/main.dev.js ",
@@ -74,6 +75,7 @@
     "mobx-react": "^5.4.3",
     "node-gyp": "^5.0.2",
     "postcss-flexbugs-fixes": "^3.2.0",
+    "prettier": "^2.0.5",
     "promisefy-util": "^1.2.0",
     "qrcode": "^1.3.3",
     "qrcode.react": "^0.9.3",

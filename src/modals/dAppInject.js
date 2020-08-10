@@ -1,10 +1,10 @@
-const { ipcRenderer } = require('electron');
-const uuid = require('uuid/v1');
+const { ipcRenderer } = require("electron");
+const uuid = require("uuid/v1");
 
 class Web3Eth {
   constructor() {
     this._callback = {}; //Save all callback funcs
-    ipcRenderer.on('dapp-message', this.dexMessageHandler.bind(this));
+    ipcRenderer.on("dapp-message", this.dexMessageHandler.bind(this));
   }
 
   // ---------------------------------
@@ -14,7 +14,7 @@ class Web3Eth {
     const msg = {
       method: "getAddresses",
       id: uuid(),
-      cb: cb
+      cb: cb,
     };
 
     this.saveCb(msg);
@@ -27,7 +27,7 @@ class Web3Eth {
       id: uuid(),
       cb: cb,
       message: message,
-      address: address
+      address: address,
     };
 
     this.saveCb(msg);
@@ -50,7 +50,7 @@ class Web3Eth {
     const msg = {
       method: "loadNetworkId",
       id: uuid(),
-      cb: cb
+      cb: cb,
     };
 
     this.saveCb(msg);
@@ -61,26 +61,28 @@ class Web3Eth {
   // -------------------------------
   // Functions used for internal data transfer
   sendToHost(obj) {
-    ipcRenderer.sendToHost('dapp-message', obj);
+    ipcRenderer.sendToHost("dapp-message", obj);
   }
 
   saveCb(msg) {
-    this._callback[msg.method + '#' + msg.id] = {};
-    this._callback[msg.method + '#' + msg.id].cb = msg.cb;
+    this._callback[msg.method + "#" + msg.id] = {};
+    this._callback[msg.method + "#" + msg.id].cb = msg.cb;
   }
 
   runCb(msg) {
-    if (this._callback[msg.method + '#' + msg.id] &&
-      this._callback[msg.method + '#' + msg.id].cb) {
-      this._callback[msg.method + '#' + msg.id].cb(msg.err, msg.val);
+    if (
+      this._callback[msg.method + "#" + msg.id] &&
+      this._callback[msg.method + "#" + msg.id].cb
+    ) {
+      this._callback[msg.method + "#" + msg.id].cb(msg.err, msg.val);
       this.removeCb(msg);
     } else {
-      console.log('can not found cb.');
+      console.log("can not found cb.");
     }
   }
 
   removeCb(msg) {
-    delete this._callback[msg.method + '#' + msg.id];
+    delete this._callback[msg.method + "#" + msg.id];
   }
 
   dexMessageHandler(event, data) {

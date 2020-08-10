@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import { render } from 'react-dom';
-import { Provider } from 'mobx-react';
+import React, { Component } from "react";
+import { render } from "react-dom";
+import { Provider } from "mobx-react";
 //import { message } from 'antd';
-import { AppContainer } from 'react-hot-loader';
-import intl from 'react-intl-universal';
+import { AppContainer } from "react-hot-loader";
+import intl from "react-intl-universal";
 
 //import './global.less';
-import Router from './Routes';
-import stores from './stores';
-import locales from './locales';
-import { initEmitterHandler, regEmitterHandler  } from 'utils/helper';
+import Router from "./Routes";
+import stores from "./stores";
+import locales from "./locales";
+import { initEmitterHandler, regEmitterHandler } from "utils/helper";
 
 class App extends Component {
   constructor(props) {
@@ -32,7 +32,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    regEmitterHandler('language', (val) => {
+    regEmitterHandler("language", (val) => {
       this.changeLanguage(val);
     });
 
@@ -70,14 +70,16 @@ class App extends Component {
     */
   }
 
-  changeLanguage = lan => {    
-    intl.init({
-      currentLocale: lan,
-      locales
-    }).then(() => {
-      stores.languageIntl.setLanguage(lan);
-    });
-  }
+  changeLanguage = (lan) => {
+    intl
+      .init({
+        currentLocale: lan,
+        locales,
+      })
+      .then(() => {
+        stores.languageIntl.setLanguage(lan);
+      });
+  };
 
   render() {
     return (
@@ -90,12 +92,11 @@ class App extends Component {
   }
 }
 
+render(<App />, document.getElementById("root"));
 
-render(<App />, document.getElementById('root'));
-
-if (module.hot && false && false) { 
-  module.hot.accept('./Routes', () => {
-    const NextApp = require('./Routes').default;
-    render(<NextApp />, document.getElementById('root'));
+if (module.hot && false && false) {
+  module.hot.accept("./Routes", () => {
+    const NextApp = require("./Routes").default;
+    render(<NextApp />, document.getElementById("root"));
   });
 }
