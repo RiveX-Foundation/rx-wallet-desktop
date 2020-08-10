@@ -1880,7 +1880,7 @@ class walletStore {
         //console.log(web3);
         web3.eth.getBalance(tokenitem.PublicAddress).then((balance) => {
           var tokenbal = new BigNumber(web3.utils.fromWei(balance, "ether"));
-          tokenitem.TokenBalance = parseFloat(tokenbal.toString());
+          tokenitem.TokenBalance = tokenbal.toString();
           // console.log(tokenbal);
           //tokenitem.TokenBalance =parseFloat(parseFloat(tokenbal).toFixed(6));
           //balance = parseFloat(balance) / (10 ** 18);
@@ -1925,7 +1925,7 @@ class walletStore {
               tokenitem.AssetCode == "USDC"
             ) {
               var tokenbal = new BigNumber(web3.utils.fromWei(balance, "mwei"));
-              tokenitem.TokenBalance = parseFloat(tokenbal.toString());
+              tokenitem.TokenBalance = tokenbal.toString();
               //var tokenbal = web3.utils.fromWei(balance,'mwei');
               //tokenitem.TokenBalance =parseFloat(parseFloat(tokenbal).toFixed(3));
               //  balance = balance / (10 ** 6);
@@ -1939,7 +1939,7 @@ class walletStore {
               var tokenbal = new BigNumber(
                 web3.utils.fromWei(balance, "ether")
               );
-              tokenitem.TokenBalance = parseFloat(tokenbal.toString());
+              tokenitem.TokenBalance = tokenbal.toString();
               //var tokenbal = web3.utils.fromWei(balance,'ether');
               //tokenitem.TokenBalance =parseFloat(parseFloat(tokenbal).toFixed(3));
               //tokenitem.TokenBalance = balance;
@@ -1981,9 +1981,7 @@ class walletStore {
                   tokenitem.TokenBalance = parseFloat(balance) / 10 ** 8;
                 } else if (tokenitem.AssetCode == "WUSDT") {
                   var tokenbal = web3.utils.fromWei(balance, "ether");
-                  tokenitem.TokenBalance = parseFloat(
-                    parseFloat(tokenbal).toFixed(3)
-                  );
+                  tokenitem.TokenBalance = tokenbal.toString();
                 } else if (tokenitem.AssetCode == "WEOS") {
                   tokenitem.TokenBalance = parseFloat(balance) / 10 ** 4;
                 } else {
@@ -1992,7 +1990,7 @@ class walletStore {
                   var tokenbal = new BigNumber(
                     web3.utils.fromWei(balance, "ether")
                   );
-                  tokenitem.TokenBalance = parseFloat(tokenbal.toString());
+                  tokenitem.TokenBalance = tokenbal.toString();
                   //var tokenbal = web3.utils.fromWei(balance,'ether');
                   //tokenitem.TokenBalance =parseFloat(parseFloat(tokenbal).toFixed(3));
                 }
@@ -2027,7 +2025,7 @@ class walletStore {
               var tokenbal = new BigNumber(
                 web3.utils.fromWei(balance, "ether")
               );
-              tokenitem.TokenBalance = parseFloat(tokenbal.toString());
+              tokenitem.TokenBalance = tokenbal.toString();
               // tokenitem.TokenBalance = tokenbal;
               tokenitem.TokenPrice = this.getTokenPrice(tokenitem.AssetCode);
               self.totalassetworth +=
