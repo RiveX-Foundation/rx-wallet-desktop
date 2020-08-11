@@ -780,19 +780,6 @@ ipc.on("system", async (event, actionUni, payload) => {
         data: ret,
       });
       break;
-    case "getDAppInjectFileETH":
-      ret = "";
-      console.log("GETTING DAPP INJECT FILE ETH");
-      if (setting.isDev) {
-        ret = `file://${__dirname}/../modals/dAppInjectETH.js`;
-      } else {
-        ret = `file://${__dirname}/modals/dAppInjectETH.js`;
-      }
-      sendResponse(["system", [action, id].join("#")].join("_"), event, {
-        err: err,
-        data: ret,
-      });
-      break;
   }
 });
 

@@ -42,6 +42,6 @@ module.exports = {
     "posInfo",
   ],
   setting: ["switchNetwork", "set", "get"],
-  system: ["reload", "getDAppInjectFile", "getDAppInjectFileETH"],
+  system: ["reload", "getDAppInjectFile"],
   upgrade: ["start"],
 };
