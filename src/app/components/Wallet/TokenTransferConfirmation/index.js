@@ -67,7 +67,7 @@ class TokenTransferConfirmation extends Component {
     gaspricevalue: 30,
     gaslimit: 0,
     mingaspricevalue: 1,
-    maxgaspricevalue: 150,
+    maxgaspricevalue: 700,
     mfa: "",
     googleAuthKey: "",
   };
