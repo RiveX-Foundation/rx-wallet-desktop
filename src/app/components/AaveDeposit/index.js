@@ -53,6 +53,7 @@ class AaveDeposit extends Component {
     tokenbalance: 0,
     depositamount: "",
     tokenInfo: {},
+    deposittoken:{},
     selectedWallet: "",
     gaspricevalue: 0,
     privatekey: "",
@@ -60,7 +61,7 @@ class AaveDeposit extends Component {
     loading: false,
     buttondisable: false,
     mingaspricevalue: 1,
-    maxgaspricevalue: 150,
+    maxgaspricevalue: 500,
   };
   onChangeTokenValue = (e) => {
     this.setState({
@@ -82,8 +83,9 @@ class AaveDeposit extends Component {
     let gasPrices = await this.getCurrentGasPrices();
     this.setState({
       gaspricevalue: gasPrices.medium,
+      deposittoken:this.props.aavedeposittoken
     });
-    console.log(this.props.aavedeposittoken);
+    console.log(toJS(this.props.aavedeposittoken));
   }
   getCurrentGasPrices = async () => {
     let response = await Axios.get(API_EthGas);
@@ -124,6 +126,9 @@ class AaveDeposit extends Component {
           parseFloat(allowance.toString()) >=
           parseFloat(this.state.depositamount.toString())
         ) {
+          this.setState({
+            approval: false,
+          });
           console.log("allowance is bigger, no need to approve");
         } else {
           console.log("allowance is smaller, need to approve");
@@ -271,12 +276,17 @@ class AaveDeposit extends Component {
       loading: true,
     });
     console.log(this.state.tokenInfo);
+    console.log(this.state.deposittoken.token);
+    let unit = "ether";
+    if(this.state.deposittoken.token == "USDT" || this.state.deposittoken.token == "USDC"){
+      unit = "mwei";
+    }
     const depositAmount = web3.utils.toWei(
       this.state.depositamount.toString(),
-      "ether"
+      unit
     );
     console.log(depositAmount);
-    //return;
+    return;
     const tokenContract = this.state.tokenInfo.ContractAddress;
     const referralCode = "0";
 
