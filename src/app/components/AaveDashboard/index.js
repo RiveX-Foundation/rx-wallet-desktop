@@ -354,6 +354,10 @@ class AaveDashboard extends Component {
     this.setState({ withdrawamount: e.target.value });
   };
 
+  setMax = () => {
+    this.setState({ withdrawamount: this.state.tokenbalance });
+  };
+
   withdraw = async () => {
     console.log(this.state.selectedtoken);
     this.props.setAaveDepositToken(this.state.selectedtoken);
@@ -440,7 +444,7 @@ class AaveDashboard extends Component {
           <div className="pheader">Amount to withdraw</div>
           <div className="pmodalcontent">
             <div className="balancetext">
-              balance: {this.state.tokenbalance}{" "}
+              balance:<a onClick={this.setMax}> {this.state.tokenbalance}{" "}</a>
               {this.state.selectedtoken.token}
             </div>
             <div

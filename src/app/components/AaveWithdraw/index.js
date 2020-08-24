@@ -63,6 +63,7 @@ class AaveWithdraw extends Component {
     mingaspricevalue: 1,
     maxgaspricevalue: 150,
     selectedtoken: {},
+    gasprices:{}
   };
   onChangeTokenValue = (e) => {
     this.setState({
@@ -71,6 +72,7 @@ class AaveWithdraw extends Component {
   };
 
   async componentDidMount() {
+    let gasPrices = await this.getCurrentGasPrices();
     var selecetedwallet = toJS(this.props.selectedwalletlist);
     let walletlist = selecetedwallet.find(
       (x) => x.publicaddress == localStorage.getItem("selectedwallet")
@@ -90,7 +92,6 @@ class AaveWithdraw extends Component {
       withdrawamount: this.props.aavedeposittokenamount,
       selectedtoken: this.props.aavedeposittoken,
     });
-    let gasPrices = await this.getCurrentGasPrices();
     this.setState({
       gaspricevalue: gasPrices.medium,
     });
@@ -104,6 +105,9 @@ class AaveWithdraw extends Component {
       medium: parseFloat(response.data.average) / 10,
       high: parseFloat(response.data.fast) / 10,
     };
+    this.setState({
+      gasprices:prices
+    });
     return prices;
   };
 
@@ -299,7 +303,7 @@ class AaveWithdraw extends Component {
               <div className="spacebetween" style={{ marginTop: "10px" }}>
                 <div className="panellabel">Balance</div>
                 <div className="panelvalue">
-                  {parseFloat(this.props.aavedeposittoken.balance.toString())} a
+                  {this.props.aavedeposittoken.balance.toString()} a
                   {this.props.aavedeposittoken.token.toString().toUpperCase()}
                 </div>
               </div>
@@ -311,7 +315,7 @@ class AaveWithdraw extends Component {
                   {" "}
                   <Input
                     value={this.state.withdrawamount}
-                    className="inputTransparent gasclass"
+                    className="inputTransparent inputclass"
                     onChange={this.onChangeTokenValue}
                     placeholder={0}
                   />
@@ -325,22 +329,23 @@ class AaveWithdraw extends Component {
             >
               <div className="spacebetween">
                 <div className="panellabel">
-                  {intl.get("Transaction.GasPrice")} (Displaying average gas
-                  price from API)
-                </div>
-                <div className="panelvalue">
-                  {this.state.gaspricevalue}{" "}
-                  {this._formatWeiWin(this.props.selectedTokenAsset.TokenType)}
+                  {intl.get("Transaction.GasPrice")}
                 </div>
               </div>
               <div
-                className="spacebetween"
+                className="spacebetween2"
                 style={{
                   marginTop: "20px",
                   marginRight: "20px",
                   marginLeft: "20px",
                 }}
-              >
+              ><Button type="primary" ghost style={{borderRight:"none"}}> Safe Low
+              <br />{this.state.gasprices.low}</Button>
+              <Button type="primary" ghost style={{borderRight:"none",borderLeft:"none"}}> Standard
+              <br />{this.state.gasprices.medium}</Button>
+              <Button type="primary" ghost style={{borderLeft:"none"}}> Fast 
+              <br />{this.state.gasprices.high}</Button>
+                 {/*
                 <Slider
                   axis="x"
                   xstep={1}
@@ -364,7 +369,7 @@ class AaveWithdraw extends Component {
                       backgroundColor: "#64F4F4",
                     },
                   }}
-                />
+                />*/}
               </div>
             </div>
             <div

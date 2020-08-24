@@ -224,6 +224,9 @@ class Aave extends Component {
   onChangeTokenValue = (e) => {
     this.setState({ depositamount: e.target.value });
   };
+  setMax = () => {
+    this.setState({ depositamount: this.state.tokenbalance });
+  };
 
   render() {
     return (
@@ -316,7 +319,7 @@ class Aave extends Component {
           <div className="pheader">Amount to deposit</div>
           <div className="pmodalcontent">
             <div className="balancetext">
-              balance: {this.state.tokenbalance}{" "}
+              balance: <a onClick={this.setMax}>{this.state.tokenbalance}{" "}</a>
               {this.state.selectedtoken.token}
             </div>
             <div

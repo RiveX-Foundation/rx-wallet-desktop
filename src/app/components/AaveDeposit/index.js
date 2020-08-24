@@ -286,7 +286,6 @@ class AaveDeposit extends Component {
       unit
     );
     console.log(depositAmount);
-    return;
     const tokenContract = this.state.tokenInfo.ContractAddress;
     const referralCode = "0";
 
