@@ -53,7 +53,7 @@ class AaveDeposit extends Component {
     tokenbalance: 0,
     depositamount: "",
     tokenInfo: {},
-    deposittoken:{},
+    deposittoken: {},
     selectedWallet: "",
     gaspricevalue: 0,
     privatekey: "",
@@ -62,6 +62,10 @@ class AaveDeposit extends Component {
     buttondisable: false,
     mingaspricevalue: 1,
     maxgaspricevalue: 500,
+    gasprices: {},
+    advancedoptions: false,
+    advancedgasprice: 0,
+    advancedgaslimit: 0
   };
   onChangeTokenValue = (e) => {
     this.setState({
@@ -69,7 +73,20 @@ class AaveDeposit extends Component {
     });
   };
 
+  onChangeAdvancedGasPriceValue = (e) => {
+    this.setState({
+      advancedgasprice: e.target.value,
+    });
+  };
+
+  onChangeAdvancedGasLimitValue = (e) => {
+    this.setState({
+      advancedgaslimit: e.target.value,
+    });
+  };
+
   async componentDidMount() {
+    let gasPrices = await this.getCurrentGasPrices();
     web3 = new Web3("https://mainnet.infura.io" + this.props.infuraprojectid);
     this.setState({
       selectedWallet: localStorage
@@ -77,16 +94,49 @@ class AaveDeposit extends Component {
         .toString()
         .toLowerCase(),
       depositamount: this.props.aavedeposittokenamount,
-    });
-    await this.getTokenBalance();
-    await this.getAllowance();
-    let gasPrices = await this.getCurrentGasPrices();
-    this.setState({
       gaspricevalue: gasPrices.medium,
-      deposittoken:this.props.aavedeposittoken
+      deposittoken: this.props.aavedeposittoken,
+
     });
+    await this.getAllowance();
+    await this.getEstimateGasLimit();
+    await this.getTokenBalance();
+    
     console.log(toJS(this.props.aavedeposittoken));
   }
+
+  getEstimateGasLimit = async () => {
+
+    let unit = "ether";
+    if (
+      this.state.deposittoken.token == "USDT" ||
+      this.state.deposittoken.token == "USDC"
+    ) {
+      unit = "mwei";
+    }
+    //let amount = web3.utils.toWei(this.state.selectedtoken.balance.toString(),unit);
+    let amount = web3.utils.toWei(this.state.depositamount.toString(), unit);
+    const aTokenContract = new web3.eth.Contract(
+      ATokenABI,
+      this.state.selectedtoken.aContract
+    );
+    var dataWithdraw = aTokenContract.methods.redeem(amount).encodeABI();
+    console.log(dataWithdraw);
+    console.log(amount);
+    aTokenContract.methods
+      .redeem(amount)
+      .estimateGas({
+        from: this.state.selectedwallet,
+        data: dataWithdraw,
+      })
+      .then((gasLimit) => {
+        this.setState({
+          advancedgaslimit: gasLimit + 50000
+        });
+      })
+
+  }
+
   getCurrentGasPrices = async () => {
     let response = await Axios.get(API_EthGas);
 
@@ -95,6 +145,10 @@ class AaveDeposit extends Component {
       medium: parseFloat(response.data.average) / 10,
       high: parseFloat(response.data.fast) / 10,
     };
+    this.setState({
+      gasprices: prices,
+      advancedgasprice: prices.medium
+    });
     return prices;
   };
 
@@ -141,9 +195,9 @@ class AaveDeposit extends Component {
 
   approve = async () => {
     if (this.state.loading) {
-        createNotification("info", "Wait for transaction to be mined!");
-        return;
-      }
+      createNotification("info", "Wait for transaction to be mined!");
+      return;
+    }
     this.setState({
       loading: true,
     });
@@ -184,9 +238,9 @@ class AaveDeposit extends Component {
           rawTransaction = {
             from: this.state.selectedWallet.toString(),
             nonce: count,
-            gasPrice: web3.utils.toHex(gasPrice), //"0x04e3b29200",
+            gasPrice: web3.utils.toHex(this.state.advancedgasprice), //"0x04e3b29200",
             // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-            gas: gasLimit, //"0x7458",
+            gas: this.state.advancedgaslimit, //"0x7458",
             to: tokenContract, //this.tokencontract,
             value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
             data: dataApprove, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
@@ -197,9 +251,9 @@ class AaveDeposit extends Component {
             this.props.selectedethnetwork.shortcode == "mainnet"
               ? new Tx(rawTransaction)
               : new Tx(rawTransaction, {
-                  chain: this.props.selectedethnetwork.shortcode,
-                  hardfork: "petersburg",
-                });
+                chain: this.props.selectedethnetwork.shortcode,
+                hardfork: "petersburg",
+              });
           tx.sign(privKey);
           var serializedTx = tx.serialize();
           web3.eth
@@ -246,6 +300,18 @@ class AaveDeposit extends Component {
     }
   };
 
+  setAdvancedOptions = () => {
+    this.setState({
+      advancedoptions: true
+    });
+  };
+
+  setAdvancedGasPrice = (value) => {
+    this.setState({
+      advancedgasprice: value
+    });
+  }
+
   getLendingPoolAddressProviderContract = () => {
     const lpAddressProviderAddress =
       "0x24a42fD28C976A61Df5D00D0599C34c4f90748c8"; // mainnet address, for other addresses: https://docs.aave.com/developers/developing-on-aave/deployed-contract-instances
@@ -269,16 +335,16 @@ class AaveDeposit extends Component {
   };
   deposit = async () => {
     if (this.state.loading) {
-        createNotification("info", "Wait for transaction to be mined!");
-        return;
-      }
+      createNotification("info", "Wait for transaction to be mined!");
+      return;
+    }
     this.setState({
       loading: true,
     });
     console.log(this.state.tokenInfo);
     console.log(this.state.deposittoken.token);
     let unit = "ether";
-    if(this.state.deposittoken.token == "USDT" || this.state.deposittoken.token == "USDC"){
+    if (this.state.deposittoken.token == "USDT" || this.state.deposittoken.token == "USDC") {
       unit = "mwei";
     }
     const depositAmount = web3.utils.toWei(
@@ -322,9 +388,9 @@ class AaveDeposit extends Component {
           rawTransaction = {
             from: this.state.selectedWallet.toString(),
             nonce: count,
-            gasPrice: web3.utils.toHex(gasPrice), //"0x04e3b29200",
+            gasPrice: web3.utils.toHex(this.state.advancedgasprice), //"0x04e3b29200",
             // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-            gas: limit, //"0x7458",
+            gas: this.state.advancedgaslimit, //"0x7458",
             to: lpAddress, //this.tokencontract,
             value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
             data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
@@ -335,9 +401,9 @@ class AaveDeposit extends Component {
             this.props.selectedethnetwork.shortcode == "mainnet"
               ? new Tx(rawTransaction)
               : new Tx(rawTransaction, {
-                  chain: this.props.selectedethnetwork.shortcode,
-                  hardfork: "istanbul",
-                });
+                chain: this.props.selectedethnetwork.shortcode,
+                hardfork: "istanbul",
+              });
           tx.sign(privKey);
           var serializedTx = tx.serialize();
           web3.eth
@@ -439,7 +505,7 @@ class AaveDeposit extends Component {
       });
       try {
         var tokenAbiArray = JSON.parse(TokenInfo.AbiArray);
-      } catch (e) {}
+      } catch (e) { }
       let contract = new web3.eth.Contract(
         tokenAbiArray,
         TokenInfo.ContractAddress
@@ -467,6 +533,7 @@ class AaveDeposit extends Component {
         });
     }
   };
+
 
   _setCurrentGasPrice = (price) => {
     // console.log(price);
@@ -509,13 +576,13 @@ class AaveDeposit extends Component {
                   style={{ marginBottom: "10px" }}
                 >
                   <div className="spacebetween">
-                    <div className="panellabel">APY</div>
+                    <div className="panellabel">{intl.get("Aave.APY")}</div>
                     <div className="panelvalue">
                       {this.props.aavedeposittoken.apy.toFixed(2)}%
                     </div>
                   </div>
                   <div className="spacebetween" style={{ marginTop: "10px" }}>
-                    <div className="panellabel">Balance</div>
+                    <div className="panellabel"> {intl.get("Aave.Balance")}</div>
                     <div className="panelvalue">
                       {this.state.tokenbalance}{" "}
                       {this.props.aavedeposittoken.token
@@ -531,7 +598,7 @@ class AaveDeposit extends Component {
                       {" "}
                       <Input
                         value={this.state.depositamount}
-                        className="inputTransparent gasclass"
+                        className="inputTransparent inputclass"
                         onChange={this.onChangeTokenValue}
                         placeholder={0}
                       />
@@ -547,8 +614,7 @@ class AaveDeposit extends Component {
                 >
                   <div className="spacebetween">
                     <div className="panellabel">
-                      {intl.get("Transaction.GasPrice")} (Displaying average gas
-                      price from API)
+                      {intl.get("Transaction.GasPrice")}  {intl.get("Aave.DisplayingGas")} 
                     </div>
                     <div className="panelvalue">
                       {this.state.gaspricevalue}{" "}
@@ -558,43 +624,62 @@ class AaveDeposit extends Component {
                     </div>
                   </div>
                   <div
-                    className="spacebetween"
+                    className="spacebetween2"
                     style={{
                       marginTop: "20px",
                       marginRight: "20px",
                       marginLeft: "20px",
                     }}
                   >
-                    <Slider
-                      axis="x"
-                      xstep={1}
-                      xmin={this.state.mingaspricevalue}
-                      xmax={this.state.maxgaspricevalue}
-                      x={this.state.gaspricevalue}
-                      onChange={({ x }) => this._setCurrentGasPrice(x)}
-                      styles={{
-                        track: {
-                          backgroundColor: "#000000",
-                          height: 5,
-                          width: "100%",
-                        },
-                        active: {
-                          backgroundColor: "#5f5cdf",
-                          height: 5,
-                        },
-                        thumb: {
-                          width: 15,
-                          height: 15,
-                          backgroundColor: "#64F4F4",
-                        },
-                      }}
-                    />
+                    <Button onClick={this.onChangeAdvancedGasPriceValue} value={this.state.gasprices.low} type="primary" ghost style={{ borderRight: "none" }}> Safe Low
+              <br />{this.state.gasprices.low}</Button>
+                    <Button onClick={this.onChangeAdvancedGasPriceValue} value={this.state.gasprices.medium} type="primary" ghost style={{ borderRight: "none", borderLeft: "none" }}> Standard
+              <br />{this.state.gasprices.medium}</Button>
+                    <Button onClick={this.onChangeAdvancedGasPriceValue} value={this.state.gasprices.high} type="primary" ghost style={{ borderLeft: "none" }}> Fast
+              <br />{this.state.gasprices.high}</Button>
                   </div>
                 </div>
                 <div
                   className="width600 spacebetween"
                   style={{ marginBottom: "30px" }}
-                ></div>
+                > <div className="panelvalue"></div>
+                  <div className="panelvalue"><a onClick={this.setAdvancedOptions}>Advanced options</a></div>
+                </div>
+                {this.state.advancedoptions === true && (
+              <React.Fragment>
+               <div
+               className="panelwrapper borderradiusfull"
+               style={{ marginBottom: "10px" }}
+             >
+               <div className="spacebetween" style={{ marginTop: "10px" }}>
+                 <div className="panellabel">Gas price (Gwei)</div>
+                 <div className="panelvalue">
+                 <Input
+                     value={this.state.advancedgasprice}
+                     className="inputTransparent inputclass"
+                     onChange={this.onChangeAdvancedGasPriceValue}
+                     placeholder={this.state.advancedgasprice}
+                   />
+                 </div>
+               </div>
+               <div className="spacebetween" style={{ marginTop: "10px" }}>
+                 <div className="panellabel">
+                   Gas Limit (Advanced users only!)
+                 </div>
+                 <div className="panelvalue">
+                   {" "}
+                   <Input
+                     value={this.state.advancedgaslimit}
+                     className="inputTransparent inputclass"
+                     onChange={this.onChangeAdvancedGasLimitValue}
+                     placeholder={this.state.advancedgaslimit}
+                   />
+
+                 </div>
+               </div>
+             </div>
+             </React.Fragment>
+            )}
                 {this.state.loading === true && (
                   <React.Fragment>
                     <div>
@@ -653,43 +738,63 @@ class AaveDeposit extends Component {
                     </div>
                   </div>
                   <div
-                    className="spacebetween"
+                    className="spacebetween2"
                     style={{
                       marginTop: "20px",
                       marginRight: "20px",
                       marginLeft: "20px",
                     }}
                   >
-                    <Slider
-                      axis="x"
-                      xstep={1}
-                      xmin={this.state.mingaspricevalue}
-                      xmax={this.state.maxgaspricevalue}
-                      x={this.state.gaspricevalue}
-                      onChange={({ x }) => this._setCurrentGasPrice(x)}
-                      styles={{
-                        track: {
-                          backgroundColor: "#000000",
-                          height: 5,
-                          width: "100%",
-                        },
-                        active: {
-                          backgroundColor: "#5f5cdf",
-                          height: 5,
-                        },
-                        thumb: {
-                          width: 15,
-                          height: 15,
-                          backgroundColor: "#64F4F4",
-                        },
-                      }}
-                    />
+                    <Button onClick={this.onChangeAdvancedGasPriceValue} value={this.state.gasprices.low} type="primary" ghost style={{ borderRight: "none" }}> Safe Low
+              <br />{this.state.gasprices.low}</Button>
+                    <Button onClick={this.onChangeAdvancedGasPriceValue} value={this.state.gasprices.medium} type="primary" ghost style={{ borderRight: "none", borderLeft: "none" }}> Standard
+              <br />{this.state.gasprices.medium}</Button>
+                    <Button onClick={this.onChangeAdvancedGasPriceValue} value={this.state.gasprices.high} type="primary" ghost style={{ borderLeft: "none" }}> Fast
+              <br />{this.state.gasprices.high}</Button>
                   </div>
                 </div>
                 <div
                   className="width600 spacebetween"
                   style={{ marginBottom: "30px" }}
-                ></div>
+                >
+                   <div className="panelvalue"></div>
+              <div className="panelvalue"><a onClick={this.setAdvancedOptions}>Advanced options</a></div>
+                </div>
+                {this.state.advancedoptions === true && (
+              <React.Fragment>
+               <div
+               className="panelwrapper borderradiusfull"
+               style={{ marginBottom: "10px" }}
+             >
+               <div className="spacebetween" style={{ marginTop: "10px" }}>
+                 <div className="panellabel">Gas price (Gwei)</div>
+                 <div className="panelvalue">
+                 <Input
+                     value={this.state.advancedgasprice}
+                     className="inputTransparent inputclass"
+                     onChange={this.onChangeAdvancedGasPriceValue}
+                     placeholder={this.state.advancedgasprice}
+                   />
+                 </div>
+               </div>
+               <div className="spacebetween" style={{ marginTop: "10px" }}>
+                 <div className="panellabel">
+                   Gas Limit (Advanced users only!)
+                 </div>
+                 <div className="panelvalue">
+                   {" "}
+                   <Input
+                     value={this.state.advancedgaslimit}
+                     className="inputTransparent inputclass"
+                     onChange={this.onChangeAdvancedGasLimitValue}
+                     placeholder={this.state.advancedgaslimit}
+                   />
+                   
+                 </div>
+               </div>
+             </div>
+             </React.Fragment>
+            )}
                 {this.state.loading === true && (
                   <React.Fragment>
                     <div>

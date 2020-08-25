@@ -1,4 +1,8 @@
 const en_US = {
+
+  "Aave.Balance": "Balance",
+  "Aave.APY":"APY",
+  "Aave.DisplayingGas":"(Displaying average gas price from API)",
   "Footer.allRightsReserved": "All Rights Reserved",
   "Footer.Company": "PixieLab Sdn Bhd",
 
