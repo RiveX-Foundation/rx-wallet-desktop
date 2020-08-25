@@ -68,7 +68,8 @@ class AaveWithdraw extends Component {
     advancedgasprice:0,
     advancedgaslimit:0
   };
-  onChangeTokenValue = (e) => {
+  onChangeTokenValue = async(e) => {
+    await this.getEstimateGasLimit(); //dont know yet
     this.setState({
       withdrawamount: e.target.value,
     });
@@ -179,6 +180,7 @@ class AaveWithdraw extends Component {
     return lpCoreAddress;
   };
   withdraw = async () => {
+    await this.getEstimateGasLimit();
     if (this.state.loading) {
       createNotification("info", "Wait for transaction to be mined!");
       return;

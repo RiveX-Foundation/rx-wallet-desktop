@@ -364,6 +364,7 @@ class AaveDeposit extends Component {
     return lpCoreAddress;
   };
   deposit = async () => {
+    await this.getEstimateGasLimit();
     if (this.state.loading) {
       createNotification("info", "Wait for transaction to be mined!");
       return;
