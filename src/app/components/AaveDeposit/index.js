@@ -98,15 +98,15 @@ class AaveDeposit extends Component {
       deposittoken: this.props.aavedeposittoken,
 
     });
-    await this.getAllowance();
-    await this.getEstimateGasLimit();
     await this.getTokenBalance();
-    
+    await this.getAllowance();
+
+
+
     console.log(toJS(this.props.aavedeposittoken));
   }
 
   getEstimateGasLimit = async () => {
-
     let unit = "ether";
     if (
       this.state.deposittoken.token == "USDT" ||
@@ -114,26 +114,52 @@ class AaveDeposit extends Component {
     ) {
       unit = "mwei";
     }
-    //let amount = web3.utils.toWei(this.state.selectedtoken.balance.toString(),unit);
-    let amount = web3.utils.toWei(this.state.depositamount.toString(), unit);
-    const aTokenContract = new web3.eth.Contract(
-      ATokenABI,
-      this.state.selectedtoken.aContract
-    );
-    var dataWithdraw = aTokenContract.methods.redeem(amount).encodeABI();
-    console.log(dataWithdraw);
-    console.log(amount);
-    aTokenContract.methods
-      .redeem(amount)
-      .estimateGas({
-        from: this.state.selectedwallet,
-        data: dataWithdraw,
-      })
-      .then((gasLimit) => {
-        this.setState({
-          advancedgaslimit: gasLimit + 50000
-        });
-      })
+    if (this.state.approval) { //need to approve
+      let amount = web3.utils.toWei(this.state.depositamount.toString(), unit);
+      const tokenContract = this.state.tokenInfo.ContractAddress;
+      const lpCoreAddress = await this.getLendingPoolCoreAddress();
+      const ERCcontract = new web3.eth.Contract(ERC20ABI, tokenContract);
+      var dataApprove = ERCcontract.methods
+        .approve(lpCoreAddress, amount)
+        .encodeABI();
+      ERCcontract.methods
+        .approve(lpCoreAddress, amount)
+        .estimateGas({
+          from: this.state.selectedWallet,
+          data: dataApprove
+        })
+        .then((gasLimit) => {
+          this.setState({
+            advancedgaslimit: gasLimit
+          });
+        })
+    } else { //no need to approve
+
+      const depositAmount = web3.utils.toWei(
+        this.state.depositamount.toString(),
+        unit
+      );
+      const referralCode = "0";
+      const tokenContract = this.state.tokenInfo.ContractAddress;
+      const lpAddress = await this.getLendingPoolAddress();
+      const lpContract = new web3.eth.Contract(LendingPoolABI, lpAddress);
+      var dataDeposit = lpContract.methods
+        .deposit(tokenContract, depositAmount, referralCode)
+        .encodeABI();
+      lpContract.methods
+        .deposit(tokenContract, depositAmount, referralCode)
+        .estimateGas({
+          from: this.state.selectedWallet,
+          data: dataDeposit,
+        })
+        .then((gasLimit) => {
+          this.setState({
+            advancedgaslimit: gasLimit
+          });
+        })
+    }
+
+
 
   }
 
@@ -158,6 +184,8 @@ class AaveDeposit extends Component {
       "ether"
     );
     console.log(depositAmount);
+    console.log(this.state.tokenInfo);
+    console.log(this.state.selectedWallet);
     //return;
     const tokenContract = this.state.tokenInfo.ContractAddress;
     console.log(tokenContract);
@@ -183,12 +211,14 @@ class AaveDeposit extends Component {
           this.setState({
             approval: false,
           });
+          await this.getEstimateGasLimit();
           console.log("allowance is bigger, no need to approve");
         } else {
           console.log("allowance is smaller, need to approve");
           this.setState({
             approval: true,
           });
+          await this.getEstimateGasLimit();
         }
       });
   };
@@ -521,13 +551,13 @@ class AaveDeposit extends Component {
           if (tokenitem.AssetCode == "USDT") {
             var tokenbal = new BigNumber(web3.utils.fromWei(balance, "mwei"));
             this.setState({
-              tokenbalance: parseFloat(tokenbal.toString()),
+              tokenbalance: tokenbal.toString(),
             });
-            tokenitem.TokenBalance = parseFloat(tokenbal.toString());
+            tokenitem.TokenBalance = tokenbal.toString();
           } else {
             var tokenbal = new BigNumber(web3.utils.fromWei(balance, "ether"));
             this.setState({
-              tokenbalance: parseFloat(tokenbal.toString()),
+              tokenbalance: tokenbal.toString(),
             });
           }
         });
@@ -614,13 +644,9 @@ class AaveDeposit extends Component {
                 >
                   <div className="spacebetween">
                     <div className="panellabel">
-                      {intl.get("Transaction.GasPrice")}  {intl.get("Aave.DisplayingGas")} 
+                      {intl.get("Transaction.GasPrice")}  {intl.get("Aave.DisplayingGas")}
                     </div>
                     <div className="panelvalue">
-                      {this.state.gaspricevalue}{" "}
-                      {this._formatWeiWin(
-                        this.props.selectedTokenAsset.TokenType
-                      )}
                     </div>
                   </div>
                   <div
@@ -646,40 +672,40 @@ class AaveDeposit extends Component {
                   <div className="panelvalue"><a onClick={this.setAdvancedOptions}>Advanced options</a></div>
                 </div>
                 {this.state.advancedoptions === true && (
-              <React.Fragment>
-               <div
-               className="panelwrapper borderradiusfull"
-               style={{ marginBottom: "10px" }}
-             >
-               <div className="spacebetween" style={{ marginTop: "10px" }}>
-                 <div className="panellabel">Gas price (Gwei)</div>
-                 <div className="panelvalue">
-                 <Input
-                     value={this.state.advancedgasprice}
-                     className="inputTransparent inputclass"
-                     onChange={this.onChangeAdvancedGasPriceValue}
-                     placeholder={this.state.advancedgasprice}
-                   />
+                  <React.Fragment>
+                    <div
+                      className="panelwrapper borderradiusfull"
+                      style={{ marginBottom: "10px" }}
+                    >
+                      <div className="spacebetween" style={{ marginTop: "10px" }}>
+                        <div className="panellabel">Gas price (Gwei)</div>
+                        <div className="panelvalue">
+                          <Input
+                            value={this.state.advancedgasprice}
+                            className="inputTransparent inputclass"
+                            onChange={this.onChangeAdvancedGasPriceValue}
+                            placeholder={this.state.advancedgasprice}
+                          />
+                        </div>
+                      </div>
+                      <div className="spacebetween" style={{ marginTop: "10px" }}>
+                        <div className="panellabel">
+                          Gas Limit (Advanced users only!)
                  </div>
-               </div>
-               <div className="spacebetween" style={{ marginTop: "10px" }}>
-                 <div className="panellabel">
-                   Gas Limit (Advanced users only!)
-                 </div>
-                 <div className="panelvalue">
-                   {" "}
-                   <Input
-                     value={this.state.advancedgaslimit}
-                     className="inputTransparent inputclass"
-                     onChange={this.onChangeAdvancedGasLimitValue}
-                     placeholder={this.state.advancedgaslimit}
-                   />
+                        <div className="panelvalue">
+                          {" "}
+                          <Input
+                            value={this.state.advancedgaslimit}
+                            className="inputTransparent inputclass"
+                            onChange={this.onChangeAdvancedGasLimitValue}
+                            placeholder={this.state.advancedgaslimit}
+                          />
 
-                 </div>
-               </div>
-             </div>
-             </React.Fragment>
-            )}
+                        </div>
+                      </div>
+                    </div>
+                  </React.Fragment>
+                )}
                 {this.state.loading === true && (
                   <React.Fragment>
                     <div>
@@ -689,7 +715,7 @@ class AaveDeposit extends Component {
                 )}
                 <div>
                   <Button className="curvebutton" onClick={this.deposit}>
-                    {intl.get("Wallet.Confirm")}
+                    Deposit
                   </Button>
                 </div>
               </React.Fragment>
@@ -731,10 +757,6 @@ class AaveDeposit extends Component {
                       price from API)
                     </div>
                     <div className="panelvalue">
-                      {this.state.gaspricevalue}{" "}
-                      {this._formatWeiWin(
-                        this.props.selectedTokenAsset.TokenType
-                      )}
                     </div>
                   </div>
                   <div
@@ -757,44 +779,44 @@ class AaveDeposit extends Component {
                   className="width600 spacebetween"
                   style={{ marginBottom: "30px" }}
                 >
-                   <div className="panelvalue"></div>
-              <div className="panelvalue"><a onClick={this.setAdvancedOptions}>Advanced options</a></div>
+                  <div className="panelvalue"></div>
+                  <div className="panelvalue"><a onClick={this.setAdvancedOptions}>Advanced options</a></div>
                 </div>
                 {this.state.advancedoptions === true && (
-              <React.Fragment>
-               <div
-               className="panelwrapper borderradiusfull"
-               style={{ marginBottom: "10px" }}
-             >
-               <div className="spacebetween" style={{ marginTop: "10px" }}>
-                 <div className="panellabel">Gas price (Gwei)</div>
-                 <div className="panelvalue">
-                 <Input
-                     value={this.state.advancedgasprice}
-                     className="inputTransparent inputclass"
-                     onChange={this.onChangeAdvancedGasPriceValue}
-                     placeholder={this.state.advancedgasprice}
-                   />
+                  <React.Fragment>
+                    <div
+                      className="panelwrapper borderradiusfull"
+                      style={{ marginBottom: "10px" }}
+                    >
+                      <div className="spacebetween" style={{ marginTop: "10px" }}>
+                        <div className="panellabel">Gas price (Gwei)</div>
+                        <div className="panelvalue">
+                          <Input
+                            value={this.state.advancedgasprice}
+                            className="inputTransparent inputclass"
+                            onChange={this.onChangeAdvancedGasPriceValue}
+                            placeholder={this.state.advancedgasprice}
+                          />
+                        </div>
+                      </div>
+                      <div className="spacebetween" style={{ marginTop: "10px" }}>
+                        <div className="panellabel">
+                          Gas Limit (Advanced users only!)
                  </div>
-               </div>
-               <div className="spacebetween" style={{ marginTop: "10px" }}>
-                 <div className="panellabel">
-                   Gas Limit (Advanced users only!)
-                 </div>
-                 <div className="panelvalue">
-                   {" "}
-                   <Input
-                     value={this.state.advancedgaslimit}
-                     className="inputTransparent inputclass"
-                     onChange={this.onChangeAdvancedGasLimitValue}
-                     placeholder={this.state.advancedgaslimit}
-                   />
-                   
-                 </div>
-               </div>
-             </div>
-             </React.Fragment>
-            )}
+                        <div className="panelvalue">
+                          {" "}
+                          <Input
+                            value={this.state.advancedgaslimit}
+                            className="inputTransparent inputclass"
+                            onChange={this.onChangeAdvancedGasLimitValue}
+                            placeholder={this.state.advancedgaslimit}
+                          />
+
+                        </div>
+                      </div>
+                    </div>
+                  </React.Fragment>
+                )}
                 {this.state.loading === true && (
                   <React.Fragment>
                     <div>
