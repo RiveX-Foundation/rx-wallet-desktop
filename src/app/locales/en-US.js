@@ -1,12 +1,21 @@
 const en_US = {
 
+  "Aave.GasPrice(Gwei)" :"GasPrice(Gwei" ,
+  "Aave.Withdrawal": "Withdrawal",
+  "Aave.Savings": "Savings",
+  "Aave.GasLimit(AdvancedUsersOnly)": "GasLimit(AdvancedUsersOnly!)",
+  "Aave.DisplayingAverageGasPriceFromAPI": "DisplayingAverageGasPriceFromAPI",
   "Aave.Balance": "Balance",
   "Aave.APY":"APY",
+  "Aave.Deposit":"Deposit",
+  "Aave.AdvnacedOptions" : "AdvancedOptions",
   "Aave.DisplayingGas":"(Displaying average gas price from API)",
   "Footer.allRightsReserved": "All Rights Reserved",
   "Footer.Company": "PixieLab Sdn Bhd",
-
+  "Aave.Balance" : "Balance",
+  "Aave.Approve" : "Appove",
   "Dashboard.Title": "Dashboard",
+  
 
   "Dex.Dex": "WRDEX",
 

@@ -591,7 +591,7 @@ class AaveDeposit extends Component {
           <span>
             <img onClick={this.back} width="20px" src={buttonback} />
           </span>
-          <span style={{ marginLeft: "20px" }}>Aave Deposit</span>
+          <span style={{ marginLeft: "20px" }}>{intl.get("Aave.APY")}</span>
         </div>
         <div className="centerpanel">
           <center>
@@ -599,7 +599,7 @@ class AaveDeposit extends Component {
               <React.Fragment>
                 <div className="subtitle">
                   {this.props.aavedeposittoken.token.toString().toUpperCase()}{" "}
-                  (savings)
+                  ({intl.get("Aave.Savings")})
                 </div>
                 <div
                   className="panelwrapper borderradiusfull"
@@ -672,25 +672,25 @@ class AaveDeposit extends Component {
                   <div className="panelvalue"><a onClick={this.setAdvancedOptions}>Advanced options</a></div>
                 </div>
                 {this.state.advancedoptions === true && (
-                  <React.Fragment>
-                    <div
-                      className="panelwrapper borderradiusfull"
-                      style={{ marginBottom: "10px" }}
-                    >
-                      <div className="spacebetween" style={{ marginTop: "10px" }}>
-                        <div className="panellabel">Gas price (Gwei)</div>
-                        <div className="panelvalue">
-                          <Input
-                            value={this.state.advancedgasprice}
-                            className="inputTransparent inputclass"
-                            onChange={this.onChangeAdvancedGasPriceValue}
-                            placeholder={this.state.advancedgasprice}
-                          />
-                        </div>
-                      </div>
-                      <div className="spacebetween" style={{ marginTop: "10px" }}>
-                        <div className="panellabel">
-                          Gas Limit (Advanced users only!)
+              <React.Fragment>
+               <div
+               className="panelwrapper borderradiusfull"
+               style={{ marginBottom: "10px" }}
+             >
+               <div className="spacebetween" style={{ marginTop: "10px" }}>
+                 <div className="panellabel">{intl.get("Aave.GasPrice(Gwei)")}</div>
+                 <div className="panelvalue">
+                 <Input
+                     value={this.state.advancedgasprice}
+                     className="inputTransparent inputclass"
+                     onChange={this.onChangeAdvancedGasPriceValue}
+                     placeholder={this.state.advancedgasprice}
+                   />
+                 </div>
+               </div>
+               <div className="spacebetween" style={{ marginTop: "10px" }}>
+                 <div className="panellabel">
+                 {intl.get("Aave.GasLimit(AdvancedUsersOnly)")}
                  </div>
                         <div className="panelvalue">
                           {" "}
@@ -732,13 +732,13 @@ class AaveDeposit extends Component {
                   style={{ marginBottom: "10px" }}
                 >
                   <div className="spacebetween">
-                    <div className="panellabel">APY</div>
+                    <div className="panellabel">{intl.get("Aave.APY")}</div>
                     <div className="panelvalue">
                       {this.props.aavedeposittoken.apy.toFixed(2)}%
                     </div>
                   </div>
                   <div className="spacebetween" style={{ marginTop: "10px" }}>
-                    <div className="panellabel">Balance</div>
+                    <div className="panellabel">{intl.get("Aave.Balance")}</div>
                     <div className="panelvalue">
                       {this.state.tokenbalance}{" "}
                       {this.props.aavedeposittoken.token
@@ -753,8 +753,7 @@ class AaveDeposit extends Component {
                 >
                   <div className="spacebetween">
                     <div className="panellabel">
-                      {intl.get("Transaction.GasPrice")} (Displaying average gas
-                      price from API)
+                      {intl.get("Transaction.GasPrice")} {intl.get("Aave.DisplayingAverageGasPriceFromAPI")}
                     </div>
                     <div className="panelvalue">
                     </div>
@@ -779,29 +778,39 @@ class AaveDeposit extends Component {
                   className="width600 spacebetween"
                   style={{ marginBottom: "30px" }}
                 >
-                  <div className="panelvalue"></div>
-                  <div className="panelvalue"><a onClick={this.setAdvancedOptions}>Advanced options</a></div>
+                   <div className="panelvalue"></div>
+              <div className="panelvalue"><a onClick={this.setAdvancedOptions}>{intl.get("Aave.AdvancedOptions")}</a></div>
                 </div>
                 {this.state.advancedoptions === true && (
-                  <React.Fragment>
-                    <div
-                      className="panelwrapper borderradiusfull"
-                      style={{ marginBottom: "10px" }}
-                    >
-                      <div className="spacebetween" style={{ marginTop: "10px" }}>
-                        <div className="panellabel">Gas price (Gwei)</div>
-                        <div className="panelvalue">
-                          <Input
-                            value={this.state.advancedgasprice}
-                            className="inputTransparent inputclass"
-                            onChange={this.onChangeAdvancedGasPriceValue}
-                            placeholder={this.state.advancedgasprice}
-                          />
-                        </div>
-                      </div>
-                      <div className="spacebetween" style={{ marginTop: "10px" }}>
-                        <div className="panellabel">
-                          Gas Limit (Advanced users only!)
+              <React.Fragment>
+               <div
+               className="panelwrapper borderradiusfull"
+               style={{ marginBottom: "10px" }}
+             >
+               <div className="spacebetween" style={{ marginTop: "10px" }}>
+                 <div className="panellabel">{intl.get("Aave.GasPrice(Gwei)")}</div>
+                 <div className="panelvalue">
+                 <Input
+                     value={this.state.advancedgasprice}
+                     className="inputTransparent inputclass"
+                     onChange={this.onChangeAdvancedGasPriceValue}
+                     placeholder={this.state.advancedgasprice}
+                   />
+                 </div>
+               </div>
+               <div className="spacebetween" style={{ marginTop: "10px" }}>
+                 <div className="panellabel">
+                 {intl.get("Aave.GasLimit(AdvancedUsersOnly)")}
+                 </div>
+                 <div className="panelvalue">
+                   {" "}
+                   <Input
+                     value={this.state.advancedgaslimit}
+                     className="inputTransparent inputclass"
+                     onChange={this.onChangeAdvancedGasLimitValue}
+                     placeholder={this.state.advancedgaslimit}
+                   />
+                   
                  </div>
                         <div className="panelvalue">
                           {" "}
@@ -826,7 +835,7 @@ class AaveDeposit extends Component {
                 )}
                 <div>
                   <Button className="curvebutton" onClick={this.approve}>
-                    Approve
+                  {intl.get("Aave.Approve")}
                   </Button>
                 </div>
               </React.Fragment>

@@ -346,20 +346,20 @@ class AaveWithdraw extends Component {
           <span>
             <img onClick={this.back} width="20px" src={buttonback} />
           </span>
-          <span style={{ marginLeft: "20px" }}>Aave Withdrawal</span>
+          <span style={{ marginLeft: "20px" }}>{intl.get("Aave.Withdrawal")}</span>
         </div>
         <div className="centerpanel">
           <center>
             <div className="subtitle">
               {this.props.aavedeposittoken.token.toString().toUpperCase()}{" "}
-              (savings)
+              ({intl.get("Aave.Savings")})
             </div>
             <div
               className="panelwrapper borderradiusfull"
               style={{ marginBottom: "10px" }}
             >
               <div className="spacebetween" style={{ marginTop: "10px" }}>
-                <div className="panellabel">Balance</div>
+                <div className="panellabel">{intl.get("Aave.Balance")}</div>
                 <div className="panelvalue">
                   {this.props.aavedeposittoken.balance.toString()} a
                   {this.props.aavedeposittoken.token.toString().toUpperCase()}
@@ -410,7 +410,7 @@ class AaveWithdraw extends Component {
               style={{ marginBottom: "30px" }}
             >
               <div className="panelvalue"></div>
-              <div className="panelvalue"><a onClick={this.setAdvancedOptions}>Advanced options</a></div>
+              <div className="panelvalue"><a onClick={this.setAdvancedOptions}>{intl.get("Aave.AdvancedOptions")}</a></div>
             </div>
             {this.state.advancedoptions === true && (
               <React.Fragment>
@@ -419,7 +419,7 @@ class AaveWithdraw extends Component {
                style={{ marginBottom: "10px" }}
              >
                <div className="spacebetween" style={{ marginTop: "10px" }}>
-                 <div className="panellabel">Gas price (Gwei)</div>
+                 <div className="panellabel">{intl.get("Aave.GasPrice(Gwei)")}</div>
                  <div className="panelvalue">
                  <Input
                      value={this.state.advancedgasprice}
@@ -431,7 +431,7 @@ class AaveWithdraw extends Component {
                </div>
                <div className="spacebetween" style={{ marginTop: "10px" }}>
                  <div className="panellabel">
-                   Gas Limit (Advanced users only!)
+                 {intl.get("Aave.GasLimit(AdvancedUsersOnly)")}
                  </div>
                  <div className="panelvalue">
                    {" "}
