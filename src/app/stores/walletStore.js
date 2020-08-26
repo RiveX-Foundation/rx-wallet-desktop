@@ -572,7 +572,8 @@ class walletStore {
       this.selectedTokenAsset.TokenType == "erc20" ||
       this.selectedTokenAsset.TokenType == "eth"
     ) {
-      //console.log(this.networkstore.selectedethnetwork.etherscanendpoint + '?module=account&action=txlist&address=' + addr + '&sort=desc&apikey=' + etherscanAPIKey);
+
+      console.log(this.networkstore.selectedethnetwork.etherscanendpoint + '?module=account&action=txlist&address=' + addr + '&sort=desc&apikey=' + etherscanAPIKey);
       axios({
         method: "get",
         url:

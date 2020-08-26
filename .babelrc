@@ -17,7 +17,7 @@
                 "legacy": true 
             }
         ],
-        ["transform-remove-console"],
+       // ["transform-remove-console"],
         [
             "@babel/proposal-class-properties",
             {
