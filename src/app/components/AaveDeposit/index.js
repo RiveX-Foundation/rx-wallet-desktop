@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { toJS } from "mobx";
 import { Modal, Button, Input, Spin } from "antd";
 import { inject, observer } from "mobx-react";
+import aavevertical from "static/image/aavevertical.png";
 import intl from "react-intl-universal";
 import { WALLETID } from "../../utils/support";
 import {
@@ -593,6 +594,10 @@ class AaveDeposit extends Component {
             <img onClick={this.back} width="20px" src={buttonback} />
           </span>
           <span style={{ marginLeft: "20px" }}>{intl.get("Aave.APY")}</span>
+        </div>
+        <div className="walletname"></div>
+        <div className="contentpanel">
+          <img src={aavevertical} style={{ height: "20%", width: "20%" }}></img>
         </div>
         <div className="centerpanel">
           <center>

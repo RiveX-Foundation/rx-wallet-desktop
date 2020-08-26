@@ -163,8 +163,56 @@
       font-size: 20px;
     }
   }
+  #students {
+    text-align: center;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-spacing: 0 10px;
+    border-collapse: separate;
+    width: 100%;
+    tr:first-child td:first-child { border-top-left-radius: 10px; }
+    tr:first-child td:last-child { border-top-right-radius: 10px; }
+    tr:last-child td:first-child { border-bottom-left-radius: 10px; }
+    tr:last-child td:last-child { border-bottom-right-radius: 10px; }
+  }
+  .assetclass {
+    float: left;
+    margin-top: 3px;
+    font-size: 20px;
+    color: white;
+  }
+  
+  #students td, #students th {
+    padding: 8px;
+  }
+  
+  
+  #students tr:hover {
+    background-image: linear-gradient(to right, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d, #25294d);
+  }
+  #students tr {
+    font-size: 20px;
+    background-image: linear-gradient(to right, #25294d, #24284b, #222749, #212647, #202545, #1f2443, #1e2441, #1d233f, #1c223d, #1b213b, #1a2039, #191f37);
+  }
+
+
+
+  
+  #students th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: center;
+    background-color: #4CAF50;
+    color: white;
+  }
   .tokenwrapper {
+    
     margin: 20px;
+    img.tokenimg {
+      width: 35px;
+      height: 35px;
+      margin-right: 20px;
+      float:left
+    }
 
     .tokenassetitemtop {
       display: flex;
@@ -206,13 +254,12 @@
 
       .assetcode, .totalcoin {
         color: #fff;
-        font-size: 20px;
+        font-size: 22px;
       }
 
-      .totalcoin span {
+      .totalcoin2 {
         color: #fff;
-        font-size: 17px;
-        margin-left: 5px;
+        font-size: 22px!important;
       }
 
       .assetcodename, .totalcurrency {

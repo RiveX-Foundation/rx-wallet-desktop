@@ -359,10 +359,14 @@ class AaveDashboard extends Component {
   };
 
   withdraw = async () => {
-    console.log(this.state.selectedtoken);
+    if(parseFloat(this.state.withdrawamount) > parseFloat(this.state.tokenbalance) || parseFloat(this.state.withdrawamount) <= 0 ){
+      createNotification('error',"Amount is higher than your balance!");
+    } else {
+    } console.log(this.state.selectedtoken);
     this.props.setAaveDepositToken(this.state.selectedtoken);
     this.props.setAaveDepositTokenAmount(this.state.withdrawamount);
     this.props.setCurrent("aavewithdraw");
+   
   };
 
   render() {

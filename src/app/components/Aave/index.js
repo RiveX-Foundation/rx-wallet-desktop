@@ -108,9 +108,14 @@ class Aave extends Component {
   };
 
   deposit = async () => {
-    this.props.setAaveDepositToken(this.state.selectedtoken);
-    this.props.setAaveDepositTokenAmount(this.state.depositamount);
-    this.props.setCurrent("aavedeposit");
+    if(parseFloat(this.state.depositamount) > parseFloat(this.state.tokenbalance) || parseFloat(this.state.depositamount) <= 0 ){
+      createNotification('error',"Amount is higher than your balance!");
+    } else {
+      this.props.setAaveDepositToken(this.state.selectedtoken);
+      this.props.setAaveDepositTokenAmount(this.state.depositamount);
+      this.props.setCurrent("aavedeposit");
+    }
+   
   };
 
   getAPYrates = async () => {
@@ -193,6 +198,18 @@ class Aave extends Component {
     this.props.setCurrent("aavedashboard");
   };
 
+  renderTableData() {
+    return this.state.apy.map((item, index) => {
+       return (
+          <tr key={index} onClick={() => this.openModal(item)} >
+             <td style={{width:"32%",borderTopLeftRadius:"10px",borderBottomLeftRadius:"10px"}}><img src={item.LogoUrl} className="tokenimg" /> <span className="assetclass">{item.token}</span>  </td>
+             <td>{Number(item.apy).toFixed(2)}%</td>
+             <td style={{float:"right",borderTopRightRadius:"10px",borderBottomRightRadius:"10px",marginTop:"7px",marginRight:"15px"}}> {item.market}</td>
+          </tr>
+       )
+    })
+ }
+
   openModal = (token) => {
     var selecetedwallet = toJS(this.props.selectedwalletlist);
     let walletlist = selecetedwallet.find(
@@ -257,7 +274,7 @@ class Aave extends Component {
               <div className="tokenassetitemrow">
                 <div className="amountctn">
                   <div className="totalcoin">
-                    <span>Market size</span>
+                    <span className="totalcoin2">Market size</span>
                   </div>
                 </div>
               </div>
@@ -267,7 +284,12 @@ class Aave extends Component {
                 <Spin size="large" tip="Loading..."></Spin>
               </React.Fragment>
             )}
-            {this.state.apy.map((item, index) => {
+             <table id='students'>
+               <tbody>
+                  {this.renderTableData()}
+               </tbody>
+            </table>
+            {/*this.state.apy.map((item, index) => {
               return (
                 <div
                   key={index}
@@ -298,7 +320,7 @@ class Aave extends Component {
                   </div>
                 </div>
               );
-            })}
+            })*/}
           </div>
           <Button
             className="curvebutton"
