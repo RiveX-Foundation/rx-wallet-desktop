@@ -108,8 +108,11 @@ class Aave extends Component {
   };
 
   deposit = async () => {
-    if(parseFloat(this.state.depositamount) > parseFloat(this.state.tokenbalance) || parseFloat(this.state.depositamount) <= 0 ){
-      createNotification('error',"Amount is higher than your balance!");
+    let tokenbal = new BigNumber(this.state.tokenbalance);
+    let withdrawam = new BigNumber(this.state.depositamount);
+    withdrawam.comparedTo(tokenbal);
+    if ( withdrawam.comparedTo(tokenbal) > 0 || Number(this.state.depositamount) <= 0 ||withdrawam.comparedTo(tokenbal) == null ) {
+      createNotification('error', "Wrong deposit amount!");
     } else {
       this.props.setAaveDepositToken(this.state.selectedtoken);
       this.props.setAaveDepositTokenAmount(this.state.depositamount);

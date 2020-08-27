@@ -365,6 +365,13 @@ class AaveDeposit extends Component {
     return lpCoreAddress;
   };
   deposit = async () => {
+    let tokenbal = new BigNumber(this.state.tokenbalance);
+    let withdrawam = new BigNumber(this.state.depositamount);
+    withdrawam.comparedTo(tokenbal);
+    if ( withdrawam.comparedTo(tokenbal) > 0 || Number(this.state.depositamount) <= 0 ||withdrawam.comparedTo(tokenbal) == null ) {
+      createNotification('error', "Wrong deposit amount!");
+      return;
+    }
     await this.getEstimateGasLimit();
     if (this.state.loading) {
       createNotification("info", "Wait for transaction to be mined!");
@@ -599,11 +606,12 @@ class AaveDeposit extends Component {
         <div className="contentpanel">
           <img src={aavevertical} style={{ height: "20%", width: "20%" }}></img>
         </div>
-        <div className="centerpanel">
+        <div className="centerpanel2">
           <center>
             {this.state.approval === false && (
               <React.Fragment>
                 <div className="subtitle">
+                <img src={this.props.aavedeposittoken.LogoUrl} className="tokenimg" />
                   {this.props.aavedeposittoken.token.toString().toUpperCase()}{" "}
                   ({intl.get("Aave.Savings")})
                 </div>
@@ -730,6 +738,7 @@ class AaveDeposit extends Component {
             {this.state.approval === true && (
               <React.Fragment>
                 <div className="subtitle">
+                <img src={this.props.aavedeposittoken.LogoUrl} className="tokenimg" />
                   {this.props.aavedeposittoken.token.toString().toUpperCase()}{" "}
                   (savings)
                 </div>

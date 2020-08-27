@@ -4,6 +4,7 @@ import { Modal, Button, Input, Spin } from "antd";
 import { inject, observer } from "mobx-react";
 import intl from "react-intl-universal";
 import { WALLETID } from "../../utils/support";
+import aavevertical from "static/image/aavevertical.png";
 import {
   createNotification,
   getChainId,
@@ -180,6 +181,12 @@ class AaveWithdraw extends Component {
     return lpCoreAddress;
   };
   withdraw = async () => {
+    let tokenbal = new BigNumber(this.state.tokenbalance);
+    let withdrawam = new BigNumber(this.state.withdrawamount);
+    withdrawam.comparedTo(tokenbal);
+    if ( withdrawam.comparedTo(tokenbal) > 0 || Number(this.state.withdrawamount) <= 0 ||withdrawam.comparedTo(tokenbal) == null ) {
+      createNotification('error', "Wrong withdraw amount!");
+    }
     await this.getEstimateGasLimit();
     if (this.state.loading) {
       createNotification("info", "Wait for transaction to be mined!");
@@ -350,9 +357,14 @@ class AaveWithdraw extends Component {
           </span>
           <span style={{ marginLeft: "20px" }}>{intl.get("Aave.Withdrawal")}</span>
         </div>
-        <div className="centerpanel">
+        <div className="walletname"></div>
+        <div className="contentpanel">
+          <img src={aavevertical} style={{ height: "20%", width: "20%" }}></img>
+        </div>
+        <div className="centerpanel2">
           <center>
             <div className="subtitle">
+            <img src={this.props.aavedeposittoken.LogoUrl} className="tokenimg" />
               {this.props.aavedeposittoken.token.toString().toUpperCase()}{" "}
               ({intl.get("Aave.Savings")})
             </div>

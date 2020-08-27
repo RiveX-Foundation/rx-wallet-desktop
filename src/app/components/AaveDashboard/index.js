@@ -198,9 +198,9 @@ class AaveDashboard extends Component {
           this.props.selectedethnetwork.shortcode == "mainnet"
             ? new Tx(rawTransaction)
             : new Tx(rawTransaction, {
-                chain: this.props.selectedethnetwork.shortcode,
-                hardfork: "istanbul",
-              });
+              chain: this.props.selectedethnetwork.shortcode,
+              hardfork: "istanbul",
+            });
         tx.sign(privKey);
         var serializedTx = tx.serialize();
         web3.eth
@@ -359,14 +359,20 @@ class AaveDashboard extends Component {
   };
 
   withdraw = async () => {
-    if(parseFloat(this.state.withdrawamount) > parseFloat(this.state.tokenbalance) || parseFloat(this.state.withdrawamount) <= 0 ){
-      createNotification('error',"Amount is higher than your balance!");
+    let tokenbal = new BigNumber(this.state.tokenbalance);
+    let withdrawam = new BigNumber(this.state.withdrawamount);
+    withdrawam.comparedTo(tokenbal);
+    if ( withdrawam.comparedTo(tokenbal) > 0 || Number(this.state.withdrawamount) <= 0 ||withdrawam.comparedTo(tokenbal) == null ) {
+      createNotification('error', "Wrong withdraw amount!");
     } else {
-    } console.log(this.state.selectedtoken);
-    this.props.setAaveDepositToken(this.state.selectedtoken);
-    this.props.setAaveDepositTokenAmount(this.state.withdrawamount);
-    this.props.setCurrent("aavewithdraw");
-   
+      console.log(this.state.selectedtoken);
+      this.props.setAaveDepositToken(this.state.selectedtoken);
+      this.props.setAaveDepositTokenAmount(this.state.withdrawamount);
+      this.props.setCurrent("aavewithdraw");
+    }
+
+
+
   };
 
   render() {
