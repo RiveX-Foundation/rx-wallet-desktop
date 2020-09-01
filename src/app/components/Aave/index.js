@@ -111,14 +111,17 @@ class Aave extends Component {
     let tokenbal = new BigNumber(this.state.tokenbalance);
     let withdrawam = new BigNumber(this.state.depositamount);
     withdrawam.comparedTo(tokenbal);
-    if ( withdrawam.comparedTo(tokenbal) > 0 || Number(this.state.depositamount) <= 0 ||withdrawam.comparedTo(tokenbal) == null ) {
-      createNotification('error', "Wrong deposit amount!");
+    if (
+      withdrawam.comparedTo(tokenbal) > 0 ||
+      Number(this.state.depositamount) <= 0 ||
+      withdrawam.comparedTo(tokenbal) == null
+    ) {
+      createNotification("error", "Wrong deposit amount!");
     } else {
       this.props.setAaveDepositToken(this.state.selectedtoken);
       this.props.setAaveDepositTokenAmount(this.state.depositamount);
       this.props.setCurrent("aavedeposit");
     }
-   
   };
 
   getAPYrates = async () => {
@@ -141,52 +144,67 @@ class Aave extends Component {
         item.AssetCode == "KNC" ||
         item.AssetCode == "SNX" ||
         item.AssetCode == "MKR" ||
-        item.AssetCode == "BAT"
+        item.AssetCode == "BAT" ||
+        item.AssetCode == "TUSD" ||
+        item.AssetCode == "sUSD" ||
+        item.AssetCode == "BUSD" ||
+        item.AssetCode == "LEND" ||
+        item.AssetCode == "YFI" ||
+        item.AssetCode == "REN" ||
+        item.AssetCode == "ENJ" ||
+        item.AssetCode == "MANA" ||
+        item.AssetCode == "REP" ||
+        item.AssetCode == "WBTC" ||
+        item.AssetCode == "ZRX"
       ) {
         var TokenInfo = item.TokenInfoList.find((x) => x.Network == "mainnet");
         TokenInfo = toJS(TokenInfo);
-        lpCoreContract.methods
-          .getReserveCurrentLiquidityRate(TokenInfo.ContractAddress)
-          .call()
-          .then(async (result) => {
-            BigNumber.config({ RANGE: 27 });
-            var test = web3.utils.fromWei(result.toString(), "gether");
-            test = test.toString().slice(0, 7);
-            let apy = parseFloat(test).toFixed(4);
-            apy = apy * 100;
-            lpCoreContract.methods
-              .getReserveTotalLiquidity(TokenInfo.ContractAddress)
-              .call()
-              .then(async (market) => {
-                let unit = "ether";
-                if (item.AssetCode == "USDT" || item.AssetCode == "USDC") {
-                  unit = "mwei";
-                }
-                var rez = web3.utils.fromWei(market.toString(), unit);
-                rez = rez.toString().slice(0, 12);
-                rez = Number(rez).toFixed(2);
-                console.log(rez);
-                var s = this.formatNumber(rez);
-                console.log(s);
-                let lastchar = s.slice(-1);
-                var x = s.indexOf(".");
+        try {
+          lpCoreContract.methods
+            .getReserveCurrentLiquidityRate(TokenInfo.ContractAddress)
+            .call()
+            .then(async (result) => {
+              BigNumber.config({ RANGE: 27 });
+              var test = web3.utils.fromWei(result.toString(), "gether");
+              test = test.toString().slice(0, 7);
+              let apy = parseFloat(test).toFixed(4);
+              apy = apy * 100;
+              lpCoreContract.methods
+                .getReserveTotalLiquidity(TokenInfo.ContractAddress)
+                .call()
+                .then(async (market) => {
+                  let unit = "ether";
+                  if (item.AssetCode == "USDT" || item.AssetCode == "USDC") {
+                    unit = "mwei";
+                  }
+                  var rez = web3.utils.fromWei(market.toString(), unit);
+                  rez = rez.toString().slice(0, 12);
+                  rez = Number(rez).toFixed(2);
+                  console.log(rez);
+                  var s = this.formatNumber(rez);
+                  console.log(s);
+                  let lastchar = s.slice(-1);
+                  var x = s.indexOf(".");
 
-                console.log(x);
-                s = s.slice(0, x + 2);
-                s = s + lastchar;
-                //console.log(item.AssetCode + " " +s);
-                apylist.push({
-                  token: item.AssetCode,
-                  apy: apy,
-                  LogoUrl: item.LogoUrl,
-                  market: s,
+                  console.log(x);
+                  s = s.slice(0, x + 2);
+                  s = s + lastchar;
+                  //console.log(item.AssetCode + " " +s);
+                  apylist.push({
+                    token: item.AssetCode,
+                    apy: apy,
+                    LogoUrl: item.LogoUrl,
+                    market: s,
+                  });
+                  this.setState({
+                    apy: this.state.apy.concat(apylist),
+                  });
+                  apylist = [];
                 });
-                this.setState({
-                  apy: this.state.apy.concat(apylist),
-                });
-                apylist = [];
-              });
-          });
+            });
+        } catch (error) {
+          console.log("ERROR: " + error);
+        }
       }
     });
   };
@@ -203,15 +221,35 @@ class Aave extends Component {
 
   renderTableData() {
     return this.state.apy.map((item, index) => {
-       return (
-          <tr key={index} onClick={() => this.openModal(item)} >
-             <td style={{width:"32%",borderTopLeftRadius:"10px",borderBottomLeftRadius:"10px"}}><img src={item.LogoUrl} className="tokenimg" /> <span className="assetclass">{item.token}</span>  </td>
-             <td>{Number(item.apy).toFixed(2)}%</td>
-             <td style={{float:"right",borderTopRightRadius:"10px",borderBottomRightRadius:"10px",marginTop:"7px",marginRight:"15px"}}> {item.market}</td>
-          </tr>
-       )
-    })
- }
+      return (
+        <tr key={index} onClick={() => this.openModal(item)}>
+          <td
+            style={{
+              width: "32%",
+              borderTopLeftRadius: "10px",
+              borderBottomLeftRadius: "10px",
+            }}
+          >
+            <img src={item.LogoUrl} className="tokenimg" />{" "}
+            <span className="assetclass">{item.token}</span>{" "}
+          </td>
+          <td>{Number(item.apy).toFixed(2)}%</td>
+          <td
+            style={{
+              float: "right",
+              borderTopRightRadius: "10px",
+              borderBottomRightRadius: "10px",
+              marginTop: "7px",
+              marginRight: "15px",
+            }}
+          >
+            {" "}
+            {item.market}
+          </td>
+        </tr>
+      );
+    });
+  }
 
   openModal = (token) => {
     var selecetedwallet = toJS(this.props.selectedwalletlist);
@@ -287,10 +325,8 @@ class Aave extends Component {
                 <Spin size="large" tip="Loading..."></Spin>
               </React.Fragment>
             )}
-             <table id='students'>
-               <tbody>
-                  {this.renderTableData()}
-               </tbody>
+            <table id="students">
+              <tbody>{this.renderTableData()}</tbody>
             </table>
             {/*this.state.apy.map((item, index) => {
               return (
@@ -344,7 +380,7 @@ class Aave extends Component {
           <div className="pheader">Amount to deposit</div>
           <div className="pmodalcontent">
             <div className="balancetext">
-              balance: <a onClick={this.setMax}>{this.state.tokenbalance}{" "}</a>
+              balance: <a onClick={this.setMax}>{this.state.tokenbalance} </a>
               {this.state.selectedtoken.token}
             </div>
             <div

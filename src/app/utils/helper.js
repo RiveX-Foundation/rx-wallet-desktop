@@ -559,7 +559,7 @@ export const isNullOrEmpty = (value) => {
 export const toFixedNoRounding = (str, n) => {
   let num = str.toString();
   let indexofdot = num.toString().indexOf(".");
-  num = num.slice(0,indexofdot+n);
+  num = num.slice(0, indexofdot + n);
   return num;
 };
 

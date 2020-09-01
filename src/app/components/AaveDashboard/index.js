@@ -198,9 +198,9 @@ class AaveDashboard extends Component {
           this.props.selectedethnetwork.shortcode == "mainnet"
             ? new Tx(rawTransaction)
             : new Tx(rawTransaction, {
-              chain: this.props.selectedethnetwork.shortcode,
-              hardfork: "istanbul",
-            });
+                chain: this.props.selectedethnetwork.shortcode,
+                hardfork: "istanbul",
+              });
         tx.sign(privKey);
         var serializedTx = tx.serialize();
         web3.eth
@@ -274,42 +274,57 @@ class AaveDashboard extends Component {
         item.AssetCode == "KNC" ||
         item.AssetCode == "SNX" ||
         item.AssetCode == "MKR" ||
-        item.AssetCode == "BAT"
+        item.AssetCode == "BAT" ||
+        item.AssetCode == "TUSD" ||
+        item.AssetCode == "sUSD" ||
+        item.AssetCode == "BUSD" ||
+        item.AssetCode == "LEND" ||
+        item.AssetCode == "YFI" ||
+        item.AssetCode == "REN" ||
+        item.AssetCode == "ENJ" ||
+        item.AssetCode == "MANA" ||
+        item.AssetCode == "REP" ||
+        item.AssetCode == "WBTC" ||
+        item.AssetCode == "ZRX"
       ) {
         var TokenInfo = item.TokenInfoList.find((x) => x.Network == "mainnet");
         TokenInfo = toJS(TokenInfo);
-        lpCoreContract.methods
-          .getReserveATokenAddress(TokenInfo.ContractAddress)
-          .call()
-          .then(async (result) => {
-            var addy = result.toString();
-            // console.log(addy);
-            //console.log("selected wallet: "+this.state.selectedwallet);
-            let ercContract = new web3.eth.Contract(ERC20ABI, addy);
-            console.log(ercContract);
-            ercContract.methods
-              .balanceOf(this.state.selectedwallet.toString().toLowerCase())
-              .call()
-              .then(async (balance) => {
-                let unit = "ether";
-                if (item.AssetCode == "USDT" || item.AssetCode == "USDC") {
-                  unit = "mwei";
-                }
-                var rez = web3.utils.fromWei(balance.toString(), unit);
-                var bal = new BigNumber(rez.toString());
-                console.log(bal.toString());
-                dashtoken.push({
-                  token: item.AssetCode,
-                  balance: bal,
-                  LogoUrl: item.LogoUrl,
-                  aContract: addy,
+        try {
+          lpCoreContract.methods
+            .getReserveATokenAddress(TokenInfo.ContractAddress)
+            .call()
+            .then(async (result) => {
+              var addy = result.toString();
+              // console.log(addy);
+              //console.log("selected wallet: "+this.state.selectedwallet);
+              let ercContract = new web3.eth.Contract(ERC20ABI, addy);
+              console.log(ercContract);
+              ercContract.methods
+                .balanceOf(this.state.selectedwallet.toString().toLowerCase())
+                .call()
+                .then(async (balance) => {
+                  let unit = "ether";
+                  if (item.AssetCode == "USDT" || item.AssetCode == "USDC") {
+                    unit = "mwei";
+                  }
+                  var rez = web3.utils.fromWei(balance.toString(), unit);
+                  var bal = new BigNumber(rez.toString());
+                  console.log(bal.toString());
+                  dashtoken.push({
+                    token: item.AssetCode,
+                    balance: bal,
+                    LogoUrl: item.LogoUrl,
+                    aContract: addy,
+                  });
+                  this.setState({
+                    tokenlist: this.state.tokenlist.concat(dashtoken),
+                  });
+                  dashtoken = [];
                 });
-                this.setState({
-                  tokenlist: this.state.tokenlist.concat(dashtoken),
-                });
-                dashtoken = [];
-              });
-          });
+            });
+        } catch (error) {
+          console.log("ERROR: " + error);
+        }
       }
     });
   };
@@ -362,17 +377,18 @@ class AaveDashboard extends Component {
     let tokenbal = new BigNumber(this.state.tokenbalance);
     let withdrawam = new BigNumber(this.state.withdrawamount);
     withdrawam.comparedTo(tokenbal);
-    if ( withdrawam.comparedTo(tokenbal) > 0 || Number(this.state.withdrawamount) <= 0 ||withdrawam.comparedTo(tokenbal) == null ) {
-      createNotification('error', "Wrong withdraw amount!");
+    if (
+      withdrawam.comparedTo(tokenbal) > 0 ||
+      Number(this.state.withdrawamount) <= 0 ||
+      withdrawam.comparedTo(tokenbal) == null
+    ) {
+      createNotification("error", "Wrong withdraw amount!");
     } else {
       console.log(this.state.selectedtoken);
       this.props.setAaveDepositToken(this.state.selectedtoken);
       this.props.setAaveDepositTokenAmount(this.state.withdrawamount);
       this.props.setCurrent("aavewithdraw");
     }
-
-
-
   };
 
   render() {
@@ -454,7 +470,7 @@ class AaveDashboard extends Component {
           <div className="pheader">Amount to withdraw</div>
           <div className="pmodalcontent">
             <div className="balancetext">
-              balance:<a onClick={this.setMax}> {this.state.tokenbalance}{" "}</a>
+              balance:<a onClick={this.setMax}> {this.state.tokenbalance} </a>
               {this.state.selectedtoken.token}
             </div>
             <div
