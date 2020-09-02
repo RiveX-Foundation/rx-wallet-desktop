@@ -68,7 +68,7 @@ const en_US = {
   "Modal.AreYouSureChangeNetwork.Msg1": "Changing network will reload the app",
   "Modal.AreYouSureChangeNetwork.Msg2": "Do you still want to change?",
   "Modal.AreYouSureRemoveTokenAsset": "Are you sure want to remove asset ?",
-
+  "Wallet.ShowChart":"Show/Hide Chart",
   "Wallet.CreateWallet": "Create Wallet",
   "Wallet.BasicWallet": "Basic Wallet",
   "Wallet.LocalWallet": "Local Wallet",

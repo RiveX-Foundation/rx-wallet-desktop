@@ -343,7 +343,7 @@ class SelectedWallet extends Component {
                         )}
                       </div>
                       <div className="chartctn">
-                        <ResponsiveContainer width={"100%"} height={200}>
+                        <ResponsiveContainer width={"100%"} height={130}>
                           <AreaChart data={sparkline} baseValue={dataMin}>
                             <defs>
                               <linearGradient
