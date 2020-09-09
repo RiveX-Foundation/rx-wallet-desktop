@@ -592,7 +592,8 @@ class walletStore {
       this.selectedTokenAsset.TokenType == "erc20" ||
       this.selectedTokenAsset.TokenType == "eth"
     ) {
-      //console.log(this.networkstore.selectedethnetwork.etherscanendpoint + '?module=account&action=txlist&address=' + addr + '&sort=desc&apikey=' + etherscanAPIKey);
+
+      console.log(this.networkstore.selectedethnetwork.etherscanendpoint + '?module=account&action=txlist&address=' + addr + '&sort=desc&apikey=' + etherscanAPIKey);
       axios({
         method: "get",
         url:
@@ -1941,8 +1942,14 @@ class walletStore {
           .then((balance) => {
             //console.log("BALANCE: "+ balance + " "+ tokenitem.AssetCode);
             if (
+              tokenitem.AssetCode == "WBTC" 
+            ) {
+              var tokenbal = balance / 10 ** 8;
+              tokenitem.TokenBalance = tokenbal.toString();
+            }
+            else if (
               tokenitem.AssetCode == "USDT" ||
-              tokenitem.AssetCode == "USDC"
+              tokenitem.AssetCode == "USDC" 
             ) {
               var tokenbal = new BigNumber(web3.utils.fromWei(balance, "mwei"));
               tokenitem.TokenBalance = tokenbal.toString();

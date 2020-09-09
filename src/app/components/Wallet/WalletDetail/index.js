@@ -15,6 +15,7 @@ import buttonsend from "static/image/icon/send.png";
 import buttonback from "static/image/icon/back.png";
 import menuicon from "static/image/icon/menu.png";
 import deleteicon from "static/image/icon/rubbish-bin-delete-button.png";
+import charticon from "static/image/icon/chart.png";
 import { Area, AreaChart, Curve, ResponsiveContainer } from "recharts";
 
 var Web3 = require("web3");
@@ -83,9 +84,16 @@ class WalletDetail extends Component {
     showhideremovetoken: false,
     isPrimary: false,
     selecteddataset: {},
+    showChart: false
   };
 
   componentDidMount() {
+    let showchart = localStorage.getItem("showchart");
+    if(showchart == "true"){
+      this.setState({showChart:true});
+    } else {
+      this.setState({showChart:false});
+    }
     // console.log(JSON.stringify(this.props.selectedWallet))
     // console.log("selectedTokenAsset" , this.props.selectedTokenAsset)
     var TokenInfo = this.props.selectedTokenAsset.TokenInfoList[0]; //.find(x => x.Network == this.props.selectednetwork.shortcode);
@@ -189,6 +197,10 @@ class WalletDetail extends Component {
           <img src={deleteicon} />
           <div>{intl.get("Wallet.RemoveAsset")}</div>
         </Menu.Item>
+        <Menu.Item key="1" onClick={this.showHideChart}>
+          <img src={charticon} />
+          <div>{intl.get("Wallet.ShowChart")}</div>
+        </Menu.Item>
       </Menu>
     );
   };
@@ -198,6 +210,14 @@ class WalletDetail extends Component {
     this.setState({
       showhideremovetoken: !this.state.showhideremovetoken,
     });
+  };
+
+  showHideChart = () => {
+    console.log("showHideChart");
+    this.setState({
+      showChart: !this.state.showChart
+    });
+    localStorage.setItem("showchart",!this.state.showChart);
   };
 
   confirmRemoveToken = () => {
@@ -315,8 +335,11 @@ class WalletDetail extends Component {
                 )}{" "}
                 {this.props.currencycode}
               </div>
+              { this.state.showChart && 
+                <React.Fragment>
+              
               <div style={{ height: "100px", position: "relative" }}>
-                <ResponsiveContainer width={"100%"} height={500}>
+                <ResponsiveContainer width={"100%"} height={200}>
                   <AreaChart data={sparkline} baseValue={dataMin}>
                     <defs>
                       <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
@@ -332,10 +355,7 @@ class WalletDetail extends Component {
                         />
                       </linearGradient>
                     </defs>
-                    {/* <XAxis dataKey="value" />
-                    <YAxis />
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <Tooltip cursor={false} />  */}
+                 
                     <Curve type={"natural"} />
                     <Area
                       type="monotone"
@@ -350,6 +370,7 @@ class WalletDetail extends Component {
                 <div className="chartvalue-high">{dataMax}</div>
                 <div className="chartvalue-low">{dataMin}</div>
               </div>
+              </React.Fragment> }
               <Button
                 className="butreceive button"
                 onClick={this.receiveToken}
