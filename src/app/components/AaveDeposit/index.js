@@ -265,7 +265,7 @@ class AaveDeposit extends Component {
           rawTransaction = {
             from: this.state.selectedWallet.toString(),
             nonce: count,
-            gasPrice: web3.utils.toHex(this.state.advancedgasprice), //"0x04e3b29200",
+            gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(),"gwei")), //"0x04e3b29200",
             // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
             gas: this.state.advancedgaslimit, //"0x7458",
             to: tokenContract, //this.tokencontract,
@@ -430,7 +430,7 @@ class AaveDeposit extends Component {
           rawTransaction = {
             from: this.state.selectedWallet.toString(),
             nonce: count,
-            gasPrice: web3.utils.toHex(this.state.advancedgasprice), //"0x04e3b29200",
+            gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(),"gwei")), //"0x04e3b29200",
             // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
             gas: this.state.advancedgaslimit, //"0x7458",
             to: lpAddress, //this.tokencontract,
