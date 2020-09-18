@@ -140,7 +140,7 @@ class AaveDeposit extends Component {
         this.state.depositamount.toString(),
         unit
       );
-      const referralCode = "0";
+      const referralCode = "87";
       const tokenContract = this.state.tokenInfo.ContractAddress;
       const lpAddress = await this.getLendingPoolAddress();
       const lpContract = new web3.eth.Contract(LendingPoolABI, lpAddress);
@@ -159,7 +159,9 @@ class AaveDeposit extends Component {
           });
         });
     }
-  };
+  }
+
+  
 
   getCurrentGasPrices = async () => {
     let response = await Axios.get(API_EthGas);
@@ -267,7 +269,7 @@ class AaveDeposit extends Component {
             nonce: count,
             gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(),"gwei")), //"0x04e3b29200",
             // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-            gas: this.state.advancedgaslimit, //"0x7458",
+            gas: this.state.advancedgaslimit + 100000, //"0x7458",
             to: tokenContract, //this.tokencontract,
             value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
             data: dataApprove, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
@@ -395,7 +397,7 @@ class AaveDeposit extends Component {
     );
     console.log(depositAmount);
     const tokenContract = this.state.tokenInfo.ContractAddress;
-    const referralCode = "0";
+    const referralCode = "87";
 
     try {
       //if no approval then deposit
