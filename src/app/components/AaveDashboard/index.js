@@ -312,7 +312,7 @@ class AaveDashboard extends Component {
                   console.log(bal.toString());
                   dashtoken.push({
                     token: item.AssetCode,
-                    balance: bal,
+                    balance: rez,
                     LogoUrl: item.LogoUrl,
                     aContract: addy,
                   });

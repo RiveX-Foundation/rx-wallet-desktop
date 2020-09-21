@@ -562,7 +562,7 @@ class AaveDeposit extends Component {
           data: contract.methods.balanceOf(tokenitem.PublicAddress).encodeABI(),
         })
         .then((balance) => {
-          if (tokenitem.AssetCode == "USDT") {
+          if (tokenitem.AssetCode == "USDT" || tokenitem.AssetCode == "USDC") {
             var tokenbal = new BigNumber(web3.utils.fromWei(balance, "mwei"));
             this.setState({
               tokenbalance: tokenbal.toString(),
