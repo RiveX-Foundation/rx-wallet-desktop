@@ -242,7 +242,7 @@ class AaveWithdraw extends Component {
           nonce: count,
           gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(),"gwei")), //"0x04e3b29200",
           // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-          gas: this.state.advancedgaslimit +100000, //"0x7458",
+          gas: this.state.advancedgaslimit +10000, //"0x7458",
           to: this.state.selectedtoken.aContract, //this.tokencontract,
           value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
           data: dataWithdraw, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
