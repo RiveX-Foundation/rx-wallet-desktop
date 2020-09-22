@@ -303,8 +303,8 @@ class TokenTransferConfirmation extends Component {
           var txcost = gas.multipliedBy(gasPrice);
           console.log("TXCOST" + txcost);
           var totalcost = txcost.plus(sendamount);
-          console.log(totalcost + " " + totalbalance);
-          if (totalcost > totalbalance) {
+          let compare = totalcost.comparedTo(totalbalance);
+          if (compare == 1) {
             console.log("total cost higher");
             tosend = sendamount.minus(txcost);
           } else {
