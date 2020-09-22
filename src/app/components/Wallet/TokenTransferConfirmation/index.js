@@ -304,7 +304,8 @@ class TokenTransferConfirmation extends Component {
           console.log("TXCOST" + txcost);
           var totalcost = txcost.plus(sendamount);
           console.log(totalcost + " " + totalbalance);
-          if (totalcost > totalbalance) {
+         let compare = totalcost.comparedTo(totalbalance);
+          if (compare == 1) {
             console.log("total cost higher");
             tosend = sendamount.minus(txcost);
           } else {

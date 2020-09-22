@@ -235,7 +235,7 @@ class Security extends Component {
     return (
       <div className="currencypanel fadeInAnim">
         {/* <div className="title" ><span>{intl.get('Settings.2FASecurity')}</span></div>*/}
-        <div className="centerpanel" style={{ marginTop: "-50px" }}>
+        <div className="centerpanel2" style={{ marginTop: "-50px" }}>
           <div className="inputpanel">
             <Radio.Group onChange={this.onChange} value={this.state.value}>
               {!smsdisabled && (

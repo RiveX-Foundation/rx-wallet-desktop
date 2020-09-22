@@ -98,11 +98,11 @@ class Currency extends Component {
   render() {
     const { autoliststyle, filterlist, currencycode } = this.state;
     return (
-      <div className="currencypanel fadeInAnim">
+      <div className="currencypanel fadeInAnim" style={{height:"0px!important"}}>
         <div className="title">
           <span>{intl.get("Settings.Currency")}</span>
         </div>
-        <div className="centerpanel">
+        <div className="centerpanel2">
           <div className="inputwrapper">
             <div className="panelwrapper countrycodewrapper">
               <Input

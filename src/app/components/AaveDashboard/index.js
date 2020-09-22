@@ -285,7 +285,8 @@ class AaveDashboard extends Component {
         item.AssetCode == "MANA" ||
         item.AssetCode == "REP" ||
         item.AssetCode == "WBTC" ||
-        item.AssetCode == "ZRX"
+        item.AssetCode == "ZRX" ||
+        item.AssetCode == "eth"
       ) {
         var TokenInfo = item.TokenInfoList.find((x) => x.Network == "mainnet");
         TokenInfo = toJS(TokenInfo);
@@ -311,7 +312,7 @@ class AaveDashboard extends Component {
                   var bal = new BigNumber(rez.toString());
                   console.log(bal.toString());
                   dashtoken.push({
-                    token: item.AssetCode,
+                    token: item.AssetCode.toString().toUpperCase(),
                     balance: rez,
                     LogoUrl: item.LogoUrl,
                     aContract: addy,

@@ -155,10 +155,13 @@ class Aave extends Component {
         item.AssetCode == "MANA" ||
         item.AssetCode == "REP" ||
         item.AssetCode == "WBTC" ||
-        item.AssetCode == "ZRX"
+        item.AssetCode == "ZRX" ||
+        item.AssetCode == "eth"
+        
       ) {
         var TokenInfo = item.TokenInfoList.find((x) => x.Network == "mainnet");
         TokenInfo = toJS(TokenInfo);
+        console.log(TokenInfo);
         try {
           lpCoreContract.methods
             .getReserveCurrentLiquidityRate(TokenInfo.ContractAddress)
@@ -191,7 +194,7 @@ class Aave extends Component {
                   s = s + lastchar;
                   //console.log(item.AssetCode + " " +s);
                   apylist.push({
-                    token: item.AssetCode,
+                    token: item.AssetCode.toString().toUpperCase(),
                     apy: apy,
                     LogoUrl: item.LogoUrl,
                     market: s,
