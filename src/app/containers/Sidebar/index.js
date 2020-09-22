@@ -140,6 +140,12 @@ class Sidebar extends Component {
     this.setState({ selectedtab: "los" });
     this.props.setCurrent("los");
   };
+  selectlosv2 = () => {
+    this.props.clearSelectedWallet();
+    this.props.setselectedwallettype("");
+    this.setState({ selectedtab: "leagueofstakes" });
+    this.props.setCurrent("leagueofstakes");
+  };
 
   selectaave = () => {
     this.props.clearSelectedWallet();
@@ -198,6 +204,10 @@ class Sidebar extends Component {
       selectedtab == "aave"
         ? "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open ant-menu-submenu-selected"
         : "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open";
+        const leaguestyle =
+        selectedtab == "losv2"
+          ? "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open ant-menu-submenu-selected"
+          : "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open";
     const settingstyle =
       selectedtab == "setting"
         ? "ant-menu-submenu ant-menu-submenu-inline ant-menu-submenu-open ant-menu-submenu-selected"
@@ -343,6 +353,28 @@ class Sidebar extends Component {
                     <img src={buttonaave} width="20px" />
                     <span className="sidebar_fontsize sidebar_dexfontcolor">
                       AAVE
+                    </span>
+                  </span>
+                </div>
+              </li>
+            }
+               {
+              <li
+                data-tabvalue="losv2"
+                className={leaguestyle}
+                onClick={this.selectlosv2}
+                role="menuitem"
+              >
+                <div
+                  className="ant-menu-submenu-title"
+                  aria-expanded="true"
+                  aria-haspopup="true"
+                  aria-owns="/$Menu"
+                >
+                  <span>
+                    <img src={buttonlos} width="20px" />
+                    <span className="sidebar_fontsize sidebar_dexfontcolor">
+                      {intl.get("Los.Los")} v2
                     </span>
                   </span>
                 </div>
