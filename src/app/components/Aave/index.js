@@ -146,7 +146,7 @@ class Aave extends Component {
         item.AssetCode == "MKR" ||
         item.AssetCode == "BAT" ||
         item.AssetCode == "TUSD" ||
-        item.AssetCode == "sUSD" ||
+        item.AssetCode == "SUSD" ||
         item.AssetCode == "BUSD" ||
         item.AssetCode == "LEND" ||
         item.AssetCode == "YFI" ||
