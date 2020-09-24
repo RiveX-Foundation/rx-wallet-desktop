@@ -136,6 +136,7 @@ class Aave extends Component {
     var obj = {};
     console.log("GETTING APY RATES");
     alltokens.map((item, index) => {
+      console.log(item.AssetCode);
       if (
         item.AssetCode == "DAI" ||
         item.AssetCode == "USDC" ||
