@@ -123,6 +123,9 @@ class walletStore {
   }
 
   @computed get gettrxlist() {
+    try {
+      
+    
     var finallist = [];
     this.trxlist.map((item, i) => {
       if (item.to != "") {
@@ -154,6 +157,9 @@ class walletStore {
         finallist.push(trx);
       }
     });
+  } catch (error) {
+      
+  }
 
     this.multisigtrxlist.map((item, i) => {
       var action = "approve";
@@ -1923,7 +1929,7 @@ class walletStore {
         console.log(TokenInfo);
         try {
           var tokenAbiArray = JSON.parse(TokenInfo.AbiArray);
-        } catch (e) {}
+       
 
         // Get ERC20 Token contract instance
         let contract = new web3.eth.Contract(
@@ -1976,6 +1982,7 @@ class walletStore {
                 tokenitem.TokenBalance;
             }
           });
+        } catch (e) {}
         self.selectedassettokenlist.push(tokenitem);
       } else if (tokenitem.TokenType == "wrc20") {
         var web3 = new Web3(
