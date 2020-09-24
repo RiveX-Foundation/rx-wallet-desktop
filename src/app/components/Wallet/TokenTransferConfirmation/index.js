@@ -594,7 +594,7 @@ class TokenTransferConfirmation extends Component {
       } else if (this.props.selectedTokenAsset.TokenType == "erc20") {
         var tokenitem = toJS(this.props.selectedTokenAsset);
         var unit = "ether";
-        if (tokenitem.AssetCode == "USDT" || tokenitem.AssetCode == "fls6") {
+        if (tokenitem.AssetCode == "USDT" || tokenitem.AssetCode == "USDC") {
           unit = "mwei";
         }
         const web3 = new Web3(this.web3Provider);

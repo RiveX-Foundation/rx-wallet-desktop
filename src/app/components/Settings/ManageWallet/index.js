@@ -185,7 +185,7 @@ class ManageWallet extends Component {
   render() {
     return (
       <div className="managewalletpanel fadeInAnim">
-        <div className="centerpanel">
+        <div className="centerpanel2">
           <div className="title">
             <span>{intl.get("Settings.ManageWallets")}</span>
           </div>
