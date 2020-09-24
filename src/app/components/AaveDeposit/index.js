@@ -570,13 +570,13 @@ class AaveDeposit extends Component {
         })
         .then((balance) => {
           if (tokenitem.AssetCode == "USDT" || tokenitem.AssetCode == "USDC") {
-            var tokenbal = new BigNumber(web3.utils.fromWei(balance, "mwei"));
+            var tokenbal = web3.utils.fromWei(balance, "mwei");
             this.setState({
               tokenbalance: tokenbal.toString(),
             });
             tokenitem.TokenBalance = tokenbal.toString();
           } else {
-            var tokenbal = new BigNumber(web3.utils.fromWei(balance, "ether"));
+            var tokenbal = web3.utils.fromWei(balance, "ether");
             this.setState({
               tokenbalance: tokenbal.toString(),
             });
