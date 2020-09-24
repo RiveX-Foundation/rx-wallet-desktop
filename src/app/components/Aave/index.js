@@ -256,12 +256,13 @@ class Aave extends Component {
 
   openModal = (token) => {
     var selecetedwallet = toJS(this.props.selectedwalletlist);
+    console.log(selecetedwallet);
     let walletlist = selecetedwallet.find(
       (x) => x.publicaddress == localStorage.getItem("selectedwallet")
     );
     walletlist = toJS(walletlist);
     let tokenasset = walletlist.tokenassetlist.find(
-      (x) => x.AssetCode == token.token
+      (x) => x.AssetCode.toString().toUpperCase() == token.token.toString().toUpperCase()
     );
     if (tokenasset == null || tokenasset == "") {
       createNotification(

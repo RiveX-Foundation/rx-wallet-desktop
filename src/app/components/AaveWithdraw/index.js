@@ -180,7 +180,7 @@ class AaveWithdraw extends Component {
     return lpCoreAddress;
   };
   withdraw = async () => {
-    let tokenbal = new BigNumber(this.state.tokenbalance);
+    let tokenbal = new BigNumber(this.state.selectedtoken.balance);
     let withdrawam = new BigNumber(this.state.withdrawamount);
     withdrawam.comparedTo(tokenbal);
     if (

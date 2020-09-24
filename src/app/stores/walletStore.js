@@ -143,7 +143,7 @@ class walletStore {
               : item.gasUsed / 1000000000 + " gwei",
           nonce: item.nonce,
           timestamp: item.timeStamp,
-          value: Web3.utils.fromWei(item.value, "ether"),
+          value: Web3.utils.fromWei(item.value.toString(), "ether"),
           confirmation: item.confirmations,
           status: this.ParseTrxStatus(item.txreceipt_status),
           isblockchain: true,
