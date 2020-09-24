@@ -275,9 +275,7 @@ class AaveDashboard extends Component {
         item.AssetCode == "SNX" ||
         item.AssetCode == "MKR" ||
         item.AssetCode == "BAT" ||
-        item.AssetCode == "TUSD" ||
         item.AssetCode == "SUSD" ||
-        item.AssetCode == "BUSD" ||
         item.AssetCode == "LEND" ||
         item.AssetCode == "YFI" ||
         item.AssetCode == "REN" ||
@@ -285,8 +283,7 @@ class AaveDashboard extends Component {
         item.AssetCode == "MANA" ||
         item.AssetCode == "REP" ||
         item.AssetCode == "WBTC" ||
-        item.AssetCode == "ZRX" ||
-        item.AssetCode == "eth"
+        item.AssetCode == "ZRX" 
       ) {
         var TokenInfo = item.TokenInfoList.find((x) => x.Network == "mainnet");
         TokenInfo = toJS(TokenInfo);

@@ -532,12 +532,6 @@ class AaveDeposit extends Component {
     let tokenitem = walletlist.tokenassetlist.find(
       (x) => x.AssetCode.toString().toUpperCase() == this.props.aavedeposittoken.token.toString().toUpperCase()
     );
-    if(tokenitem.AssetCode == "eth" || tokenitem.AssetCode == "ETH") {
-      this.setState({
-        tokenbalance: tokenitem.TokenBalance
-      });
-      return;
-    }
     if (tokenitem == null || tokenitem == "") {
       console.log("wallet does not have this asset.");
       createNotification(
