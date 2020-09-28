@@ -136,6 +136,7 @@ class Aave extends Component {
     var obj = {};
     console.log("GETTING APY RATES");
     alltokens.map((item, index) => {
+      console.log(item.AssetCode);
       if (
         item.AssetCode == "DAI" ||
         item.AssetCode == "USDC" ||
@@ -145,9 +146,7 @@ class Aave extends Component {
         item.AssetCode == "SNX" ||
         item.AssetCode == "MKR" ||
         item.AssetCode == "BAT" ||
-        item.AssetCode == "TUSD" ||
-        item.AssetCode == "sUSD" ||
-        item.AssetCode == "BUSD" ||
+        item.AssetCode == "SUSD" ||
         item.AssetCode == "LEND" ||
         item.AssetCode == "YFI" ||
         item.AssetCode == "REN" ||
@@ -156,9 +155,11 @@ class Aave extends Component {
         item.AssetCode == "REP" ||
         item.AssetCode == "WBTC" ||
         item.AssetCode == "ZRX"
+        
       ) {
         var TokenInfo = item.TokenInfoList.find((x) => x.Network == "mainnet");
         TokenInfo = toJS(TokenInfo);
+        console.log(TokenInfo);
         try {
           lpCoreContract.methods
             .getReserveCurrentLiquidityRate(TokenInfo.ContractAddress)
@@ -191,7 +192,7 @@ class Aave extends Component {
                   s = s + lastchar;
                   //console.log(item.AssetCode + " " +s);
                   apylist.push({
-                    token: item.AssetCode,
+                    token: item.AssetCode.toString().toUpperCase(),
                     apy: apy,
                     LogoUrl: item.LogoUrl,
                     market: s,
@@ -253,12 +254,13 @@ class Aave extends Component {
 
   openModal = (token) => {
     var selecetedwallet = toJS(this.props.selectedwalletlist);
+    console.log(selecetedwallet);
     let walletlist = selecetedwallet.find(
       (x) => x.publicaddress == localStorage.getItem("selectedwallet")
     );
     walletlist = toJS(walletlist);
     let tokenasset = walletlist.tokenassetlist.find(
-      (x) => x.AssetCode == token.token
+      (x) => x.AssetCode.toString().toUpperCase() == token.token.toString().toUpperCase()
     );
     if (tokenasset == null || tokenasset == "") {
       createNotification(

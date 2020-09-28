@@ -116,6 +116,7 @@ class AaveDeposit extends Component {
     if (this.state.approval) {
       //need to approve
       let amount = web3.utils.toWei(this.state.depositamount.toString(), unit);
+      console.log(this.state.tokenInfo);
       const tokenContract = this.state.tokenInfo.ContractAddress;
       const lpCoreAddress = await this.getLendingPoolCoreAddress();
       const ERCcontract = new web3.eth.Contract(ERC20ABI, tokenContract);
@@ -529,7 +530,7 @@ class AaveDeposit extends Component {
       privatekey: walletlist.privatekey,
     });
     let tokenitem = walletlist.tokenassetlist.find(
-      (x) => x.AssetCode == this.props.aavedeposittoken.token
+      (x) => x.AssetCode.toString().toUpperCase() == this.props.aavedeposittoken.token.toString().toUpperCase()
     );
     if (tokenitem == null || tokenitem == "") {
       console.log("wallet does not have this asset.");
@@ -563,13 +564,13 @@ class AaveDeposit extends Component {
         })
         .then((balance) => {
           if (tokenitem.AssetCode == "USDT" || tokenitem.AssetCode == "USDC") {
-            var tokenbal = new BigNumber(web3.utils.fromWei(balance, "mwei"));
+            var tokenbal = web3.utils.fromWei(balance, "mwei");
             this.setState({
               tokenbalance: tokenbal.toString(),
             });
             tokenitem.TokenBalance = tokenbal.toString();
           } else {
-            var tokenbal = new BigNumber(web3.utils.fromWei(balance, "ether"));
+            var tokenbal = web3.utils.fromWei(balance, "ether");
             this.setState({
               tokenbalance: tokenbal.toString(),
             });

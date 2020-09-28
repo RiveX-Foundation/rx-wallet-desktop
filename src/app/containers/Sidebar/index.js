@@ -294,7 +294,7 @@ class Sidebar extends Component {
                 </li>
               </ul>
             </li>
-            <li
+           {/* <li
               data-tabvalue="dex"
               className={dexstyle}
               onClick={this.dexwarning}
@@ -313,7 +313,7 @@ class Sidebar extends Component {
                   </span>
                 </span>
               </div>
-            </li>
+           </li>*/}
             {
               <li
                 data-tabvalue="los"
