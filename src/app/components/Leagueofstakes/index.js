@@ -108,6 +108,10 @@ class Leagueofstakes extends Component {
       selectedwallet: localStorage.getItem("selectedwallet"),
     });
     await this.getDataFromBlockchain();
+    setTimeout(() => {
+       this.getDataFromBlockchain();
+    }, 30000);
+  
     this.setState({
       loading: false,
     });
