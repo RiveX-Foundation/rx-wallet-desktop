@@ -112,12 +112,59 @@ class Leagueofstakestx extends Component {
       deposittoken: this.props.aavedeposittoken,
       tokenbalance: this.props.aavedeposittoken.tokenbalance
     });
-    await this.getEstimateGasLimit();
+    if (this.props.aavedeposittoken.action == "Exit") {
+      await this.getEstimateGasLimitExit();
+    } else if (this.props.aavedeposittoken.action == "Claim Rewards") {
+      await this.getEstimateGasLimitClaim();
+    } else {
+      await this.getEstimateGasLimit();
+    }
+
     // await this.getTokenBalance();
     // await this.getAllowance();
 
     console.log(toJS(this.props.aavedeposittoken));
     console.log(this.state.gasprices);
+  }
+
+  getEstimateGasLimitClaim = async () => {
+    console.log("estimating gas claim");
+    let tokenContract = this.state.losAddress;
+    const losContract = new web3.eth.Contract(LOSV2, tokenContract);
+    var dataClaim = losContract.methods
+      .getReward()
+      .encodeABI();
+    losContract.methods
+      .getReward()
+      .estimateGas({
+        from: this.state.selectedWallet,
+        data: dataClaim,
+      })
+      .then((gasLimit) => {
+        this.setState({
+          advancedgaslimit: gasLimit,
+        });
+      });
+  }
+
+  getEstimateGasLimitExit = async () => {
+    console.log("estimating gas Exit");
+    let tokenContract = this.state.losAddress;
+    const losContract = new web3.eth.Contract(LOSV2, tokenContract);
+    var dataClaim = losContract.methods
+      .exit()
+      .encodeABI();
+    losContract.methods
+      .exit()
+      .estimateGas({
+        from: this.state.selectedWallet,
+        data: dataClaim,
+      })
+      .then((gasLimit) => {
+        this.setState({
+          advancedgaslimit: gasLimit,
+        });
+      });
   }
 
   getEstimateGasLimit = async () => {
@@ -128,7 +175,7 @@ class Leagueofstakestx extends Component {
     if (this.props.aavedeposittoken.action == "Stake") {
       //ERCcontract = new web3.eth.Contract(ERC20ABI, this.state.rvxAddress);
       tokenContract = this.state.rvxAddress;
-    } else {
+    } else if (this.props.aavedeposittoken.action == "Withdraw") {
       //  ERCcontract = new web3.eth.Contract(ERC20ABI, this.state.rRvxAddress);
       tokenContract = this.state.rRvxAddress;
     }
@@ -462,21 +509,21 @@ class Leagueofstakestx extends Component {
       createNotification("info", "Wait for transaction to be mined!");
       return;
     }
-    let tokenbal = new BigNumber(this.state.tokenbalance);
-    let withdrawam = new BigNumber(this.state.depositamount);
-    withdrawam.comparedTo(tokenbal);
-    if (
-      withdrawam.comparedTo(tokenbal) > 0 ||
-      Number(this.state.depositamount) <= 0 ||
-      withdrawam.comparedTo(tokenbal) == null
-    ) {
-      createNotification("error", "Wrong deposit amount!");
-      return;
-    }
     console.log(this.state.selectedWallet);
     let tokenContract;
     let ERCcontract;
     if (this.props.aavedeposittoken.action == "Stake") {
+      let tokenbal = new BigNumber(this.state.tokenbalance);
+      let withdrawam = new BigNumber(this.state.depositamount);
+      withdrawam.comparedTo(tokenbal);
+      if (
+        withdrawam.comparedTo(tokenbal) > 0 ||
+        Number(this.state.depositamount) <= 0 ||
+        withdrawam.comparedTo(tokenbal) == null
+      ) {
+        createNotification("error", "Wrong deposit amount!");
+        return;
+      }
       ERCcontract = new web3.eth.Contract(ERC20ABI, this.state.rvxAddress);
       tokenContract = this.state.rvxAddress;
       await this.getEstimateGasLimit();
@@ -613,7 +660,18 @@ class Leagueofstakestx extends Component {
       }
 
 
-    } else {
+    } else if (this.props.aavedeposittoken.action == "Withdraw") {
+      let tokenbal = new BigNumber(this.state.tokenbalance);
+      let withdrawam = new BigNumber(this.state.depositamount);
+      withdrawam.comparedTo(tokenbal);
+      if (
+        withdrawam.comparedTo(tokenbal) > 0 ||
+        Number(this.state.depositamount) <= 0 ||
+        withdrawam.comparedTo(tokenbal) == null
+      ) {
+        createNotification("error", "Wrong deposit amount!");
+        return;
+      }
       ERCcontract = new web3.eth.Contract(ERC20ABI, this.state.rRvxAddress);
       tokenContract = this.state.rRvxAddress;
 
@@ -749,6 +807,238 @@ class Leagueofstakestx extends Component {
           loading: false,
         });
       }
+    } else if (this.props.aavedeposittoken.action == "Claim Rewards") {
+
+      await this.getEstimateGasLimitClaim();
+
+      this.setState({
+        loading: true,
+      });
+      try {
+        const losContract = new web3.eth.Contract(LOSV2, this.state.losAddress);
+        var dataDeposit = losContract.methods
+          .getReward()
+          .encodeABI();
+        var count = await web3.eth.getTransactionCount(this.state.selectedWallet);
+        var rawTransaction = {
+          from: this.state.selectedWallet,
+          to: this.state.losAddress, //this.tokencontract,
+          nonce: count,
+          value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+          data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+        };
+        console.log(dataDeposit);
+        losContract.methods
+          .getReward()
+          .estimateGas({
+            from: this.state.selectedWallet,
+            data: dataDeposit,
+          })
+          .then((gasLimit) => {
+            var gasPrice = web3.utils.toWei(
+              this.state.gaspricevalue.toString(),
+              "gwei"
+            );
+            var limit = Number(gasLimit);
+            limit = limit + 150000;
+            //console.log("GAS LIMIT: "+limit);
+            rawTransaction = {
+              from: this.state.selectedWallet.toString(),
+              nonce: count,
+              gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
+              // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
+              gas: this.state.advancedgaslimit + 10000, //"0x7458",
+              to: this.state.losAddress, //this.tokencontract,
+              value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+              data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+              chainId: "0x3",
+            };
+            var privKey = Buffer.from(this.state.privatekey, "hex");
+            var tx = new Tx(rawTransaction, {
+              chain: 'ropsten',
+              hardfork: 'petersburg'
+            })
+            /*var tx =
+              this.props.selectedethnetwork.shortcode == "mainnet"
+                ? new Tx(rawTransaction)
+                : new Tx(rawTransaction, {
+                  chain: "ropsten",
+                  hardfork: "istanbul",
+                });*/
+            console.log(tx);
+            tx.sign(privKey);
+            var serializedTx = tx.serialize();
+            web3.eth
+              .sendSignedTransaction(
+                "0x" + serializedTx.toString("hex"),
+                (err, hash) => {
+                  if (!err) {
+                    //SUCCESS
+                    console.log(hash);
+                    createNotification("info", "Transaction submited.");
+                    // that.props.setsuccessulhash(hash);
+                    //that.props.setCurrent("tokentransfersuccessful");
+                  } else {
+                    console.log(err);
+                    this.setState({
+                      loading: false,
+                    });
+                  }
+                }
+              )
+              .once("confirmation", (confNumber, receipt, latestBlockHash) => {
+                console.log("mined");
+                console.log(receipt);
+                console.log(confNumber);
+                if (receipt.status) {
+                  createNotification("success", "Succesfully mined!");
+                }
+                this.setState({
+                  loading: false,
+                });
+                this.props.setCurrent("leagueofstakes");
+              })
+              .on("error", (error) => {
+                console.log(error);
+                createNotification("error", "Transaction failed.");
+                this.setState({
+                  loading: false,
+                });
+              });
+          })
+          .catch((e) => {
+            createNotification(
+              "error",
+              "Always failing transaction. Please check your deposit amount!"
+            );
+            this.setState({
+              loading: false,
+            });
+          });
+      } catch (e) {
+        alert(e.message);
+        console.log(e.message);
+        this.setState({
+          loading: false,
+        });
+      }
+
+    } else if (this.props.aavedeposittoken.action == "Exit") {
+
+      await this.getEstimateGasLimitExit();
+
+      this.setState({
+        loading: true,
+      });
+      try {
+        const losContract = new web3.eth.Contract(LOSV2, this.state.losAddress);
+        var dataDeposit = losContract.methods
+          .exit()
+          .encodeABI();
+        var count = await web3.eth.getTransactionCount(this.state.selectedWallet);
+        var rawTransaction = {
+          from: this.state.selectedWallet,
+          to: this.state.losAddress, //this.tokencontract,
+          nonce: count,
+          value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+          data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+        };
+        console.log(dataDeposit);
+        losContract.methods
+          .exit()
+          .estimateGas({
+            from: this.state.selectedWallet,
+            data: dataDeposit,
+          })
+          .then((gasLimit) => {
+            var gasPrice = web3.utils.toWei(
+              this.state.gaspricevalue.toString(),
+              "gwei"
+            );
+            var limit = Number(gasLimit);
+            limit = limit + 150000;
+            //console.log("GAS LIMIT: "+limit);
+            rawTransaction = {
+              from: this.state.selectedWallet.toString(),
+              nonce: count,
+              gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
+              // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
+              gas: this.state.advancedgaslimit + 10000, //"0x7458",
+              to: this.state.losAddress, //this.tokencontract,
+              value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+              data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+              chainId: "0x3",
+            };
+            var privKey = Buffer.from(this.state.privatekey, "hex");
+            var tx = new Tx(rawTransaction, {
+              chain: 'ropsten',
+              hardfork: 'petersburg'
+            })
+            /*var tx =
+              this.props.selectedethnetwork.shortcode == "mainnet"
+                ? new Tx(rawTransaction)
+                : new Tx(rawTransaction, {
+                  chain: "ropsten",
+                  hardfork: "istanbul",
+                });*/
+            console.log(tx);
+            tx.sign(privKey);
+            var serializedTx = tx.serialize();
+            web3.eth
+              .sendSignedTransaction(
+                "0x" + serializedTx.toString("hex"),
+                (err, hash) => {
+                  if (!err) {
+                    //SUCCESS
+                    console.log(hash);
+                    createNotification("info", "Transaction submited.");
+                    // that.props.setsuccessulhash(hash);
+                    //that.props.setCurrent("tokentransfersuccessful");
+                  } else {
+                    console.log(err);
+                    this.setState({
+                      loading: false,
+                    });
+                  }
+                }
+              )
+              .once("confirmation", (confNumber, receipt, latestBlockHash) => {
+                console.log("mined");
+                console.log(receipt);
+                console.log(confNumber);
+                if (receipt.status) {
+                  createNotification("success", "Succesfully mined!");
+                }
+                this.setState({
+                  loading: false,
+                });
+                this.props.setCurrent("leagueofstakes");
+              })
+              .on("error", (error) => {
+                console.log(error);
+                createNotification("error", "Transaction failed.");
+                this.setState({
+                  loading: false,
+                });
+              });
+          })
+          .catch((e) => {
+            createNotification(
+              "error",
+              "Always failing transaction. Please check your deposit amount!"
+            );
+            this.setState({
+              loading: false,
+            });
+          });
+      } catch (e) {
+        alert(e.message);
+        console.log(e.message);
+        this.setState({
+          loading: false,
+        });
+      }
+
     }
 
 

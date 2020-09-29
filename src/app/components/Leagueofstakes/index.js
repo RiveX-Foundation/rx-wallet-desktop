@@ -328,110 +328,25 @@ class Leagueofstakes extends Component {
   };
 
   claimrewards = async () => {
-    const losContract = new web3.eth.Contract(LOSV2, this.state.losAddress);
-    var dataClaim = losContract.methods
-    .getReward()
-    .encodeABI();
-    var count = await web3.eth.getTransactionCount(this.state.selectedWallet);
-    var rawTransaction = {
-      from: this.state.selectedWallet,
-      to: this.state.losAddress, //this.tokencontract,
-      nonce: count,
-      value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
-      data: dataClaim, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+    let oby = {
+      token: "RVX",
+      tokenbalance: this.state.rRvxBalance,
+      action: "Claim Rewards"
     };
-
-    losContract.methods
-    .getReward()
-    .estimateGas({
-      from: this.state.selectedWallet,
-      data: dataClaim,
-    })
-    .then((gasLimit) => {
-      var gasPrice = web3.utils.toWei(
-        this.state.gaspricevalue.toString(),
-        "gwei"
-      );
-      var limit = Number(gasLimit);
-      limit = limit + 150000;
-      //console.log("GAS LIMIT: "+limit);
-      rawTransaction = {
-        from: this.state.selectedWallet.toString(),
-        nonce: count,
-        gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
-        // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-        gas: this.state.advancedgaslimit + 10000, //"0x7458",
-        to: this.state.losAddress, //this.tokencontract,
-        value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
-        data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
-        chainId: "0x3",
-      };
-      var privKey = Buffer.from(this.state.privatekey, "hex");
-      var tx = new Tx(rawTransaction, {
-        chain: 'ropsten',
-        hardfork: 'petersburg'
-      })
-      /*var tx =
-        this.props.selectedethnetwork.shortcode == "mainnet"
-          ? new Tx(rawTransaction)
-          : new Tx(rawTransaction, {
-            chain: "ropsten",
-            hardfork: "istanbul",
-          });*/
-      console.log(tx);
-      tx.sign(privKey);
-      var serializedTx = tx.serialize();
-      web3.eth
-        .sendSignedTransaction(
-          "0x" + serializedTx.toString("hex"),
-          (err, hash) => {
-            if (!err) {
-              //SUCCESS
-              console.log(hash);
-              createNotification("info", "Transaction submited.");
-              // that.props.setsuccessulhash(hash);
-              //that.props.setCurrent("tokentransfersuccessful");
-            } else {
-              console.log(err);
-              this.setState({
-                loading: false,
-              });
-            }
-          }
-        )
-        .once("confirmation", (confNumber, receipt, latestBlockHash) => {
-          console.log("mined");
-          console.log(receipt);
-          console.log(confNumber);
-          if (receipt.status) {
-            createNotification("success", "Succesfully mined!");
-          }
-          this.setState({
-            loading: false,
-          });
-          this.props.setCurrent("leagueofstakes");
-        })
-        .on("error", (error) => {
-          console.log(error);
-          createNotification("error", "Transaction failed.");
-          this.setState({
-            loading: false,
-          });
-        });
-    })
-    .catch((e) => {
-      createNotification(
-        "error",
-        "Always failing transaction. Please check your deposit amount!"
-      );
-      this.setState({
-        loading: false,
-      });
-    });
+    this.props.setAaveDepositToken(oby);
+    this.props.setAaveDepositTokenAmount(this.state.rvxRewardsAvailable);
+    this.props.setCurrent("leagueofstakestx");
   };
 
   exit = async () => {
-
+    let oby = {
+      token: "RVX",
+      tokenbalance: this.state.rRvxBalance,
+      action: "Exit"
+    };
+    this.props.setAaveDepositToken(oby);
+    this.props.setAaveDepositTokenAmount(this.state.rvxRewardsAvailable);
+    this.props.setCurrent("leagueofstakestx");
   };
 
   openModal = () => {
@@ -687,51 +602,6 @@ class Leagueofstakes extends Component {
             >
               {this.state.rvxRewardsAvailable} RVX available to claim
             </div>
-            <div
-                    className="spacebetween2"
-                    style={{
-                      marginTop: "20px",
-                      marginRight: "20px",
-                      marginLeft: "20px",
-                    }}
-                  >
-                    <Button
-                      onClick={this.onChangeAdvancedGasPriceValue}
-                      value={this.state.gasprices.low}
-                      type="primary"
-                      ghost
-                      style={{ borderRight: "none" }}
-                    >
-                      {" "}
-                      Safe Low
-                      <br />
-                      {this.state.gasprices.low}
-                    </Button>
-                    <Button
-                      onClick={this.onChangeAdvancedGasPriceValue}
-                      value={this.state.gasprices.medium}
-                      type="primary"
-                      ghost
-                      style={{ borderRight: "none", borderLeft: "none" }}
-                    >
-                      {" "}
-                      Standard
-                      <br />
-                      {this.state.gasprices.medium}
-                    </Button>
-                    <Button
-                      onClick={this.onChangeAdvancedGasPriceValue}
-                      value={this.state.gasprices.high}
-                      type="primary"
-                      ghost
-                      style={{ borderLeft: "none" }}
-                    >
-                      {" "}
-                      Fast
-                      <br />
-                      {this.state.gasprices.high}
-                    </Button>
-                  </div>
           </div>
           {this.state.loading === true && (
             <React.Fragment>
