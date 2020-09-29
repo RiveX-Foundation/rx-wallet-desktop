@@ -278,7 +278,7 @@ class Aave extends Component {
   };
 
   back = () => {
-    this.props.setCurrent("selectedwallet");
+    this.props.setCurrent("leagueofstakes");
   };
 
   onChangeTokenValue = (e) => {

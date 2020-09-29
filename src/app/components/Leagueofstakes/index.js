@@ -62,7 +62,13 @@ class Leagueofstakes extends Component {
     preload: null,
     displayed: "none",
     loading: true,
+    withdrawmodalvisible: false,
+    claimmodalvisible: false,
+    exitmodalvisible: false,
     withdrawamount: 0,
+    gasprices: {},
+    advancedgasprice:0,
+    privatekey:"",
     addrInfo: {
       normal: {},
       ledger: {},
@@ -80,21 +86,38 @@ class Leagueofstakes extends Component {
     rvxUsdPrice: "",
     totalValueUsd: "",
     totalRvxStaked: "",
+    stakeamount: 0,
     rvxAddress: "0x5d921bD3676Be048A3EF7F6bB535d1993421DCA5",
     rRvxAddress: "0x0E778A448d49f01BB08A81AE72D104c523685fC4",
     losAddress: "0x17584cFDfb113431a2ae5eA7c9C1b3558904faDf"
   };
 
   async componentDidMount() {
+    let gasPrices = await this.getCurrentGasPrices();
+    var selecetedwallet = toJS(this.props.selectedwalletlist);
+    let walletlist = selecetedwallet.find(
+      (x) => x.publicaddress == localStorage.getItem("selectedwallet")
+    );
+    walletlist = toJS(walletlist);
+    console.log(walletlist);
+    this.setState({
+      privatekey: walletlist.privatekey,
+    });
     web3 = new Web3("https://ropsten.infura.io" + this.props.infuraprojectid);
     this.setState({
       selectedwallet: localStorage.getItem("selectedwallet"),
     });
-     await this.getDataFromBlockchain();
+    await this.getDataFromBlockchain();
     this.setState({
       loading: false,
     });
   }
+
+  onChangeAdvancedGasPriceValue = (e) => {
+    this.setState({
+      advancedgasprice: e.target.value,
+    });
+  };
 
 
   getDataFromBlockchain = async () => {
@@ -179,7 +202,7 @@ class Leagueofstakes extends Component {
         .call({ from: selectedwallet })
         .then(async (bal) => {
           let balance = web3.utils.fromWei(bal.toString(), "ether");
-          totalRVXstaked=balance;
+          totalRVXstaked = balance;
           this.setState({
             totalRvxStaked: balance
           });
@@ -210,10 +233,17 @@ class Leagueofstakes extends Component {
     })
   }
 
+  setMax = (bal) => {
+    //this.setState({ stakeamount: bal });
+  };
+
 
   handleCancel = () => {
     this.setState({
       depositmodalvisible: false,
+      withdrawmodalvisible: false,
+      exitmodalvisible: false,
+      claimmodalvisible: false
     });
   };
 
@@ -239,12 +269,199 @@ class Leagueofstakes extends Component {
      });*/
   };
 
+  stake = async () => {
+    let tokenbal = new BigNumber(this.state.rvxBalance);
+    let stakeamount = new BigNumber(this.state.stakeamount.toString());
+    stakeamount.comparedTo(tokenbal);
+    if (
+      stakeamount.comparedTo(tokenbal) > 0 ||
+      Number(this.state.depositamount) <= 0 ||
+      stakeamount.comparedTo(tokenbal) == null
+    ) {
+      createNotification("error", "Wrong stake amount!");
+    } else {
+      let oby = {
+        token: "RVX",
+        tokenbalance: this.state.rvxBalance,
+        action: "Stake"
+      };
+      this.props.setAaveDepositToken(oby);
+      this.props.setAaveDepositTokenAmount(this.state.stakeamount);
+      this.props.setCurrent("leagueofstakestx");
+    }
+  };
+
+  withdraw = async () => {
+    let tokenbal = new BigNumber(this.state.rRvxBalance);
+    let stakeamount = new BigNumber(this.state.stakeamount.toString());
+    stakeamount.comparedTo(tokenbal);
+    if (
+      stakeamount.comparedTo(tokenbal) > 0 ||
+      Number(this.state.depositamount) <= 0 ||
+      stakeamount.comparedTo(tokenbal) == null
+    ) {
+      createNotification("error", "Wrong stake amount!");
+    } else {
+      let oby = {
+        token: "rRVX",
+        tokenbalance: this.state.rRvxBalance,
+        action: "Withdraw"
+      };
+      this.props.setAaveDepositToken(oby);
+      this.props.setAaveDepositTokenAmount(this.state.stakeamount);
+      this.props.setCurrent("leagueofstakestx");
+    }
+  };
+
+  getCurrentGasPrices = async () => {
+    let response = await Axios.get(API_EthGas);
+    let prices = {
+      low: parseFloat(response.data.safeLow) / 10,
+      medium: parseFloat(response.data.average) / 10,
+      high: parseFloat(response.data.fast) / 10,
+    };
+    this.setState({
+      gasprices: prices,
+      advancedgasprice: prices.medium,
+    });
+    return prices;
+  };
+
+  claimrewards = async () => {
+    const losContract = new web3.eth.Contract(LOSV2, this.state.losAddress);
+    var dataClaim = losContract.methods
+    .getReward()
+    .encodeABI();
+    var count = await web3.eth.getTransactionCount(this.state.selectedWallet);
+    var rawTransaction = {
+      from: this.state.selectedWallet,
+      to: this.state.losAddress, //this.tokencontract,
+      nonce: count,
+      value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+      data: dataClaim, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+    };
+
+    losContract.methods
+    .getReward()
+    .estimateGas({
+      from: this.state.selectedWallet,
+      data: dataClaim,
+    })
+    .then((gasLimit) => {
+      var gasPrice = web3.utils.toWei(
+        this.state.gaspricevalue.toString(),
+        "gwei"
+      );
+      var limit = Number(gasLimit);
+      limit = limit + 150000;
+      //console.log("GAS LIMIT: "+limit);
+      rawTransaction = {
+        from: this.state.selectedWallet.toString(),
+        nonce: count,
+        gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
+        // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
+        gas: this.state.advancedgaslimit + 10000, //"0x7458",
+        to: this.state.losAddress, //this.tokencontract,
+        value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
+        data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
+        chainId: "0x3",
+      };
+      var privKey = Buffer.from(this.state.privatekey, "hex");
+      var tx = new Tx(rawTransaction, {
+        chain: 'ropsten',
+        hardfork: 'petersburg'
+      })
+      /*var tx =
+        this.props.selectedethnetwork.shortcode == "mainnet"
+          ? new Tx(rawTransaction)
+          : new Tx(rawTransaction, {
+            chain: "ropsten",
+            hardfork: "istanbul",
+          });*/
+      console.log(tx);
+      tx.sign(privKey);
+      var serializedTx = tx.serialize();
+      web3.eth
+        .sendSignedTransaction(
+          "0x" + serializedTx.toString("hex"),
+          (err, hash) => {
+            if (!err) {
+              //SUCCESS
+              console.log(hash);
+              createNotification("info", "Transaction submited.");
+              // that.props.setsuccessulhash(hash);
+              //that.props.setCurrent("tokentransfersuccessful");
+            } else {
+              console.log(err);
+              this.setState({
+                loading: false,
+              });
+            }
+          }
+        )
+        .once("confirmation", (confNumber, receipt, latestBlockHash) => {
+          console.log("mined");
+          console.log(receipt);
+          console.log(confNumber);
+          if (receipt.status) {
+            createNotification("success", "Succesfully mined!");
+          }
+          this.setState({
+            loading: false,
+          });
+          this.props.setCurrent("leagueofstakes");
+        })
+        .on("error", (error) => {
+          console.log(error);
+          createNotification("error", "Transaction failed.");
+          this.setState({
+            loading: false,
+          });
+        });
+    })
+    .catch((e) => {
+      createNotification(
+        "error",
+        "Always failing transaction. Please check your deposit amount!"
+      );
+      this.setState({
+        loading: false,
+      });
+    });
+  };
+
+  exit = async () => {
+
+  };
+
+  openModal = () => {
+    this.setState({
+      depositmodalvisible: true,
+    });
+  };
+
+  openModalWithdraw = () => {
+    this.setState({
+      withdrawmodalvisible: true,
+    });
+  };
+  openModalExit = () => {
+    this.setState({
+      exitmodalvisible: true,
+    });
+  };
+
+  openModalClaim = () => {
+    this.setState({
+      claimmodalvisible: true,
+    });
+  };
   back = () => {
     this.props.setCurrent("selectedwallet");
   };
 
   onChangeTokenValue = (e) => {
-    this.setState({ withdrawamount: e.target.value });
+    this.setState({ stakeamount: e.target.value });
   };
 
   render() {
@@ -263,15 +480,15 @@ class Leagueofstakes extends Component {
         <div className="centerpanel">
           <Row type="flex" justify="center">
             <Col className="colClass" xs={{ span: 5, offset: 1 }} lg={{ span: 6, offset: 2 }} style={{ marginLeft: "57.578px!important" }}>
-              <span style={{color:"#9364d3"}}>Total Value Locked (USD)</span>
+              <span style={{ color: "#9364d3" }}>Total Value Locked (USD)</span>
               <Col>{this.state.totalValueUsd} $</Col>
             </Col>
             <Col className="colClass" xs={{ span: 11, offset: 1 }} lg={{ span: 6, offset: 2 }}>
-            <span style={{color:"#9364d3"}}> RVX Price</span>
+              <span style={{ color: "#9364d3" }}> RVX Price</span>
               <Col>{this.state.rvxUsdPrice} $</Col>
             </Col>
             <Col className="colClass" xs={{ span: 5, offset: 1 }} lg={{ span: 6, offset: 2 }}>
-            <span style={{color:"#9364d3"}}> Total Supply</span>
+              <span style={{ color: "#9364d3" }}> Total Supply</span>
               <Col>25,000,000 RVX</Col>
             </Col>
           </Row>
@@ -279,38 +496,36 @@ class Leagueofstakes extends Component {
             <div className="tokenassetitemtop">
               <div className="tokenassetitemrow">
                 <div className="infoctn">
-                  <div className="assetcode"><span style={{color:"#9364d3"}}>Unstaked Balance:</span> {Number(this.state.rvxBalance).toFixed(4)} RVX</div>
+                  <div className="assetcode"><span style={{ color: "#9364d3" }}>Unstaked Balance:</span> {Number(this.state.rvxBalance).toFixed(4)} RVX</div>
                 </div>
               </div>
               <div className="tokenassetitemrow">
                 <div className="amountctn">
                   <div className="totalcoin">
-                    <span style={{color:"#9364d3"}}>Currently staking:</span> {Number(this.state.totalRvxStaked).toFixed(4)} RVX
+                    <span style={{ color: "#9364d3" }}>Currently staking:</span> {Number(this.state.totalRvxStaked).toFixed(4)} RVX
                   </div>
                 </div>
               </div>
             </div>
             <div
               className="tokenassetitem"
-              onClick={() => this.openModal("value")}
               style={{ borderTopLeftRadius: "8px", borderTopRightRadius: "8px" }}
             >
               <div className="tokenassetitemrow" >
                 <div className="infoctn">
-                  <div className="assetcode"><span style={{color:"#9364d3"}}> rRvx Balance</span> </div>
+                  <div className="assetcode"><span style={{ color: "#9364d3" }}> rRvx Balance</span> </div>
                 </div>
               </div>
               <div className="tokenassetitemrow">
                 <div className="amountctn">
                   <div className="totalcoin">
-                  <span style={{color:"#9364d3"}}> Rewards Available</span>
+                    <span style={{ color: "#9364d3" }}> Rewards Available</span>
                   </div>
                 </div>
               </div>
             </div>
             <div
               className="tokenassetitem"
-              onClick={() => this.openModal("value")}
               style={{ marginTop: "0px", padding: "0px 25px", paddingBottom: "10px", borderBottomRightRadius: "8px", borderBottomLeftRadius: "8px" }}
             >
               <div className="tokenassetitemrow">
@@ -321,7 +536,7 @@ class Leagueofstakes extends Component {
               <div className="tokenassetitemrow">
                 <div className="amountctn">
                   <div className="totalcoin">
-                  {Number(this.state.rvxRewardsAvailable).toFixed(4)} RVX
+                    {Number(this.state.rvxRewardsAvailable).toFixed(4)} RVX
                   </div>
                 </div>
               </div>
@@ -330,45 +545,45 @@ class Leagueofstakes extends Component {
           <Button
             className="curvebutton"
             style={{ marginTop: "15px", marginRight: "20px" }}
-            onClick={this.dashboard}
+            onClick={this.openModalClaim}
           >
             Claim Rewards
           </Button>
           <Button
             className="curvebutton"
             style={{ marginTop: "15px", marginRight: "20px" }}
-            onClick={this.dashboard}
+            onClick={this.openModalExit}
           >
             Exit
           </Button>
           <Button
             className="curvebutton"
             style={{ marginTop: "15px", marginRight: "20px" }}
-            onClick={this.dashboard}
+            onClick={this.openModal}
           >
             Stake
           </Button>
           <Button
             className="curvebutton"
             style={{ marginTop: "15px" }}
-            onClick={this.dashboard}
+            onClick={this.openModalWithdraw}
           >
-            Unstake
+            Withdraw
           </Button>
         </div>
         <Modal
           title=""
           visible={this.state.depositmodalvisible}
-          onOk={this.withdraw}
+          onOk={this.stake}
           onCancel={this.handleCancel}
-          okText="Withdraw"
+          okText="Stake"
           cancelText="Cancel"
         >
-          <div className="pheader">Amount to withdraw</div>
+          <div className="pheader">Amount to Stake</div>
           <div className="pmodalcontent">
             <div className="balancetext">
-              balance:<a onClick={this.setMax}> {this.state.tokenbalance} </a>
-              {this.state.selectedtoken.token}
+              balance:<a onClick={this.setMax(this.state.rvxBalance)}> {this.state.rvxBalance} </a>
+               RVX
             </div>
             <div
               className="panelwrapper borderradiusfull"
@@ -376,10 +591,147 @@ class Leagueofstakes extends Component {
             >
               <Input
                 className="inputTransparent"
-                value={this.state.withdrawamount}
+                value={this.state.stakeamount}
                 onChange={this.onChangeTokenValue}
               />
             </div>
+          </div>
+          {this.state.loading === true && (
+            <React.Fragment>
+              <div>
+                <center>
+                  <Spin tip="Transaction pending..."></Spin>
+                </center>
+              </div>
+            </React.Fragment>
+          )}
+        </Modal>
+
+        <Modal
+          title=""
+          visible={this.state.withdrawmodalvisible}
+          onOk={this.withdraw}
+          onCancel={this.handleCancel}
+          okText="Withdraw"
+          cancelText="Cancel"
+        >
+          <div className="pheader">Amount to Withdraw</div>
+          <div className="pmodalcontent">
+            <div className="balancetext">
+              balance:<a onClick={this.setMax(this.state.rRvxBalance)}> {this.state.rRvxBalance} </a>
+               rRVX
+            </div>
+            <div
+              className="panelwrapper borderradiusfull"
+              style={{ width: "500px" }}
+            >
+              <Input
+                className="inputTransparent"
+                value={this.state.stakeamount}
+                onChange={this.onChangeTokenValue}
+              />
+            </div>
+          </div>
+          {this.state.loading === true && (
+            <React.Fragment>
+              <div>
+                <center>
+                  <Spin tip="Transaction pending..."></Spin>
+                </center>
+              </div>
+            </React.Fragment>
+          )}
+        </Modal>
+
+        <Modal
+          title=""
+          visible={this.state.claimmodalvisible}
+          onOk={this.claimrewards}
+          onCancel={this.handleCancel}
+          okText="Claim"
+          cancelText="Cancel"
+        >
+          <div className="pheader">Claim rewards</div>
+          <div className="pmodalcontent">
+            <div
+              className="panelwrapper borderradiusfull"
+              style={{ width: "500px" }}
+            >
+              {this.state.rvxRewardsAvailable} RVX available to claim
+            </div>
+          </div>
+          {this.state.loading === true && (
+            <React.Fragment>
+              <div>
+                <center>
+                  <Spin tip="Transaction pending..."></Spin>
+                </center>
+              </div>
+            </React.Fragment>
+          )}
+        </Modal>
+
+        <Modal
+          title=""
+          visible={this.state.exitmodalvisible}
+          onOk={this.exit}
+          onCancel={this.handleCancel}
+          okText="Claim"
+          cancelText="Cancel"
+        >
+          <div className="pheader">Exit - Claim rewards and Withdraw</div>
+          <div className="pmodalcontent">
+            <div
+              className="panelwrapper borderradiusfull"
+              style={{ width: "500px" }}
+            >
+              {this.state.rvxRewardsAvailable} RVX available to claim
+            </div>
+            <div
+                    className="spacebetween2"
+                    style={{
+                      marginTop: "20px",
+                      marginRight: "20px",
+                      marginLeft: "20px",
+                    }}
+                  >
+                    <Button
+                      onClick={this.onChangeAdvancedGasPriceValue}
+                      value={this.state.gasprices.low}
+                      type="primary"
+                      ghost
+                      style={{ borderRight: "none" }}
+                    >
+                      {" "}
+                      Safe Low
+                      <br />
+                      {this.state.gasprices.low}
+                    </Button>
+                    <Button
+                      onClick={this.onChangeAdvancedGasPriceValue}
+                      value={this.state.gasprices.medium}
+                      type="primary"
+                      ghost
+                      style={{ borderRight: "none", borderLeft: "none" }}
+                    >
+                      {" "}
+                      Standard
+                      <br />
+                      {this.state.gasprices.medium}
+                    </Button>
+                    <Button
+                      onClick={this.onChangeAdvancedGasPriceValue}
+                      value={this.state.gasprices.high}
+                      type="primary"
+                      ghost
+                      style={{ borderLeft: "none" }}
+                    >
+                      {" "}
+                      Fast
+                      <br />
+                      {this.state.gasprices.high}
+                    </Button>
+                  </div>
           </div>
           {this.state.loading === true && (
             <React.Fragment>

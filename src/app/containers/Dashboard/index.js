@@ -42,6 +42,7 @@ import AaveDeposit from "components/AaveDeposit";
 import AaveDashboard from "components/AaveDashboard";
 import AaveWithdraw from "components/AaveWithdraw";
 import Leagueofstakes from "components/Leagueofstakes";
+import Leagueofstakestx from "components/Leaugeofstakestx"
 //import { checkCryptographic, checkPhrase } from 'utils/support';
 
 const Step = Steps.Step;
@@ -195,6 +196,11 @@ class Dashboard extends Component {
       {
         content: <Leagueofstakes />,
         key: "leagueofstakes",
+      }
+      ,
+      {
+        content: <Leagueofstakestx />,
+        key: "leagueofstakestx",
       },
       {
         content: <TwoFAWarning />,
