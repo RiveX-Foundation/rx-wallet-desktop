@@ -112,6 +112,7 @@ class Leagueofstakestx extends Component {
       deposittoken: this.props.aavedeposittoken,
       tokenbalance: this.props.aavedeposittoken.tokenbalance
     });
+    await this.getAllowance();
     if (this.props.aavedeposittoken.action == "Exit") {
       await this.getEstimateGasLimitExit();
     } else if (this.props.aavedeposittoken.action == "Claim Rewards") {

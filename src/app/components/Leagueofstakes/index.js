@@ -29,6 +29,7 @@ const { API_EthGas } = require("../../../../config/common");
 var Tx = require("ethereumjs-tx");
 
 var web3;
+var  blockchainRefresh;
 var ranges = [
   { divider: 1e18, suffix: "E" },
   { divider: 1e15, suffix: "P" },
@@ -108,13 +109,14 @@ class Leagueofstakes extends Component {
       selectedwallet: localStorage.getItem("selectedwallet"),
     });
     await this.getDataFromBlockchain();
-    setTimeout(() => {
-       this.getDataFromBlockchain();
-    }, 30000);
+     blockchainRefresh = setTimeout(() =>this.getDataFromBlockchain(), 15000);
   
     this.setState({
       loading: false,
     });
+  }
+  async componentWillUnmount() {
+    clearTimeout(blockchainRefresh);
   }
 
   onChangeAdvancedGasPriceValue = (e) => {
