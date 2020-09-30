@@ -40,6 +40,7 @@
   },
   "homepage": "https://rivex.io",
   "dependencies": {
+    "@ant-design/icons": "^4.2.2",
     "@babel/plugin-proposal-class-properties": "^7.4.0",
     "@babel/runtime": "^7.4.0",
     "@ledgerhq/hw-transport-node-hid": "^4.72.1",

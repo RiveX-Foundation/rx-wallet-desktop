@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Modal, Button, Input, Spin } from "antd";
+import { Modal, Button, Input, Spin, Tooltip } from "antd";
 import { toJS } from "mobx";
 import { inject, observer } from "mobx-react";
 import { Row, Col } from 'antd';
@@ -15,7 +15,7 @@ import {
 import { BigNumber } from "bignumber.js";
 import "./index.less";
 import buttonback from "static/image/icon/back.png";
-import aavevertical from "static/image/los100.png";
+import aavevertical from "static/image/staking.png";
 import ERC20ABI from "../../ABIs/ERC20.json";
 import LOSV2 from "../../ABIs/LOSv2.json";
 import Web3 from "web3";
@@ -29,7 +29,7 @@ const { API_EthGas } = require("../../../../config/common");
 var Tx = require("ethereumjs-tx");
 
 var web3;
-var  blockchainRefresh;
+var blockchainRefresh;
 var ranges = [
   { divider: 1e18, suffix: "E" },
   { divider: 1e15, suffix: "P" },
@@ -68,8 +68,8 @@ class Leagueofstakes extends Component {
     exitmodalvisible: false,
     withdrawamount: 0,
     gasprices: {},
-    advancedgasprice:0,
-    privatekey:"",
+    advancedgasprice: 0,
+    privatekey: "",
     addrInfo: {
       normal: {},
       ledger: {},
@@ -109,8 +109,8 @@ class Leagueofstakes extends Component {
       selectedwallet: localStorage.getItem("selectedwallet"),
     });
     await this.getDataFromBlockchain();
-     blockchainRefresh = setTimeout(() =>this.getDataFromBlockchain(), 15000);
-  
+    blockchainRefresh = setTimeout(() => this.getDataFromBlockchain(), 15000);
+
     this.setState({
       loading: false,
     });
@@ -127,6 +127,7 @@ class Leagueofstakes extends Component {
 
 
   getDataFromBlockchain = async () => {
+    var dollarvalue = await this.lookUpPrices(["rivex"]);
     let selectedwallet = localStorage.getItem("selectedwallet");
     const rvxContract = new web3.eth.Contract(
       ERC20ABI,
@@ -207,8 +208,11 @@ class Leagueofstakes extends Component {
         .totalSupply()
         .call({ from: selectedwallet })
         .then(async (bal) => {
+          console.log(bal);
           let balance = web3.utils.fromWei(bal.toString(), "ether");
+          console.log("total rvx staked:" + balance);
           totalRVXstaked = balance;
+          await this.getTVL(dollarvalue, totalRVXstaked);
           this.setState({
             totalRvxStaked: balance
           });
@@ -217,9 +221,15 @@ class Leagueofstakes extends Component {
       console.log("ERROR: " + error);
     }
 
+
+  };
+
+  getTVL = async (dollarvalue, totalRVXstaked) => {
     console.log("GETTING RVX USD PRICE AND TOTAL VALUE LOCKED (USD)");
     try {
-      let dollarvalue = await this.lookUpPrices(["rivex"]);
+      console.log(dollarvalue["rivex"])
+      console.log(totalRVXstaked)
+      console.log("TVL: " + parseFloat(dollarvalue["rivex"].usd) * parseFloat(totalRVXstaked))
       this.setState({
         rvxUsdPrice: dollarvalue["rivex"].usd,
         totalValueUsd: parseFloat(dollarvalue["rivex"].usd) * parseFloat(totalRVXstaked)
@@ -228,7 +238,7 @@ class Leagueofstakes extends Component {
       console.log("ERROR: " + error);
     }
 
-  };
+  }
 
 
   lookUpPrices = async (id_array) => {
@@ -392,7 +402,7 @@ class Leagueofstakes extends Component {
           <span>
             <img onClick={this.back} width="20px" src={buttonback} />
           </span>
-          <span style={{ marginLeft: "20px" }}>League of Stakes</span>
+          <span style={{ marginLeft: "20px" }}>Staking</span>
         </div>
         <div className="walletname"></div>
         <div className="contentpanel">
@@ -466,31 +476,32 @@ class Leagueofstakes extends Component {
           <Button
             className="curvebutton"
             style={{ marginTop: "15px", marginRight: "20px" }}
-            onClick={this.openModalClaim}
-          >
-            Claim Rewards
-          </Button>
-          <Button
-            className="curvebutton"
-            style={{ marginTop: "15px", marginRight: "20px" }}
-            onClick={this.openModalExit}
-          >
-            Exit
-          </Button>
-          <Button
-            className="curvebutton"
-            style={{ marginTop: "15px", marginRight: "20px" }}
             onClick={this.openModal}
           >
             Stake
           </Button>
           <Button
             className="curvebutton"
-            style={{ marginTop: "15px" }}
+            style={{ marginTop: "15px", marginRight: "20px" }}
+            onClick={this.openModalClaim}
+          >
+            Claim Rewards
+          </Button>
+          <Button
+            className="curvebutton"
+            style={{ marginTop: "15px", marginRight:"20px" }}
             onClick={this.openModalWithdraw}
           >
             Withdraw
           </Button>
+          <Button
+            className="curvebutton"
+            style={{ marginTop: "15px", marginRight: "20px" }}
+            onClick={this.openModalExit}
+          >
+            Unstake and Claim
+          </Button>
+
         </div>
         <Modal
           title=""
