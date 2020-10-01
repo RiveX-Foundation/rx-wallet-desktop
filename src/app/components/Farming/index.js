@@ -96,14 +96,15 @@ class Farming extends Component {
     totalValueUsd: "0",
     stakeamount: 0,
     activepool: "",
+    activepoolrewards: "",
     rvxUsdPrice: "0",
-    rRvxAddress: "0x5d921bD3676Be048A3EF7F6bB535d1993421DCA5", //change to mainnet
+    rRvxAddress: "0x0E778A448d49f01BB08A81AE72D104c523685fC4", //change to mainnet
     uniswaprvxusdtaddress: "0x0E778A448d49f01BB08A81AE72D104c523685fC4", //change to mainnet uniswap rvx usdt lp
     balanceryrxusdtaddress: "0x0E778A448d49f01BB08A81AE72D104c523685fC4", //change to mainnet balancer yrx usdt 98/2
     yrxaddress: "0x260aD5e6Eb9119006efd66052120481bC77E3046", //change to mainnet yrx addy
-    yrxpooloneaddress: "0x5de3112cd00BB062aEDc7a6E49fa37454345C4aC", //change to mainnet pool one 
-    yrxpooltwoaddress: "0x44b857B097221eB231E64ee24C3082E05f259979",//change to mainnet pool two 
-    yrxpoolthreeaddress: "0x9B18D5b4e8B2604F055E5A9df33715FEfc7eFB2d"//change to mainnet pool three 
+    yrxpooloneaddress: "0xF348a446BA084dC90d63E79753C6E5957463F745", //change to mainnet pool one 
+    yrxpooltwoaddress: "0x9bD58943ce4D86Fc6582e017AcF898b8a76B411d",//change to mainnet pool two 
+    yrxpoolthreeaddress: "0x134AE1977a2F90CA4073F4E98f4cD7E14b16A4F7"//change to mainnet pool three 
   };
 
   async componentDidMount() {
@@ -393,30 +394,32 @@ class Farming extends Component {
     });
   };
 
-  openModal = (pool) => {
-    /* var selecetedwallet = toJS(this.props.selectedwalletlist);
-     let walletlist = selecetedwallet.find(
-       (x) => x.publicaddress == localStorage.getItem("selectedwallet")
-     );
-     walletlist = toJS(walletlist);
-     let tokenasset = this.state.tokenlist.find((x) => x.token == token.token);
-     //  let tokenasset = walletlist.tokenassetlist.find(x => x.AssetCode == token.token);
-     if (tokenasset == null || tokenasset == "") {
-       createNotification(
-         "error",
-         "Please add " + token.token + " to your wallet!"
-       );
-       return;
-     }
-     this.setState({
-       depositmodalvisible: true,
-       selectedtoken: token,
-       tokenbalance: tokenasset.balance.toString(),
-     });*/
-  };
+
 
   stake = async () => {
-    let tokenbal = new BigNumber(this.state.rvxBalance);
+    let tokenbal;
+    let token;
+    let tokenContract;
+    let rewardaddress;
+    if(this.state.activepool == "Pool 1 rRVX") {
+      tokenbal = new BigNumber(this.state.rRvxBalance);
+      token= "rRVX"
+      tokenContract = this.state.rRvxAddress;
+      rewardaddress = this.state.yrxpooloneaddress;
+    } else if(this.state.activepool == "Pool 2 RVX/USDT Uniswap LP") {
+      tokenbal = new BigNumber(this.state.uniswaprvxusdtBalance);
+      token= "UNI-V2"
+      tokenContract = this.state.uniswaprvxusdtaddress;
+      rewardaddress = this.state.yrxpooltwoaddress;
+    } else if(this.state.activepool == "Pool 3 YRX/USDT Balancer 98/2") {
+      tokenbal = new BigNumber(this.state.balanceryrxusdtBalance);
+      token= "BPT";
+      tokenContract = this.state.balanceryrxusdtaddress;
+      rewardaddress = this.state.yrxpoolthreeaddress;
+    } else {
+      return;
+    }
+     
     let stakeamount = new BigNumber(this.state.stakeamount.toString());
     stakeamount.comparedTo(tokenbal);
     if (
@@ -424,13 +427,22 @@ class Farming extends Component {
       Number(this.state.depositamount) <= 0 ||
       stakeamount.comparedTo(tokenbal) == null
     ) {
+      this.setState({
+        withdrawamount:"",
+        stakeamount:""
+      })
       createNotification("error", "Wrong stake amount!");
     } else {
+
       let oby = {
-        token: "RVX",
-        tokenbalance: this.state.rvxBalance,
-        action: "Stake"
+        token: token,
+        tokenContract:tokenContract,
+        tokenbalance: tokenbal.toString(),
+        rewardAddress:rewardaddress,
+        action: "Stake",
+        pool: this.state.activepool
       };
+      console.log(oby);
       this.props.setAaveDepositToken(oby);
       this.props.setAaveDepositTokenAmount(this.state.stakeamount);
       this.props.setCurrent("farmingtx");
@@ -438,46 +450,92 @@ class Farming extends Component {
   };
 
   withdraw = async () => {
-    let tokenbal = new BigNumber(this.state.rRvxBalance);
-    let stakeamount = new BigNumber(this.state.stakeamount.toString());
+    let tokenbal;
+    let token;
+    let tokenContract;
+    let rewardaddress;
+    if(this.state.activepool == "Pool 1 rRVX") {
+      tokenbal = new BigNumber(this.state.yrxRewardsStakedBalance);
+      token= "rRVX"
+      tokenContract = this.state.rRvxAddress;
+      rewardaddress = this.state.yrxpooloneaddress;
+    } else if(this.state.activepool == "Pool 2 RVX/USDT Uniswap LP") {
+      tokenbal = new BigNumber(this.state.uniswaprvxusdtStakedBalance);
+      token= "UNI-V2"
+      tokenContract = this.state.uniswaprvxusdtaddress;
+      rewardaddress = this.state.yrxpooltwoaddress;
+    } else if(this.state.activepool == "Pool 3 YRX/USDT Balancer 98/2") {
+      tokenbal = new BigNumber(this.state.balanceryrxusdtStakedBalance);
+      token= "BPT";
+      tokenContract = this.state.balanceryrxusdtaddress;
+      rewardaddress = this.state.yrxpoolthreeaddress;
+    } else {
+      return;
+    }
+     
+    let stakeamount = new BigNumber(this.state.withdrawamount.toString());
     stakeamount.comparedTo(tokenbal);
     if (
       stakeamount.comparedTo(tokenbal) > 0 ||
       Number(this.state.depositamount) <= 0 ||
       stakeamount.comparedTo(tokenbal) == null
     ) {
-      createNotification("error", "Wrong stake amount!");
+      createNotification("error", "Wrong withdraw amount!");
+      this.setState({
+        withdrawamount:"",
+        stakeamount:""
+      })
     } else {
+
       let oby = {
-        token: "rRVX",
-        tokenbalance: this.state.rRvxBalance,
-        action: "Withdraw"
+        token: token,
+        tokenContract:tokenContract,
+        tokenbalance: tokenbal.toString(),
+        rewardAddress:rewardaddress,
+        action: "Withdraw",
+        pool: this.state.activepool
       };
+      console.log(oby);
       this.props.setAaveDepositToken(oby);
-      this.props.setAaveDepositTokenAmount(this.state.stakeamount);
+      this.props.setAaveDepositTokenAmount(this.state.withdrawamount);
       this.props.setCurrent("farmingtx");
     }
   };
 
-  /* getCurrentGasPrices = async () => {
-     let response = await Axios.get(API_EthGas);
-     let prices = {
-       low: parseFloat(response.data.safeLow) / 10,
-       medium: parseFloat(response.data.average) / 10,
-       high: parseFloat(response.data.fast) / 10,
-     };
-     this.setState({
-       gasprices: prices,
-       advancedgasprice: prices.medium,
-     });
-     return prices;
-   };*/
-
   claimrewards = async () => {
+    let tokenbal;
+    let token;
+    let tokenContract;
+    let rewardaddress;
+    if(this.state.activepool == "Pool 1 rRVX") {
+      tokenbal = new BigNumber(this.state.yrxRewardsBalance);
+      token= "rRVX"
+      tokenContract = this.state.rRvxAddress;
+      rewardaddress = this.state.yrxpooloneaddress;
+    } else if(this.state.activepool == "Pool 2 RVX/USDT Uniswap LP") {
+      tokenbal = new BigNumber(this.state.uniswapRewardsAvailable);
+      token= "UNI-V2"
+      tokenContract = this.state.uniswaprvxusdtaddress;
+      rewardaddress = this.state.yrxpooltwoaddress;
+    } else if(this.state.activepool == "Pool 3 YRX/USDT Balancer 98/2") {
+      tokenbal = new BigNumber(this.state.balancerRewardsAvailable);
+      token= "BPT";
+      tokenContract = this.state.balanceryrxusdtaddress;
+      rewardaddress = this.state.yrxpoolthreeaddress;
+    } else {
+      return;
+    }
+    if(Number(tokenbal.toString()) == 0){
+      createNotification("error", "No rewards to claim!");
+      return;
+    }
     let oby = {
-      token: "RVX",
-      tokenbalance: this.state.rRvxBalance,
-      action: "Claim Rewards"
+      token: token,
+      tokenContract:tokenContract,
+      tokenbalance: tokenbal.toString(),
+      rewardAddress:rewardaddress,
+      action: "Claim Rewards",
+      pool: this.state.activepool
     };
     this.props.setAaveDepositToken(oby);
     this.props.setAaveDepositTokenAmount(this.state.rvxRewardsAvailable);
@@ -485,10 +543,44 @@ class Farming extends Component {
   };
 
   exit = async () => {
+
+    let tokenbal;
+    let token;
+    let tokenContract;
+    let rewardaddress;
+    let rewardBalance;
+    if(this.state.activepool == "Pool 1 rRVX") {
+      tokenbal = new BigNumber(this.state.yrxRewardsStakedBalance);
+      rewardBalance = new BigNumber(this.state.yrxRewardsStakedBalance)
+      token= "rRVX"
+      tokenContract = this.state.rRvxAddress;
+      rewardaddress = this.state.yrxpooloneaddress;
+    } else if(this.state.activepool == "Pool 2 RVX/USDT Uniswap LP") {
+      tokenbal = new BigNumber(this.state.uniswaprvxusdtStakedBalance);
+      rewardBalance = new BigNumber(this.state.uniswapRewardsAvailable)
+      token= "UNI-V2"
+      tokenContract = this.state.uniswaprvxusdtaddress;
+      rewardaddress = this.state.yrxpooltwoaddress;
+    } else if(this.state.activepool == "Pool 3 YRX/USDT Balancer 98/2") {
+      tokenbal = new BigNumber(this.state.balanceryrxusdtStakedBalance);
+      rewardBalance = new BigNumber(this.state.balancerRewardsAvailable)
+      token= "BPT";
+      tokenContract = this.state.balanceryrxusdtaddress;
+      rewardaddress = this.state.yrxpoolthreeaddress;
+    } else {
+      return;
+    }
+    if(Number(rewardBalance.toString()) == 0 && Number(tokenbal.toString() == 0)){
+      createNotification("error", "Reward balance or Staked balance is 0!");
+      return;
+    }
     let oby = {
-      token: "RVX",
-      tokenbalance: this.state.rRvxBalance,
-      action: "Exit"
+      token: token,
+      tokenContract:tokenContract,
+      tokenbalance: tokenbal.toString(),
+      rewardAddress:rewardaddress,
+      action: "Exit",
+      pool: this.state.activepool
     };
     this.props.setAaveDepositToken(oby);
     this.props.setAaveDepositTokenAmount(this.state.rvxRewardsAvailable);
@@ -496,30 +588,73 @@ class Farming extends Component {
   };
 
   openModal = (pool) => {
-
+    let activerew;
+    if(pool == "Pool 1 rRVX") {
+      activerew = this.state.yrxRewardsBalance
+    } else if( pool =="Pool 2 RVX/USDT Uniswap LP") {
+      activerew = this.state.uniswaprvxusdtBalance
+    } else if(pool == "Pool 3 YRX/USDT Balancer 98/2") {
+      activerew = this.state.balancerRewardsAvailable
+    } else {
+      return;
+    }
     this.setState({
       depositmodalvisible: true,
-      activepool: pool
+      activepool: pool,
+      activepoolrewards:activerew,
     });
   };
 
   openModalWithdraw = (pool) => {
+    let activerew;
+    if(pool == "Pool 1 rRVX") {
+      activerew = this.state.yrxRewardsBalance
+    } else if( pool =="Pool 2 RVX/USDT Uniswap LP") {
+      activerew = this.state.uniswapRewardsAvailable
+    } else if(pool == "Pool 3 YRX/USDT Balancer 98/2") {
+      activerew = this.state.balancerRewardsAvailable
+    } else {
+      return;
+    }
     this.setState({
       withdrawmodalvisible: true,
-      activepool: pool
+      activepool: pool,
+      activepoolrewards:activerew,
     });
   };
   openModalExit = (pool) => {
+    let activerew;
+    if(pool == "Pool 1 rRVX") {
+      activerew = this.state.yrxRewardsBalance
+    } else if( pool =="Pool 2 RVX/USDT Uniswap LP") {
+      activerew = this.state.uniswapRewardsAvailable
+    } else if(pool == "Pool 3 YRX/USDT Balancer 98/2") {
+      activerew = this.state.balancerRewardsAvailable
+    } else {
+      return;
+    }
     this.setState({
       exitmodalvisible: true,
-      activepool: pool
+      activepool: pool,
+      activepoolrewards:activerew,
     });
   };
 
   openModalClaim = (pool) => {
+    let activerew;
+    if(pool == "Pool 1 rRVX") {
+      activerew = this.state.yrxRewardsBalance
+    } else if( pool =="Pool 2 RVX/USDT Uniswap LP") {
+      activerew = this.state.uniswapRewardsAvailable
+    } else if(pool == "Pool 3 YRX/USDT Balancer 98/2") {
+      activerew = this.state.balancerRewardsAvailable
+    } else {
+      return;
+    }
     this.setState({
       claimmodalvisible: true,
-      activepool: pool
+      activepool: pool,
+      activepoolrewards:activerew,
     });
   };
   back = () => {
@@ -589,12 +724,12 @@ class Farming extends Component {
               <Col>{this.state.totalValueUsd} $</Col>
             </Col>
             <Col className="colClass" xs={{ span: 11, offset: 1 }} lg={{ span: 6, offset: 2 }}>
-              <span style={{ color: "#9364d3" }}> RVX Price</span>
+              <span style={{ color: "#9364d3" }}> YRX Price</span>
               <Col>{this.state.rvxUsdPrice} $</Col>
             </Col>
             <Col className="colClass" xs={{ span: 5, offset: 1 }} lg={{ span: 6, offset: 2 }}>
               <span style={{ color: "#9364d3" }}> Total Supply</span>
-              <Col>25,000,000 RVX</Col>
+              <Col>15,000 YRX</Col>
             </Col>
           </Row>
           <div className="tokenwrapper">
@@ -630,7 +765,7 @@ class Farming extends Component {
                   </Col>
                   <Col span={12}>
                     <Row>
-                      <Col span={12}><div className="balancetext2">Rewards Available</div></Col>
+                      <Col span={12}><div className="balancetext2">Rewards Available </div></Col>
                       <Col span={12}><div className="balancetext" style={{ marginRight: "15px" }}>
                         {this.state.yrxRewardsBalance}
                       YRX
@@ -650,7 +785,7 @@ class Farming extends Component {
                   </Col>
                 </Row>
 
-                {this.renderButtons("pool1")}
+                {this.renderButtons("Pool 1 rRVX")}
               </Panel>
             </Collapse>
             <Collapse accordion className="accordionpool"
@@ -682,7 +817,7 @@ class Farming extends Component {
                   </Col>
                   <Col span={12}>
                     <Row>
-                      <Col span={12}><div className="balancetext2">Rewards Available</div></Col>
+                      <Col span={12}><div className="balancetext2">Rewards Available </div></Col>
                       <Col span={12}><div className="balancetext" style={{ marginRight: "15px" }}>
                         {this.state.uniswapRewardsAvailable}
                       YRX
@@ -701,7 +836,7 @@ class Farming extends Component {
                     </div>
                   </Col>
                 </Row>
-                {this.renderButtons("pool2")}
+                {this.renderButtons("Pool 2 RVX/USDT Uniswap LP")}
               </Panel>
             </Collapse>
             <Collapse accordion className="accordionpool"
@@ -733,7 +868,7 @@ class Farming extends Component {
                   </Col>
                   <Col span={12}>
                     <Row>
-                      <Col span={12}><div className="balancetext2">Rewards Available</div></Col>
+                      <Col span={12}><div className="balancetext2">Rewards Available </div></Col>
                       <Col span={12}><div className="balancetext" style={{ marginRight: "15px" }}>
                         {this.state.balancerRewardsAvailable}
                       YRX
@@ -752,7 +887,7 @@ class Farming extends Component {
                     </div>
                   </Col>
                 </Row>
-                {this.renderButtons("pool3")}
+                {this.renderButtons("Pool 3 YRX/USDT Balancer 98/2")}
               </Panel>
             </Collapse>
           </div>
@@ -767,10 +902,6 @@ class Farming extends Component {
         >
           <div className="pheader">Amount to Stake to {this.state.activepool}</div>
           <div className="pmodalcontent">
-            <div className="balancetext">
-              balance:<a onClick={() => this.setMaxDeposit(this.state.rvxBalance)}> {this.state.rvxBalance} </a>
-               RVX
-            </div>
             <div
               className="panelwrapper borderradiusfull"
               style={{ width: "500px" }}
@@ -803,17 +934,13 @@ class Farming extends Component {
         >
           <div className="pheader">Amount to Withdraw from {this.state.activepool}</div>
           <div className="pmodalcontent">
-            <div className="balancetext">
-              balance:<a onClick={() => this.setMaxWithdraw(this.state.rRvxBalance)}> {this.state.rRvxBalance} </a>
-               rRVX
-            </div>
             <div
               className="panelwrapper borderradiusfull"
               style={{ width: "500px" }}
             >
               <Input
                 className="inputTransparent"
-                value={this.state.stakeamount}
+                value={this.state.withdrawamount}
                 onChange={this.onChangeTokenValue}
               />
             </div>
@@ -843,7 +970,7 @@ class Farming extends Component {
               className="panelwrapper borderradiusfull"
               style={{ width: "500px" }}
             >
-              {this.state.rvxRewardsAvailable} RVX available to claim
+              {this.state.activepoolrewards} YRX available to claim
             </div>
           </div>
           {this.state.loading === true && (
@@ -871,7 +998,7 @@ class Farming extends Component {
               className="panelwrapper borderradiusfull"
               style={{ width: "500px" }}
             >
-              {this.state.rvxRewardsAvailable} RVX available to claim
+              {this.state.activepoolrewards} YRX available to claim
             </div>
           </div>
           {this.state.loading === true && (

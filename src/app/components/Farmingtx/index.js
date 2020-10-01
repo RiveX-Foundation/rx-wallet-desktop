@@ -18,9 +18,10 @@ import "./index.less";
 import Web3 from "web3";
 const { API_EthGas } = require("../../../../config/common");
 import ERC20ABI from "../../ABIs/ERC20.json";
+import YRXABI from "../../ABIs/YRXFarming.json";
 import LendingPoolAddressProviderABI from "../../ABIs/AddressProvider.json";
 import LendingPoolABI from "../../ABIs/LendingPool.json";
-import LOSV2 from "../../ABIs/LOSv2.json";
+//import YRXABI from "../../ABIs/YRXABI.json";
 import buttonback from "static/image/icon/back.png";
 import Axios from "axios";
 import { create } from "lodash";
@@ -69,12 +70,12 @@ class Farmingtx extends Component {
     advancedgasprice: 0,
     advancedgaslimit: 0,
     rRvxAddress: "0x0E778A448d49f01BB08A81AE72D104c523685fC4", //change to mainnet
-    uniswaprvxusdtaddress:"0x0E778A448d49f01BB08A81AE72D104c523685fC4", //change to mainnet uniswap rvx usdt lp
-    balanceryrxusdtaddress:"0x0E778A448d49f01BB08A81AE72D104c523685fC4", //change to mainnet balancer yrx usdt 98/2
-    yrxaddress:"0x260aD5e6Eb9119006efd66052120481bC77E3046", //change to mainnet yrx addy
-    yrxpooloneaddress:"0x5de3112cd00BB062aEDc7a6E49fa37454345C4aC", //change to mainnet pool one 
-    yrxpooltwoaddress:"0x44b857B097221eB231E64ee24C3082E05f259979",//change to mainnet pool two 
-    yrxpoolthreeaddress:"0x9B18D5b4e8B2604F055E5A9df33715FEfc7eFB2d"//change to mainnet pool three 
+    uniswaprvxusdtaddress: "0x0E778A448d49f01BB08A81AE72D104c523685fC4", //change to mainnet uniswap rvx usdt lp
+    balanceryrxusdtaddress: "0x0E778A448d49f01BB08A81AE72D104c523685fC4", //change to mainnet balancer yrx usdt 98/2
+    yrxaddress: "0x260aD5e6Eb9119006efd66052120481bC77E3046", //change to mainnet yrx addy
+    yrxpooloneaddress: "0xF348a446BA084dC90d63E79753C6E5957463F745", //change to mainnet pool one 
+    yrxpooltwoaddress: "0x9bD58943ce4D86Fc6582e017AcF898b8a76B411d",//change to mainnet pool two 
+    yrxpoolthreeaddress: "0x134AE1977a2F90CA4073F4E98f4cD7E14b16A4F7"//change to mainnet pool three 
   };
   onChangeTokenValue = (e) => {
     this.setState({
@@ -121,8 +122,8 @@ class Farmingtx extends Component {
       await this.getEstimateGasLimitExit();
     } else if (this.props.aavedeposittoken.action == "Claim Rewards") {
       await this.getEstimateGasLimitClaim();
-    } else {
-      await this.getEstimateGasLimit();
+    } else if (this.props.aavedeposittoken.action == "Withdraw") {
+      await this.getEstimateGasLimitWithdraw();
     }
 
     // await this.getTokenBalance();
@@ -134,12 +135,11 @@ class Farmingtx extends Component {
 
   getEstimateGasLimitClaim = async () => {
     console.log("estimating gas claim");
-    let tokenContract = this.state.losAddress;
-    const losContract = new web3.eth.Contract(LOSV2, tokenContract);
-    var dataClaim = losContract.methods
+    const YRXcontract = new web3.eth.Contract(YRXABI, this.props.aavedeposittoken.rewardAddress);
+    var dataClaim = YRXcontract.methods
       .getReward()
       .encodeABI();
-    losContract.methods
+    YRXcontract.methods
       .getReward()
       .estimateGas({
         from: this.state.selectedWallet,
@@ -154,16 +154,15 @@ class Farmingtx extends Component {
 
   getEstimateGasLimitExit = async () => {
     console.log("estimating gas Exit");
-    let tokenContract = this.state.losAddress;
-    const losContract = new web3.eth.Contract(LOSV2, tokenContract);
-    var dataClaim = losContract.methods
+    const YRXcontract = new web3.eth.Contract(YRXABI, this.props.aavedeposittoken.rewardAddress);
+    var dataExit = YRXcontract.methods
       .exit()
       .encodeABI();
-    losContract.methods
+    YRXcontract.methods
       .exit()
       .estimateGas({
         from: this.state.selectedWallet,
-        data: dataClaim,
+        data: dataExit,
       })
       .then((gasLimit) => {
         this.setState({
@@ -176,26 +175,17 @@ class Farmingtx extends Component {
     console.log("estimating gas");
     let unit = "ether";
     let tokenContract;
-
-    if (this.props.aavedeposittoken.action == "Stake") {
-      //ERCcontract = new web3.eth.Contract(ERC20ABI, this.state.rvxAddress);
-      tokenContract = this.state.rvxAddress;
-    } else if (this.props.aavedeposittoken.action == "Withdraw") {
-      //  ERCcontract = new web3.eth.Contract(ERC20ABI, this.state.rRvxAddress);
-      tokenContract = this.state.rRvxAddress;
-    }
+    tokenContract = this.props.aavedeposittoken.tokenContract;
     if (this.state.approval) {
       //need to approve
       let amount = web3.utils.toWei(this.state.depositamount.toString(), unit);
       console.log(this.state.tokenInfo);
-      // const tokenContract = this.state.tokenInfo.ContractAddress;
-      // const lpCoreAddress = await this.getLendingPoolCoreAddress();
       const ERCcontract = new web3.eth.Contract(ERC20ABI, tokenContract);
       var dataApprove = ERCcontract.methods
-        .approve(this.state.losAddress, amount)
+        .approve(this.props.aavedeposittoken.rewardAddress, amount)
         .encodeABI();
       ERCcontract.methods
-        .approve(this.state.losAddress, amount)
+        .approve(this.props.aavedeposittoken.rewardAddress, amount)
         .estimateGas({
           from: this.state.selectedWallet,
           data: dataApprove,
@@ -212,14 +202,11 @@ class Farmingtx extends Component {
         this.state.depositamount.toString(),
         unit
       );
-      // const referralCode = "87";
-      // const tokenContract = this.state.tokenInfo.ContractAddress;
-      // const lpAddress = await this.getLendingPoolAddress();
-      const losContract = new web3.eth.Contract(LOSV2, this.state.losAddress);
-      var dataDeposit = losContract.methods
+      const YRXcontract = new web3.eth.Contract(YRXABI, this.props.aavedeposittoken.rewardAddress);
+      var dataDeposit = YRXcontract.methods
         .stake(depositAmount)
         .encodeABI();
-      losContract.methods
+      YRXcontract.methods
         .stake(depositAmount)
         .estimateGas({
           from: this.state.selectedWallet,
@@ -236,62 +223,26 @@ class Farmingtx extends Component {
   getEstimateGasLimitWithdraw = async () => {
     console.log("estimating gas");
     let unit = "ether";
-    let tokenContract;
 
-    if (this.props.aavedeposittoken.action == "Stake") {
-      //ERCcontract = new web3.eth.Contract(ERC20ABI, this.state.rvxAddress);
-      tokenContract = this.state.rvxAddress;
-    } else {
-      //  ERCcontract = new web3.eth.Contract(ERC20ABI, this.state.rRvxAddress);
-      tokenContract = this.state.rRvxAddress;
-    }
-    if (this.state.approval) {
-      //need to approve
-      let amount = web3.utils.toWei(this.state.depositamount.toString(), unit);
-      console.log(this.state.tokenInfo);
-      // const tokenContract = this.state.tokenInfo.ContractAddress;
-      // const lpCoreAddress = await this.getLendingPoolCoreAddress();
-      const ERCcontract = new web3.eth.Contract(ERC20ABI, tokenContract);
-      var dataApprove = ERCcontract.methods
-        .approve(this.state.losAddress, amount)
-        .encodeABI();
-      ERCcontract.methods
-        .approve(this.state.losAddress, amount)
-        .estimateGas({
-          from: this.state.selectedWallet,
-          data: dataApprove,
-        })
-        .then((gasLimit) => {
-          this.setState({
-            advancedgaslimit: gasLimit,
-          });
+    const depositAmount = web3.utils.toWei(
+      this.state.depositamount.toString(),
+      unit
+    );
+    const YRXcontract = new web3.eth.Contract(YRXABI, this.props.aavedeposittoken.rewardAddress);
+    var dataDeposit = YRXcontract.methods
+      .withdraw(depositAmount)
+      .encodeABI();
+    YRXcontract.methods
+      .withdraw(depositAmount)
+      .estimateGas({
+        from: this.state.selectedWallet,
+        data: dataDeposit,
+      })
+      .then((gasLimit) => {
+        this.setState({
+          advancedgaslimit: gasLimit,
         });
-    } else {
-      //no need to approve
-
-      const depositAmount = web3.utils.toWei(
-        this.state.depositamount.toString(),
-        unit
-      );
-      // const referralCode = "87";
-      // const tokenContract = this.state.tokenInfo.ContractAddress;
-      // const lpAddress = await this.getLendingPoolAddress();
-      const losContract = new web3.eth.Contract(LOSV2, this.state.losAddress);
-      var dataDeposit = losContract.methods
-        .withdraw(depositAmount)
-        .encodeABI();
-      losContract.methods
-        .withdraw(depositAmount)
-        .estimateGas({
-          from: this.state.selectedWallet,
-          data: dataDeposit,
-        })
-        .then((gasLimit) => {
-          this.setState({
-            advancedgaslimit: gasLimit,
-          });
-        });
-    }
+      });
   }
 
 
@@ -317,24 +268,16 @@ class Farmingtx extends Component {
       "ether"
     );
     console.log(depositAmount);
-    //console.log(this.state.tokenInfo);
-    // console.log(this.state.selectedWallet);
-    //return;
     let ERCcontract;
     let tokenContract;
-    if (this.props.aavedeposittoken.action == "Stake") {
-      ERCcontract = new web3.eth.Contract(ERC20ABI, this.state.rvxAddress);
-      tokenContract = this.state.rvxAddress;
-    } else {
-      ERCcontract = new web3.eth.Contract(ERC20ABI, this.state.rRvxAddress);
-      tokenContract = this.state.rRvxAddress;
-    }
+    ERCcontract = new web3.eth.Contract(ERC20ABI, this.props.aavedeposittoken.tokenContract.toString());
+    tokenContract = this.props.aavedeposittoken.tokenContract;
     console.log(ERCcontract);
     web3.eth
       .call({
         to: tokenContract,
         data: ERCcontract.methods
-          .allowance(this.state.selectedWallet, this.state.losAddress)
+          .allowance(this.state.selectedWallet, this.props.aavedeposittoken.rewardAddress.toString())
           .encodeABI(),
       })
       .then(async (balance) => {
@@ -363,13 +306,8 @@ class Farmingtx extends Component {
   approve = async () => {
     let tokenContract;
     let ERCcontract;
-    if (this.props.aavedeposittoken.action == "Stake") {
-      ERCcontract = new web3.eth.Contract(ERC20ABI, this.state.rvxAddress);
-      tokenContract = this.state.rvxAddress;
-    } else {
-      ERCcontract = new web3.eth.Contract(ERC20ABI, this.state.rRvxAddress);
-      tokenContract = this.state.rRvxAddress;
-    }
+    ERCcontract = new web3.eth.Contract(ERC20ABI, this.props.aavedeposittoken.tokenContract);
+    tokenContract = this.props.aavedeposittoken.tokenContract;
     if (this.state.loading) {
       createNotification("info", "Wait for transaction to be mined!");
       return;
@@ -390,7 +328,7 @@ class Farmingtx extends Component {
       //approve first
       createNotification("info", "Approving...");
       var dataApprove = ERCcontract.methods
-        .approve(this.state.losAddress, depositAmount)
+        .approve(this.props.aavedeposittoken.rewardAddress, depositAmount)
         .encodeABI();
       var count = await web3.eth.getTransactionCount(this.state.selectedWallet);
       var rawTransaction = {
@@ -401,7 +339,7 @@ class Farmingtx extends Component {
         data: dataApprove, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
       };
       ERCcontract.methods
-        .approve(this.state.losAddress, depositAmount)
+        .approve(this.props.aavedeposittoken.rewardAddress, depositAmount)
         .estimateGas({
           from: this.state.selectedWallet,
         })
@@ -423,13 +361,17 @@ class Farmingtx extends Component {
             chainId: "0x3",
           };
           var privKey = Buffer.from(this.state.privatekey, "hex");
-          var tx =
+          var tx = new Tx(rawTransaction, {
+            chain: 'ropsten',
+            hardfork: 'petersburg'
+          })
+         /* var tx =
             this.props.selectedethnetwork.shortcode == "mainnet"
               ? new Tx(rawTransaction)
               : new Tx(rawTransaction, {
                 chain: this.props.selectedethnetwork.shortcode,
                 hardfork: "petersburg",
-              });
+              });*/
           tx.sign(privKey);
           var serializedTx = tx.serialize();
           web3.eth
@@ -529,8 +471,8 @@ class Farmingtx extends Component {
         createNotification("error", "Wrong deposit amount!");
         return;
       }
-      ERCcontract = new web3.eth.Contract(ERC20ABI, this.state.rvxAddress);
-      tokenContract = this.state.rvxAddress;
+      ERCcontract = new web3.eth.Contract(ERC20ABI, this.props.aavedeposittoken.tokenContract);
+      tokenContract = this.props.aavedeposittoken.tokenContract;
       await this.getEstimateGasLimit();
 
       this.setState({
@@ -556,14 +498,14 @@ class Farmingtx extends Component {
       try {
         //if no approval then deposit
         //  const lpAddress = await this.getLendingPoolAddress();
-        const losContract = new web3.eth.Contract(LOSV2, this.state.losAddress);
+        const losContract = new web3.eth.Contract(YRXABI, this.props.aavedeposittoken.rewardAddress);
         var dataDeposit = losContract.methods
           .stake(depositAmount)
           .encodeABI();
         var count = await web3.eth.getTransactionCount(this.state.selectedWallet);
         var rawTransaction = {
           from: this.state.selectedWallet,
-          to: this.state.losAddress, //this.tokencontract,
+          to: this.props.aavedeposittoken.rewardAddress, //this.tokencontract,
           nonce: count,
           value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
           data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
@@ -589,7 +531,7 @@ class Farmingtx extends Component {
               gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
               // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
               gas: this.state.advancedgaslimit + 10000, //"0x7458",
-              to: this.state.losAddress, //this.tokencontract,
+              to: this.props.aavedeposittoken.rewardAddress, //this.tokencontract,
               value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
               data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
               chainId: "0x3",
@@ -637,7 +579,7 @@ class Farmingtx extends Component {
                 this.setState({
                   loading: false,
                 });
-                this.props.setCurrent("leagueofstakes");
+                this.props.setCurrent("farming");
               })
               .on("error", (error) => {
                 console.log(error);
@@ -705,14 +647,14 @@ class Farmingtx extends Component {
       try {
         //if no approval then deposit
         //  const lpAddress = await this.getLendingPoolAddress();
-        const losContract = new web3.eth.Contract(LOSV2, this.state.losAddress);
+        const losContract = new web3.eth.Contract(YRXABI, this.props.aavedeposittoken.rewardAddress);
         var dataDeposit = losContract.methods
           .withdraw(depositAmount)
           .encodeABI();
         var count = await web3.eth.getTransactionCount(this.state.selectedWallet);
         var rawTransaction = {
           from: this.state.selectedWallet,
-          to: this.state.losAddress, //this.tokencontract,
+          to: this.props.aavedeposittoken.rewardAddress, //this.tokencontract,
           nonce: count,
           value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
           data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
@@ -738,7 +680,7 @@ class Farmingtx extends Component {
               gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
               // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
               gas: this.state.advancedgaslimit + 10000, //"0x7458",
-              to: this.state.losAddress, //this.tokencontract,
+              to: this.props.aavedeposittoken.rewardAddress, //this.tokencontract,
               value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
               data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
               chainId: "0x3",
@@ -786,7 +728,7 @@ class Farmingtx extends Component {
                 this.setState({
                   loading: false,
                 });
-                this.props.setCurrent("leagueofstakes");
+                this.props.setCurrent("farming");
               })
               .on("error", (error) => {
                 console.log(error);
@@ -820,14 +762,14 @@ class Farmingtx extends Component {
         loading: true,
       });
       try {
-        const losContract = new web3.eth.Contract(LOSV2, this.state.losAddress);
+        const losContract = new web3.eth.Contract(YRXABI, this.props.aavedeposittoken.rewardAddress);
         var dataDeposit = losContract.methods
           .getReward()
           .encodeABI();
         var count = await web3.eth.getTransactionCount(this.state.selectedWallet);
         var rawTransaction = {
           from: this.state.selectedWallet,
-          to: this.state.losAddress, //this.tokencontract,
+          to: this.props.aavedeposittoken.rewardAddress, //this.tokencontract,
           nonce: count,
           value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
           data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
@@ -853,7 +795,7 @@ class Farmingtx extends Component {
               gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
               // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
               gas: this.state.advancedgaslimit + 10000, //"0x7458",
-              to: this.state.losAddress, //this.tokencontract,
+              to: this.props.aavedeposittoken.rewardAddress, //this.tokencontract,
               value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
               data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
               chainId: "0x3",
@@ -901,7 +843,7 @@ class Farmingtx extends Component {
                 this.setState({
                   loading: false,
                 });
-                this.props.setCurrent("leagueofstakes");
+                this.props.setCurrent("farming");
               })
               .on("error", (error) => {
                 console.log(error);
@@ -936,14 +878,14 @@ class Farmingtx extends Component {
         loading: true,
       });
       try {
-        const losContract = new web3.eth.Contract(LOSV2, this.state.losAddress);
+        const losContract = new web3.eth.Contract(YRXABI, this.props.aavedeposittoken.rewardAddress);
         var dataDeposit = losContract.methods
           .exit()
           .encodeABI();
         var count = await web3.eth.getTransactionCount(this.state.selectedWallet);
         var rawTransaction = {
           from: this.state.selectedWallet,
-          to: this.state.losAddress, //this.tokencontract,
+          to: this.props.aavedeposittoken.rewardAddress, //this.tokencontract,
           nonce: count,
           value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
           data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
@@ -969,7 +911,7 @@ class Farmingtx extends Component {
               gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
               // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
               gas: this.state.advancedgaslimit + 10000, //"0x7458",
-              to: this.state.losAddress, //this.tokencontract,
+              to: this.props.aavedeposittoken.rewardAddress, //this.tokencontract,
               value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
               data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
               chainId: "0x3",
@@ -1017,7 +959,7 @@ class Farmingtx extends Component {
                 this.setState({
                   loading: false,
                 });
-                this.props.setCurrent("leagueofstakes");
+                this.props.setCurrent("farming");
               })
               .on("error", (error) => {
                 console.log(error);
@@ -1077,7 +1019,7 @@ class Farmingtx extends Component {
   };
 
   back = () => {
-    this.props.setCurrent("leagueofstakes");
+    this.props.setCurrent("farming");
   };
 
   render() {
@@ -1087,7 +1029,7 @@ class Farmingtx extends Component {
           <span>
             <img onClick={this.back} width="20px" src={buttonback} />
           </span>
-          <span style={{ marginLeft: "20px" }}>{this.props.aavedeposittoken.action}</span>
+          <span style={{ marginLeft: "20px" }}>{this.props.aavedeposittoken.action} {this.props.aavedeposittoken.pool} </span>
         </div>
         <div className="walletname"></div>
         <div className="contentpanel">
@@ -1102,7 +1044,7 @@ class Farmingtx extends Component {
                     src={rvxlogo}
                     className="tokenimg"
                   />
-                  {this.props.aavedeposittoken.token} {this.props.aavedeposittoken.action}
+                  {this.props.aavedeposittoken.token} {this.props.aavedeposittoken.action} {this.props.aavedeposittoken.pool}
                 </div>
                 <div
                   className="panelwrapper borderradiusfull"
@@ -1265,7 +1207,7 @@ class Farmingtx extends Component {
                     src={rvxlogo}
                     className="tokenimg"
                   />
-                  {this.props.aavedeposittoken.token} {this.props.aavedeposittoken.action}
+                  {this.props.aavedeposittoken.token} {this.props.aavedeposittoken.action} {this.props.aavedeposittoken.pool}
                 </div>
                 <div
                   className="panelwrapper borderradiusfull"

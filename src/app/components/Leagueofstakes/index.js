@@ -125,6 +125,15 @@ class Leagueofstakes extends Component {
     });
   };
 
+  formatNumber = (n) => {
+    for (var i = 0; i < ranges.length; i++) {
+      if (n >= ranges[i].divider) {
+        return (n / ranges[i].divider).toString() + ranges[i].suffix;
+      }
+    }
+    return n.toString();
+  };
+
 
   getDataFromBlockchain = async () => {
     var dollarvalue = await this.lookUpPrices(["rivex"]);
@@ -226,13 +235,26 @@ class Leagueofstakes extends Component {
 
   getTVL = async (dollarvalue, totalRVXstaked) => {
     console.log("GETTING RVX USD PRICE AND TOTAL VALUE LOCKED (USD)");
+    let rez = parseFloat(dollarvalue["rivex"].usd) * parseFloat(totalRVXstaked);
     try {
       console.log(dollarvalue["rivex"])
       console.log(totalRVXstaked)
+      rez = rez.toString().slice(0, 12);
+      rez = Number(rez).toFixed(2);
+      console.log(rez);
+      var s = this.formatNumber(rez);
+      console.log(s);
+      let lastchar = s.slice(-1);
+      var x = s.indexOf(".");
+
+      console.log(x);
+      s = s.slice(0, x + 2);
+      s = s + lastchar;
+      console.log(s);
       console.log("TVL: " + parseFloat(dollarvalue["rivex"].usd) * parseFloat(totalRVXstaked))
       this.setState({
         rvxUsdPrice: dollarvalue["rivex"].usd,
-        totalValueUsd: parseFloat(dollarvalue["rivex"].usd) * parseFloat(totalRVXstaked)
+        totalValueUsd: s
       })
     } catch (error) {
       console.log("ERROR: " + error);
@@ -489,7 +511,7 @@ class Leagueofstakes extends Component {
           </Button>
           <Button
             className="curvebutton"
-            style={{ marginTop: "15px", marginRight:"20px" }}
+            style={{ marginTop: "15px", marginRight: "20px" }}
             onClick={this.openModalWithdraw}
           >
             Withdraw
