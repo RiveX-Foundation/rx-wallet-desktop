@@ -455,7 +455,7 @@ class Leagueofstakes extends Component {
               <div className="tokenassetitemrow">
                 <div className="amountctn">
                   <div className="totalcoin">
-                    <span style={{ color: "#9364d3" }}>Currently staking:</span> {Number(this.state.totalRvxStaked).toFixed(4)} RVX
+                    <span style={{ color: "#9364d3" }}>Currently staking:</span> {Number(this.state.rvxStakedBalance).toFixed(4)} RVX
                   </div>
                 </div>
               </div>
@@ -517,7 +517,7 @@ class Leagueofstakes extends Component {
             Withdraw
           </Button>
           <Button
-            className="curvebutton"
+            className="curvebutton2"
             style={{ marginTop: "15px", marginRight: "20px" }}
             onClick={this.openModalExit}
           >

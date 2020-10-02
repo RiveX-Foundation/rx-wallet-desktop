@@ -694,7 +694,7 @@ class Farming extends Component {
           Withdraw
     </Button>
         <Button
-          className="curvebutton"
+          className="curvebutton2"
           style={{ marginTop: "15px", marginRight: "20px" }}
           onClick={() => this.openModalExit(pools)}
         >
@@ -739,7 +739,7 @@ class Farming extends Component {
               onChange={() => this.clearInputs()}
             >
               <Panel header="Pool 1 rRVX" key="1">
-                <p>Staked Amount:<a onClick={() => this.setMaxWithdraw(this.state.yrxRewardsStakedBalance)}>{this.state.yrxRewardsStakedBalance}</a>  rRVX</p>
+                <p style={{color:"rgb(147, 100, 211)"}}>Staked Amount</p> <p><a onClick={() => this.setMaxWithdraw(this.state.yrxRewardsStakedBalance)}>{this.state.yrxRewardsStakedBalance}</a>  rRVX</p>
                 <Row style={{ marginBottom: "30px" }}>
                   <Col span={12}>
                     <Row>
@@ -792,7 +792,7 @@ class Farming extends Component {
               expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
               onChange={() => this.clearInputs()}>
               <Panel header="Pool 2 RVX/USDT Uniswap LP" key="2">
-                <p>Staked Amount: <a onClick={() => this.setMaxWithdraw(this.state.uniswaprvxusdtStakedBalance)}>{this.state.uniswaprvxusdtStakedBalance}</a> UNI-V2</p>
+              <p style={{color:"rgb(147, 100, 211)"}}>Staked Amount</p> <p><a onClick={() => this.setMaxWithdraw(this.state.uniswaprvxusdtStakedBalance)}>{this.state.uniswaprvxusdtStakedBalance}</a> UNI-V2</p>
                 <Row style={{ marginBottom: "30px" }}>
                   <Col span={12}>
                     <Row>
@@ -843,7 +843,7 @@ class Farming extends Component {
               expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
               onChange={() => this.clearInputs()}>
               <Panel header="Pool 3 YRX/USDT Balancer 98/2" key="3">
-                <p>Staked Amount: <a onClick={() => this.setMaxWithdraw(this.state.balanceryrxusdtStakedBalance)}> {this.state.balanceryrxusdtStakedBalance}</a> BPT</p>
+              <p style={{color:"rgb(147, 100, 211)"}}>Staked Amount</p> <p><a onClick={() => this.setMaxWithdraw(this.state.balanceryrxusdtStakedBalance)}> {this.state.balanceryrxusdtStakedBalance}</a> BPT</p>
                 <Row style={{ marginBottom: "30px" }}>
                   <Col span={12}>
                     <Row>
@@ -871,7 +871,7 @@ class Farming extends Component {
                       <Col span={12}><div className="balancetext2">Rewards Available </div></Col>
                       <Col span={12}><div className="balancetext" style={{ marginRight: "15px" }}>
                         {this.state.balancerRewardsAvailable}
-                      YRX
+                       YRX
                     </div>
                       </Col>
                     </Row>
