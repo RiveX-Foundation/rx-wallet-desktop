@@ -73,7 +73,7 @@
     "i18next": "^15.0.8",
     "i18next-node-fs-backend": "^2.1.2",
     "jquery": "^3.4.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.20",
     "lowdb": "^1.0.0",
     "mobx": "^5.9.4",
     "mobx-react": "^5.4.3",
