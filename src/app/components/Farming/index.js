@@ -941,7 +941,7 @@ class Farming extends Component {
               <Input
                 className="inputTransparent"
                 value={this.state.withdrawamount}
-                onChange={this.onChangeTokenValue}
+                onChange={this.onChangeTokenValueWithdraw}
               />
             </div>
           </div>
