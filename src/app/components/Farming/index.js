@@ -551,7 +551,7 @@ class Farming extends Component {
     let rewardBalance;
     if(this.state.activepool == "Pool 1 rRVX") {
       tokenbal = new BigNumber(this.state.yrxRewardsStakedBalance);
-      rewardBalance = new BigNumber(this.state.yrxRewardsStakedBalance)
+      rewardBalance = new BigNumber(this.state.yrxRewardsBalance)
       token= "rRVX"
       tokenContract = this.state.rRvxAddress;
       rewardaddress = this.state.yrxpooloneaddress;

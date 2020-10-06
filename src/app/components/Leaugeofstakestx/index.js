@@ -412,12 +412,13 @@ class Leagueofstakestx extends Component {
             nonce: count,
             gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
             // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-            gas: this.state.advancedgaslimit + 10000, //"0x7458",
+            gas: Number(this.state.advancedgaslimit) + 10000, //"0x7458",
             to: tokenContract, //this.tokencontract,
             value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
             data: dataApprove, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
             chainId: "0x3",
           };
+          console.log(rawTransaction);
           var privKey = Buffer.from(this.state.privatekey, "hex");
           var tx =
             this.props.selectedethnetwork.shortcode == "mainnet"
@@ -584,7 +585,7 @@ class Leagueofstakestx extends Component {
               nonce: count,
               gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
               // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-              gas: this.state.advancedgaslimit + 10000, //"0x7458",
+              gas: Number(this.state.advancedgaslimit) + 10000, //"0x7458",
               to: this.state.losAddress, //this.tokencontract,
               value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
               data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
@@ -733,7 +734,7 @@ class Leagueofstakestx extends Component {
               nonce: count,
               gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
               // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-              gas: this.state.advancedgaslimit + 10000, //"0x7458",
+              gas: Number(this.state.advancedgaslimit) + 10000, //"0x7458",
               to: this.state.losAddress, //this.tokencontract,
               value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
               data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
@@ -848,7 +849,7 @@ class Leagueofstakestx extends Component {
               nonce: count,
               gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
               // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-              gas: this.state.advancedgaslimit + 10000, //"0x7458",
+              gas: Number(this.state.advancedgaslimit) + 10000, //"0x7458",
               to: this.state.losAddress, //this.tokencontract,
               value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
               data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
@@ -964,7 +965,7 @@ class Leagueofstakestx extends Component {
               nonce: count,
               gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
               // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-              gas: this.state.advancedgaslimit + 10000, //"0x7458",
+              gas: Number(this.state.advancedgaslimit) + 10000, //"0x7458",
               to: this.state.losAddress, //this.tokencontract,
               value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
               data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
@@ -1247,7 +1248,7 @@ class Leagueofstakestx extends Component {
                   </React.Fragment>
                 )}
                 <div>
-                  <Button className="curvebutton" onClick={this.deposit}>
+                  <Button disabled={this.state.loading} className="curvebutton" onClick={this.deposit}>
                     Confirm
                   </Button>
                 </div>
@@ -1393,7 +1394,7 @@ class Leagueofstakestx extends Component {
                   </React.Fragment>
                 )}
                 <div>
-                  <Button className="curvebutton" onClick={this.approve}>
+                  <Button disabled={this.state.loading} className="curvebutton" onClick={this.approve}>
                     {intl.get("Aave.Approve")}
                   </Button>
                 </div>

@@ -117,13 +117,15 @@ class Farmingtx extends Component {
       deposittoken: this.props.aavedeposittoken,
       tokenbalance: this.props.aavedeposittoken.tokenbalance
     });
-    await this.getAllowance();
+    //await this.getAllowance();
     if (this.props.aavedeposittoken.action == "Exit") {
       await this.getEstimateGasLimitExit();
     } else if (this.props.aavedeposittoken.action == "Claim Rewards") {
       await this.getEstimateGasLimitClaim();
     } else if (this.props.aavedeposittoken.action == "Withdraw") {
       await this.getEstimateGasLimitWithdraw();
+    } else if (this.props.aavedeposittoken.action == "Stake") {
+      await this.getAllowance();
     }
 
     // await this.getTokenBalance();
@@ -354,7 +356,7 @@ class Farmingtx extends Component {
             nonce: count,
             gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
             // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-            gas: this.state.advancedgaslimit + 10000, //"0x7458",
+            gas: Number(this.state.advancedgaslimit) + 20000, //"0x7458",
             to: tokenContract, //this.tokencontract,
             value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
             data: dataApprove, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
@@ -365,13 +367,13 @@ class Farmingtx extends Component {
             chain: 'ropsten',
             hardfork: 'petersburg'
           })
-         /* var tx =
-            this.props.selectedethnetwork.shortcode == "mainnet"
-              ? new Tx(rawTransaction)
-              : new Tx(rawTransaction, {
-                chain: this.props.selectedethnetwork.shortcode,
-                hardfork: "petersburg",
-              });*/
+          /* var tx =
+             this.props.selectedethnetwork.shortcode == "mainnet"
+               ? new Tx(rawTransaction)
+               : new Tx(rawTransaction, {
+                 chain: this.props.selectedethnetwork.shortcode,
+                 hardfork: "petersburg",
+               });*/
           tx.sign(privKey);
           var serializedTx = tx.serialize();
           web3.eth
@@ -530,7 +532,7 @@ class Farmingtx extends Component {
               nonce: count,
               gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
               // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-              gas: this.state.advancedgaslimit + 10000, //"0x7458",
+              gas: Number(this.state.advancedgaslimit) + 20000, //"0x7458",
               to: this.props.aavedeposittoken.rewardAddress, //this.tokencontract,
               value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
               data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
@@ -679,7 +681,7 @@ class Farmingtx extends Component {
               nonce: count,
               gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
               // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-              gas: this.state.advancedgaslimit + 10000, //"0x7458",
+              gas: Number(this.state.advancedgaslimit) + 20000, //"0x7458",
               to: this.props.aavedeposittoken.rewardAddress, //this.tokencontract,
               value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
               data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
@@ -794,7 +796,7 @@ class Farmingtx extends Component {
               nonce: count,
               gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
               // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-              gas: this.state.advancedgaslimit + 10000, //"0x7458",
+              gas: Number(this.state.advancedgaslimit) + 20000, //"0x7458",
               to: this.props.aavedeposittoken.rewardAddress, //this.tokencontract,
               value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
               data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
@@ -910,7 +912,7 @@ class Farmingtx extends Component {
               nonce: count,
               gasPrice: web3.utils.toHex(web3.utils.toWei(this.state.advancedgasprice.toString(), "gwei")), //"0x04e3b29200",
               // "gasPrice": gasPrices.high * 100000000,//"0x04e3b29200",
-              gas: this.state.advancedgaslimit + 10000, //"0x7458",
+              gas: Number(this.state.advancedgaslimit) + 20000, //"0x7458",
               to: this.props.aavedeposittoken.rewardAddress, //this.tokencontract,
               value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
               data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
@@ -1060,21 +1062,25 @@ class Farmingtx extends Component {
                       {this.props.aavedeposittoken.token}
                     </div>
                   </div>
-                  <div className="spacebetween" style={{ marginTop: "10px" }}>
-                    <div className="panellabel">
-                      {intl.get("TokenTransferConfirmation.Amount")}
-                    </div>
-                    <div className="panelvalue">
-                      {" "}
-                      <Input
-                        value={this.state.depositamount}
-                        className="inputTransparent inputclass"
-                        onChange={this.onChangeTokenValue}
-                        placeholder={0}
-                      />
-                      {this.props.aavedeposittoken.token}
-                    </div>
-                  </div>
+                  {this.props.aavedeposittoken.action != "Claim Rewards" && this.props.aavedeposittoken.action != "Exit" && (
+                    <React.Fragment>
+                      <div className="spacebetween" style={{ marginTop: "10px" }}>
+                        <div className="panellabel">
+                          {intl.get("TokenTransferConfirmation.Amount")}
+                        </div>
+                        <div className="panelvalue">
+                          {" "}
+                          <Input
+                            value={this.state.depositamount}
+                            className="inputTransparent inputclass"
+                            onChange={this.onChangeTokenValue}
+                            placeholder={0}
+                          />
+                          {this.props.aavedeposittoken.token}
+                        </div>
+                      </div>
+                    </React.Fragment>
+                  )}
                 </div>
                 <div
                   className="panelwrapper borderradiusfull"
@@ -1193,7 +1199,7 @@ class Farmingtx extends Component {
                   </React.Fragment>
                 )}
                 <div>
-                  <Button className="curvebutton" onClick={this.deposit}>
+                  <Button disabled={this.state.loading} className="curvebutton" onClick={this.deposit}>
                     Confirm
                   </Button>
                 </div>
@@ -1339,7 +1345,7 @@ class Farmingtx extends Component {
                   </React.Fragment>
                 )}
                 <div>
-                  <Button className="curvebutton" onClick={this.approve}>
+                  <Button disabled={this.state.loading} className="curvebutton" onClick={this.approve}>
                     {intl.get("Aave.Approve")}
                   </Button>
                 </div>

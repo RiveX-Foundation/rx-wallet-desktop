@@ -272,7 +272,11 @@ class Leagueofstakes extends Component {
   }
 
   setMax = (bal) => {
-    //this.setState({ stakeamount: bal });
+  this.setState({ stakeamount: bal });
+  };
+
+  setMaxWithdraw = (bal) => {
+    this.setState({ withdrawamount: bal });
   };
 
 
@@ -536,7 +540,7 @@ class Leagueofstakes extends Component {
           <div className="pheader">Amount to Stake</div>
           <div className="pmodalcontent">
             <div className="balancetext">
-              balance:<a onClick={this.setMax(this.state.rvxBalance)}> {this.state.rvxBalance} </a>
+              balance:<a onClick={() => this.setMax(this.state.rvxBalance)}> {this.state.rvxBalance} </a>
                RVX
             </div>
             <div
@@ -572,7 +576,7 @@ class Leagueofstakes extends Component {
           <div className="pheader">Amount to Withdraw</div>
           <div className="pmodalcontent">
             <div className="balancetext">
-              balance:<a onClick={this.setMax(this.state.rRvxBalance)}> {this.state.rRvxBalance} </a>
+              balance:<a onClick={()=>this.setMaxWithdraw(this.state.rRvxBalance)}> {this.state.rRvxBalance} </a>
                rRVX
             </div>
             <div
