@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { toJS } from "mobx";
 import { Modal, Button, Input, Spin } from "antd";
 import { inject, observer } from "mobx-react";
-import aavevertical from "static/image/los100.png";
+import aavevertical from "static/image/staking.png";
 import intl from "react-intl-universal";
 import { WALLETID } from "../../utils/support";
 import {
@@ -69,8 +69,8 @@ class Leagueofstakestx extends Component {
     advancedgasprice: 0,
     advancedgaslimit: 0,
     rvxAddress: "0x5d921bD3676Be048A3EF7F6bB535d1993421DCA5",
-    rRvxAddress: "0x0E778A448d49f01BB08A81AE72D104c523685fC4",
-    losAddress: "0x17584cFDfb113431a2ae5eA7c9C1b3558904faDf"
+    rRvxAddress: "0xdeD5a34911F2a67e3cC2C56A437ec93045d35286",
+    losAddress: "0x9CEe9AC29Af304Ce8B1E63cD7AD18534ab97b790"
   };
   onChangeTokenValue = (e) => {
     this.setState({
@@ -402,7 +402,14 @@ class Leagueofstakestx extends Component {
           from: this.state.selectedWallet,
         })
         .then((gasLimit) => {
-          var gas = new BigNumber(gasLimit);
+          var limit = Number(gasLimit);
+          if(limit === 0) {
+            createNotification(
+              "error",
+              "Always failing transaction. Please check your deposit amount!"
+            );
+            return;
+          }
           var gasPrice = web3.utils.toWei(
             this.state.gaspricevalue.toString(),
             "gwei"
@@ -528,7 +535,7 @@ class Leagueofstakestx extends Component {
       }
       ERCcontract = new web3.eth.Contract(ERC20ABI, this.state.rvxAddress);
       tokenContract = this.state.rvxAddress;
-      await this.getEstimateGasLimit();
+     // await this.getEstimateGasLimit();
 
       this.setState({
         loading: true,
@@ -578,7 +585,13 @@ class Leagueofstakestx extends Component {
               "gwei"
             );
             var limit = Number(gasLimit);
-            limit = limit + 150000;
+            if(limit === 0) {
+              createNotification(
+                "error",
+                "Always failing transaction. Please check your deposit amount!"
+              );
+              return;
+            }
             //console.log("GAS LIMIT: "+limit);
             rawTransaction = {
               from: this.state.selectedWallet.toString(),
@@ -677,7 +690,7 @@ class Leagueofstakestx extends Component {
       ERCcontract = new web3.eth.Contract(ERC20ABI, this.state.rRvxAddress);
       tokenContract = this.state.rRvxAddress;
 
-      await this.getEstimateGasLimitWithdraw();
+      //await this.getEstimateGasLimitWithdraw();
 
       this.setState({
         loading: true,
@@ -727,7 +740,13 @@ class Leagueofstakestx extends Component {
               "gwei"
             );
             var limit = Number(gasLimit);
-            limit = limit + 150000;
+            if(limit === 0) {
+              createNotification(
+                "error",
+                "Always failing transaction. Please check your deposit amount!"
+              );
+              return;
+            }
             //console.log("GAS LIMIT: "+limit);
             rawTransaction = {
               from: this.state.selectedWallet.toString(),
@@ -811,7 +830,7 @@ class Leagueofstakestx extends Component {
       }
     } else if (this.props.aavedeposittoken.action == "Claim Rewards") {
 
-      await this.getEstimateGasLimitClaim();
+      //await this.getEstimateGasLimitClaim();
 
       this.setState({
         loading: true,
@@ -842,7 +861,14 @@ class Leagueofstakestx extends Component {
               "gwei"
             );
             var limit = Number(gasLimit);
-            limit = limit + 150000;
+            console.log(limit);
+            if(limit === 0) {
+              createNotification(
+                "error",
+                "Always failing transaction. Please check your deposit amount!"
+              );
+              return;
+            }
             //console.log("GAS LIMIT: "+limit);
             rawTransaction = {
               from: this.state.selectedWallet.toString(),
@@ -927,7 +953,7 @@ class Leagueofstakestx extends Component {
 
     } else if (this.props.aavedeposittoken.action == "Exit") {
 
-      await this.getEstimateGasLimitExit();
+     // await this.getEstimateGasLimitExit();
 
       this.setState({
         loading: true,
@@ -958,7 +984,13 @@ class Leagueofstakestx extends Component {
               "gwei"
             );
             var limit = Number(gasLimit);
-            limit = limit + 150000;
+            if(limit === 0) {
+              createNotification(
+                "error",
+                "Always failing transaction. Please check your deposit amount!"
+              );
+              return;
+            }
             //console.log("GAS LIMIT: "+limit);
             rawTransaction = {
               from: this.state.selectedWallet.toString(),

@@ -89,8 +89,8 @@ class Leagueofstakes extends Component {
     totalRvxStaked: "",
     stakeamount: 0,
     rvxAddress: "0x5d921bD3676Be048A3EF7F6bB535d1993421DCA5",
-    rRvxAddress: "0x0E778A448d49f01BB08A81AE72D104c523685fC4",
-    losAddress: "0x17584cFDfb113431a2ae5eA7c9C1b3558904faDf"
+    rRvxAddress: "0xdeD5a34911F2a67e3cC2C56A437ec93045d35286",
+    losAddress: "0x9CEe9AC29Af304Ce8B1E63cD7AD18534ab97b790"
   };
 
   async componentDidMount() {

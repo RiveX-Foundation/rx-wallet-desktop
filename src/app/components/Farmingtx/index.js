@@ -69,9 +69,9 @@ class Farmingtx extends Component {
     advancedoptions: false,
     advancedgasprice: 0,
     advancedgaslimit: 0,
-    rRvxAddress: "0x0E778A448d49f01BB08A81AE72D104c523685fC4", //change to mainnet
-    uniswaprvxusdtaddress: "0x0E778A448d49f01BB08A81AE72D104c523685fC4", //change to mainnet uniswap rvx usdt lp
-    balanceryrxusdtaddress: "0x0E778A448d49f01BB08A81AE72D104c523685fC4", //change to mainnet balancer yrx usdt 98/2
+    rRvxAddress: "0xdeD5a34911F2a67e3cC2C56A437ec93045d35286", //change to mainnet
+    uniswaprvxusdtaddress: "0xdeD5a34911F2a67e3cC2C56A437ec93045d35286", //change to mainnet uniswap rvx usdt lp
+    balanceryrxusdtaddress: "0xdeD5a34911F2a67e3cC2C56A437ec93045d35286", //change to mainnet balancer yrx usdt 98/2
     yrxaddress: "0x260aD5e6Eb9119006efd66052120481bC77E3046", //change to mainnet yrx addy
     yrxpooloneaddress: "0xF348a446BA084dC90d63E79753C6E5957463F745", //change to mainnet pool one 
     yrxpooltwoaddress: "0x9bD58943ce4D86Fc6582e017AcF898b8a76B411d",//change to mainnet pool two 
@@ -346,7 +346,14 @@ class Farmingtx extends Component {
           from: this.state.selectedWallet,
         })
         .then((gasLimit) => {
-          var gas = new BigNumber(gasLimit);
+          var limit = Number(gasLimit);
+            if(limit === 0) {
+              createNotification(
+                "error",
+                "Always failing transaction. Please check your deposit amount!"
+              );
+              return;
+            }
           var gasPrice = web3.utils.toWei(
             this.state.gaspricevalue.toString(),
             "gwei"
@@ -475,7 +482,7 @@ class Farmingtx extends Component {
       }
       ERCcontract = new web3.eth.Contract(ERC20ABI, this.props.aavedeposittoken.tokenContract);
       tokenContract = this.props.aavedeposittoken.tokenContract;
-      await this.getEstimateGasLimit();
+      //await this.getEstimateGasLimit();
 
       this.setState({
         loading: true,
@@ -525,7 +532,13 @@ class Farmingtx extends Component {
               "gwei"
             );
             var limit = Number(gasLimit);
-            limit = limit + 150000;
+            if(limit === 0) {
+              createNotification(
+                "error",
+                "Always failing transaction. Please check your deposit amount!"
+              );
+              return;
+            }
             //console.log("GAS LIMIT: "+limit);
             rawTransaction = {
               from: this.state.selectedWallet.toString(),
@@ -624,7 +637,7 @@ class Farmingtx extends Component {
       ERCcontract = new web3.eth.Contract(ERC20ABI, this.state.rRvxAddress);
       tokenContract = this.state.rRvxAddress;
 
-      await this.getEstimateGasLimitWithdraw();
+      //await this.getEstimateGasLimitWithdraw();
 
       this.setState({
         loading: true,
@@ -674,7 +687,13 @@ class Farmingtx extends Component {
               "gwei"
             );
             var limit = Number(gasLimit);
-            limit = limit + 150000;
+            if(limit === 0) {
+              createNotification(
+                "error",
+                "Always failing transaction. Please check your deposit amount!"
+              );
+              return;
+            }
             //console.log("GAS LIMIT: "+limit);
             rawTransaction = {
               from: this.state.selectedWallet.toString(),
@@ -758,7 +777,7 @@ class Farmingtx extends Component {
       }
     } else if (this.props.aavedeposittoken.action == "Claim Rewards") {
 
-      await this.getEstimateGasLimitClaim();
+      //await this.getEstimateGasLimitClaim();
 
       this.setState({
         loading: true,
@@ -789,7 +808,13 @@ class Farmingtx extends Component {
               "gwei"
             );
             var limit = Number(gasLimit);
-            limit = limit + 150000;
+            if(limit === 0) {
+              createNotification(
+                "error",
+                "Always failing transaction. Please check your deposit amount!"
+              );
+              return;
+            }
             //console.log("GAS LIMIT: "+limit);
             rawTransaction = {
               from: this.state.selectedWallet.toString(),
@@ -874,7 +899,7 @@ class Farmingtx extends Component {
 
     } else if (this.props.aavedeposittoken.action == "Exit") {
 
-      await this.getEstimateGasLimitExit();
+     // await this.getEstimateGasLimitExit();
 
       this.setState({
         loading: true,
@@ -905,7 +930,13 @@ class Farmingtx extends Component {
               "gwei"
             );
             var limit = Number(gasLimit);
-            limit = limit + 150000;
+            if(limit === 0) {
+              createNotification(
+                "error",
+                "Always failing transaction. Please check your deposit amount!"
+              );
+              return;
+            }
             //console.log("GAS LIMIT: "+limit);
             rawTransaction = {
               from: this.state.selectedWallet.toString(),

@@ -98,9 +98,9 @@ class Farming extends Component {
     activepool: "",
     activepoolrewards: "",
     rvxUsdPrice: "0",
-    rRvxAddress: "0x0E778A448d49f01BB08A81AE72D104c523685fC4", //change to mainnet
-    uniswaprvxusdtaddress: "0x0E778A448d49f01BB08A81AE72D104c523685fC4", //change to mainnet uniswap rvx usdt lp
-    balanceryrxusdtaddress: "0x0E778A448d49f01BB08A81AE72D104c523685fC4", //change to mainnet balancer yrx usdt 98/2
+    rRvxAddress: "0xdeD5a34911F2a67e3cC2C56A437ec93045d35286", //change to mainnet
+    uniswaprvxusdtaddress: "0xdeD5a34911F2a67e3cC2C56A437ec93045d35286", //change to mainnet uniswap rvx usdt lp
+    balanceryrxusdtaddress: "0xdeD5a34911F2a67e3cC2C56A437ec93045d35286", //change to mainnet balancer yrx usdt 98/2
     yrxaddress: "0x260aD5e6Eb9119006efd66052120481bC77E3046", //change to mainnet yrx addy
     yrxpooloneaddress: "0xF348a446BA084dC90d63E79753C6E5957463F745", //change to mainnet pool one 
     yrxpooltwoaddress: "0x9bD58943ce4D86Fc6582e017AcF898b8a76B411d",//change to mainnet pool two 

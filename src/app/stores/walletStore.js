@@ -83,7 +83,7 @@ class walletStore {
   @observable mnemonicpassword = "";
   @observable mnemonicpasswordconfirm = "";
   @observable currentGasPrice = 100;
-  @observable infuraprojectid = "/v3/c941387bd4d8467285c24d75ad3574a4";
+  @observable infuraprojectid = "/v3/156ba0ee6fbd4c3db60981b326d8ab7b";
   @observable pendingpassword = "";
   @observable googleAuthKeyPending = "";
   @observable googleAuthKey = "";
