@@ -190,7 +190,7 @@ class AaveWithdraw extends Component {
     ) {
       createNotification("error", "Wrong withdraw amount!");
     }
-    await this.getEstimateGasLimit();
+   // await this.getEstimateGasLimit();
     if (this.state.loading) {
       createNotification("info", "Wait for transaction to be mined!");
       return;
