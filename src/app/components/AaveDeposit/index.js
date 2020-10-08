@@ -375,7 +375,7 @@ class AaveDeposit extends Component {
       createNotification("error", "Wrong deposit amount!");
       return;
     }
-    await this.getEstimateGasLimit();
+   // await this.getEstimateGasLimit();
     if (this.state.loading) {
       createNotification("info", "Wait for transaction to be mined!");
       return;
