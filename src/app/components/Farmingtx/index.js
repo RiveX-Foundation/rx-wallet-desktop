@@ -69,13 +69,13 @@ class Farmingtx extends Component {
     advancedoptions: false,
     advancedgasprice: 0,
     advancedgaslimit: 0,
-    rRvxAddress: "0xdeD5a34911F2a67e3cC2C56A437ec93045d35286", //change to mainnet
+    rRvxAddress: "0x6f7b10841eabd73ad226bbf653989539f1bff809", // mainnet
     uniswaprvxusdtaddress: "0xdeD5a34911F2a67e3cC2C56A437ec93045d35286", //change to mainnet uniswap rvx usdt lp
     balanceryrxusdtaddress: "0xdeD5a34911F2a67e3cC2C56A437ec93045d35286", //change to mainnet balancer yrx usdt 98/2
-    yrxaddress: "0x260aD5e6Eb9119006efd66052120481bC77E3046", //change to mainnet yrx addy
-    yrxpooloneaddress: "0xF348a446BA084dC90d63E79753C6E5957463F745", //change to mainnet pool one 
-    yrxpooltwoaddress: "0x9bD58943ce4D86Fc6582e017AcF898b8a76B411d",//change to mainnet pool two 
-    yrxpoolthreeaddress: "0x134AE1977a2F90CA4073F4E98f4cD7E14b16A4F7"//change to mainnet pool three 
+    yrxaddress: "0x21634B64a6915b879aD13d96418a82b2a48Fcbe9", // mainnet
+    yrxpooloneaddress: "0x1A290f8C7786Cdd3bF2ebcD6D45d58c4B9df2788", //mainnet  
+    yrxpooltwoaddress: "0xD620eeb5D41845C54ec1D27D97A0b456C6aE4bB6",//mainnet
+   // yrxpoolthreeaddress: "0x134AE1977a2F90CA4073F4E98f4cD7E14b16A4F7"//change to mainnet pool three 
   };
   onChangeTokenValue = (e) => {
     this.setState({
@@ -106,7 +106,7 @@ class Farmingtx extends Component {
     this.setState({
       privatekey: walletlist.privatekey,
     });
-    web3 = new Web3("https://ropsten.infura.io" + this.props.infuraprojectid);
+    web3 = new Web3("https://mainnet.infura.io" + this.props.infuraprojectid);
     this.setState({
       selectedWallet: localStorage
         .getItem("selectedwallet")

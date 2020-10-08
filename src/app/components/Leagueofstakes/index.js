@@ -88,9 +88,9 @@ class Leagueofstakes extends Component {
     totalValueUsd: "",
     totalRvxStaked: "",
     stakeamount: 0,
-    rvxAddress: "0x5d921bD3676Be048A3EF7F6bB535d1993421DCA5",
-    rRvxAddress: "0xdeD5a34911F2a67e3cC2C56A437ec93045d35286",
-    losAddress: "0x9CEe9AC29Af304Ce8B1E63cD7AD18534ab97b790"
+    rvxAddress: "0x91d6f6e9026E43240ce6F06Af6a4b33129EBdE94", //mainnet
+    rRvxAddress: "0x6f7b10841eabd73ad226bbf653989539f1bff809", //mainnet
+    losAddress: "0x0733d47e9fCa3161A443a0E16Dd8c94E0059Da28" //mainnet
   };
 
   async componentDidMount() {
@@ -104,7 +104,7 @@ class Leagueofstakes extends Component {
     this.setState({
       privatekey: walletlist.privatekey,
     });
-    web3 = new Web3("https://ropsten.infura.io" + this.props.infuraprojectid);
+    web3 = new Web3("https://mainnet.infura.io" + this.props.infuraprojectid);
     this.setState({
       selectedwallet: localStorage.getItem("selectedwallet"),
     });
