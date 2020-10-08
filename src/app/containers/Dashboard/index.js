@@ -37,6 +37,14 @@ import TwoFACreation from "components/Wallet/TwoFACreation";
 import TwoFARemove from "components/Wallet/TwoFARemove";
 import { NotificationContainer } from "react-notifications";
 import Los from "components/Los";
+import Aave from "components/Aave";
+import AaveDeposit from "components/AaveDeposit";
+import AaveDashboard from "components/AaveDashboard";
+import AaveWithdraw from "components/AaveWithdraw";
+import Leagueofstakes from "components/Leagueofstakes";
+import Leagueofstakestx from "components/Leaugeofstakestx"
+import Farming from "components/Farming";
+import Farmingtx from "components/Farmingtx"
 //import { checkCryptographic, checkPhrase } from 'utils/support';
 
 const Step = Steps.Step;
@@ -170,6 +178,41 @@ class Dashboard extends Component {
       {
         content: <Los />,
         key: "los",
+      },
+      {
+        content: <Aave />,
+        key: "aave",
+      },
+      {
+        content: <AaveDashboard />,
+        key: "aavedashboard",
+      },
+      {
+        content: <AaveDeposit />,
+        key: "aavedeposit",
+      },
+      {
+        content: <AaveWithdraw />,
+        key: "aavewithdraw",
+      },
+      {
+        content: <Leagueofstakes />,
+        key: "leagueofstakes",
+      }
+      ,
+      {
+        content: <Leagueofstakestx />,
+        key: "leagueofstakestx",
+      }
+      ,
+      {
+        content: <Farming />,
+        key: "farming",
+      }
+      ,
+      {
+        content: <Farmingtx />,
+        key: "farmingtx",
       },
       {
         content: <TwoFAWarning />,

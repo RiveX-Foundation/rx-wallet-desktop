@@ -180,7 +180,7 @@ class Network extends Component {
         <div className="title">
           <span>{intl.get("Settings.ETHNetwork")}</span>
         </div>
-        <div className="centerpanel">
+        <div className="centerpanel2" style={{padding:"10px"}}>
           <div className="inputwrapper">
             <div className="panelwrapper">
               <Input
@@ -221,7 +221,7 @@ class Network extends Component {
         <div className="title">
           <span>{intl.get("Settings.WANNetwork")}</span>
         </div>
-        <div className="centerpanel">
+        <div className="centerpanel2" style={{padding:"10px"}}>
           <div className="inputwrapper">
             <div className="panelwrapper">
               <Input

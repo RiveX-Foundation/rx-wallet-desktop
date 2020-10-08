@@ -83,11 +83,15 @@ class walletStore {
   @observable mnemonicpassword = "";
   @observable mnemonicpasswordconfirm = "";
   @observable currentGasPrice = 100;
-  @observable infuraprojectid = "/v3/c941387bd4d8467285c24d75ad3574a4";
+  @observable infuraprojectid = "/v3/156ba0ee6fbd4c3db60981b326d8ab7b";
   @observable pendingpassword = "";
   @observable googleAuthKeyPending = "";
   @observable googleAuthKey = "";
   @observable mfaenabled;
+  @observable aavedeposittoken = "";
+  @observable aavedeposittokenamount = "";
+  @observable aavewithdrawtoken = "";
+  @observable aavewithdrawamount = "";
 
   userstore = null;
   networkstore = null;
@@ -119,6 +123,9 @@ class walletStore {
   }
 
   @computed get gettrxlist() {
+    try {
+      
+    
     var finallist = [];
     this.trxlist.map((item, i) => {
       if (item.to != "") {
@@ -139,7 +146,7 @@ class walletStore {
               : item.gasUsed / 1000000000 + " gwei",
           nonce: item.nonce,
           timestamp: item.timeStamp,
-          value: Web3.utils.fromWei(item.value, "ether"),
+          value: Web3.utils.fromWei(item.value.toString(), "ether"),
           confirmation: item.confirmations,
           status: this.ParseTrxStatus(item.txreceipt_status),
           isblockchain: true,
@@ -150,6 +157,9 @@ class walletStore {
         finallist.push(trx);
       }
     });
+  } catch (error) {
+      
+  }
 
     this.multisigtrxlist.map((item, i) => {
       var action = "approve";
@@ -446,6 +456,22 @@ class walletStore {
 
   @action setPasswordConfirm(password) {
     this.mnemonicpasswordconfirm = password;
+  }
+
+  @action setAaveDepositToken(token) {
+    this.aavedeposittoken = token;
+  }
+
+  @action setAaveDepositTokenAmount(amount) {
+    this.aavedeposittokenamount = amount;
+  }
+
+  @action setAaveWithdrawToken(token) {
+    this.aavewithdrawtoken = token;
+  }
+
+  @action setAaveWithdrawTokenAmount(amount) {
+    this.aavedeposittokenamount = amount;
   }
 
   @action loadWallet() {
@@ -1903,7 +1929,7 @@ class walletStore {
         console.log(TokenInfo);
         try {
           var tokenAbiArray = JSON.parse(TokenInfo.AbiArray);
-        } catch (e) {}
+       
 
         // Get ERC20 Token contract instance
         let contract = new web3.eth.Contract(
@@ -1931,7 +1957,8 @@ class walletStore {
               tokenitem.AssetCode == "USDT" ||
               tokenitem.AssetCode == "USDC" 
             ) {
-              var tokenbal = new BigNumber(web3.utils.fromWei(balance, "mwei"));
+              
+              var tokenbal = web3.utils.fromWei(balance, "mwei");
               tokenitem.TokenBalance = tokenbal.toString();
               //var tokenbal = web3.utils.fromWei(balance,'mwei');
               //tokenitem.TokenBalance =parseFloat(parseFloat(tokenbal).toFixed(3));
@@ -1943,10 +1970,9 @@ class walletStore {
                 tokenitem.TokenBalance;
             } else {
               // balance = balance / (10 ** 18);
-              var tokenbal = new BigNumber(
-                web3.utils.fromWei(balance, "ether")
-              );
+              var tokenbal = web3.utils.fromWei(balance, "ether");
               tokenitem.TokenBalance = tokenbal.toString();
+              console.log(tokenitem.AssetCode + " " +tokenbal);
               //var tokenbal = web3.utils.fromWei(balance,'ether');
               //tokenitem.TokenBalance =parseFloat(parseFloat(tokenbal).toFixed(3));
               //tokenitem.TokenBalance = balance;
@@ -1956,6 +1982,7 @@ class walletStore {
                 tokenitem.TokenBalance;
             }
           });
+        } catch (e) {}
         self.selectedassettokenlist.push(tokenitem);
       } else if (tokenitem.TokenType == "wrc20") {
         var web3 = new Web3(
