@@ -367,20 +367,20 @@ class Farmingtx extends Component {
             to: tokenContract, //this.tokencontract,
             value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
             data: dataApprove, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
-            chainId: "0x3",
+            chainId: "0x1",
           };
           var privKey = Buffer.from(this.state.privatekey, "hex");
-          var tx = new Tx(rawTransaction, {
+         /* var tx = new Tx(rawTransaction, {
             chain: 'ropsten',
             hardfork: 'petersburg'
-          })
-          /* var tx =
+          })*/
+          var tx =
              this.props.selectedethnetwork.shortcode == "mainnet"
                ? new Tx(rawTransaction)
                : new Tx(rawTransaction, {
                  chain: this.props.selectedethnetwork.shortcode,
                  hardfork: "petersburg",
-               });*/
+               });
           tx.sign(privKey);
           var serializedTx = tx.serialize();
           web3.eth
@@ -549,20 +549,20 @@ class Farmingtx extends Component {
               to: this.props.aavedeposittoken.rewardAddress, //this.tokencontract,
               value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
               data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
-              chainId: "0x3",
+              chainId: "0x1",
             };
             var privKey = Buffer.from(this.state.privatekey, "hex");
-            var tx = new Tx(rawTransaction, {
+           /* var tx = new Tx(rawTransaction, {
               chain: 'ropsten',
               hardfork: 'petersburg'
-            })
-            /*var tx =
+            })*/
+            var tx =
               this.props.selectedethnetwork.shortcode == "mainnet"
                 ? new Tx(rawTransaction)
                 : new Tx(rawTransaction, {
-                  chain: "ropsten",
+                  chain: "mainnet",
                   hardfork: "istanbul",
-                });*/
+                });
             console.log(tx);
             tx.sign(privKey);
             var serializedTx = tx.serialize();
@@ -704,20 +704,20 @@ class Farmingtx extends Component {
               to: this.props.aavedeposittoken.rewardAddress, //this.tokencontract,
               value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
               data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
-              chainId: "0x3",
+              chainId: "0x1",
             };
             var privKey = Buffer.from(this.state.privatekey, "hex");
-            var tx = new Tx(rawTransaction, {
+            /*var tx = new Tx(rawTransaction, {
               chain: 'ropsten',
               hardfork: 'petersburg'
-            })
-            /*var tx =
+            })*/
+            var tx =
               this.props.selectedethnetwork.shortcode == "mainnet"
                 ? new Tx(rawTransaction)
                 : new Tx(rawTransaction, {
-                  chain: "ropsten",
+                  chain: "mainnet",
                   hardfork: "istanbul",
-                });*/
+                });
             console.log(tx);
             tx.sign(privKey);
             var serializedTx = tx.serialize();
@@ -825,20 +825,20 @@ class Farmingtx extends Component {
               to: this.props.aavedeposittoken.rewardAddress, //this.tokencontract,
               value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
               data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
-              chainId: "0x3",
+              chainId: "0x1",
             };
             var privKey = Buffer.from(this.state.privatekey, "hex");
-            var tx = new Tx(rawTransaction, {
+            /*var tx = new Tx(rawTransaction, {
               chain: 'ropsten',
               hardfork: 'petersburg'
-            })
-            /*var tx =
+            })*/
+            var tx =
               this.props.selectedethnetwork.shortcode == "mainnet"
                 ? new Tx(rawTransaction)
                 : new Tx(rawTransaction, {
-                  chain: "ropsten",
+                  chain: "mainnet",
                   hardfork: "istanbul",
-                });*/
+                });
             console.log(tx);
             tx.sign(privKey);
             var serializedTx = tx.serialize();
@@ -947,20 +947,20 @@ class Farmingtx extends Component {
               to: this.props.aavedeposittoken.rewardAddress, //this.tokencontract,
               value: "0x0", //web3.utils.toHex(web3.utils.toWei(this.state.tokenval, 'ether')),
               data: dataDeposit, //contract.transfer.getData(this.tokencontract, 10, {from: this.props.selectedwallet.publicaddress}),
-              chainId: "0x3",
+              chainId: "0x1",
             };
             var privKey = Buffer.from(this.state.privatekey, "hex");
-            var tx = new Tx(rawTransaction, {
+            /*var tx = new Tx(rawTransaction, {
               chain: 'ropsten',
               hardfork: 'petersburg'
-            })
-            /*var tx =
+            })*/
+            var tx =
               this.props.selectedethnetwork.shortcode == "mainnet"
                 ? new Tx(rawTransaction)
                 : new Tx(rawTransaction, {
-                  chain: "ropsten",
+                  chain: "mainnet",
                   hardfork: "istanbul",
-                });*/
+                });
             console.log(tx);
             tx.sign(privKey);
             var serializedTx = tx.serialize();
