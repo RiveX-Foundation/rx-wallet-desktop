@@ -486,7 +486,7 @@ class Farming extends Component {
         withdrawamount: "",
         stakeamount: ""
       })
-    } else {
+    } else { 
 
       let oby = {
         token: token,
