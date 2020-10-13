@@ -356,7 +356,7 @@ class Farming extends Component {
   getTVL = async (dollarvalue, totalRVXstaked) => {
     console.log("GETTING RVX USD PRICE AND TOTAL VALUE LOCKED (USD)");
     try {
-      console.log(dollarvalue["rivex"])
+      console.log(dollarvalue["rivex-erc20"])
       console.log(totalRVXstaked)
       console.log("TVL: " + parseFloat(dollarvalue["rivex"].usd) * parseFloat(totalRVXstaked))
       this.setState({

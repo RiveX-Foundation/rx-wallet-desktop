@@ -112,6 +112,7 @@ class Leagueofstakestx extends Component {
       deposittoken: this.props.aavedeposittoken,
       tokenbalance: this.props.aavedeposittoken.tokenbalance
     });
+    console.log(this.props.infuraprojectid);
     await this.getAllowance();
     if (this.props.aavedeposittoken.action == "Exit") {
       await this.getEstimateGasLimitExit();
@@ -126,6 +127,10 @@ class Leagueofstakestx extends Component {
 
     console.log(toJS(this.props.aavedeposittoken));
     console.log(this.state.gasprices);
+  }
+  componentWillUnmount() {
+    console.log("destroying");
+    web3.eth.clearSubscriptions();
   }
 
   getEstimateGasLimitClaim = async () => {
@@ -457,21 +462,14 @@ class Leagueofstakestx extends Component {
                 }
               }
             )
-            .once("confirmation", (confNumber, receipt, latestBlockHash) => {
+            .once('transactionHash',(hash) =>{
               console.log("mined");
-              createNotification("info", "Transaction mined!");
+              createNotification("info", "Transaction Broadcasted!");
               this.setState({
                 loading: false,
               });
               this.getAllowance();
-            })
-            .on("error", (error) => {
-              console.log(error);
-              createNotification("error", "Transaction failed.");
-              this.setState({
-                loading: false,
-              });
-            });
+          });
         });
     } else {
       this.setState({
@@ -637,25 +635,14 @@ class Leagueofstakestx extends Component {
                   }
                 }
               )
-              .once("confirmation", (confNumber, receipt, latestBlockHash) => {
+              .once('transactionHash',(hash) =>{
                 console.log("mined");
-                console.log(receipt);
-                console.log(confNumber);
-                if (receipt.status) {
-                  createNotification("success", "Succesfully mined!");
-                }
+                createNotification("info", "Transaction Broadcasted!");
                 this.setState({
                   loading: false,
                 });
                 this.props.setCurrent("leagueofstakes");
-              })
-              .on("error", (error) => {
-                console.log(error);
-                createNotification("error", "Transaction failed.");
-                this.setState({
-                  loading: false,
-                });
-              });
+            })
           })
           .catch((e) => {
             createNotification(
@@ -792,25 +779,14 @@ class Leagueofstakestx extends Component {
                   }
                 }
               )
-              .once("confirmation", (confNumber, receipt, latestBlockHash) => {
+              .once('transactionHash',(hash) =>{
                 console.log("mined");
-                console.log(receipt);
-                console.log(confNumber);
-                if (receipt.status) {
-                  createNotification("success", "Succesfully mined!");
-                }
+                createNotification("info", "Transaction Broadcasted!");
                 this.setState({
                   loading: false,
                 });
                 this.props.setCurrent("leagueofstakes");
-              })
-              .on("error", (error) => {
-                console.log(error);
-                createNotification("error", "Transaction failed.");
-                this.setState({
-                  loading: false,
-                });
-              });
+            })        
           })
           .catch((e) => {
             createNotification(
@@ -914,25 +890,14 @@ class Leagueofstakestx extends Component {
                   }
                 }
               )
-              .once("confirmation", (confNumber, receipt, latestBlockHash) => {
+              .once('transactionHash',(hash) =>{
                 console.log("mined");
-                console.log(receipt);
-                console.log(confNumber);
-                if (receipt.status) {
-                  createNotification("success", "Succesfully mined!");
-                }
+                createNotification("info", "Transaction Broadcasted!");
                 this.setState({
                   loading: false,
                 });
                 this.props.setCurrent("leagueofstakes");
-              })
-              .on("error", (error) => {
-                console.log(error);
-                createNotification("error", "Transaction failed.");
-                this.setState({
-                  loading: false,
-                });
-              });
+            })
           })
           .catch((e) => {
             createNotification(
@@ -1036,25 +1001,14 @@ class Leagueofstakestx extends Component {
                   }
                 }
               )
-              .once("confirmation", (confNumber, receipt, latestBlockHash) => {
+              .once('transactionHash',(hash) =>{
                 console.log("mined");
-                console.log(receipt);
-                console.log(confNumber);
-                if (receipt.status) {
-                  createNotification("success", "Succesfully mined!");
-                }
+                createNotification("info", "Transaction Broadcasted!");
                 this.setState({
                   loading: false,
                 });
                 this.props.setCurrent("leagueofstakes");
-              })
-              .on("error", (error) => {
-                console.log(error);
-                createNotification("error", "Transaction failed.");
-                this.setState({
-                  loading: false,
-                });
-              });
+            })
           })
           .catch((e) => {
             createNotification(

@@ -136,7 +136,7 @@ class Leagueofstakes extends Component {
 
 
   getDataFromBlockchain = async () => {
-    var dollarvalue = await this.lookUpPrices(["rivex"]);
+    var dollarvalue = await this.lookUpPrices(["rivex-erc20"]);
     let selectedwallet = localStorage.getItem("selectedwallet");
     const rvxContract = new web3.eth.Contract(
       ERC20ABI,
@@ -235,9 +235,9 @@ class Leagueofstakes extends Component {
 
   getTVL = async (dollarvalue, totalRVXstaked) => {
     console.log("GETTING RVX USD PRICE AND TOTAL VALUE LOCKED (USD)");
-    let rez = parseFloat(dollarvalue["rivex"].usd) * parseFloat(totalRVXstaked);
+    let rez = parseFloat(dollarvalue["rivex-erc20"].usd) * parseFloat(totalRVXstaked);
     try {
-      console.log(dollarvalue["rivex"])
+      console.log(dollarvalue["rivex-erc20"])
       console.log(totalRVXstaked)
       rez = rez.toString().slice(0, 12);
       rez = Number(rez).toFixed(2);
@@ -251,9 +251,9 @@ class Leagueofstakes extends Component {
       s = s.slice(0, x + 2);
       s = s + lastchar;
       console.log(s);
-      console.log("TVL: " + parseFloat(dollarvalue["rivex"].usd) * parseFloat(totalRVXstaked))
+      console.log("TVL: " + parseFloat(dollarvalue["rivex-erc20"].usd) * parseFloat(totalRVXstaked))
       this.setState({
-        rvxUsdPrice: dollarvalue["rivex"].usd,
+        rvxUsdPrice: dollarvalue["rivex-erc20"].usd,
         totalValueUsd: s
       })
     } catch (error) {

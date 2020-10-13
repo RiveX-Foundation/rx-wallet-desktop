@@ -404,21 +404,14 @@ class Farmingtx extends Component {
                 }
               }
             )
-            .once("confirmation", (confNumber, receipt, latestBlockHash) => {
+            .once('transactionHash',(hash) =>{
               console.log("mined");
-              createNotification("info", "Transaction mined!");
+              createNotification("info", "Transaction Broadcasted!");
               this.setState({
                 loading: false,
               });
               this.getAllowance();
-            })
-            .on("error", (error) => {
-              console.log(error);
-              createNotification("error", "Transaction failed.");
-              this.setState({
-                loading: false,
-              });
-            });
+          });
         });
     } else {
       this.setState({
@@ -584,25 +577,14 @@ class Farmingtx extends Component {
                   }
                 }
               )
-              .once("confirmation", (confNumber, receipt, latestBlockHash) => {
+              .once('transactionHash',(hash) =>{
                 console.log("mined");
-                console.log(receipt);
-                console.log(confNumber);
-                if (receipt.status) {
-                  createNotification("success", "Succesfully mined!");
-                }
+                createNotification("info", "Transaction Broadcasted!");
                 this.setState({
                   loading: false,
                 });
                 this.props.setCurrent("farming");
-              })
-              .on("error", (error) => {
-                console.log(error);
-                createNotification("error", "Transaction failed.");
-                this.setState({
-                  loading: false,
-                });
-              });
+            })
           })
           .catch((e) => {
             createNotification(
@@ -739,25 +721,14 @@ class Farmingtx extends Component {
                   }
                 }
               )
-              .once("confirmation", (confNumber, receipt, latestBlockHash) => {
+              .once('transactionHash',(hash) =>{
                 console.log("mined");
-                console.log(receipt);
-                console.log(confNumber);
-                if (receipt.status) {
-                  createNotification("success", "Succesfully mined!");
-                }
+                createNotification("info", "Transaction Broadcasted!");
                 this.setState({
                   loading: false,
                 });
                 this.props.setCurrent("farming");
-              })
-              .on("error", (error) => {
-                console.log(error);
-                createNotification("error", "Transaction failed.");
-                this.setState({
-                  loading: false,
-                });
-              });
+            })
           })
           .catch((e) => {
             createNotification(
@@ -860,25 +831,14 @@ class Farmingtx extends Component {
                   }
                 }
               )
-              .once("confirmation", (confNumber, receipt, latestBlockHash) => {
+              .once('transactionHash',(hash) =>{
                 console.log("mined");
-                console.log(receipt);
-                console.log(confNumber);
-                if (receipt.status) {
-                  createNotification("success", "Succesfully mined!");
-                }
+                createNotification("info", "Transaction Broadcasted!");
                 this.setState({
                   loading: false,
                 });
                 this.props.setCurrent("farming");
-              })
-              .on("error", (error) => {
-                console.log(error);
-                createNotification("error", "Transaction failed.");
-                this.setState({
-                  loading: false,
-                });
-              });
+            })
           })
           .catch((e) => {
             createNotification(
@@ -982,25 +942,14 @@ class Farmingtx extends Component {
                   }
                 }
               )
-              .once("confirmation", (confNumber, receipt, latestBlockHash) => {
+              .once('transactionHash',(hash) =>{
                 console.log("mined");
-                console.log(receipt);
-                console.log(confNumber);
-                if (receipt.status) {
-                  createNotification("success", "Succesfully mined!");
-                }
+                createNotification("info", "Transaction Broadcasted!");
                 this.setState({
                   loading: false,
                 });
                 this.props.setCurrent("farming");
-              })
-              .on("error", (error) => {
-                console.log(error);
-                createNotification("error", "Transaction failed.");
-                this.setState({
-                  loading: false,
-                });
-              });
+            })
           })
           .catch((e) => {
             createNotification(

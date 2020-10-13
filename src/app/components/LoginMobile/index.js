@@ -37,6 +37,7 @@ var bcrypt = require("bcryptjs");
     stores.walletStore.setSelectedWallet(publicaddress),
   toMYR: async () => stores.walletStore.toMYR(),
   toCNY: async () => stores.walletStore.toCNY(),
+  setApiKey: () => stores.walletStore.setApiKey()
 }))
 @observer
 class LoginMobile extends Component {
@@ -60,6 +61,7 @@ class LoginMobile extends Component {
   };
 
   componentDidMount() {
+    this.props.setApiKey();
     this.MYR();
     this.props.setCountryCode("+60");
     this.props.setPassword("");
