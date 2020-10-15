@@ -13,7 +13,7 @@ const en_US = {
   "Footer.allRightsReserved": "All Rights Reserved",
   "Footer.Company": "PixieLab Sdn Bhd",
   "Aave.Balance": "Balance",
-  "Aave.Approve": "Appove",
+  "Aave.Approve": "Approve",
   "Dashboard.Title": "Dashboard",
   
 
