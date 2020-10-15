@@ -99,12 +99,12 @@ class Farming extends Component {
     activepoolrewards: "",
     rvxUsdPrice: "0",
     rRvxAddress: "0x6f7b10841eabd73ad226bbf653989539f1bff809", // mainnet
-    uniswaprvxusdtaddress: "0xBd455F35BC5e531999B1C8fC72DF938767aA69b9", //change to mainnet uniswap rvx usdt lp
-   // balanceryrxusdtaddress: "0xdeD5a34911F2a67e3cC2C56A437ec93045d35286", //change to mainnet balancer yrx usdt 98/2
+    uniswaprvxusdtaddress: "0xBd455F35BC5e531999B1C8fC72DF938767aA69b9", //mainnet
+    balanceryrxusdtaddress: "0x50A6Af8D1B16e9fB18c912562239d65c0fF6724a", //change to mainnet balancer yrx usdt 98/2
     yrxaddress: "0x21634B64a6915b879aD13d96418a82b2a48Fcbe9", //mainnet
     yrxpooloneaddress: "0x1A290f8C7786Cdd3bF2ebcD6D45d58c4B9df2788", //mainnet
     yrxpooltwoaddress: "0xD620eeb5D41845C54ec1D27D97A0b456C6aE4bB6",//mainnet 
-    // yrxpoolthreeaddress: "0x134AE1977a2F90CA4073F4E98f4cD7E14b16A4F7"//change to mainnet pool three 
+     yrxpoolthreeaddress: "0x07b33c29960C005889B5F3746667a0AA7D260166"//mainnet
   };
 
   async componentDidMount() {
@@ -152,10 +152,10 @@ class Farming extends Component {
       ERC20ABI,
       this.state.uniswaprvxusdtaddress
     );
-  /*  const balanceryrxusdtContract = new web3.eth.Contract(
+    const balanceryrxusdtContract = new web3.eth.Contract(
       ERC20ABI,
       this.state.balanceryrxusdtaddress
-    );*/
+    );
     const rRvxContract = new web3.eth.Contract(
       ERC20ABI,
       this.state.rRvxAddress
@@ -168,10 +168,10 @@ class Farming extends Component {
       YRXFarming,
       this.state.yrxpooltwoaddress
     );
-    /* const FarmingPoolThreeContract = new web3.eth.Contract(
+     const FarmingPoolThreeContract = new web3.eth.Contract(
        YRXFarming,
        this.state.yrxpoolthreeaddress
-     );*/
+     );
     //get erc20 balances
     console.log("GETTING RRVX BALANCE");
     try {
@@ -202,7 +202,7 @@ class Farming extends Component {
       console.log("ERROR: " + error);
     }
 
-    /*console.log("GETTING BALANCER YRX USDT  BALANCE");
+    console.log("GETTING BALANCER YRX USDT  BALANCE");
     try {
       balanceryrxusdtContract.methods
         .balanceOf(selectedwallet)
@@ -215,7 +215,7 @@ class Farming extends Component {
         });
     } catch (error) {
       console.log("ERROR: " + error);
-    }*/
+    }
 
     //end erc balance
 
@@ -254,7 +254,7 @@ class Farming extends Component {
       console.log("ERROR: " + error);
     }
 
-    /* console.log("GETTING STAKED BALANCE POOL 3");
+     console.log("GETTING STAKED BALANCE POOL 3");
      try {
        FarmingPoolThreeContract.methods
          .balanceOf(selectedwallet)
@@ -267,7 +267,7 @@ class Farming extends Component {
          });
      } catch (error) {
        console.log("ERROR: " + error);
-     }*/
+     }
 
     //end staked balance
 
@@ -305,7 +305,7 @@ class Farming extends Component {
     }
 
 
-    /* console.log("GETTING REWARDS AVAILABLE POOL 3");
+     console.log("GETTING REWARDS AVAILABLE POOL 3");
      try {
        FarmingPoolThreeContract.methods
          .earned(selectedwallet)
@@ -318,7 +318,7 @@ class Farming extends Component {
          });
      } catch (error) {
        console.log("ERROR: " + error);
-     }*/
+     }
 
     //end reward avaialble
 
@@ -356,7 +356,7 @@ class Farming extends Component {
   getTVL = async (dollarvalue, totalRVXstaked) => {
     console.log("GETTING RVX USD PRICE AND TOTAL VALUE LOCKED (USD)");
     try {
-      console.log(dollarvalue["rivex"])
+      console.log(dollarvalue["rivex-erc20"])
       console.log(totalRVXstaked)
       console.log("TVL: " + parseFloat(dollarvalue["rivex"].usd) * parseFloat(totalRVXstaked))
       this.setState({
@@ -412,12 +412,12 @@ class Farming extends Component {
       token = "UNI-V2"
       tokenContract = this.state.uniswaprvxusdtaddress;
       rewardaddress = this.state.yrxpooltwoaddress;
-    } /*else if(this.state.activepool == "Pool 3 YRX/USDT Balancer 98/2") {
+    } else if(this.state.activepool == "Pool 3 YRX/DAI Balancer 80/20") {
       tokenbal = new BigNumber(this.state.balanceryrxusdtBalance);
       token= "BPT";
       tokenContract = this.state.balanceryrxusdtaddress;
       rewardaddress = this.state.yrxpoolthreeaddress;
-    } */else {
+    } else {
       return;
     }
 
@@ -465,12 +465,12 @@ class Farming extends Component {
       token = "UNI-V2"
       tokenContract = this.state.uniswaprvxusdtaddress;
       rewardaddress = this.state.yrxpooltwoaddress;
-    }/* else if(this.state.activepool == "Pool 3 YRX/USDT Balancer 98/2") {
+    }else if(this.state.activepool == "Pool 3 YRX/DAI Balancer 80/20") {
       tokenbal = new BigNumber(this.state.balanceryrxusdtStakedBalance);
       token= "BPT";
       tokenContract = this.state.balanceryrxusdtaddress;
       rewardaddress = this.state.yrxpoolthreeaddress;
-    }*/ else {
+    } else {
       return;
     }
 
@@ -518,12 +518,12 @@ class Farming extends Component {
       token = "UNI-V2"
       tokenContract = this.state.uniswaprvxusdtaddress;
       rewardaddress = this.state.yrxpooltwoaddress;
-    }/* else if(this.state.activepool == "Pool 3 YRX/USDT Balancer 98/2") {
+    } else if(this.state.activepool == "Pool 3 YRX/DAI Balancer 80/20") {
       tokenbal = new BigNumber(this.state.balancerRewardsAvailable);
       token= "BPT";
       tokenContract = this.state.balanceryrxusdtaddress;
       rewardaddress = this.state.yrxpoolthreeaddress;
-    } */else {
+    }else {
       return;
     }
     if (Number(tokenbal.toString()) == 0) {
@@ -562,13 +562,13 @@ class Farming extends Component {
       token = "UNI-V2"
       tokenContract = this.state.uniswaprvxusdtaddress;
       rewardaddress = this.state.yrxpooltwoaddress;
-    }/* else if(this.state.activepool == "Pool 3 YRX/USDT Balancer 98/2") {
+    } else if(this.state.activepool == "Pool 3 YRX/DAI Balancer 80/20") {
       tokenbal = new BigNumber(this.state.balanceryrxusdtStakedBalance);
       rewardBalance = new BigNumber(this.state.balancerRewardsAvailable)
       token= "BPT";
       tokenContract = this.state.balanceryrxusdtaddress;
       rewardaddress = this.state.yrxpoolthreeaddress;
-    }*/else {
+    }else {
       return;
     }
     if (Number(rewardBalance.toString()) == 0 && Number(tokenbal.toString() == 0)) {
@@ -594,7 +594,7 @@ class Farming extends Component {
       activerew = this.state.yrxRewardsBalance
     } else if (pool == "Pool 2 RVX/USDT Uniswap LP") {
       activerew = this.state.uniswaprvxusdtBalance
-    } else if (pool == "Pool 3 YRX/USDT Balancer 98/2") {
+    } else if (pool == "Pool 3 YRX/DAI Balancer 80/20") {
       activerew = this.state.balancerRewardsAvailable
     } else {
       return;
@@ -612,7 +612,7 @@ class Farming extends Component {
       activerew = this.state.yrxRewardsBalance
     } else if (pool == "Pool 2 RVX/USDT Uniswap LP") {
       activerew = this.state.uniswapRewardsAvailable
-    } else if (pool == "Pool 3 YRX/USDT Balancer 98/2") {
+    } else if (pool == "Pool 3 YRX/DAI Balancer 80/20") {
       activerew = this.state.balancerRewardsAvailable
     } else {
       return;
@@ -629,7 +629,7 @@ class Farming extends Component {
       activerew = this.state.yrxRewardsBalance
     } else if (pool == "Pool 2 RVX/USDT Uniswap LP") {
       activerew = this.state.uniswapRewardsAvailable
-    } else if (pool == "Pool 3 YRX/USDT Balancer 98/2") {
+    } else if (pool == "Pool 3 YRX/DAI Balancer 80/20") {
       activerew = this.state.balancerRewardsAvailable
     } else {
       return;
@@ -647,7 +647,7 @@ class Farming extends Component {
       activerew = this.state.yrxRewardsBalance
     } else if (pool == "Pool 2 RVX/USDT Uniswap LP") {
       activerew = this.state.uniswapRewardsAvailable
-    } else if (pool == "Pool 3 YRX/USDT Balancer 98/2") {
+    } else if (pool == "Pool 3 YRX/DAI Balancer 80/20") {
       activerew = this.state.balancerRewardsAvailable
     } else {
       return;
@@ -840,10 +840,10 @@ class Farming extends Component {
                 {this.renderButtons("Pool 2 RVX/USDT Uniswap LP")}
               </Panel>
             </Collapse>
-            {/*<Collapse accordion className="accordionpool"
+            {<Collapse accordion className="accordionpool"
               expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
               onChange={() => this.clearInputs()}>
-              <Panel header="Pool 3 YRX/USDT Balancer 98/2" key="3">
+              <Panel header="Pool 3 YRX/DAI Balancer 80/20" key="3">
                 <p style={{ color: "rgb(147, 100, 211)" }}>Staked Amount</p> <p><a onClick={() => this.setMaxWithdraw(this.state.balanceryrxusdtStakedBalance)}> {this.state.balanceryrxusdtStakedBalance}</a> BPT</p>
                 <Row style={{ marginBottom: "30px" }}>
                   <Col span={12}>
@@ -888,9 +888,9 @@ class Farming extends Component {
                     </div>
                   </Col>
                 </Row>
-                {this.renderButtons("Pool 3 YRX/USDT Balancer 98/2")}
+                {this.renderButtons("Pool 3 YRX/DAI Balancer 80/20")}
               </Panel>
-    </Collapse>*/}
+    </Collapse>}
           </div>
         </div>
         <Modal

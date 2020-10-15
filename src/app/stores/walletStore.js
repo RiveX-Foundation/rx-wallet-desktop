@@ -83,7 +83,7 @@ class walletStore {
   @observable mnemonicpassword = "";
   @observable mnemonicpasswordconfirm = "";
   @observable currentGasPrice = 100;
-  @observable infuraprojectid = "/v3/156ba0ee6fbd4c3db60981b326d8ab7b";
+  @observable infuraprojectid = "/v3/24902615bd1f4a38a4581ef404cb059e";
   @observable pendingpassword = "";
   @observable googleAuthKeyPending = "";
   @observable googleAuthKey = "";
@@ -232,10 +232,44 @@ class walletStore {
   getthisstore() {
     return this;
   }
+  setApiKey = async () =>{
+    console.log("setting api key");
+    this.infuraprojectid = await this.getInfuraApiKey();
+  }
 
   setnetworkstore(store) {
     this.networkstore = store;
   }
+  @action getInfuraApiKey = async () => {
+    let apiKey = '/v3/d3750f29298741c9996ec3506253088b';
+
+    try {
+      let response = await axios.get('https://staging.rivex.io/api/token/allinfura');
+      //console.log('response count', response.data)
+      if (response.data.status == 200) {
+        let min = 1;
+        let max = response.data.apiCount;
+        let apiNum = this.randomIntFromInterval(min, max);
+        console.log('apiNum', apiNum);
+
+        let apiKeyResponse = await axios.get('https://staging.rivex.io/api/token/infura-apikey?type=ApiKey' + apiNum);
+        //console.log('apiKeyResponse', apiKeyResponse.data.status)
+        if (apiKeyResponse.data.status == 200) {
+          apiKey = apiKeyResponse.data.apiKey;
+        }
+      }
+
+      //console.log('apiKey',apiKey)
+
+      return apiKey;
+    } catch (error) {
+      return apiKey;
+    }
+  };
+
+  randomIntFromInterval = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  };
 
   @action setGoogleAuthKeyPending(googleAuthKey) {
     this.googleAuthKeyPending = googleAuthKey;
@@ -1985,6 +2019,9 @@ class walletStore {
         } catch (e) {}
         self.selectedassettokenlist.push(tokenitem);
       } else if (tokenitem.TokenType == "wrc20") {
+        try {
+          
+      
         var web3 = new Web3(
           this.networkstore.selectedethnetwork.infuraendpoint +
             this.infuraprojectid
@@ -2001,6 +2038,9 @@ class walletStore {
         //console.log("CurrentNetworkAllTokenInfo", CurrentNetworkAllTokenInfo);
         //   console.log("TokenInfo", TokenInfo);
         TokenInfo = toJS(TokenInfo);
+      } catch (error) {
+          
+      }
         iWanUtils
           .getWrc20Balance(
             "WAN",
