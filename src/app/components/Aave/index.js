@@ -368,7 +368,7 @@ class Aave extends Component {
             style={{ marginTop: "15px" }}
             onClick={this.dashboard}
           >
-            Dasboard
+            Dashboard
           </Button>
         </div>
         <Modal
