@@ -70,12 +70,12 @@ class Farmingtx extends Component {
     advancedgasprice: 0,
     advancedgaslimit: 0,
     rRvxAddress: "0x6f7b10841eabd73ad226bbf653989539f1bff809", // mainnet
-    uniswaprvxusdtaddress: "0xdeD5a34911F2a67e3cC2C56A437ec93045d35286", //change to mainnet uniswap rvx usdt lp
-    balanceryrxusdtaddress: "0xdeD5a34911F2a67e3cC2C56A437ec93045d35286", //change to mainnet balancer yrx usdt 98/2
-    yrxaddress: "0x21634B64a6915b879aD13d96418a82b2a48Fcbe9", // mainnet
-    yrxpooloneaddress: "0x1A290f8C7786Cdd3bF2ebcD6D45d58c4B9df2788", //mainnet  
-    yrxpooltwoaddress: "0xD620eeb5D41845C54ec1D27D97A0b456C6aE4bB6",//mainnet
-   // yrxpoolthreeaddress: "0x134AE1977a2F90CA4073F4E98f4cD7E14b16A4F7"//change to mainnet pool three 
+    uniswaprvxusdtaddress: "0xBd455F35BC5e531999B1C8fC72DF938767aA69b9", //mainnet
+    balanceryrxusdtaddress: "0x50A6Af8D1B16e9fB18c912562239d65c0fF6724a", //change to mainnet balancer yrx usdt 98/2
+    yrxaddress: "0x21634B64a6915b879aD13d96418a82b2a48Fcbe9", //mainnet
+    yrxpooloneaddress: "0x1A290f8C7786Cdd3bF2ebcD6D45d58c4B9df2788", //mainnet
+    yrxpooltwoaddress: "0xD620eeb5D41845C54ec1D27D97A0b456C6aE4bB6",//mainnet 
+     yrxpoolthreeaddress: "0x07b33c29960C005889B5F3746667a0AA7D260166"//mainnet
   };
   onChangeTokenValue = (e) => {
     this.setState({

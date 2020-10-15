@@ -2019,6 +2019,9 @@ class walletStore {
         } catch (e) {}
         self.selectedassettokenlist.push(tokenitem);
       } else if (tokenitem.TokenType == "wrc20") {
+        try {
+          
+      
         var web3 = new Web3(
           this.networkstore.selectedethnetwork.infuraendpoint +
             this.infuraprojectid
@@ -2035,6 +2038,9 @@ class walletStore {
         //console.log("CurrentNetworkAllTokenInfo", CurrentNetworkAllTokenInfo);
         //   console.log("TokenInfo", TokenInfo);
         TokenInfo = toJS(TokenInfo);
+      } catch (error) {
+          
+      }
         iWanUtils
           .getWrc20Balance(
             "WAN",
