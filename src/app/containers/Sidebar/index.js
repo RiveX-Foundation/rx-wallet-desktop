@@ -372,7 +372,7 @@ class Sidebar extends Component {
                 </div>
               </li>
             }
-               {
+               {/*
               <li
                 data-tabvalue="staking"
                 className={stakingstyle}
@@ -415,7 +415,7 @@ class Sidebar extends Component {
                   </span>
                 </div>
               </li>
-            }
+              */ }
             <li
               data-tabvalue="setting"
               className={settingstyle}
