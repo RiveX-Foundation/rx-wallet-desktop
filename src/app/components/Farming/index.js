@@ -102,8 +102,8 @@ class Farming extends Component {
     uniswaprvxusdtaddress: "0xBd455F35BC5e531999B1C8fC72DF938767aA69b9", //mainnet
     balanceryrxusdtaddress: "0x50A6Af8D1B16e9fB18c912562239d65c0fF6724a", //change to mainnet balancer yrx usdt 98/2
     yrxaddress: "0x21634B64a6915b879aD13d96418a82b2a48Fcbe9", //mainnet
-    yrxpooloneaddress: "0x1A290f8C7786Cdd3bF2ebcD6D45d58c4B9df2788", //mainnet
-    yrxpooltwoaddress: "0xD620eeb5D41845C54ec1D27D97A0b456C6aE4bB6",//mainnet 
+    yrxpooloneaddress: "0x17Acf2eC0843B4DA0bfEcd62098F6a0D7415A467", //mainnet
+    yrxpooltwoaddress: "0x7c4C4c5ef2396854A5885358868F12E0bE5EDDfe",//mainnet 
      yrxpoolthreeaddress: "0x07b33c29960C005889B5F3746667a0AA7D260166"//mainnet
   };
 
