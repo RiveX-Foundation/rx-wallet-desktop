@@ -734,7 +734,7 @@ class Farming extends Component {
             </Col>
           </Row>
           <div className="tokenwrapper">
-            <Collapse accordion
+           { /*<Collapse accordion
               className="accordionpool"
               expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
               onChange={() => this.clearInputs()}
@@ -788,7 +788,7 @@ class Farming extends Component {
 
                 {this.renderButtons("Pool 1 rRVX")}
               </Panel>
-            </Collapse>
+           </Collapse> */}
             <Collapse accordion className="accordionpool"
               expandIcon={({ isActive }) => <CaretRightOutlined rotate={isActive ? 90 : 0} />}
               onChange={() => this.clearInputs()}>
