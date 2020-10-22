@@ -2002,7 +2002,16 @@ class walletStore {
               self.totalassetworth +=
                 this.getTokenPrice(tokenitem.AssetCode) *
                 tokenitem.TokenBalance;
-            } else {
+            } else if(tokenitem.AssetCode == "XDB"){
+              console.log("XDB BAL");
+              let balanceBN = new BigNumber(balance.toString());
+              const decimalsBN = new BigNumber("7");
+              const divisor = new BigNumber(10).pow(decimalsBN);
+              console.log(balanceBN.div(divisor).toString());
+              var tokenbal = balanceBN.div(divisor).toString();
+              tokenitem.TokenBalance = tokenbal.toString();
+            }
+             else {
               // balance = balance / (10 ** 18);
               var tokenbal = web3.utils.fromWei(balance, "ether");
               tokenitem.TokenBalance = tokenbal.toString();

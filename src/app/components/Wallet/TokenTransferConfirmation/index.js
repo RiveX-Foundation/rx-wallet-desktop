@@ -602,16 +602,33 @@ class TokenTransferConfirmation extends Component {
           this.props.selectedTokenAsset.PublicAddress
         );
         var gasPrices = await this.getCurrentGasPrices();
+        
         var totalbalance = new BigNumber(
           web3.utils.toWei(
             this.props.selectedTokenAsset.TokenBalance.toString(),
             unit
           )
         );
-        var sendamount = web3.utils.toWei(
-          this.props.tokentransfertoken.toString(),
-          unit
-        );
+        if (tokenitem.AssetCode == "XDB" ) {
+          let balance = this.props.tokentransfertoken.toString();
+          console.log(balance);
+          var sendamount = web3.utils.toWei(balance,"mwei");
+          console.log(sendamount);
+          console.log(sendamount+"0");
+          sendamount = sendamount+"0";
+          
+        } else if(tokenitem.AssetCode == "WBTC"){
+          let balance = this.props.tokentransfertoken.toString();
+          console.log(balance);
+          var sendamount = web3.utils.toWei(balance,"mwei");
+          sendamount = sendamount+"00";
+        } else {
+          var sendamount = web3.utils.toWei(
+            this.props.tokentransfertoken.toString(),
+            unit
+          );
+        }
+      
         var tosend;
         console.log("sending " + sendamount.toString());
         var TokenInfo = this.props.selectedTokenAsset.TokenInfoList[0];
@@ -623,7 +640,7 @@ class TokenTransferConfirmation extends Component {
         var data = contractdata.methods
           .transfer(
             this.props.tokentransferreceiver.toString().toLowerCase(),
-            web3.utils.toWei(this.props.tokentransfertoken.toString(), unit)
+            sendamount
           )
           .encodeABI();
         console.log(data);

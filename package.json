@@ -1,7 +1,7 @@
 {
   "name": "rvxwallet",
   "productName": "RX Wallet",
-  "version": "1.2.9",
+  "version": "1.3.0",
   "description": "RiveX Wallet",
   "main": "./build/main.js",
   "author": {
